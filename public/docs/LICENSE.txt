@@ -1,0 +1,86 @@
+BugIt QA Agent — Commercial End-User License Agreement (EULA)
+Copyright (c) 2026 Taskivator. All Rights Reserved.
+
+This software and its documentation ("the Software") are licensed, not sold. By
+purchasing, activating, or using the Software you ("the Licensee") agree to these
+terms.
+
+1. Grant. On purchase and activation with a valid license key, Taskivator grants
+   the Licensee a non-exclusive, non-transferable license to use the Software for
+   internal QA and bug-reporting purposes, on the number of devices allowed by the
+   purchased tier (Solo = 1 device at a time; Team = 5 devices at a time).
+
+2. License keys & seats. Each license key is personal to the Licensee. The
+   Licensee may not share, publish, resell, sublicense, or transfer a license key.
+   Taskivator may suspend or revoke a key that is shared, published, refunded,
+   charged back, or used fraudulently or in breach of these terms; a revoked key
+   stops activating on new devices.
+
+3. Modification & anti-circumvention. The Licensee may edit configuration,
+   glossary, templates, and instruction files for their own internal use. The
+   Licensee may NOT disable, bypass, remove, or circumvent the Software's
+   licensing, activation, seat, or update-verification mechanisms, nor use the
+   Software without a valid license.
+
+4. Restrictions. The Licensee may not resell, sublicense, redistribute, publish,
+   or make the Software (original or modified) available to third parties, or
+   remove or alter this notice or any copyright or license information.
+
+5. Ownership. Taskivator retains all right, title, and interest in the Software,
+   including all intellectual-property rights. This license grants use rights
+   only; it does not transfer ownership.
+
+6. Your data. Settings in config.json and any content you create are yours. The
+   Software runs on the Licensee's own machine and sends no project, ticket,
+   glossary, or tracker data to Taskivator. See PRIVACY.md.
+
+7. Term. Licenses are sold on an annual term that begins at first activation and
+   continues until it expires or is terminated. Continued use requires a current
+   license.
+
+8. Licensee responsibility & assumption of risk. The Software assists with
+   drafting and filing bug reports; it does not replace the Licensee's own
+   judgment. After purchase, how the Software is used — and the safety and
+   integrity of the Licensee's projects, data, repositories, trackers, and
+   systems — are the Licensee's sole responsibility. The Licensee is responsible
+   for reviewing and approving every report, comment, or change before it is filed
+   or submitted, and for using the Software in accordance with the terms and
+   policies of the tools it is connected to. The Software provides safeguards
+   (preview-before-write, explicit confirmation for irreversible actions, a
+   no-write "dry run" mode, and secret redaction) intended to reduce risk, but
+   these are aids, not guarantees, and do not remove the Licensee's obligation to
+   verify results. Taskivator is not responsible for any loss, damage, or
+   consequence arising from the Licensee's use or misuse of the Software,
+   including mis-filed, incorrect, or unwanted tickets, comments, data changes, or
+   disclosures.
+
+9. No warranty. The Software is provided "AS IS", without warranty of any kind,
+   express or implied, including merchantability and fitness for a particular
+   purpose.
+
+10. Limitation of liability. To the maximum extent permitted by law, Taskivator's
+    total liability for any claim arising from the Software is limited to the
+    amount the Licensee paid for it, and Taskivator is not liable for any
+    indirect, incidental, consequential, or special damages, or for any data filed
+    to, or changed in, external trackers or tools.
+
+11. Indemnification. The Licensee agrees to defend, indemnify, and hold harmless
+    Taskivator from any third-party claim, demand, loss, liability, or expense
+    (including reasonable legal fees) arising out of or relating to the
+    Licensee's use or misuse of the Software, including any ticket, comment,
+    data change, or disclosure filed or made through it.
+
+12. Termination. This license ends automatically if its terms are breached. On
+    termination the Licensee must stop using the Software.
+
+13. Governing law. This agreement is governed by the laws of Japan, without
+    regard to conflict-of-law rules.
+
+14. Dispute resolution. Any dispute arising out of or relating to this agreement
+    or the Software shall be brought exclusively in the courts of Japan, and each
+    party consents to that jurisdiction and venue. This clause does not limit
+    either party's right to bring a claim in a locally mandated small-claims
+    forum where applicable.
+
+Refunds are handled through the store you purchased from. Questions, activation
+help, or transfer requests: bugit.dev or support@bugit.dev.

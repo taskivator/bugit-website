@@ -1,0 +1,1 @@
+{"name":"bugit-dev-v15-rc","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"node server.js","build":"node build.js","preview":"node server.js"},"dependencies":{},"devDependencies":{},"engines":{"node":">=18.0.0"}}

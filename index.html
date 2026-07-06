@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval." />
+  <title>Taskivator | QA Bug-Filing Agent for VS Code</title>
+  <link rel="stylesheet" href="/public/brand/tokens.css" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" type="image/svg+xml" href="/public/brand/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png" />
+  <link rel="apple-touch-icon" href="/public/brand/favicon-180.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="canonical" href="https://bugit.dev/" />
+  <meta name="theme-color" content="#0b0614" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Taskivator" />
+  <meta property="og:title" content="Taskivator | QA Bug-Filing Agent for VS Code" />
+  <meta property="og:description" content="BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval." />
+  <meta property="og:url" content="https://bugit.dev/" />
+  <meta property="og:image" content="https://bugit.dev/public/brand/favicon-180.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Taskivator | QA Bug-Filing Agent for VS Code" />
+  <meta name="twitter:description" content="BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval." />
+  <meta name="twitter:image" content="https://bugit.dev/public/brand/favicon-180.png" />
+</head>
+<body>
+  <div id="ambient" aria-hidden="true"><div class="grid"></div><div class="aurora a"></div><div class="aurora b"></div></div>
+  <header class="nav shell">
+    <a href="#/" class="brand" aria-label="Taskivator home">
+      <img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" />
+      <span><strong>BugIt</strong><em>LABS</em></span>
+    </a>
+    <nav class="main-nav">
+      <a href="#features" data-t="nav.features">Features</a>
+      <a href="#integrations" data-t="nav.integrations">Integrations</a>
+      <a href="#pricing" data-t="nav.pricing">Pricing</a>
+      <a href="#/docs" data-t="nav.docs">Documentation</a>
+      <a href="#faq" data-t="nav.faq">FAQ</a>
+    </nav>
+    <div class="nav-actions">
+      <div class="lang" id="langMenu"><button id="langButton" type="button">🌐 English</button><div id="langList" class="lang-list"></div></div>
+      <a class="nav-login" href="/login" data-t="cta.signin">Sign in</a>
+      <a class="nav-cta" href="/login"><span data-t="cta.early">Get Early Access</span> <b>LIMITED</b><small>$39.99/year · <span data-t="pricing.limited">Limited time price</span></small></a>
+    </div>
+  </header>
+
+  <main id="homeView">
+    <section id="top" class="hero shell">
+      <div class="hero-copy">
+        <div class="pill"><span></span> BUGIT V1.0.1 EARLY ACCESS</div>
+        <h1 class="hero-title" data-html="hero.title">The QA agent <span>that learns</span> your workflow.</h1>
+        <p data-t="hero.subtitle">Turn rough test notes into polished, reviewed bug tickets — filed to your tracker in seconds.</p>
+        <div class="metrics">
+          <div><strong>⚡ ~10 min</strong><small data-t="metrics.saved">saved per bug</small></div>
+          <div><strong>⌕ Auto</strong><small data-t="metrics.dupe">dupe check</small></div>
+          <div><strong>◷ ~15 min</strong><small data-t="metrics.setup">setup</small></div>
+          <div><strong>▣ Private</strong><small data-t="metrics.private">by design</small></div>
+        </div>
+        <div class="actions"><a class="primary" href="/login"><span data-t="cta.early">Get Early Access</span> <b>LIMITED</b></a><a class="secondary" href="#demo"><span data-t="cta.demo">Watch Demo</span><span>▷</span></a></div>
+        <div class="under"><span data-t="under.features">✓ All features included</span><span data-t="under.updates">✓ Free v1.x updates</span><span data-t="under.private">✓ Private by design</span></div>
+      </div>
+      <div class="mission-wrap">
+        <div class="mission">
+          <div class="window"><span></span><span></span><span></span><b>BUGIT MISSION CONTROL</b></div>
+          <div class="status-panel">
+            <ul>
+              <li data-t="mission.style">Project style loaded</li>
+              <li data-t="mission.severity">Severity matrix loaded</li>
+              <li data-t="mission.glossary">Glossary synced</li>
+              <li data-t="mission.duplicate">Duplicate search enabled</li>
+              <li data-t="mission.redaction">PII redaction enabled</li>
+              <li class="thinking" data-t="mission.generating">Generating report...</li>
+            </ul>
+            <img class="blip-logo big" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" />
+          </div>
+          <div class="report-panel">
+            <small data-t="report.label">GENERATED BUG REPORT</small>
+            <h2 data-t="report.title">Login button becomes unresponsive after rapid taps</h2>
+            <div class="chips"><span data-t="report.severity">High</span><span>Web / SaaS</span><span data-t="report.preview">Jira preview</span></div>
+            <h3 data-t="report.summaryTitle">Summary</h3>
+            <p data-t="report.summary">The login button stops responding when clicked repeatedly during authentication. User remains on login screen without error feedback.</p>
+            <pre data-t="report.pre">Steps to Reproduce
+1. Open login page
+2. Enter valid credentials
+3. Click Login rapidly
+4. Observe button state
+
+Expected: User logs in once.
+Actual: Button locks and login fails.</pre>
+            <div class="ready" data-t="report.ready">Preview ready. Waiting for your confirmation.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo" class="demo shell">
+      <div class="section-head"><span data-t="demo.eyebrow">SEE IT WORK</span><h2 data-t="demo.title">One agent. Different QA worlds.</h2><p data-t="demo.subtitle">Use it for web, mobile, desktop, SaaS, enterprise workflows or games.</p></div>
+      <div class="demo-tabs"><button class="active" data-video="saas" data-t="demo.saas">SaaS / Web App</button><button data-video="game" data-t="demo.game">Game QA</button><button data-video="general" data-t="demo.general">General Workflow</button></div>
+      <div class="video-frame"><div class="demo-stack" id="demoStack">
+        <video class="demo-video is-active" data-video="saas" muted playsinline preload="auto" src="/public/media/BugIt-Demo-SaaS.mp4"></video>
+        <video class="demo-video" data-video="game" muted playsinline preload="auto" src="/public/media/BugIt-Demo-Game.mp4"></video>
+        <video class="demo-video" data-video="general" muted playsinline preload="auto" src="/public/media/BugIt-Demo.mp4"></video>
+      </div></div>
+    </section>
+
+    <section id="integrations" class="lower shell">
+      <div class="integrations card">
+        <span class="eyebrow" data-t="integrations.eyebrow">WORKS WITH YOUR TOOLS</span>
+        <h2 data-t="integrations.title">Connect what you already use.</h2>
+        <p class="integrations-lede" data-t="integrations.lede">Jira and Azure DevOps include built-in tested field mapping. Other trackers and tools connect through your own MCP server.</p>
+        <div class="groups">
+          <div><h4 data-t="integrations.builtin">BUILT-IN TESTED MAPPING</h4><div class="icon-row" data-tools="jira,azuredevops"></div></div>
+          <div><h4 data-t="integrations.mcp">VIA YOUR MCP SERVER</h4><div class="icon-row" data-tools="github,gitlab,linear,shortcut,youtrack,bugzilla,clickup,asana,trello"></div></div>
+          <div><h4 data-t="integrations.crash">CRASH & TEST</h4><div class="icon-row" data-tools="sentry,crashlytics,bugsnag,testrail,xray"></div></div>
+          <div><h4 data-t="integrations.knowledge">KNOWLEDGE & COLLAB</h4><div class="icon-row" data-tools="confluence,notion,slack,teams,googledrive,amazons3"></div></div>
+        </div>
+        <p class="note" data-t="integrations.note">⌁ Flip on any tool in setup. Connect once. Use everywhere.</p>
+      </div>
+      <div id="pricing" class="pricing">
+        <article class="price-card"><h3 data-t="pricing.soloTitle">EARLY ACCESS · LIMITED</h3><div class="price"><strong>$39.99</strong><span data-t="pricing.perYear">/year</span></div><p class="regular"><b data-t="pricing.limited">Limited time price</b><span data-t="pricing.soloRegular">Regular price $59.99/year</span></p><ul><li data-t="pricing.soloDevice">1 device (one user)</li><li data-t="pricing.allFeatures">All features included</li><li data-t="pricing.updates">Free v1.x updates while active</li><li data-t="pricing.docs">Documentation & guides</li><li data-t="pricing.support">Email support</li></ul><a class="primary wide" href="/login"><span data-t="cta.early">Get Early Access</span><b>LIMITED</b></a><small data-t="pricing.limited">Limited time price</small></article>
+        <article class="price-card"><h3 data-t="pricing.teamTitle">TEAM LICENSE · LIMITED</h3><em data-t="pricing.seats">5 SEATS</em><div class="price"><strong>$199</strong><span data-t="pricing.perYear">/year</span></div><p class="regular"><b data-t="pricing.limited">Limited time price</b><span data-t="pricing.teamRegular">Regular price $249.99/year</span></p><ul><li data-t="pricing.teamDevices">5 devices (5 users)</li><li data-t="pricing.teamWorkflow">Shared QA workflow</li><li data-t="pricing.teamConfig">Shared project configuration</li><li data-t="pricing.teamSeverity">Consistent severity & categories</li><li data-t="pricing.teamTools">Team setup tools</li><li data-t="pricing.priority">Priority support</li></ul><a class="primary wide" href="/login"><span data-t="pricing.teamCta">Get Team License</span><b>LIMITED</b></a><small data-t="pricing.limited">Limited time price</small></article>
+      </div>
+    </section>
+
+    <section id="features" class="trust shell">
+      <div><strong data-t="trust.privateTitle">▣ Private by Design</strong><p data-t="trust.private">Your work stays on your machine. We never store, train on, or sell your data.</p></div>
+      <div><strong data-t="trust.telemetryTitle">◌ No Telemetry</strong><p data-t="trust.telemetry">Only anonymous license checks to keep your license active.</p></div>
+      <div><strong data-t="trust.previewTitle">✓ Preview Before Filing</strong><p data-t="trust.preview">You review every ticket and type “yes” to file.</p></div>
+      <div><strong data-t="trust.backupsTitle">◎ Local Backups</strong><p data-t="trust.backups">Your settings and activity stay on your machine. Easy backups anytime.</p></div>
+      <div><strong data-t="trust.updatesTitle">◇ Secure Updates</strong><p data-t="trust.updates">Updates are cryptographically signed and verified before installation.</p></div>
+      <div><strong data-t="trust.vscodeTitle">&lt;/&gt; Runs in VS Code</strong><p data-t="trust.vscode">Native to VS Code. No other apps needed.</p></div>
+    </section>
+
+    <section id="faq" class="faq shell"><div class="section-head"><span>FAQ</span><h2 data-t="faq.title">Launch details, without surprises.</h2></div><div id="faqList"></div></section>
+
+    <section class="docs-strip shell"><span class="eyebrow" data-t="docs.eyebrow">DOCUMENTATION</span><div class="doc-cards">
+      <a href="#/docs"><b data-t="docs.user">User Guide</b><small data-t="docs.userDesc">Complete guide to features and workflows.</small></a>
+      <a href="#/docs"><b data-t="nav.docs">Documentation</b><small data-t="docPages.homeIntro">Download the localized User Guide and QA Agent Overview.</small></a>
+      <a href="#/docs/license"><b data-t="docs.license">License Agreement</b><small data-t="docs.licenseDesc">Read the terms for using BugIt.</small></a>
+      <a href="#/docs/privacy"><b data-t="docs.privacy">Privacy Policy</b><small data-t="docs.privacyDesc">How we collect, use and protect your data.</small></a>
+      <a href="#/docs/faq"><b>FAQ</b><small data-t="docs.faqDesc">Answers to common questions.</small></a>
+      <a href="#/support"><b data-t="docs.support">Support</b><small data-t="docs.supportDesc">Get help and open a support ticket.</small></a>
+    </div></section>
+  </main>
+
+  <main id="docView" hidden class="docs-page shell">
+    <div class="docs-layout"><aside id="docNav" class="docs-sidebar"></aside><article id="docContent" class="docs-content"></article></div>
+  </main>
+
+  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. All Rights Reserved.</p></div><nav><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/support" data-t="docs.support">Support</a></nav></footer>
+  <script src="/app.js"></script>
+</body>
+</html>

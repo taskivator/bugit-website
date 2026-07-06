@@ -1,0 +1,29 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BugIt Blip">
+<style>
+.blip-float{transform-box:view-box;transform-origin:50px 62px;animation:bF 3.4s ease-in-out infinite}
+@keyframes bF{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(.7deg)}}
+.blip-eye{transform-box:view-box;transform-origin:50px 50px;animation:bB 4.8s ease-in-out infinite}
+@keyframes bB{0%,88%,100%{transform:scaleY(1)}93%{transform:scaleY(.12)}}
+.blip-look{transform-box:view-box;transform-origin:50px 50px;animation:bL 6.4s ease-in-out infinite}
+@keyframes bL{0%,26%{transform:translate(0,0)}40%,58%{transform:translate(3px,.4px)}72%,90%{transform:translate(-2.4px,0)}100%{transform:translate(0,0)}}
+.blip-glow{transform-box:view-box;transform-origin:50px 56px;opacity:.16;animation:bG 2.8s ease-in-out infinite}
+@keyframes bG{0%,100%{opacity:.12;transform:scale(1)}50%{opacity:.28;transform:scale(1.08)}}
+.blip-tool{transform-box:view-box;transform-origin:63px 63px;animation:bT 3.1s ease-in-out infinite}
+@keyframes bT{0%,100%{transform:rotate(-6deg) translateY(0)}50%{transform:rotate(7deg) translateY(-1.4px)}}
+@media(prefers-reduced-motion:reduce){.blip-float,.blip-eye,.blip-look,.blip-glow,.blip-tool{animation:none}}
+</style>
+<defs>
+<linearGradient id="bg_main" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF2E9A"/><stop offset="1" stop-color="#C21C79"/></linearGradient>
+<filter id="bf_main" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<ellipse class="blip-glow" cx="50" cy="56" rx="33" ry="35" fill="#FF2E9A" filter="url(#bf_main)"/>
+<g class="blip-float">
+<rect x="30" y="82" width="12" height="8" rx="4" fill="#C21C79"/><rect x="58" y="82" width="12" height="8" rx="4" fill="#C21C79"/>
+<rect x="20" y="22" width="60" height="60" rx="20" fill="url(#bg_main)"/>
+<rect x="20" y="22" width="60" height="30" rx="20" fill="#ffffff" opacity="0.12"/>
+<g class="blip-eye"><circle cx="50" cy="50" r="15" fill="#17101a"/><circle cx="50" cy="50" r="9.3" fill="#17101a"/>
+<g class="blip-look"><circle cx="45.8" cy="44.9" r="4.5" fill="#ffffff"/><circle cx="53.9" cy="54.5" r="2.1" fill="#ffffff" opacity="0.55"/></g></g>
+<path d="M43 68 Q50 74.3 57 68" fill="none" stroke="#17101a" stroke-width="2.38" stroke-linecap="round"/>
+
+</g>
+</svg>

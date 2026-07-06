@@ -1,0 +1,13 @@
+{
+  "name": "Taskivator — BugIt",
+  "short_name": "BugIt",
+  "description": "BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0614",
+  "theme_color": "#0b0614",
+  "icons": [
+    { "src": "/public/brand/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/public/brand/favicon-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
