@@ -13,4 +13,5 @@ const server = http.createServer((req,res)=>{
   res.writeHead(200, {'Content-Type': mime[path.extname(file)] || 'application/octet-stream'});
   fs.createReadStream(file).pipe(res);
 });
-server.listen(3000,()=>console.log('BugIt dev server running at http://localhost:3000'));
+const PORT=process.env.PORT||3000;
+server.listen(PORT,()=>console.log(`BugIt dev server running at http://localhost:${PORT}`));
