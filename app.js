@@ -97,16 +97,35 @@ const docRoutes=['docs','docs/license','docs/privacy','docs/faq','support'];
 function route(){const r=location.hash.replace(/^#\/?/,'').replace(/^\//,'');return (r==='docs/getting-started'||r==='docs/user-guide')?'docs':r;}
 
 const docUiText={
-  en:{localized:'Download Getting Started PDF',englishPdf:'Download English step-by-step PDF',englishOnly:'The complete step-by-step User Guide PDF is currently provided in English. The Getting Started guide is available in the selected website language.',fullLicense:'Open full license text',fullPrivacy:'Open full privacy statement',openTicket:'Open a support ticket'},
-  ja:{localized:'選択言語の Getting Started を開く',englishPdf:'英語版ステップバイステップPDFをダウンロード',englishOnly:'完全なステップバイステップのUser Guide PDFは現在英語のみです。Getting Startedは選択したWebサイト言語で利用できます。',fullLicense:'完全なライセンス本文を開く',fullPrivacy:'完全なプライバシー文書を開く',openTicket:'サポートチケットを送信'},
-  fr:{localized:'Ouvrir le Getting Started localisé',englishPdf:'Télécharger le PDF pas-à-pas en anglais',englishOnly:'Le guide complet pas-à-pas au format PDF est actuellement fourni uniquement en anglais. Le guide Getting Started est disponible dans la langue sélectionnée du site.',fullLicense:'Ouvrir le texte complet de la licence',fullPrivacy:'Ouvrir la déclaration de confidentialité complète',openTicket:'Ouvrir un ticket de support'},
-  de:{localized:'Lokalisierte Getting-Started-Anleitung öffnen',englishPdf:'Englisches Schritt-für-Schritt-PDF herunterladen',englishOnly:'Das vollständige Schritt-für-Schritt-PDF des User Guides ist derzeit nur auf Englisch verfügbar. Die Getting-Started-Anleitung ist in der gewählten Website-Sprache verfügbar.',fullLicense:'Vollständigen Lizenztext öffnen',fullPrivacy:'Vollständige Datenschutzerklärung öffnen',openTicket:'Support-Ticket öffnen'},
-  es:{localized:'Abrir Getting Started localizado',englishPdf:'Descargar PDF paso a paso en inglés',englishOnly:'La guía completa paso a paso en PDF está disponible actualmente solo en inglés. La guía Getting Started está disponible en el idioma seleccionado del sitio.',fullLicense:'Abrir texto completo de la licencia',fullPrivacy:'Abrir declaración completa de privacidad',openTicket:'Abrir un ticket de soporte'},
-  'pt-br':{localized:'Abrir Getting Started localizado',englishPdf:'Baixar PDF passo a passo em inglês',englishOnly:'O guia completo passo a passo em PDF está disponível atualmente apenas em inglês. O Getting Started está disponível no idioma selecionado do site.',fullLicense:'Abrir texto completo da licença',fullPrivacy:'Abrir declaração completa de privacidade',openTicket:'Abrir um chamado de suporte'},
-  it:{localized:'Apri Getting Started localizzato',englishPdf:'Scarica PDF passo-passo in inglese',englishOnly:'La guida completa passo-passo in PDF è attualmente disponibile solo in inglese. Il Getting Started è disponibile nella lingua selezionata del sito.',fullLicense:'Apri testo completo della licenza',fullPrivacy:'Apri informativa privacy completa',openTicket:'Apri un ticket di supporto'},
-  ko:{localized:'선택한 언어의 Getting Started 열기',englishPdf:'영어 단계별 PDF 다운로드',englishOnly:'전체 단계별 User Guide PDF는 현재 영어로만 제공됩니다. Getting Started 문서는 선택한 웹사이트 언어로 제공됩니다.',fullLicense:'전체 라이선스 문서 열기',fullPrivacy:'전체 개인정보 문서 열기',openTicket:'지원 티켓 등록'},
-  zh:{localized:'打开所选语言的 Getting Started',englishPdf:'下载英文分步 PDF',englishOnly:'完整的分步 User Guide PDF 目前仅提供英文版。Getting Started 指南可按所选网站语言查看。',fullLicense:'打开完整许可文本',fullPrivacy:'打开完整隐私声明',openTicket:'提交支持工单'},
-  ru:{localized:'Открыть Getting Started на выбранном языке',englishPdf:'Скачать пошаговый PDF на английском',englishOnly:'Полное пошаговое руководство User Guide в PDF сейчас доступно только на английском. Getting Started доступен на выбранном языке сайта.',fullLicense:'Открыть полный текст лицензии',fullPrivacy:'Открыть полную политику конфиденциальности',openTicket:'Создать обращение в поддержку'}
+  en:{openTicket:'Open a support ticket'},
+  ja:{openTicket:'サポートチケットを送信'},
+  fr:{openTicket:'Ouvrir un ticket de support'},
+  de:{openTicket:'Support-Ticket öffnen'},
+  es:{openTicket:'Abrir un ticket de soporte'},
+  'pt-br':{openTicket:'Abrir um chamado de suporte'},
+  it:{openTicket:'Apri un ticket di supporto'},
+  ko:{openTicket:'지원 티켓 등록'},
+  zh:{openTicket:'提交支持工单'},
+  ru:{openTicket:'Создать обращение в поддержку'}
+};
+// Downloadable documentation PDFs. English uses the root /public/docs/ files;
+// every other language uses its own /public/docs/<lang>/ folder. Filenames are
+// preserved exactly as shipped in the release.
+function docPdfs(lang){
+  if(lang==='en')return{ug:'/public/docs/BugIt-User-Guide.pdf',ov:'/public/docs/BugIt-QA-Agent-Overview.pdf',ugName:'BugIt-User-Guide.pdf',ovName:'BugIt-QA-Agent-Overview.pdf'};
+  return{ug:`/public/docs/${lang}/BugIt-User-Guide.${lang}.pdf`,ov:`/public/docs/${lang}/BugIt-QA-Agent-Overview.${lang}.pdf`,ugName:`BugIt-User-Guide.${lang}.pdf`,ovName:`BugIt-QA-Agent-Overview.${lang}.pdf`};
+}
+const docDownloadLabels={
+  en:{userGuide:"Download User Guide",overview:"Download QA Agent Overview",ugDesc:"The complete step-by-step setup and usage guide.",ovDesc:"A concise overview of the BugIt QA Agent."},
+  ja:{userGuide:"ユーザーガイドをダウンロード",overview:"QAエージェント概要をダウンロード",ugDesc:"インストールから使い方までの完全な手順ガイド。",ovDesc:"BugIt QAエージェントの簡潔な概要。"},
+  fr:{userGuide:"Télécharger le guide utilisateur",overview:"Télécharger la présentation de l'agent QA",ugDesc:"Le guide complet d'installation et d'utilisation, étape par étape.",ovDesc:"Une présentation concise de l'agent QA BugIt."},
+  de:{userGuide:"Benutzerhandbuch herunterladen",overview:"QA-Agent-Übersicht herunterladen",ugDesc:"Die vollständige Schritt-für-Schritt-Anleitung zu Einrichtung und Nutzung.",ovDesc:"Ein kompakter Überblick über den BugIt QA-Agenten."},
+  es:{userGuide:"Descargar guía de usuario",overview:"Descargar resumen del agente QA",ugDesc:"La guía completa de instalación y uso paso a paso.",ovDesc:"Un resumen conciso del agente QA de BugIt."},
+  "pt-br":{userGuide:"Baixar guia do usuário",overview:"Baixar visão geral do agente de QA",ugDesc:"O guia completo de instalação e uso, passo a passo.",ovDesc:"Uma visão geral concisa do agente de QA do BugIt."},
+  it:{userGuide:"Scarica la guida utente",overview:"Scarica la panoramica dell'agente QA",ugDesc:"La guida completa all'installazione e all'uso, passo dopo passo.",ovDesc:"Una panoramica sintetica dell'agente QA di BugIt."},
+  ko:{userGuide:"사용자 가이드 다운로드",overview:"QA 에이전트 개요 다운로드",ugDesc:"설치부터 사용까지 전체 단계별 가이드.",ovDesc:"BugIt QA 에이전트에 대한 간결한 개요."},
+  zh:{userGuide:"下载用户指南",overview:"下载 QA 代理概览",ugDesc:"从安装到使用的完整分步指南。",ovDesc:"BugIt QA 代理的简明概览。"},
+  ru:{userGuide:"Скачать руководство пользователя",overview:"Скачать обзор QA-агента",ugDesc:"Полное пошаговое руководство по установке и использованию.",ovDesc:"Краткий обзор QA-агента BugIt."}
 };
 const BASE_TITLE='Taskivator | QA Bug-Filing Agent for VS Code';
 function renderDocRoute(){
@@ -123,10 +142,12 @@ function renderDocRoute(){
   const titles={docs:d.homeTitle,'docs/getting-started':d.gettingTitle,'docs/user-guide':d.userTitle,'docs/license':d.licenseTitle,'docs/privacy':d.privacyTitle,'docs/faq':d.faqTitle,support:d.supportTitle};
   let body='';
   if(r==='docs'){
-    // Downloadable PDFs are temporarily disabled while updated (Taskivator-branded)
-    // documentation is prepared. See docs/translations sources for current content.
-    body=`<p>${d.homeIntro}</p>`
-      +`<p class="doc-soon-note">Updated documentation is being prepared and will be available soon.</p>`;
+    const p=docPdfs(lang);
+    const dl=docDownloadLabels[lang]||docDownloadLabels.en;
+    body=`<p>${d.homeIntro}</p><div class="doc-download-cards">`
+      +`<a class="doc-download-card" href="${p.ug}" download="${p.ugName}"><span class="doc-dl-arrow" aria-hidden="true">↓</span><b>${dl.userGuide}</b><small>${dl.ugDesc}</small><span class="doc-dl-tag">PDF</span></a>`
+      +`<a class="doc-download-card" href="${p.ov}" download="${p.ovName}"><span class="doc-dl-arrow" aria-hidden="true">↓</span><b>${dl.overview}</b><small>${dl.ovDesc}</small><span class="doc-dl-tag">PDF</span></a>`
+      +`</div>`;
   }else if(r==='docs/faq'){
     body=`<div class="faq-doc">${i18n[lang].faq.items.map(([q,a])=>`<h2>${q}</h2><p>${a}</p>`).join('')}</div>`;
   }else if(r==='support'){
@@ -137,13 +158,11 @@ function renderDocRoute(){
   }else if(r==='docs/license'){
     body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
       +`<p>${d.sections[2]}</p>`
-      +`<div id="licenseText" class="license-doc"><p class="license-loading">…</p></div>`
-      +`<div class="doc-actions"><a class="doc-button ghost" href="/public/docs/LICENSE.txt" download="BugIt-License.txt">↓ .txt</a></div>`;
+      +`<div id="licenseText" class="license-doc"><p class="license-loading">…</p></div>`;
   }else if(r==='docs/privacy'){
     body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
       +`<p>${d.sections[3]}</p>`
-      +`<div id="privacyText" class="license-doc"><p class="license-loading">…</p></div>`
-      +`<div class="doc-actions"><a class="doc-button ghost" href="/public/docs/PRIVACY.md" download="BugIt-Privacy.md">↓ .md</a></div>`;
+      +`<div id="privacyText" class="license-doc"><p class="license-loading">…</p></div>`;
   }
   document.getElementById('docContent').innerHTML=`<span class="eyebrow">${titles[r]}</span><h1>${titles[r]}</h1>${body}`;
   document.title=`${titles[r]} · Taskivator`;
@@ -152,13 +171,13 @@ function renderDocRoute(){
     fetch('/public/docs/LICENSE.txt')
       .then(x=>x.ok?x.text():Promise.reject())
       .then(txt=>{if(box)box.innerHTML=formatLicense(txt);})
-      .catch(()=>{if(box)box.innerHTML=`<p><a href="/public/docs/LICENSE.txt" download="BugIt-License.txt">↓ .txt</a></p>`;});
+      .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The license text is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
   }else if(r==='docs/privacy'){
     const box=document.getElementById('privacyText');
     fetch('/public/docs/PRIVACY.md')
       .then(x=>x.ok?x.text():Promise.reject())
       .then(txt=>{if(box)box.innerHTML=formatMarkdownDoc(txt);})
-      .catch(()=>{if(box)box.innerHTML=`<p><a href="/public/docs/PRIVACY.md" download="BugIt-Privacy.md">↓ .md</a></p>`;});
+      .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The privacy statement is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
   }
   window.scrollTo({top:0,behavior:'smooth'});
 }

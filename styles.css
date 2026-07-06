@@ -8,7 +8,6 @@
 .nav-login{display:inline-flex;align-items:center;padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:800;color:var(--text);transition:.18s;white-space:nowrap}
 .nav-login:hover{border-color:rgba(255,79,201,.5);background:rgba(255,255,255,.08);color:#ff86dc}
 .doc-download-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:22px 0 8px}
-.doc-soon-note{margin:22px 0 8px;padding:22px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.045);color:var(--muted);line-height:1.55;font-size:15px}
 .doc-download-card{position:relative;display:flex;flex-direction:column;gap:8px;padding:22px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.045);transition:.18s;text-decoration:none}
 .doc-download-card:hover{transform:translateY(-3px);border-color:rgba(255,79,201,.5);box-shadow:0 0 30px rgba(255,79,201,.16)}
 .doc-download-card b{font-size:17px;color:var(--text);line-height:1.3}
@@ -30,8 +29,6 @@
 .license-doc strong{color:var(--text)}
 .license-doc code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
 .license-loading{opacity:.6}
-.doc-button.ghost{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none}
-.doc-button.ghost:hover{border-color:rgba(255,79,201,.5);color:#ff86dc}
 
 
 /* ===== Blips mascot logo (shared asset — /public/brand/blip-logo.svg; animation is inside the SVG) ===== */
