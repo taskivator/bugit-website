@@ -113,7 +113,19 @@ const docUiText={
 // preserved exactly as shipped in the release.
 function docPdfs(lang){
   if(lang==='en')return{ug:'/public/docs/BugIt-User-Guide.pdf',ov:'/public/docs/BugIt-QA-Agent-Overview.pdf',ugName:'BugIt-User-Guide.pdf',ovName:'BugIt-QA-Agent-Overview.pdf'};
-  return{ug:`/public/docs/${lang}/BugIt-User-Guide.${lang}.pdf`,ov:`/public/docs/${lang}/BugIt-QA-Agent-Overview.${lang}.pdf`,ugName:`BugIt-User-Guide.${lang}.pdf`,ovName:`BugIt-QA-Agent-Overview.${lang}.pdf`};
+  // Latin-script languages ship native-language filenames (accents romanized to ASCII for
+  // URL/download/ZIP reliability); CJK/Cyrillic keep the ASCII English slug. The localized
+  // document TITLE is shown to the user via docDownloadLabels below, not via the filename.
+  const NATIVE={
+    de:{ug:'BugIt-Benutzerhandbuch.de.pdf',ov:'BugIt-QA-Agent-Ueberblick.de.pdf'},
+    es:{ug:'BugIt-Guia-del-usuario.es.pdf',ov:'BugIt-QA-Agent-Descripcion-general.es.pdf'},
+    fr:{ug:'BugIt-Guide-d-utilisation.fr.pdf',ov:'BugIt-QA-Agent-Presentation.fr.pdf'},
+    it:{ug:'BugIt-Guida-utente.it.pdf',ov:'BugIt-QA-Agent-Panoramica.it.pdf'},
+    'pt-br':{ug:'BugIt-Guia-do-usuario.pt-br.pdf',ov:'BugIt-QA-Agent-Visao-geral.pt-br.pdf'}
+  };
+  const ugName=(NATIVE[lang]&&NATIVE[lang].ug)||`BugIt-User-Guide.${lang}.pdf`;
+  const ovName=(NATIVE[lang]&&NATIVE[lang].ov)||`BugIt-QA-Agent-Overview.${lang}.pdf`;
+  return{ug:`/public/docs/${lang}/${ugName}`,ov:`/public/docs/${lang}/${ovName}`,ugName,ovName};
 }
 const docDownloadLabels={
   en:{userGuide:"Download User Guide",overview:"Download QA Agent Overview",ugDesc:"The complete step-by-step setup and usage guide.",ovDesc:"A concise overview of the BugIt QA Agent."},
