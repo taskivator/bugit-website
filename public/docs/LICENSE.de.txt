@@ -1,0 +1,99 @@
+BugIt QA Agent — Kommerzieller Endbenutzer-Lizenzvertrag (EULA)
+Copyright (c) 2026 Taskivator. All Rights Reserved.
+
+Diese Software und ihre Dokumentation („die Software") werden lizenziert, nicht
+verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären Sie
+(„der Lizenznehmer") sich mit diesen Bedingungen einverstanden.
+
+1. Lizenzgewährung. Mit Kauf und Aktivierung unter Verwendung eines gültigen
+   Lizenzschlüssels gewährt Taskivator dem Lizenznehmer eine nicht-exklusive,
+   nicht übertragbare Lizenz zur Nutzung der Software für interne QA- und
+   Fehlerberichtszwecke, auf der Anzahl von Geräten, die die erworbene Stufe
+   zulässt (Solo = 1 Gerät gleichzeitig; Team = 5 Geräte gleichzeitig).
+
+2. Lizenzschlüssel & Plätze. Jeder Lizenzschlüssel ist persönlich an den
+   Lizenznehmer gebunden. Der Lizenznehmer darf einen Lizenzschlüssel nicht
+   weitergeben, veröffentlichen, weiterverkaufen, unterlizenzieren oder
+   übertragen. Taskivator kann einen Schlüssel sperren oder widerrufen, der
+   weitergegeben, veröffentlicht, rückerstattet, rückbelastet oder betrügerisch
+   bzw. unter Verstoß gegen diese Bedingungen verwendet wird; ein widerrufener
+   Schlüssel lässt sich auf neuen Geräten nicht mehr aktivieren.
+
+3. Änderung & Umgehungsverbot. Der Lizenznehmer darf Konfigurations-, Glossar-,
+   Vorlagen- und Anweisungsdateien für seine eigene interne Nutzung bearbeiten.
+   Der Lizenznehmer darf die Lizenzierungs-, Aktivierungs-, Platz- oder
+   Update-Verifizierungsmechanismen der Software NICHT deaktivieren, umgehen,
+   entfernen oder aushebeln und die Software nicht ohne eine gültige Lizenz nutzen.
+
+4. Beschränkungen. Der Lizenznehmer darf die Software (im Original oder
+   verändert) nicht weiterverkaufen, unterlizenzieren, weiterverbreiten,
+   veröffentlichen oder Dritten zugänglich machen und diesen Hinweis oder
+   jegliche Urheberrechts- oder Lizenzinformationen weder entfernen noch verändern.
+
+5. Eigentum. Taskivator behält sämtliche Rechte, Titel und Anteile an der
+   Software, einschließlich aller Rechte des geistigen Eigentums. Diese Lizenz
+   gewährt ausschließlich Nutzungsrechte; sie überträgt kein Eigentum.
+
+6. Ihre Daten. Einstellungen in config.json und alle von Ihnen erstellten
+   Inhalte gehören Ihnen. Die Software läuft auf dem Rechner des Lizenznehmers
+   und sendet keine Projekt-, Ticket-, Glossar- oder Tracker-Daten an Taskivator.
+   Siehe PRIVACY.md.
+
+7. Laufzeit. Lizenzen werden mit einer jährlichen Laufzeit verkauft, die mit der
+   ersten Aktivierung beginnt und bis zu ihrem Ablauf oder ihrer Kündigung
+   fortbesteht. Die fortgesetzte Nutzung erfordert eine gültige Lizenz.
+
+8. Verantwortung des Lizenznehmers & Risikoübernahme. Die Software unterstützt
+   beim Verfassen und Einreichen von Fehlerberichten; sie ersetzt nicht das
+   eigene Urteilsvermögen des Lizenznehmers. Nach dem Kauf liegen die Art und
+   Weise der Nutzung der Software — sowie die Sicherheit und Integrität der
+   Projekte, Daten, Repositories, Tracker und Systeme des Lizenznehmers — in der
+   alleinigen Verantwortung des Lizenznehmers. Der Lizenznehmer ist dafür
+   verantwortlich, jeden Bericht, Kommentar oder jede Änderung vor der Einreichung
+   oder Übermittlung zu prüfen und freizugeben und die Software im Einklang mit den
+   Bedingungen und Richtlinien der Werkzeuge zu nutzen, mit denen sie verbunden ist.
+   Die Software bietet Schutzvorkehrungen (Vorschau vor dem Schreiben, ausdrückliche
+   Bestätigung für unumkehrbare Aktionen, einen schreibfreien „dry run"-Modus sowie
+   die Schwärzung von Geheimnissen), die das Risiko verringern sollen, doch dies
+   sind Hilfsmittel, keine Garantien, und sie heben die Verpflichtung des
+   Lizenznehmers zur Überprüfung der Ergebnisse nicht auf. Taskivator ist nicht
+   verantwortlich für Verluste, Schäden oder Folgen, die aus der Nutzung oder dem
+   Missbrauch der Software durch den Lizenznehmer entstehen, einschließlich falsch
+   eingereichter, unrichtiger oder unerwünschter Tickets, Kommentare, Datenänderungen
+   oder Offenlegungen.
+
+9. Kein Gewährleistungsanspruch. Die Software wird „WIE BESEHEN" bereitgestellt,
+   ohne jegliche ausdrückliche oder stillschweigende Gewährleistung, einschließlich
+   der Marktgängigkeit und der Eignung für einen bestimmten Zweck.
+
+10. Haftungsbeschränkung. Soweit gesetzlich zulässig, ist die Gesamthaftung von
+    Taskivator für jegliche aus der Software entstehende Ansprüche auf den Betrag
+    beschränkt, den der Lizenznehmer dafür gezahlt hat, und Taskivator haftet nicht
+    für indirekte, zufällige, Folge- oder Sonderschäden noch für Daten, die in
+    externe Tracker oder Werkzeuge eingereicht oder darin geändert werden.
+
+11. Freistellung. Der Lizenznehmer verpflichtet sich, Taskivator gegen jeden
+    Anspruch, jede Forderung, jeden Verlust, jede Haftung oder Ausgabe Dritter
+    (einschließlich angemessener Anwaltskosten) zu verteidigen, schadlos zu halten
+    und freizustellen, die aus der Nutzung oder dem Missbrauch der Software durch
+    den Lizenznehmer entstehen oder damit zusammenhängen, einschließlich jedes
+    Tickets, Kommentars, jeder Datenänderung oder Offenlegung, die dadurch
+    eingereicht oder vorgenommen wird.
+
+12. Beendigung. Diese Lizenz endet automatisch, wenn gegen ihre Bedingungen
+    verstoßen wird. Bei Beendigung muss der Lizenznehmer die Nutzung der Software
+    einstellen.
+
+13. Anwendbares Recht. Dieser Vertrag unterliegt dem Recht Japans, ohne
+    Berücksichtigung der Regeln des Kollisionsrechts.
+
+14. Streitbeilegung. Jede Streitigkeit, die aus diesem Vertrag oder der Software
+    entsteht oder damit zusammenhängt, ist ausschließlich vor den Gerichten Japans
+    zu erheben, und jede Partei unterwirft sich dieser Gerichtsbarkeit und diesem
+    Gerichtsstand. Diese Klausel beschränkt nicht das Recht einer Partei, einen
+    Anspruch gegebenenfalls vor einem örtlich vorgeschriebenen Bagatellgericht
+    geltend zu machen.
+
+Rückerstattungen werden über den Store abgewickelt, in dem Sie gekauft haben.
+Fragen, Hilfe bei der Aktivierung oder Übertragungsanfragen: bugit.dev oder
+support@bugit.dev.

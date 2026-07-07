@@ -1,0 +1,103 @@
+BugIt QA Agent — Contrat de licence utilisateur final commercial (EULA)
+Copyright (c) 2026 Taskivator. All Rights Reserved.
+
+Ce logiciel et sa documentation (« le Logiciel ») font l'objet d'une licence,
+et non d'une vente. En achetant, en activant ou en utilisant le Logiciel, vous
+(« le Titulaire de la licence ») acceptez les présentes conditions.
+
+1. Octroi. À l'achat et à l'activation au moyen d'une clé de licence valide,
+   Taskivator accorde au Titulaire de la licence une licence non exclusive et
+   non transférable d'utilisation du Logiciel à des fins internes d'assurance
+   qualité (QA) et de signalement de bugs, sur le nombre d'appareils autorisé
+   par la formule achetée (Solo = 1 appareil à la fois ; Team = 5 appareils à
+   la fois).
+
+2. Clés de licence et sièges. Chaque clé de licence est personnelle au
+   Titulaire de la licence. Le Titulaire ne peut pas partager, publier,
+   revendre, sous-licencier ni transférer une clé de licence. Taskivator peut
+   suspendre ou révoquer une clé qui est partagée, publiée, remboursée, ayant
+   fait l'objet d'une rétrofacturation, ou utilisée de manière frauduleuse ou
+   en violation des présentes conditions ; une clé révoquée cesse de s'activer
+   sur de nouveaux appareils.
+
+3. Modification et anti-contournement. Le Titulaire de la licence peut modifier
+   les fichiers de configuration, de glossaire, de modèles et d'instructions
+   pour son propre usage interne. Le Titulaire ne peut PAS désactiver,
+   contourner, supprimer ni neutraliser les mécanismes de licence, d'activation,
+   de siège ou de vérification des mises à jour du Logiciel, ni utiliser le
+   Logiciel sans une licence valide.
+
+4. Restrictions. Le Titulaire de la licence ne peut pas revendre, sous-licencier,
+   redistribuer, publier ni mettre le Logiciel (original ou modifié) à la
+   disposition de tiers, ni supprimer ou modifier le présent avis ou toute
+   information de copyright ou de licence.
+
+5. Propriété. Taskivator conserve l'ensemble des droits, titres et intérêts sur
+   le Logiciel, y compris tous les droits de propriété intellectuelle. La
+   présente licence n'accorde que des droits d'utilisation ; elle ne transfère
+   aucune propriété.
+
+6. Vos données. Les paramètres du fichier config.json et tout contenu que vous
+   créez vous appartiennent. Le Logiciel s'exécute sur la propre machine du
+   Titulaire de la licence et n'envoie à Taskivator aucune donnée de projet, de
+   ticket, de glossaire ni d'outil de suivi. Voir PRIVACY.md.
+
+7. Durée. Les licences sont vendues pour une durée annuelle qui commence à la
+   première activation et se poursuit jusqu'à son expiration ou sa résiliation.
+   La poursuite de l'utilisation nécessite une licence en cours de validité.
+
+8. Responsabilité du Titulaire et acceptation des risques. Le Logiciel aide à
+   rédiger et à créer des rapports de bug ; il ne remplace pas le jugement propre
+   du Titulaire de la licence. Après l'achat, la manière dont le Logiciel est
+   utilisé — ainsi que la sécurité et l'intégrité des projets, des données, des
+   dépôts, des outils de suivi et des systèmes du Titulaire — relèvent de la
+   seule responsabilité du Titulaire de la licence. Le Titulaire est responsable
+   de la relecture et de l'approbation de chaque rapport, commentaire ou
+   modification avant qu'il ne soit créé ou soumis, ainsi que de l'utilisation du
+   Logiciel conformément aux conditions et aux politiques des outils auxquels il
+   est connecté. Le Logiciel fournit des protections (aperçu avant écriture,
+   confirmation explicite pour les actions irréversibles, un mode « simulation »
+   (dry run) sans écriture, et le masquage des secrets) destinées à réduire les
+   risques, mais il s'agit d'aides, non de garanties, qui ne dispensent pas le
+   Titulaire de son obligation de vérifier les résultats. Taskivator n'est pas
+   responsable des pertes, dommages ou conséquences résultant de l'utilisation
+   ou de la mauvaise utilisation du Logiciel par le Titulaire, y compris les
+   tickets, commentaires, modifications de données ou divulgations erronés,
+   incorrects ou non souhaités.
+
+9. Absence de garantie. Le Logiciel est fourni « EN L'ÉTAT », sans garantie
+   d'aucune sorte, expresse ou implicite, y compris la qualité marchande et
+   l'adéquation à un usage particulier.
+
+10. Limitation de responsabilité. Dans toute la mesure permise par la loi, la
+    responsabilité totale de Taskivator au titre de toute réclamation découlant
+    du Logiciel est limitée au montant que le Titulaire de la licence a payé pour
+    celui-ci, et Taskivator n'est pas responsable des dommages indirects,
+    accessoires, consécutifs ou particuliers, ni de toute donnée créée dans, ou
+    modifiée au sein de, des outils de suivi ou outils externes.
+
+11. Indemnisation. Le Titulaire de la licence accepte de défendre, d'indemniser
+    et de garantir Taskivator contre toute réclamation, demande, perte,
+    responsabilité ou dépense de tiers (y compris des frais juridiques
+    raisonnables) découlant de ou liée à l'utilisation ou à la mauvaise
+    utilisation du Logiciel par le Titulaire, y compris tout ticket, commentaire,
+    modification de données ou divulgation créé ou effectué par son
+    intermédiaire.
+
+12. Résiliation. La présente licence prend fin automatiquement en cas de
+    violation de ses conditions. À la résiliation, le Titulaire de la licence
+    doit cesser d'utiliser le Logiciel.
+
+13. Droit applicable. Le présent contrat est régi par le droit du Japon, sans
+    égard aux règles de conflit de lois.
+
+14. Règlement des litiges. Tout litige découlant de ou lié au présent contrat ou
+    au Logiciel sera porté exclusivement devant les tribunaux du Japon, et chaque
+    partie consent à cette compétence et à ce ressort. La présente clause ne
+    limite pas le droit de l'une ou l'autre partie de porter une réclamation
+    devant une juridiction locale de proximité obligatoire (small claims), le cas
+    échéant.
+
+Les remboursements sont gérés par la boutique auprès de laquelle vous avez
+effectué votre achat. Pour toute question, aide à l'activation ou demande de
+transfert : bugit.dev ou support@bugit.dev.

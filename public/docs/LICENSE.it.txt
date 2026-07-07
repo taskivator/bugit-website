@@ -1,0 +1,98 @@
+BugIt QA Agent — Contratto di Licenza Commerciale con l'Utente Finale (EULA)
+Copyright (c) 2026 Taskivator. All Rights Reserved.
+
+Il presente software e la relativa documentazione («il Software») sono concessi in
+licenza, non venduti. Acquistando, attivando o utilizzando il Software, l'utente
+(«il Licenziatario») accetta i presenti termini.
+
+1. Concessione. All'atto dell'acquisto e dell'attivazione con una chiave di licenza
+   valida, Taskivator concede al Licenziatario una licenza non esclusiva e non
+   trasferibile per utilizzare il Software a fini interni di QA e di segnalazione di
+   bug, sul numero di dispositivi consentito dal piano acquistato (Solo = 1
+   dispositivo alla volta; Team = 5 dispositivi alla volta).
+
+2. Chiavi di licenza e postazioni. Ogni chiave di licenza è personale del
+   Licenziatario. Il Licenziatario non può condividere, pubblicare, rivendere,
+   concedere in sublicenza o trasferire una chiave di licenza. Taskivator può
+   sospendere o revocare una chiave che sia stata condivisa, pubblicata, rimborsata,
+   oggetto di storno (chargeback), oppure utilizzata in modo fraudolento o in
+   violazione dei presenti termini; una chiave revocata cessa di attivarsi su nuovi
+   dispositivi.
+
+3. Modifica e divieto di elusione. Il Licenziatario può modificare i file di
+   configurazione, di glossario, di template e di istruzioni per il proprio uso
+   interno. Il Licenziatario NON può disattivare, aggirare, rimuovere o eludere i
+   meccanismi di licenza, attivazione, gestione delle postazioni o verifica degli
+   aggiornamenti del Software, né utilizzare il Software senza una licenza valida.
+
+4. Restrizioni. Il Licenziatario non può rivendere, concedere in sublicenza,
+   ridistribuire, pubblicare o mettere a disposizione di terzi il Software (originale
+   o modificato), né rimuovere o alterare la presente nota o qualsiasi informazione
+   relativa al copyright o alla licenza.
+
+5. Titolarità. Taskivator conserva ogni diritto, titolo e interesse sul Software,
+   inclusi tutti i diritti di proprietà intellettuale. La presente licenza concede
+   unicamente diritti d'uso; non trasferisce la titolarità.
+
+6. I suoi dati. Le impostazioni contenute in config.json e qualsiasi contenuto da
+   Lei creato sono di Sua proprietà. Il Software viene eseguito sulla macchina del
+   Licenziatario e non invia a Taskivator alcun dato relativo a progetti, ticket,
+   glossario o tracker. Si veda PRIVACY.md.
+
+7. Durata. Le licenze sono vendute con durata annuale che decorre dalla prima
+   attivazione e prosegue fino alla scadenza o alla risoluzione. L'uso continuato
+   richiede una licenza in corso di validità.
+
+8. Responsabilità del Licenziatario e assunzione del rischio. Il Software assiste
+   nella redazione e nell'inoltro di segnalazioni di bug; non sostituisce il giudizio
+   proprio del Licenziatario. Dopo l'acquisto, le modalità di utilizzo del Software —
+   nonché la sicurezza e l'integrità dei progetti, dei dati, dei repository, dei
+   tracker e dei sistemi del Licenziatario — sono di esclusiva responsabilità del
+   Licenziatario. Il Licenziatario è responsabile della revisione e
+   dell'approvazione di ogni segnalazione, commento o modifica prima che venga
+   inoltrata o inviata, nonché dell'utilizzo del Software in conformità ai termini e
+   alle politiche degli strumenti a cui è collegato. Il Software mette a disposizione
+   misure di salvaguardia (anteprima prima della scrittura, conferma esplicita per le
+   azioni irreversibili, una modalità «dry run» senza scrittura e l'oscuramento dei
+   segreti) volte a ridurre il rischio, ma si tratta di ausili, non di garanzie, e
+   non eliminano l'obbligo del Licenziatario di verificare i risultati. Taskivator
+   non è responsabile di alcuna perdita, danno o conseguenza derivante dall'uso o
+   dall'uso improprio del Software da parte del Licenziatario, inclusi ticket,
+   commenti, modifiche di dati o divulgazioni inoltrati in modo errato, non corretti
+   o indesiderati.
+
+9. Assenza di garanzia. Il Software è fornito «COSÌ COM'È», senza garanzie di alcun
+   tipo, esplicite o implicite, comprese quelle di commerciabilità e di idoneità a
+   uno scopo particolare.
+
+10. Limitazione di responsabilità. Nella massima misura consentita dalla legge, la
+    responsabilità complessiva di Taskivator per qualsiasi pretesa derivante dal
+    Software è limitata all'importo che il Licenziatario ha pagato per lo stesso, e
+    Taskivator non è responsabile di alcun danno indiretto, incidentale,
+    consequenziale o speciale, né di alcun dato inoltrato a, o modificato in, tracker
+    o strumenti esterni.
+
+11. Manleva. Il Licenziatario si impegna a difendere, manlevare e tenere indenne
+    Taskivator da qualsiasi pretesa, richiesta, perdita, responsabilità o spesa di
+    terzi (comprese le ragionevoli spese legali) derivante da o correlata all'uso o
+    all'uso improprio del Software da parte del Licenziatario, inclusi qualsiasi
+    ticket, commento, modifica di dati o divulgazione inoltrato o effettuato tramite
+    lo stesso.
+
+12. Risoluzione. La presente licenza cessa automaticamente in caso di violazione dei
+    suoi termini. Al momento della risoluzione, il Licenziatario deve cessare di
+    utilizzare il Software.
+
+13. Legge applicabile. Il presente contratto è regolato dalle leggi del Giappone,
+    senza riguardo alle norme sul conflitto di leggi.
+
+14. Risoluzione delle controversie. Qualsiasi controversia derivante da o correlata
+    al presente contratto o al Software sarà devoluta in via esclusiva ai tribunali
+    del Giappone, e ciascuna parte acconsente a tale giurisdizione e foro. La
+    presente clausola non limita il diritto di ciascuna parte di proporre un'azione
+    presso un foro locale competente per le controversie di modico valore
+    (small-claims), ove applicabile.
+
+I rimborsi sono gestiti tramite lo store presso cui è stato effettuato l'acquisto.
+Per domande, assistenza all'attivazione o richieste di trasferimento: bugit.dev o
+support@bugit.dev.
