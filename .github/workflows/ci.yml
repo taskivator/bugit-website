@@ -1,6 +1,19 @@
 name: CI
 
-on: [push, pull_request]
+# Push-based CI (same-repo): a separate pull_request trigger would only duplicate
+# runs on the same commit. Only skip files that are NOT part of the static build
+# (build.js bundles the HTML/CSS/JS + public/, so those must still trigger CI).
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - '.gitignore'
+
+# Cancel superseded in-progress runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 # Marketing site is static and dependency-free: prove it builds, its assets
 # resolve, and the deployable output is produced.
@@ -8,10 +21,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
       - name: Build static site
         run: node build.js
       - name: Verify referenced assets resolve
