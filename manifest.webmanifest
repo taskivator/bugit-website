@@ -1,5 +1,5 @@
 {
-  "name": "Taskivator — BugIt",
+  "name": "BugIt — QA Bug-Filing Agent",
   "short_name": "BugIt",
   "description": "BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval.",
   "start_url": "/",

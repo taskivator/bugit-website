@@ -139,7 +139,7 @@ const docDownloadLabels={
   zh:{userGuide:"下载用户指南",overview:"下载 QA 代理概览",ugDesc:"从安装到使用的完整分步指南。",ovDesc:"BugIt QA 代理的简明概览。"},
   ru:{userGuide:"Скачать руководство пользователя",overview:"Скачать обзор QA-агента",ugDesc:"Полное пошаговое руководство по установке и использованию.",ovDesc:"Краткий обзор QA-агента BugIt."}
 };
-const BASE_TITLE='Taskivator | QA Bug-Filing Agent for VS Code';
+const BASE_TITLE='BugIt | QA Bug-Filing Agent for VS Code';
 /* Fetch the first URL that returns OK text. Used for localized legal docs:
    try the language-specific file first, then fall back to the English original. */
 function fetchFirstText(urls){
@@ -155,7 +155,10 @@ function renderDocRoute(){
   const labels=i18n[lang].docs;
   const ui={...docUiText.en,...(docUiText[lang]||{})};
   const nav=[['#/docs',i18n[lang].nav.docs],['#/docs/license',labels.license],['#/docs/privacy',labels.privacy],['#/docs/faq','FAQ'],['#/support',labels.support]];
-  document.getElementById('docNav').innerHTML=nav.map(([href,label])=>`<a class="${href.slice(2)===r?'active':''}" href="${href}">${label}</a>`).join('');
+  const _dn=document.getElementById('docNav');_dn.classList.remove('open');/* every render starts collapsed on mobile */
+  const _activeLabel=(nav.find(([h])=>h.slice(2)===r)||nav[0])[1];
+  const _links=nav.map(([href,label])=>`<a class="${href.slice(2)===r?'active':''}"${href.slice(2)===r?' aria-current="page"':''} href="${href}">${label}</a>`).join('');
+  _dn.innerHTML=`<button type="button" class="docs-nav-toggle" aria-expanded="false" aria-controls="docNavList"><span class="docs-nav-current">${_activeLabel}</span><span class="docs-nav-caret" aria-hidden="true">▾</span></button><div class="docs-nav-list" id="docNavList">${_links}</div>`;
   const titles={docs:d.homeTitle,'docs/getting-started':d.gettingTitle,'docs/user-guide':d.userTitle,'docs/license':d.licenseTitle,'docs/privacy':d.privacyTitle,'docs/faq':d.faqTitle,support:d.supportTitle};
   let body='';
   if(r==='docs'){
@@ -182,7 +185,7 @@ function renderDocRoute(){
       +`<div id="privacyText" class="license-doc"><p class="license-loading">…</p></div>`;
   }
   document.getElementById('docContent').innerHTML=`<span class="eyebrow">${titles[r]}</span><h1>${titles[r]}</h1>${body}`;
-  document.title=`${titles[r]} · Taskivator`;
+  document.title=`${titles[r]} · BugIt`;
   if(r==='docs/license'){
     const box=document.getElementById('licenseText');
     const urls=lang==='en'?['/public/docs/LICENSE.txt']:['/public/docs/LICENSE.'+lang+'.txt','/public/docs/LICENSE.txt'];
@@ -268,7 +271,22 @@ function initDemo(){
   rm.addEventListener?.('change',apply);
   apply();
 }
-window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();applyLang(currentLang);renderDocRoute()});
+/* Mobile docs-nav disclosure. Delegated on the persistent #docNav aside (its innerHTML
+   is rebuilt each route, but the element itself is not), so this binds once. Toggling
+   only sets the .open class; the CSS handles show/hide. Desktop ignores it (toggle is
+   display:none and the list is always visible). Selecting a page closes the menu, and
+   renderDocRoute() already re-renders collapsed and scrolls to the top of the document. */
+function initDocNav(){
+  const dn=document.getElementById('docNav');if(!dn)return;
+  const close=()=>{dn.classList.remove('open');const t=dn.querySelector('.docs-nav-toggle');if(t)t.setAttribute('aria-expanded','false');};
+  dn.addEventListener('click',e=>{
+    const toggle=e.target.closest('.docs-nav-toggle');
+    if(toggle){const open=dn.classList.toggle('open');toggle.setAttribute('aria-expanded',open?'true':'false');return;}
+    if(e.target.closest('.docs-nav-list a'))close();
+  });
+  dn.addEventListener('keydown',e=>{if(e.key==='Escape'&&dn.classList.contains('open')){const t=dn.querySelector('.docs-nav-toggle');close();if(t)t.focus();}});
+}
+window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();applyLang(currentLang);renderDocRoute()});
 
 /* v16 docs sync: official BugIt QA Agent v1.0.1 documentation updates */
 const bugitV16Faq = {
