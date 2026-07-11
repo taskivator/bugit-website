@@ -170,7 +170,7 @@ function renderDocRoute(){
   }else if(r==='support'){
     body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
       +`<div class="support-box"><div><h2>${labels.support}</h2><p>${d.supportIntro}</p><p class="note">${d.englishOnly}</p>`
-      +`<div class="doc-actions"><a class="doc-button" href="/dashboard/support">${ui.openTicket}</a></div></div>`
+      +`<div class="doc-actions"><a class="doc-button" href="https://portal.bugit.dev/dashboard/support">${ui.openTicket}</a></div></div>`
       +`<div><h2>${d.before}</h2><p>${d.beforeText}</p></div></div>`;
   }else if(r==='docs/license'){
     body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
