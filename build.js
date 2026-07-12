@@ -2,11 +2,27 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import * as esbuild from 'esbuild';
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(root,'dist');
 fs.rmSync(dist,{recursive:true,force:true}); fs.mkdirSync(dist,{recursive:true});
 for (const item of ['index.html','styles.css','app.js','server.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','.well-known']) {
   const src = path.join(root,item); if (fs.existsSync(src)) fs.cpSync(src,path.join(dist,item),{recursive:true});
+}
+
+// Minify the two hashed assets IN dist (sources stay readable + unversioned).
+// Runs before hashing so the content hash reflects the bytes actually served.
+// esbuild is a build-time devDependency only — nothing is added to the shipped
+// site, which stays dependency-free at runtime. app.js is a classic <script>
+// (no import/export), so esbuild leaves top-level names intact and only strips
+// comments/whitespace + mangles locals — behavior-preserving.
+for (const [file,loader] of [['app.js','js'],['styles.css','css']]) {
+  const p = path.join(dist,file);
+  const src = fs.readFileSync(p,'utf8');
+  // charset:'utf8' keeps embedded unicode (i18n strings) as-is; the esbuild
+  // default 'ascii' would \u-escape every multi-byte char and BLOAT app.js.
+  const { code } = await esbuild.transform(src,{ loader, minify:true, legalComments:'none', charset:'utf8' });
+  fs.writeFileSync(p,code);
 }
 
 // Cache-busting. styles.css/app.js are served with a 4h browser cache (max-age=14400),

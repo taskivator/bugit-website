@@ -33,6 +33,11 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+      # Build-time devDependency only (esbuild, for asset minification). The
+      # shipped site stays dependency-free at runtime.
+      - name: Install build tooling
+        run: npm ci
       - name: Build static site
         run: node build.js
       - name: Verify referenced assets resolve

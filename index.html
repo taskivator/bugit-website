@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval." />
+  <!-- Every page load checks the portal session cross-origin (account menu);
+       warm the TLS connection early so that fetch isn't cold. -->
+  <link rel="preconnect" href="https://portal.bugit.dev" crossorigin />
   <title>BugIt | QA Bug-Filing Agent for VS Code</title>
   <link rel="stylesheet" href="/public/brand/tokens.css" />
   <link rel="stylesheet" href="/styles.css" />
