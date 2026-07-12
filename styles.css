@@ -59,3 +59,31 @@ body.menu-open{overflow:hidden}.lang{position:relative}.lang button{min-width:15
 .blip-logo.mini{width:66px;height:66px}
 .blip-logo.big{width:92px;height:92px}
 @media(max-width:760px){.blip-logo.mini{width:54px;height:54px}}
+/* Authenticated account control (mirrors the language menu). Three states on
+   #authSlot: loading (skeleton), out (Sign in), in (account dropdown). */
+.auth-slot{display:inline-flex;align-items:center}
+.auth-slot[data-state="loading"] .nav-login,.auth-slot[data-state="loading"] .acct{display:none}
+.auth-slot[data-state="out"] .auth-skel,.auth-slot[data-state="out"] .acct{display:none}
+.auth-slot[data-state="in"] .auth-skel,.auth-slot[data-state="in"] .nav-login{display:none}
+.auth-skel{display:inline-block;width:112px;height:42px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(100deg,rgba(255,255,255,.04) 30%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.04) 70%);background-size:220% 100%;animation:authpulse 1.25s ease-in-out infinite}
+@keyframes authpulse{0%{background-position:220% 0}100%{background-position:-220% 0}}
+@media(prefers-reduced-motion:reduce){.auth-skel{animation:none}}
+.acct{position:relative}
+.acct-btn{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:800;color:var(--text);cursor:pointer;white-space:nowrap;max-width:190px;transition:border-color .18s ease,background .18s ease,color .18s ease}
+.acct-btn:hover{border-color:rgba(255,79,201,.5);background:rgba(255,255,255,.08);color:#ff86dc}
+.acct-btn #acctLabel{overflow:hidden;text-overflow:ellipsis}
+.acct-avatar{flex:0 0 auto;color:var(--muted)}
+.acct .lang-caret{flex:0 0 auto;transition:transform .18s ease,color .18s ease}
+.acct.open .lang-caret{transform:rotate(180deg);color:var(--text)}
+.acct-list{position:absolute;right:0;top:calc(100% + 8px);width:236px;border:1px solid var(--line);border-radius:14px;background:rgba(8,5,16,.98);box-shadow:var(--shadow);padding:8px;display:none;z-index:100}
+.acct.open .acct-list{display:block}
+.acct-list a,.acct-list .acct-signout{display:block;width:100%;box-sizing:border-box;min-height:44px;border:0;background:transparent;border-radius:10px;padding:12px;text-align:left;color:var(--muted);font-weight:800;font-size:15px;cursor:pointer}
+.acct-list a:hover,.acct-list a:focus-visible,.acct-list .acct-signout:hover,.acct-list .acct-signout:focus-visible{background:rgba(255,79,201,.14);color:white;outline:none}
+.acct-list form{margin:6px 0 0;padding-top:6px;border-top:1px solid var(--line)}
+/* Mobile account block inside the overlay menu */
+.mm-acct{display:flex;flex-direction:column;gap:2px}
+.mm-acct .mm-acct-name{color:var(--text);font-weight:900;margin:2px 0 6px}
+.mm-acct a,.mm-acct .acct-signout{color:var(--muted);text-align:left;background:transparent;border:0;font:inherit;font-weight:800;padding:8px 0;cursor:pointer}
+.mm-acct a:hover,.mm-acct .acct-signout:hover{color:#ff86dc}
+.mm-acct form{margin:0}
+@media(max-width:760px){.acct-btn{padding:9px 12px;max-width:150px}}
