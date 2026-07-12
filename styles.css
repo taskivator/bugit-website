@@ -87,3 +87,52 @@ body.menu-open{overflow:hidden}.lang{position:relative}.lang button{min-width:15
 .mm-acct a:hover,.mm-acct .acct-signout:hover{color:#ff86dc}
 .mm-acct form{margin:0}
 @media(max-width:760px){.acct-btn{padding:9px 12px;max-width:150px}}
+
+/* ===== Mobile header overflow fix =====================================
+   Root cause of the side-scroll: the header (.nav) is a no-wrap flex row and
+   .nav-actions (language selector + the account/auth-slot control + hamburger)
+   could not shrink below its combined content width. On phones it overflowed the
+   .shell, and because width=device-width can't be honored by overflowing flex
+   content, the mobile LAYOUT VIEWPORT expanded to fit it (body{overflow-x:hidden}
+   does not contain this) → the whole page could pan left↔right. The new account
+   control widened .nav-actions further (skeleton 112px / account button up to
+   150px), which is what turned a tight fit into a real overflow.
+
+   Fix, mirroring how .main-nav and .nav-cta already collapse into the hamburger
+   overlay: tighten gaps across the hamburger range, and on phones drop the
+   redundant in-header auth control (it is fully served by the overlay's
+   mm-signin / mm-acct) and collapse the language selector to a compact globe. */
+@media(max-width:1320px){
+  .nav{gap:18px}
+  .nav-actions{gap:10px}
+}
+@media(max-width:760px){
+  .nav{gap:12px}
+  /* Sign in / account is available in the hamburger overlay on phones, so the
+     in-header control is redundant here and only crowds the row. */
+  .auth-slot{display:none}
+  /* Compact, icon-only language switcher (globe + caret). aria-label="Language"
+     on the button keeps it accessible; the dropdown still lists every language. */
+  .lang button{min-width:0;padding:11px 12px;gap:7px}
+  .lang button #langLabel{display:none}
+  .lang-list{width:min(72vw,235px)}
+  /* Demo section tabs: 3 across can't fit a phone once labels are localized
+     (de/it/ru run long). Let them wrap instead of overflowing the centered row. */
+  .demo-tabs{flex-wrap:wrap}
+  .demo-tabs button{padding:11px 15px}
+}
+/* Documentation pages (pre-existing, exposed once the viewport no longer expands):
+   .docs-layout is a grid whose content column defaults to min-width:auto, so a long
+   token — a heading word in de/ru, or a URL/email in the legal pages — inflated the
+   column past the .shell and widened the page. min-width:0 lets the column shrink;
+   overflow-wrap:anywhere (unlike break-word) also lowers min-content so long words
+   wrap; code blocks/tables get their own scroll box instead of stretching the page. */
+.docs-layout{min-width:0}
+.docs-content{min-width:0;overflow-wrap:anywhere}
+.docs-sidebar,.docs-nav-list{min-width:0}
+.docs-content pre,.docs-content table{max-width:100%;overflow-x:auto}
+
+/* Final defensive safeguard — applied only AFTER fixing the real overflow above.
+   overflow-x:clip (not hidden) prevents any residual sideways scroll without
+   establishing a scroll container, so position:sticky (docs sidebar) still works. */
+html{overflow-x:clip}
