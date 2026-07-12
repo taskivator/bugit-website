@@ -1,0 +1,13 @@
+# Cloudflare Pages response headers for the marketing site. Adds the security
+# headers the portal already sends. CSP ships Report-Only (the static site has
+# no per-request nonce mechanism, and index.html has no inline scripts) so it
+# can be observed before enforcing. ACAO is tightened from the CF default "*" to
+# the site origin — public marketing content needs no cross-origin sharing.
+/*
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Access-Control-Allow-Origin: https://bugit.dev
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
