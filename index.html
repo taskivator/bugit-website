@@ -19,11 +19,43 @@
   <meta property="og:title" content="BugIt | QA Bug-Filing Agent for VS Code" />
   <meta property="og:description" content="BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval." />
   <meta property="og:url" content="https://bugit.dev/" />
-  <meta property="og:image" content="https://bugit.dev/public/brand/favicon-180.png" />
-  <meta name="twitter:card" content="summary" />
+  <meta property="og:image" content="https://bugit.dev/public/brand/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="BugIt by Taskivator — the QA agent that learns your workflow." />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="BugIt | QA Bug-Filing Agent for VS Code" />
   <meta name="twitter:description" content="BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval." />
-  <meta name="twitter:image" content="https://bugit.dev/public/brand/favicon-180.png" />
+  <meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://bugit.dev/#org",
+        "name": "Taskivator",
+        "url": "https://bugit.dev/",
+        "logo": "https://bugit.dev/public/brand/favicon-180.png",
+        "brand": { "@type": "Brand", "name": "BugIt" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "BugIt",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "description": "BugIt is a QA agent for VS Code that turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval.",
+        "url": "https://bugit.dev/",
+        "image": "https://bugit.dev/public/brand/og-image.png",
+        "publisher": { "@id": "https://bugit.dev/#org" },
+        "offers": [
+          { "@type": "Offer", "name": "Solo", "price": "39.99", "priceCurrency": "USD", "category": "annual" },
+          { "@type": "Offer", "name": "Team", "price": "199", "priceCurrency": "USD", "category": "annual" }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <div id="ambient" aria-hidden="true"><div class="grid"></div><div class="aurora a"></div><div class="aurora b"></div></div>
@@ -120,9 +152,9 @@ Actual: Button locks and login fails.</pre>
       <div class="section-head"><span data-t="demo.eyebrow">SEE IT WORK</span><h2 data-t="demo.title">One agent. Different QA worlds.</h2><p data-t="demo.subtitle">Use it for web, mobile, desktop, SaaS, enterprise workflows or games.</p></div>
       <div class="demo-tabs"><button class="active" data-video="saas" data-t="demo.saas">SaaS / Web App</button><button data-video="game" data-t="demo.game">Game QA</button><button data-video="general" data-t="demo.general">General Workflow</button></div>
       <div class="video-frame"><div class="demo-stack" id="demoStack">
-        <video class="demo-video is-active" data-video="saas" muted playsinline preload="auto" src="/public/media/BugIt-Demo-SaaS.mp4"></video>
-        <video class="demo-video" data-video="game" muted playsinline preload="auto" src="/public/media/BugIt-Demo-Game.mp4"></video>
-        <video class="demo-video" data-video="general" muted playsinline preload="auto" src="/public/media/BugIt-Demo.mp4"></video>
+        <video class="demo-video is-active" data-video="saas" muted playsinline preload="metadata" src="/public/media/BugIt-Demo-SaaS.mp4"></video>
+        <video class="demo-video" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4"></video>
+        <video class="demo-video" data-video="general" muted playsinline preload="none" src="/public/media/BugIt-Demo.mp4"></video>
       </div></div>
     </section>
 
