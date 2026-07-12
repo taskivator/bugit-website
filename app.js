@@ -1,3 +1,11 @@
+// Take manual control of scroll restoration. Left at the default "auto", the
+// browser restores the PRIOR scroll offset on reload; on iOS Safari's
+// pull-to-refresh that restoration (against this JS-built page + fixed background)
+// lands at the bottom, so a refresh appeared to "jump to the end". Manual means a
+// fresh load starts at the top; initInitialScroll() below then positions to a real
+// in-page anchor when one is present. Set as the very first statement so it wins
+// before the browser attempts restoration.
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 const languages=[['en','English'],['ja','日本語'],['fr','Français'],['de','Deutsch'],['es','Español'],['pt-br','Português BR'],['it','Italiano'],['ko','한국어'],['zh','中文'],['ru','Русский']];
 const toolData={
  jira:['Jira','#2684ff','M5 5h22v22H5z M11 8l6 6-6 6-6-6z'],azuredevops:['Azure DevOps','#0078d7','M4 8l11-4 13 4v16l-13 4L4 24l9-2V10z'],github:['GitHub','#fff','M16 3a13 13 0 0 0-4 25c.6.1.8-.2.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.5-1.4-1.9-1.4-1.9-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.3-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.4 1.2a11.7 11.7 0 0 1 6.2 0C22.7 8 23.7 8.3 23.7 8.3c.6 1.7.2 3 .1 3.3.8.9 1.2 2 1.2 3.3 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .4.2.8.8.6A13 13 0 0 0 16 3z'],gitlab:['GitLab','#fc6d26','M16 27l4.4-13.4h-8.8L16 27z M3 13.6l13 13.4-4.4-13.4H3z M29 13.6H20.4L16 27l13-13.4z M3 13.6l2.5-7.8c.2-.6 1-.6 1.2 0l4.9 7.8H3z M29 13.6l-2.5-7.8c-.2-.6-1-.6-1.2 0l-4.9 7.8H29z'],linear:['Linear','#5e6ad2','M6 22L22 6M10 26L26 10M6 14l8-8M18 26l8-8'],shortcut:['Shortcut','#58b9ff','M6 8c5-5 15-5 20 0L8 26c-5-5-5-15-2-18zM26 24c-5 5-15 5-20 0L24 6c5 5 5 15 2 18z'],youtrack:['YouTrack','#ff2d87','M7 5h18a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z M10 22h8M10 10h8v8h-8z'],bugzilla:['Bugzilla','#b86bff','M10 9c2-4 10-4 12 0 3 1 5 4 5 8 0 6-5 10-11 10S5 23 5 17c0-4 2-7 5-8z M9 6l3 4M23 6l-3 4'],clickup:['ClickUp','#7b68ee','M7 19l9 7 9-7-3-4-6 5-6-5z M7 12l9-7 9 7-3 4-6-5-6 5z'],asana:['Asana','#f06a6a','M16 9a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM9 28a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 28a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'],trello:['Trello','#0c66e4','M6 5h20a1 1 0 0 1 1 1v20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z M9 8h6v11H9z M17 8h6v7h-6z'],sentry:['Sentry','#fff','M16 5l12 21h-7l-5-9-5 9H4z M16 12l7 12M16 12L9 24'],crashlytics:['Crashlytics','#ffca28','M16 3c7 7 9 15 0 26C7 18 9 10 16 3z M16 9c-3 6-3 10 0 15 3-5 3-9 0-15z'],bugsnag:['BugSnag','#4949e4','M6 6h20v20H6z M10 11h8a4 4 0 0 1 0 8h-8z M10 19h9a3 3 0 0 1 0 6h-9z'],testrail:['TestRail','#65c179','M8 6h16v4H8z M8 14h16v4H8z M8 22h16v4H8z M6 8l-2 2-1-1M6 16l-2 2-1-1M6 24l-2 2-1-1'],xray:['Xray','#35d06e','M6 6l20 20M26 6L6 26M10 6h12v4H10zM10 22h12v4H10z'],confluence:['Confluence','#1d7afc','M7 20c4-7 9-8 15-5l3 2-3 5-3-2c-3-1-5 0-7 4z M25 12c-4 7-9 8-15 5l-3-2 3-5 3 2c3 1 5 0 7-4z'],notion:['Notion','#fff','M6 5l15-1 5 4v19l-16 1-4-4z M10 10v13M13 10l7 12V10'],slack:['Slack','#36c5f0','M12 4a3 3 0 0 1 3 3v7h-3a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3z M4 12a3 3 0 0 1 3-3h7v3a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z M20 28a3 3 0 0 1-3-3v-7h3a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3z M28 20a3 3 0 0 1-3 3h-7v-3a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3z'],teams:['Teams','#6264a7','M5 9h10v14H5z M17 12h10v8a5 5 0 0 1-10 0z M20 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z'],googledrive:['Google Drive','#34a853','M12 4h8l8 14h-8z M4 18l8-14 4 7-8 14z M8 25l4-7h16l-4 7z'],amazons3:['Amazon S3','#ff9900','M16 4l10 5v14l-10 5-10-5V9z M6 9l10 5 10-5M16 14v14']
@@ -343,15 +351,24 @@ function initMobileNav(){
   const closeBtn=document.getElementById('navClose');
   if(!toggle||!menu)return;
   const isOpen=()=>menu.classList.contains('open');
+  let savedY=0;
   const open=()=>{
+    // iOS-safe scroll lock: overflow:hidden alone does not lock the document on
+    // iOS Safari (and can lose the offset). Freeze the body at its current offset
+    // with position:fixed + top:-Y so the background cannot scroll and no layout
+    // shift occurs; restore the exact offset on close.
+    savedY=window.scrollY||window.pageYOffset||0;
     menu.classList.add('open');document.body.classList.add('menu-open');
+    document.body.style.top=`-${savedY}px`;
     toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close menu');
-    const first=menu.querySelector('a,button');if(first)first.focus();
+    const first=menu.querySelector('a,button');if(first)first.focus({preventScroll:true});
   };
   const close=()=>{
     menu.classList.remove('open');document.body.classList.remove('menu-open');
+    document.body.style.top='';
+    window.scrollTo({top:savedY,left:0,behavior:'instant'});
     toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open menu');
-    toggle.focus();
+    toggle.focus({preventScroll:true});
   };
   toggle.addEventListener('click',()=>isOpen()?close():open());
   if(closeBtn)closeBtn.addEventListener('click',close);
@@ -378,7 +395,20 @@ function initAcctMenu(){var menu=document.getElementById('acctMenu'),btn=documen
 function renderAccount(name){var slot=document.getElementById('authSlot'),list=document.getElementById('acctList'),label=document.getElementById('acctLabel');if(list)list.innerHTML=acctListHtml();if(label){if(name){label.textContent=name;label.removeAttribute('data-t');}else{label.setAttribute('data-t','account.myAccount');}}var mm=document.getElementById('mmAcct');if(mm){mm.innerHTML=acctListHtml();if(name){var nm=document.createElement('div');nm.className='mm-acct-name';nm.textContent=name;mm.insertBefore(nm,mm.firstChild);}mm.hidden=false;}var ms=document.querySelector('.mm-signin');if(ms)ms.hidden=true;if(slot)slot.dataset.state='in';applyLang(currentLang);initAcctMenu();}
 function renderSignedOut(){var slot=document.getElementById('authSlot');if(slot)slot.dataset.state='out';var mm=document.getElementById('mmAcct');if(mm){mm.hidden=true;mm.innerHTML='';}var ms=document.querySelector('.mm-signin');if(ms)ms.hidden=false;}
 function initAuth(){var slot=document.getElementById('authSlot');if(slot)slot.dataset.state='loading';var ctrl=('AbortController'in window)?new AbortController():null;var timer=ctrl?setTimeout(function(){try{ctrl.abort()}catch(e){}},4000):null;fetch(PORTAL_ORIGIN+'/api/session-status',{credentials:'include',signal:ctrl?ctrl.signal:undefined,headers:{'accept':'application/json'}}).then(function(r){return r.ok?r.json():Promise.reject()}).then(function(d){if(timer)clearTimeout(timer);if(d&&d.authenticated){renderAccount(d.name||null)}else{renderSignedOut()}}).catch(function(){if(timer)clearTimeout(timer);renderSignedOut()});}
-window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();initMobileNav();applyLang(currentLang);renderDocRoute();initAuth()});
+/* With manual scroll restoration, position the initial view ourselves so a
+   refresh (incl. iOS pull-to-refresh) never lands on a stale/bottom position.
+   Honor a genuine in-page anchor (#features …); a doc route (#/…) is scrolled to
+   top by renderDocRoute; anything else starts at the top (hero). Instant, so
+   there is no visible scroll animation on load. */
+function initInitialScroll(){
+  const h=location.hash;
+  if(h && !h.startsWith('#/')){
+    const anchor=document.getElementById(h.slice(1));
+    if(anchor){anchor.scrollIntoView({behavior:'instant',block:'start'});return;}
+  }
+  if(!h.startsWith('#/')) window.scrollTo({top:0,left:0,behavior:'instant'});
+}
+window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();initMobileNav();applyLang(currentLang);renderDocRoute();initAuth();requestAnimationFrame(initInitialScroll)});
 
 /* v16 docs sync: official BugIt QA Agent v1.0.1 documentation updates */
 const bugitV16Faq = {
