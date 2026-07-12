@@ -286,7 +286,40 @@ function initDocNav(){
   });
   dn.addEventListener('keydown',e=>{if(e.key==='Escape'&&dn.classList.contains('open')){const t=dn.querySelector('.docs-nav-toggle');close();if(t)t.focus();}});
 }
-window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();applyLang(currentLang);renderDocRoute()});
+/* Mobile navigation overlay. Full-screen + body scroll-lock so it never overlays
+   content while the page scrolls. Closes on link select / Escape / resize to
+   desktop; focus moves in on open and returns to the toggle on close, with a
+   lightweight Tab trap while open. */
+function initMobileNav(){
+  const toggle=document.getElementById('navToggle');
+  const menu=document.getElementById('mobileMenu');
+  const closeBtn=document.getElementById('navClose');
+  if(!toggle||!menu)return;
+  const isOpen=()=>menu.classList.contains('open');
+  const open=()=>{
+    menu.classList.add('open');document.body.classList.add('menu-open');
+    toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close menu');
+    const first=menu.querySelector('a,button');if(first)first.focus();
+  };
+  const close=()=>{
+    menu.classList.remove('open');document.body.classList.remove('menu-open');
+    toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open menu');
+    toggle.focus();
+  };
+  toggle.addEventListener('click',()=>isOpen()?close():open());
+  if(closeBtn)closeBtn.addEventListener('click',close);
+  menu.addEventListener('click',e=>{if(e.target.closest('a'))close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&isOpen())close();});
+  window.addEventListener('resize',()=>{if(window.innerWidth>1320&&isOpen())close();});
+  menu.addEventListener('keydown',e=>{
+    if(e.key!=='Tab')return;
+    const f=menu.querySelectorAll('a,button');if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  });
+}
+window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();initMobileNav();applyLang(currentLang);renderDocRoute()});
 
 /* v16 docs sync: official BugIt QA Agent v1.0.1 documentation updates */
 const bugitV16Faq = {
