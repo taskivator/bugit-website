@@ -142,18 +142,37 @@ function docPdfs(lang){
   const ovName=(NATIVE[lang]&&NATIVE[lang].ov)||`BugIt-QA-Agent-Overview.${lang}.pdf`;
   return{ug:`/public/docs/${lang}/${ugName}`,ov:`/public/docs/${lang}/${ovName}`,ugName,ovName};
 }
+// Document card labels. `userGuide`/`overview` are the plain document NAMES (the
+// card now offers separate Preview + Download actions, so the name no longer
+// carries a "Download" verb). `preview`/`download` are the two action buttons.
 const docDownloadLabels={
-  en:{userGuide:"Download User Guide",overview:"Download QA Agent Overview",ugDesc:"The complete step-by-step setup and usage guide.",ovDesc:"A concise overview of the BugIt QA Agent."},
-  ja:{userGuide:"ユーザーガイドをダウンロード",overview:"QAエージェント概要をダウンロード",ugDesc:"インストールから使い方までの完全な手順ガイド。",ovDesc:"BugIt QAエージェントの簡潔な概要。"},
-  fr:{userGuide:"Télécharger le guide utilisateur",overview:"Télécharger la présentation de l'agent QA",ugDesc:"Le guide complet d'installation et d'utilisation, étape par étape.",ovDesc:"Une présentation concise de l'agent QA BugIt."},
-  de:{userGuide:"Benutzerhandbuch herunterladen",overview:"QA-Agent-Übersicht herunterladen",ugDesc:"Die vollständige Schritt-für-Schritt-Anleitung zu Einrichtung und Nutzung.",ovDesc:"Ein kompakter Überblick über den BugIt QA-Agenten."},
-  es:{userGuide:"Descargar guía de usuario",overview:"Descargar resumen del agente QA",ugDesc:"La guía completa de instalación y uso paso a paso.",ovDesc:"Un resumen conciso del agente QA de BugIt."},
-  "pt-br":{userGuide:"Baixar guia do usuário",overview:"Baixar visão geral do agente de QA",ugDesc:"O guia completo de instalação e uso, passo a passo.",ovDesc:"Uma visão geral concisa do agente de QA do BugIt."},
-  it:{userGuide:"Scarica la guida utente",overview:"Scarica la panoramica dell'agente QA",ugDesc:"La guida completa all'installazione e all'uso, passo dopo passo.",ovDesc:"Una panoramica sintetica dell'agente QA di BugIt."},
-  ko:{userGuide:"사용자 가이드 다운로드",overview:"QA 에이전트 개요 다운로드",ugDesc:"설치부터 사용까지 전체 단계별 가이드.",ovDesc:"BugIt QA 에이전트에 대한 간결한 개요."},
-  zh:{userGuide:"下载用户指南",overview:"下载 QA 代理概览",ugDesc:"从安装到使用的完整分步指南。",ovDesc:"BugIt QA 代理的简明概览。"},
-  ru:{userGuide:"Скачать руководство пользователя",overview:"Скачать обзор QA-агента",ugDesc:"Полное пошаговое руководство по установке и использованию.",ovDesc:"Краткий обзор QA-агента BugIt."}
+  en:{userGuide:"User Guide",overview:"QA Agent Overview",ugDesc:"The complete step-by-step setup and usage guide.",ovDesc:"A concise overview of the BugIt QA Agent.",preview:"Preview",download:"Download"},
+  ja:{userGuide:"ユーザーガイド",overview:"QAエージェント概要",ugDesc:"インストールから使い方までの完全な手順ガイド。",ovDesc:"BugIt QAエージェントの簡潔な概要。",preview:"プレビュー",download:"ダウンロード"},
+  fr:{userGuide:"Guide utilisateur",overview:"Présentation de l'agent QA",ugDesc:"Le guide complet d'installation et d'utilisation, étape par étape.",ovDesc:"Une présentation concise de l'agent QA BugIt.",preview:"Aperçu",download:"Télécharger"},
+  de:{userGuide:"Benutzerhandbuch",overview:"QA-Agent-Übersicht",ugDesc:"Die vollständige Schritt-für-Schritt-Anleitung zu Einrichtung und Nutzung.",ovDesc:"Ein kompakter Überblick über den BugIt QA-Agenten.",preview:"Vorschau",download:"Herunterladen"},
+  es:{userGuide:"Guía de usuario",overview:"Resumen del agente QA",ugDesc:"La guía completa de instalación y uso paso a paso.",ovDesc:"Un resumen conciso del agente QA de BugIt.",preview:"Vista previa",download:"Descargar"},
+  "pt-br":{userGuide:"Guia do usuário",overview:"Visão geral do agente de QA",ugDesc:"O guia completo de instalação e uso, passo a passo.",ovDesc:"Uma visão geral concisa do agente de QA do BugIt.",preview:"Visualizar",download:"Baixar"},
+  it:{userGuide:"Guida utente",overview:"Panoramica dell'agente QA",ugDesc:"La guida completa all'installazione e all'uso, passo dopo passo.",ovDesc:"Una panoramica sintetica dell'agente QA di BugIt.",preview:"Anteprima",download:"Scarica"},
+  ko:{userGuide:"사용자 가이드",overview:"QA 에이전트 개요",ugDesc:"설치부터 사용까지 전체 단계별 가이드.",ovDesc:"BugIt QA 에이전트에 대한 간결한 개요.",preview:"미리 보기",download:"다운로드"},
+  zh:{userGuide:"用户指南",overview:"QA 代理概览",ugDesc:"从安装到使用的完整分步指南。",ovDesc:"BugIt QA 代理的简明概览。",preview:"预览",download:"下载"},
+  ru:{userGuide:"Руководство пользователя",overview:"Обзор QA-агента",ugDesc:"Полное пошаговое руководство по установке и использованию.",ovDesc:"Краткий обзор QA-агента BugIt.",preview:"Просмотр",download:"Скачать"}
 };
+// Human-readable byte size (filled lazily via a same-origin HEAD after render).
+function humanSize(bytes){if(!bytes||bytes<0)return'';if(bytes<1024)return bytes+' B';if(bytes<1048576)return Math.round(bytes/1024)+' KB';return (bytes/1048576).toFixed(1)+' MB';}
+function fillDocSizes(root){
+  (root||document).querySelectorAll('.doc-dl-size[data-size-for]').forEach(function(el){
+    var url=el.getAttribute('data-size-for');
+    // 1-byte Range request: the CDN omits Content-Length on HEAD but returns the
+    // total in Content-Range ("bytes 0-0/747676"). Downloads a single byte, not
+    // the file. Same-origin, so allowed by connect-src 'self'. Degrades to "PDF".
+    fetch(url,{headers:{Range:'bytes=0-0'}}).then(function(r){
+      var cr=r.headers.get('content-range');
+      var total=cr&&cr.indexOf('/')>=0?cr.split('/')[1]:r.headers.get('content-length');
+      var n=parseInt(total,10);
+      if(n>0)el.textContent=' · '+humanSize(n);
+    }).catch(function(){});
+  });
+}
 const BASE_TITLE='BugIt | QA Bug-Filing Agent for VS Code';
 /* Fetch the first URL that returns OK text. Used for localized legal docs:
    try the language-specific file first, then fall back to the English original. */
@@ -179,9 +198,21 @@ function renderDocRoute(){
   if(r==='docs'){
     const p=docPdfs(lang);
     const dl=docDownloadLabels[lang]||docDownloadLabels.en;
+    // Each card offers Preview (native inline viewer in a new tab — no download
+    // attribute, so the browser renders the ORIGINAL pdf) and Download (the
+    // same-origin `download` attribute forces the exact bytes to disk). Both point
+    // at the identical source file, so preview and download are byte-for-byte the
+    // same document.
+    const card=(url,name,filename,desc)=>`<div class="doc-download-card">`
+      +`<span class="doc-dl-tag">PDF<span class="doc-dl-size" data-size-for="${url}"></span></span>`
+      +`<b>${name}</b><small>${desc}</small>`
+      +`<div class="doc-actions">`
+        +`<a class="doc-btn doc-btn-preview" href="${url}" target="_blank" rel="noopener">${dl.preview}</a>`
+        +`<a class="doc-btn doc-btn-download" href="${url}" download="${filename}">${dl.download}</a>`
+      +`</div></div>`;
     body=`<p>${d.homeIntro}</p><div class="doc-download-cards">`
-      +`<a class="doc-download-card" href="${p.ug}" download="${p.ugName}"><span class="doc-dl-arrow" aria-hidden="true">↓</span><b>${dl.userGuide}</b><small>${dl.ugDesc}</small><span class="doc-dl-tag">PDF</span></a>`
-      +`<a class="doc-download-card" href="${p.ov}" download="${p.ovName}"><span class="doc-dl-arrow" aria-hidden="true">↓</span><b>${dl.overview}</b><small>${dl.ovDesc}</small><span class="doc-dl-tag">PDF</span></a>`
+      +card(p.ug,dl.userGuide,p.ugName,dl.ugDesc)
+      +card(p.ov,dl.overview,p.ovName,dl.ovDesc)
       +`</div>`;
   }else if(r==='docs/faq'){
     body=`<div class="faq-doc">${i18n[lang].faq.items.map(([q,a])=>`<h2>${q}</h2><p>${a}</p>`).join('')}</div>`;
@@ -200,6 +231,7 @@ function renderDocRoute(){
       +`<div id="privacyText" class="license-doc"><p class="license-loading">…</p></div>`;
   }
   document.getElementById('docContent').innerHTML=`<span class="eyebrow">${titles[r]}</span><h1>${titles[r]}</h1>${body}`;
+  if(r==='docs')fillDocSizes(document.getElementById('docContent'));
   document.title=`${titles[r]} · BugIt`;
   if(r==='docs/license'){
     const box=document.getElementById('licenseText');

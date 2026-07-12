@@ -132,6 +132,22 @@ body.menu-open{overflow:hidden}.lang{position:relative}.lang button{min-width:15
 .docs-sidebar,.docs-nav-list{min-width:0}
 .docs-content pre,.docs-content table{max-width:100%;overflow-x:auto}
 
+/* Documentation PDF cards: separate Preview (native inline viewer) + Download
+   actions. The card is a container now (not a single download link), so drop the
+   lift-on-hover and put the affordance on the buttons. Buttons wrap and keep a
+   44px min touch target; long descriptions/sizes wrap rather than overflow. */
+.doc-download-card{transition:border-color .18s ease,box-shadow .18s ease}
+.doc-download-card:hover{transform:none;border-color:rgba(255,79,201,.28)}
+.doc-download-card small{overflow-wrap:anywhere}
+.doc-dl-size{opacity:.85;font-weight:800}
+.doc-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.doc-btn{flex:1 1 auto;min-width:120px;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 18px;border-radius:11px;font-weight:900;font-size:15px;cursor:pointer;transition:border-color .18s ease,background .18s ease,color .18s ease,filter .18s ease;text-decoration:none}
+.doc-btn-preview{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text)}
+.doc-btn-preview:hover{border-color:rgba(255,79,201,.5);background:rgba(255,255,255,.09);color:#ff86dc}
+.doc-btn-download{border:0;background:linear-gradient(120deg,var(--purple),var(--pink),var(--hot));color:#fff;box-shadow:0 12px 30px rgba(255,79,201,.22)}
+.doc-btn-download:hover{filter:brightness(1.06)}
+.doc-btn:focus-visible{outline:2px solid var(--pink,#ff4fc9);outline-offset:2px}
+
 /* Final defensive safeguard — applied only AFTER fixing the real overflow above.
    overflow-x:clip (not hidden) prevents any residual sideways scroll without
    establishing a scroll container, so position:sticky (docs sidebar) still works. */
