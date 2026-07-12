@@ -22,6 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      # Committed-secret scan (zero-dependency, deterministic). High-confidence
+      # patterns + length anchors so nothing in this static site false-positives.
+      - name: Secret scan
+        run: |
+          if git grep -nIE 'sk_live_[0-9a-zA-Z]{20}|sk-ant-api[0-9a-zA-Z_-]{20}|-----BEGIN [A-Z ]*PRIVATE KEY-----|sbp_[0-9a-f]{40}|re_[0-9a-zA-Z]{24}'; then
+            echo "::error::Potential committed secret detected (see matches above)"; exit 1
+          fi
+          echo "No committed secrets detected."
       - uses: actions/setup-node@v5
         with:
           node-version: 22

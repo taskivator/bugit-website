@@ -1,0 +1,9 @@
+version: 2
+updates:
+  # This site ships zero runtime npm dependencies, so only the CI action versions
+  # need automated updates (also delivers security fixes to the actions).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
