@@ -21,7 +21,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # Committed-secret scan (zero-dependency, deterministic). High-confidence
       # patterns + length anchors so nothing in this static site false-positives.
       - name: Secret scan
