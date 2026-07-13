@@ -32,11 +32,12 @@
 /public/brand/*
   Cache-Control: public, max-age=604800
 
-# Documentation PDFs: force INLINE rendering so "Preview" opens the browser's
-# native PDF viewer instead of downloading. The exact same file is downloaded by
-# the "Download" action (via the same-origin download attribute), so preview and
-# download are byte-identical. nosniff (from /*) keeps the MIME type honest.
-# Cache for a week — published guides are stable.
+# Current web guides must revalidate after every release so version switches are
+# atomic across the website, portal, and update service.
 /public/docs/*
   Content-Disposition: inline
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Published PDFs are immutable and can remain cached for a week.
+/public/docs/*.pdf
   Cache-Control: public, max-age=604800
