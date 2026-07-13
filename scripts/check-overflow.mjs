@@ -27,7 +27,7 @@ const PORT = 3211;
 const DBG = 9411;
 
 // Routes (hash-based SPA), the 10 supported languages, and the three auth-slot states.
-const ROUTES = ['#/', '#/docs', '#/docs/license', '#/docs/privacy', '#/support'];
+const ROUTES = ['#/', '#/docs', '#/docs/getting-started', '#/docs/user-guide', '#/docs/license', '#/docs/privacy', '#/support'];
 const LANGS = ['en', 'ja', 'fr', 'de', 'es', 'pt-br', 'it', 'ko', 'zh', 'ru'];
 const STATES = ['loading', 'out', 'in'];
 // Common phone widths (portrait) + two landscape phone sizes.
@@ -50,9 +50,10 @@ function findChrome() {
 
 const CHROME = findChrome();
 if (!CHROME) {
-  console.log('check-overflow: no Chrome found (set CHROME_BIN to enable) — SKIPPING.');
-  process.exit(0);
+  console.error('check-overflow: no Chrome found; set CHROME_BIN to run required assertions.');
+  process.exit(1);
 }
+console.log(`check-overflow: using ${CHROME}`);
 
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.pdf': 'application/pdf', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.ico': 'image/x-icon' };
 const server = http.createServer((req, res) => {
@@ -65,6 +66,7 @@ const server = http.createServer((req, res) => {
   fs.createReadStream(file).pipe(res);
 });
 await new Promise((r) => server.listen(PORT, '127.0.0.1', r));
+console.log(`check-overflow: fixture server listening on ${PORT}`);
 
 const udir = fs.mkdtempSync(path.join(os.tmpdir(), 'bugit-overflow-'));
 const chrome = spawn(CHROME, [
@@ -72,31 +74,47 @@ const chrome = spawn(CHROME, [
   '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage',
   '--force-device-scale-factor=1', `--remote-debugging-port=${DBG}`, `--user-data-dir=${udir}`, 'about:blank',
 ], { stdio: 'ignore' });
+console.log(`check-overflow: Chrome launched with PID ${chrome.pid}`);
+
+const watchdog = setTimeout(() => {
+  console.error('check-overflow: timed out before completing assertions.');
+  cleanup(1);
+}, 120_000);
 
 function cleanup(code) {
+  clearTimeout(watchdog);
   try { chrome.kill(); } catch {}
   try { server.close(); } catch {}
   try { fs.rmSync(udir, { recursive: true, force: true }); } catch {}
-  process.exit(code);
+  process.exitCode = code;
+  if (code !== 0) throw new Error('check-overflow aborted before completing its assertions.');
 }
 
 async function getJSON(url) { const r = await fetch(url); return r.json(); }
 let version;
 for (let i = 0; i < 80; i++) { try { version = await getJSON(`http://127.0.0.1:${DBG}/json/version`); break; } catch { await new Promise((r) => setTimeout(r, 150)); } }
 if (!version) { console.error('check-overflow: Chrome DevTools endpoint never came up.'); cleanup(1); }
+console.log('check-overflow: Chrome DevTools endpoint ready');
 
-const ws = new WebSocket(version.webSocketDebuggerUrl);
-await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+const targets = await getJSON(`http://127.0.0.1:${DBG}/json/list`);
+const pageTarget = targets.find((target) => target.type === 'page' && target.webSocketDebuggerUrl);
+if (!pageTarget) { console.error('check-overflow: Chrome exposed no debuggable page target.'); cleanup(1); }
+
+const ws = new WebSocket(pageTarget.webSocketDebuggerUrl);
+await new Promise((res, rej) => {
+  const timeout = setTimeout(() => rej(new Error('CDP page WebSocket did not open within 5 seconds.')), 5_000);
+  ws.onopen = () => { clearTimeout(timeout); res(); };
+  ws.onerror = (error) => { clearTimeout(timeout); rej(error); };
+});
+console.log('check-overflow: attached to page target');
 let msgId = 0; const pending = new Map();
 ws.onmessage = (ev) => { const m = JSON.parse(ev.data); if (m.id && pending.has(m.id)) { const { res, rej } = pending.get(m.id); pending.delete(m.id); m.error ? rej(new Error(m.error.message)) : res(m.result); } };
-function send(method, params = {}, sessionId) { const id = ++msgId; return new Promise((res, rej) => { pending.set(id, { res, rej }); ws.send(JSON.stringify({ id, method, params, sessionId })); }); }
+function send(method, params = {}) { const id = ++msgId; return new Promise((res, rej) => { pending.set(id, { res, rej }); ws.send(JSON.stringify({ id, method, params })); }); }
 
-const { targetId } = await send('Target.createTarget', { url: 'about:blank' });
-const { sessionId: S } = await send('Target.attachToTarget', { targetId, flatten: true });
-await send('Page.enable', {}, S);
-await send('Runtime.enable', {}, S);
-async function evaluate(expr) { const r = await send('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true }, S); if (r.exceptionDetails) throw new Error(r.exceptionDetails.text); return r.result.value; }
-async function setViewport(w, h) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 0, mobile: true, screenWidth: w, screenHeight: h }, S); }
+await send('Page.enable');
+await send('Runtime.enable');
+async function evaluate(expr) { const r = await send('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw new Error(r.exceptionDetails.text); return r.result.value; }
+async function setViewport(w, h) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: true, screenWidth: w, screenHeight: h }); }
 
 const applyState = (s) => s === 'in'
   ? `renderAccount('Alexander Kowalski'); document.getElementById('authSlot').dataset.state='in';`
@@ -105,25 +123,31 @@ const applyState = (s) => s === 'in'
 const MEASURE = (w) => `(function(){
   var vw=${w}, de=document.documentElement, b=document.body;
   var ph=de.style.overflowX, pb=b.style.overflowX; de.style.overflowX='visible'; b.style.overflowX='visible'; void de.offsetWidth;
-  var trueSw=de.scrollWidth, worst=null, all=document.getElementsByTagName('*');
+  var trueSw=de.scrollWidth, worst=null, measured=0, all=document.getElementsByTagName('*');
   for(var i=0;i<all.length;i++){ var el=all[i];
     if(el.id==='ambient'||el.closest('#ambient')||(el.classList&&el.classList.contains('particle')))continue;
     var cs=getComputedStyle(el); if(cs.display==='none'||cs.visibility==='hidden')continue;
     var r=el.getBoundingClientRect(); if(r.width===0&&r.height===0)continue;
+    measured++;
     if(r.right>vw+1&&(!worst||r.right>worst.right)) worst={t:el.tagName.toLowerCase(),c:(''+(el.className||'')).slice(0,40),id:el.id||'',right:Math.round(r.right)};
   }
   de.style.overflowX=ph; b.style.overflowX=pb;
-  return JSON.stringify({over:Math.round(trueSw-vw), worst:worst});
+  return JSON.stringify({over:Math.round(trueSw-vw), worst:worst, measured:measured});
 })()`;
 
-let checks = 0, fails = 0;
+const expectedChecks = VIEWPORTS.length * ROUTES.length * LANGS.length * STATES.length;
+let checks = 0, measuredElements = 0, fails = 0;
 const failures = [];
 for (const [w, h] of VIEWPORTS) {
   await setViewport(w, h);
-  await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/?w=${w}` }, S);
+  await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/?w=${w}` });
   await new Promise((r) => setTimeout(r, 1200));
-  const ready = await evaluate(`typeof applyLang==='function'&&typeof renderAccount==='function'`).catch(() => false);
-  if (!ready) { await new Promise((r) => setTimeout(r, 1500)); }
+  let ready = await evaluate(`typeof applyLang==='function'&&typeof renderAccount==='function'`).catch(() => false);
+  if (!ready) {
+    await new Promise((r) => setTimeout(r, 1500));
+    ready = await evaluate(`typeof applyLang==='function'&&typeof renderAccount==='function'`).catch(() => false);
+  }
+  if (!ready) { console.error(`check-overflow: page scripts did not initialize at ${w}x${h}.`); cleanup(1); }
   for (const route of ROUTES) {
     for (const lang of LANGS) {
       for (const state of STATES) {
@@ -133,6 +157,8 @@ for (const [w, h] of VIEWPORTS) {
         await new Promise((r) => setTimeout(r, 15));
         const m = JSON.parse(await evaluate(MEASURE(w)));
         checks++;
+        measuredElements += m.measured;
+        if (m.measured <= 0) { console.error(`check-overflow: measurement inspected no visible elements at ${w}x${h} ${route} ${lang} ${state}.`); cleanup(1); }
         if (m.over > 1) {
           fails++;
           const wrec = m.worst ? `<${m.worst.t} class="${m.worst.c}" id="${m.worst.id}"> right=${m.worst.right}` : '(none)';
@@ -141,9 +167,14 @@ for (const [w, h] of VIEWPORTS) {
       }
     }
   }
+  console.log(`check-overflow: completed ${w}x${h} (${checks}/${expectedChecks} assertions)`);
 }
 
-console.log(`check-overflow: ${checks} assertions across ${VIEWPORTS.length} widths × ${ROUTES.length} routes × ${LANGS.length} langs × ${STATES.length} states.`);
+console.log(`check-overflow: ${checks} assertions and ${measuredElements} visible-element measurements across ${VIEWPORTS.length} widths × ${ROUTES.length} routes × ${LANGS.length} langs × ${STATES.length} states.`);
+if (checks !== expectedChecks || measuredElements <= 0) {
+  console.error(`FAIL: expected ${expectedChecks} nonempty assertions, completed ${checks} across ${measuredElements} visible-element measurements.`);
+  cleanup(1);
+}
 if (fails > 0) {
   console.error(`\nFAIL: ${fails} viewport/route/language combos scroll horizontally:`);
   failures.slice(0, 40).forEach((f) => console.error(f));

@@ -139,7 +139,6 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
 .doc-download-card{transition:border-color .18s ease,box-shadow .18s ease}
 .doc-download-card:hover{transform:none;border-color:rgba(255,79,201,.28)}
 .doc-download-card small{overflow-wrap:anywhere}
-.doc-dl-size{opacity:.85;font-weight:800}
 .doc-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
 .doc-btn{flex:1 1 auto;min-width:120px;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 18px;border-radius:11px;font-weight:900;font-size:15px;cursor:pointer;transition:border-color .18s ease,background .18s ease,color .18s ease,filter .18s ease;text-decoration:none}
 .doc-btn-preview{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text)}

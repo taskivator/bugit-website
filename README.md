@@ -19,7 +19,7 @@ runtime dependency.
 - Single-page marketing site with client-side routing and deep-linkable views
 - Full internationalization (10 languages) driven from `app.js`
 - Inline product demos (video) and the animated Blip brand mark
-- Downloadable product documentation under `public/docs/`
+- Current in-app product documentation sourced from `public/docs/`
 - Self-contained brand system (`public/brand/`) shared with the product
 
 ## Requirements
@@ -54,8 +54,10 @@ server.js           # tiny static server for dev/preview
 public/
   brand/            # logos, favicons, design tokens (shared brand system)
   media/            # product demo videos
-  docs/             # downloadable user documentation (+ localized copies)
+  docs/             # current web guides and localized legal documents
 ```
+
+Retired v1.0.1 manuals are preserved under `archive/v1.0.1-docs/` and are not copied into the deployable build.
 
 ## Deployment
 
