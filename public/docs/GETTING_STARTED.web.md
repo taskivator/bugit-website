@@ -1,6 +1,6 @@
-# Getting Started with BugIt v1.0.3
+# Getting Started with BugIt
 
-BugIt turns rough testing notes into reviewed bug reports inside VS Code. Windows 11 with VS Code and GitHub Copilot is the release-qualified client path for v1.0.3.
+BugIt turns rough testing notes into reviewed bug reports inside VS Code. Windows 11 with VS Code and GitHub Copilot is the release-qualified client path.
 
 ## Before you begin
 

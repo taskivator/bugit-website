@@ -146,6 +146,10 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
 .doc-btn-download{border:0;background:linear-gradient(120deg,var(--purple),var(--pink),var(--hot));color:#fff;box-shadow:0 12px 30px rgba(255,79,201,.22)}
 .doc-btn-download:hover{filter:brightness(1.06)}
 .doc-btn:focus-visible{outline:2px solid var(--pink,#ff4fc9);outline-offset:2px}
+/* Full-PDF actions on a guide highlights page: preview inline / download, left-aligned
+   at a natural width (not stretched across the wide doc column). */
+.doc-pdf-actions{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 22px}
+.doc-pdf-actions .doc-btn{flex:0 1 auto;min-width:160px}
 
 /* Final defensive safeguard — applied only AFTER fixing the real overflow above.
    overflow-x:clip (not hidden) prevents any residual sideways scroll without

@@ -1,4 +1,4 @@
-# BugIt QA Agent v1.0.3 Overview
+# BugIt QA Agent — Overview
 
 BugIt is a commercial VS Code Copilot agent that converts raw test notes into consistent bug reports. It drafts locally in your workspace and writes to connected services only after preview and confirmation.
 
@@ -28,9 +28,9 @@ BugIt is a commercial VS Code Copilot agent that converts raw test notes into co
 
 ## Release scope
 
-- BugIt v1.0.3 is the current published release.
+- BugIt is the current published commercial release, actively maintained.
 - Windows 11, VS Code, GitHub Copilot, and Python 3.10 through 3.13 are the release-qualified environment.
-- English is the current setup documentation. Localized manuals will return after regeneration and verification.
+- The full User Guide and Overview are available as PDFs in English and every supported language — preview or download them below.
 
 ## Policies
 
