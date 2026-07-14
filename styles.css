@@ -105,22 +105,33 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
 @media(max-width:1320px){
   .nav{gap:18px}
   .nav-actions{gap:10px}
+  /* The hamburger overlay serves the main nav across this whole range, so the
+     in-header language switcher collapses to a compact icon-only globe + caret.
+     This keeps .nav-actions from overflowing on wide-label locales (e.g. pt-br
+     "Minha conta" / de) at tablet widths where the account control is still shown.
+     aria-label="Language" keeps it accessible; the dropdown still lists every one. */
+  .lang button{min-width:0;padding:11px 12px;gap:7px}
+  .lang button #langLabel{display:none}
+  .lang-list{width:min(72vw,235px)}
 }
 @media(max-width:760px){
   .nav{gap:12px}
   /* Sign in / account is available in the hamburger overlay on phones, so the
      in-header control is redundant here and only crowds the row. */
   .auth-slot{display:none}
-  /* Compact, icon-only language switcher (globe + caret). aria-label="Language"
-     on the button keeps it accessible; the dropdown still lists every language. */
-  .lang button{min-width:0;padding:11px 12px;gap:7px}
-  .lang button #langLabel{display:none}
-  .lang-list{width:min(72vw,235px)}
   /* Demo section tabs: 3 across can't fit a phone once labels are localized
      (de/it/ru run long). Let them wrap instead of overflowing the centered row. */
   .demo-tabs{flex-wrap:wrap}
   .demo-tabs button{padding:11px 15px}
 }
+/* Home hero/demo hardening: long localized words (de/ru compounds, the report
+   preview title/label) must not inflate min-content width and latently widen the
+   page on very narrow phones. min-width:0 lets flex/grid children shrink; the
+   absolutely-positioned demo label is capped to its panel. */
+.hero-copy,.mission,.report-panel,.status-panel,.metrics,.metrics div{min-width:0}
+.hero-copy>p,.report-panel h2,.report-panel p,.metrics strong,.metrics small{overflow-wrap:break-word}
+.status-panel .big{max-width:calc(100% - 68px);overflow-wrap:break-word}
+pre{overflow-wrap:break-word;word-break:break-word}
 /* Documentation pages (pre-existing, exposed once the viewport no longer expands):
    .docs-layout is a grid whose content column defaults to min-width:auto, so a long
    token — a heading word in de/ru, or a URL/email in the legal pages — inflated the
