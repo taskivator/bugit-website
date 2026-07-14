@@ -129,9 +129,15 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
    page on very narrow phones. min-width:0 lets flex/grid children shrink; the
    absolutely-positioned demo label is capped to its panel. */
 .hero-copy,.mission,.report-panel,.status-panel,.metrics,.metrics div{min-width:0}
-.hero-copy>p,.report-panel h2,.report-panel p,.metrics strong,.metrics small{overflow-wrap:break-word}
+/* The big display headings carry no overflow-wrap, so a long localized compound
+   (de "…Arbeitsabläufe…", the report title) overflowed its box without widening
+   any element's rect — a latent page-widener the checker reports as culprit=(none).
+   Let those words break; on very narrow phones also step the hero title down a size
+   so the break is graceful rather than mid-huge-word. */
+.hero-title,.section-head h2,.hero-copy>p,.report-panel h2,.report-panel p,.metrics strong,.metrics small{overflow-wrap:break-word}
 .status-panel .big{max-width:calc(100% - 68px);overflow-wrap:break-word}
 pre{overflow-wrap:break-word;word-break:break-word}
+@media(max-width:360px){.hero-title{font-size:42px}}
 /* Documentation pages (pre-existing, exposed once the viewport no longer expands):
    .docs-layout is a grid whose content column defaults to min-width:auto, so a long
    token — a heading word in de/ru, or a URL/email in the legal pages — inflated the
