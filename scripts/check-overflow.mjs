@@ -27,7 +27,7 @@ const PORT = 3211;
 const DBG = 9411;
 
 // Routes (hash-based SPA), the 10 supported languages, and the three auth-slot states.
-const ROUTES = ['#/', '#/docs', '#/docs/getting-started', '#/docs/user-guide', '#/docs/license', '#/docs/privacy', '#/support'];
+const ROUTES = ['#/', '#/docs', '#/docs/getting-started', '#/docs/user-guide', '#/docs/license', '#/docs/privacy', '#/docs/refund', '#/docs/faq', '#/support'];
 const LANGS = ['en', 'ja', 'fr', 'de', 'es', 'pt-br', 'it', 'ko', 'zh', 'ru'];
 const STATES = ['loading', 'out', 'in'];
 // Common phone widths (portrait) + two landscape phone sizes.
