@@ -97,6 +97,35 @@ Reinstall into `public/brand/favicon-<n>.png` (this repo) and the portal's
   `source/blip-logo.svg`, update `OFFICIAL_LOGO_SHA256` in `validate_assets.py`, and
   run `python render_ads.py --ad all`.
 
+## Production polish: clean canonical vs marketing (glow)
+
+The master `blip-logo.svg` / `favicon.svg` include an ambient glow — a single blurred
+pink ellipse (`blip-glow`, `feGaussianBlur stdDeviation="5"`, ~16% opacity, animated).
+On the animated website/portal header this is the approved live treatment and stays.
+For STATIC production exports (app icon, Google Ads logo fields, favicons, avatars) the
+glow becomes a heavy fuzzy halo that eats padding and reads as a neon rim, so the
+canonical exports omit it.
+
+- **Canonical (clean) source:** the master with the `blip-glow` ellipse (and its now-unused
+  CSS/`bf_*` filter) removed. Crisp edge, transparent pixels immediately outside the body.
+- **Marketing source:** the unchanged master (keeps the glow) — clearly named `*-marketing`.
+- **Approved glow settings:** canonical = NO glow (0-1px AA edge only). Marketing = the
+  master's single blurred ellipse, never stacked/duplicated (a "repeated ring" means a
+  double-composited export, not the design).
+- **Padding / occupancy:** icon-only files frame the mascot at ~80% of canvas height
+  (content bbox svg `x20-80 y22-90`, centred; icon viewBox `7.5 13.5 85 85`). Range 75-85%.
+- **Canonical wordmark:** horizontal + stacked read "BugIt / by Taskivator". The longer
+  "QA workflow agent by Taskivator" is a marketing-only lockup.
+- **Light vs dark text:** light = `#fff8ff` / `#d8c7e7` (for dark backgrounds); dark =
+  `#17101a` / `#6a5a72` (for light backgrounds). Each is invisible on its opposite ground.
+- **Blip mark vs icon:** consolidated — the magnifier mascot is `BugIt-icon-square`; the
+  no-magnifier mascot (favicon) is `BugIt-mascot-mark`. They are different artwork (magnifier
+  vs none), used for different sizes; don't mix them.
+- **Regenerate / refresh** the desktop delivery folder `C:\Users\Ppedr\Desktop\BugIt Logo`
+  from these sources; its `README.txt` lists the recommended file per use case. Verify each
+  export: RGBA + full transparency, ~80% icon occupancy, 0-1px edge band on canonical files,
+  correct dimensions, and legibility at 32/48/64 px.
+
 ## How the artifact is prevented from recurring
 
 `scripts/check-logo.mjs` (wired into CI and `npm run test:logo`) asserts that every
