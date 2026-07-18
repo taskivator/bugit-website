@@ -48,6 +48,8 @@ jobs:
         run: node scripts/check-docs.mjs
       - name: Verify responsive pages do not overflow
         run: node scripts/check-overflow.mjs
+      - name: Verify BugIt logo highlight is clipped (upper-corner artifact guard)
+        run: node scripts/check-logo.mjs
       - name: Verify build output exists
         run: |
           test -f dist/index.html
