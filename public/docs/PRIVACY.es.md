@@ -45,6 +45,10 @@ ni es visto por Taskivator.
 Los tokens de API residen en el almacén de credenciales de su sistema operativo:
 nunca en un archivo, y nunca se transmiten a Taskivator.
 
+## Analítica del sitio web
+
+El sitio bugit.dev utiliza Cloudflare Web Analytics, un servicio que prioriza la privacidad, para medir el rendimiento de las páginas y el número de visitas. No usa cookies y no le rastrea entre sitios. Esto se aplica solo al sitio web. El Software en sí no envía ningún tipo de analítica, como se describe arriba.
+
 ## Contacto
 
 ¿Preguntas sobre privacidad? Visite **bugit.dev** y abra un ticket de soporte desde

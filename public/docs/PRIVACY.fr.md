@@ -45,6 +45,10 @@ jamais acheminé via Taskivator, copié vers Taskivator, ni vu par Taskivator.
 Les jetons d'API résident dans le gestionnaire d'identifiants de votre système
 d'exploitation — jamais dans un fichier, et jamais transmis à Taskivator.
 
+## Statistiques du site web
+
+Le site bugit.dev utilise Cloudflare Web Analytics, un service respectueux de la vie privée, pour mesurer les performances des pages et le nombre de visites. Il n'utilise pas de cookies et ne vous suit pas sur d'autres sites. Cela concerne uniquement le site web. Le Logiciel lui-même n'envoie aucune donnée d'analyse, comme décrit ci-dessus.
+
 ## Contact
 
 Des questions sur la confidentialité ? Rendez-vous sur **bugit.dev** et ouvrez un

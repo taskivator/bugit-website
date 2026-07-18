@@ -42,6 +42,10 @@ connected — it is never routed through, copied to, or seen by Taskivator.
 API tokens live in your operating system's credential store — never in a file, and
 never transmitted to Taskivator.
 
+## Website analytics
+
+The bugit.dev website uses Cloudflare Web Analytics, a privacy-first service, to measure page performance and visit counts. It does not use cookies and does not track you across sites. This applies to the website only. The Software itself sends no analytics of any kind, as described above.
+
 ## Contact
 
 Questions about privacy? Visit **bugit.dev** and open a support ticket from your

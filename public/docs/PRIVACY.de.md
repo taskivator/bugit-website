@@ -47,6 +47,10 @@ oder von Taskivator eingesehen.
 API-Tokens liegen im Anmeldeinformationsspeicher Ihres Betriebssystems — niemals
 in einer Datei und niemals an Taskivator übertragen.
 
+## Website-Analyse
+
+Die Website bugit.dev verwendet Cloudflare Web Analytics, einen datenschutzfreundlichen Dienst, um Seitenleistung und Besuchszahlen zu messen. Er verwendet keine Cookies und verfolgt Sie nicht über andere Websites hinweg. Dies gilt nur für die Website. Die Software selbst sendet, wie oben beschrieben, keinerlei Analysedaten.
+
 ## Kontakt
 
 Fragen zum Datenschutz? Besuchen Sie **bugit.dev** und öffnen Sie ein
