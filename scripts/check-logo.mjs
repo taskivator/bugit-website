@@ -27,9 +27,23 @@ import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// Every SVG here IS the BugIt logo body (magnifier logo + static favicon mark).
-// Other blip-*.svg files are separate product marks and are out of scope.
-const LOGO_SVGS = ["public/brand/blip-logo.svg", "public/brand/favicon.svg"];
+// Every SVG here IS BugIt logo artwork (aria-label "BugIt Blip") that carries the
+// glossy top highlight and must stay clipped:
+//   blip-logo  — the primary logo (mascot + magnifier)
+//   blip-bugit — a byte-identical alias of the primary logo
+//   blip-main / blip-mark — the BugIt mascot mark (no magnifier)
+//   favicon    — the static favicon mark
+// The other blip-*.svg files (buildit/deployit/docsit/planit/reviewit/testit/
+// watchit) are SEPARATE Taskivator product marks — deliberately out of scope, so
+// they are NOT listed here (listing them would make this check fail on artwork this
+// task never touched).
+const LOGO_SVGS = [
+  "public/brand/blip-logo.svg",
+  "public/brand/blip-bugit.svg",
+  "public/brand/blip-main.svg",
+  "public/brand/blip-mark.svg",
+  "public/brand/favicon.svg",
+];
 
 let failures = 0;
 

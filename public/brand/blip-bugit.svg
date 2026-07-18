@@ -15,12 +15,13 @@
 <defs>
 <linearGradient id="bg_bugit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF2E9A"/><stop offset="1" stop-color="#C21C79"/></linearGradient>
 <filter id="bf_bugit" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="5"/></filter>
+<clipPath id="body_clip_bugit"><rect x="20" y="22" width="60" height="60" rx="20"/></clipPath>
 </defs>
 <ellipse class="blip-glow" cx="50" cy="56" rx="33" ry="35" fill="#FF2E9A" filter="url(#bf_bugit)"/>
 <g class="blip-float">
 <rect x="30" y="82" width="12" height="8" rx="4" fill="#C21C79"/><rect x="58" y="82" width="12" height="8" rx="4" fill="#C21C79"/>
 <rect x="20" y="22" width="60" height="60" rx="20" fill="url(#bg_bugit)"/>
-<rect x="20" y="22" width="60" height="30" rx="20" fill="#ffffff" opacity="0.12"/>
+<rect x="20" y="22" width="60" height="30" rx="20" fill="#ffffff" opacity="0.12" clip-path="url(#body_clip_bugit)"/>
 <g class="blip-eye"><circle cx="50" cy="50" r="15" fill="#17101a"/><circle cx="50" cy="50" r="9.3" fill="#17101a"/>
 <g class="blip-look"><circle cx="45.8" cy="44.9" r="4.5" fill="#ffffff"/><circle cx="53.9" cy="54.5" r="2.1" fill="#ffffff" opacity="0.55"/></g></g>
 <path d="M43 68 Q50 74.3 57 68" fill="none" stroke="#17101a" stroke-width="2.38" stroke-linecap="round"/>

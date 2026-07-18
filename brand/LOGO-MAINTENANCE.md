@@ -11,6 +11,35 @@ These are hand-edited vector files (no build step generates them in this repo).
 Byte-identical copies live in the portal repo (`bugit-portal/public/brand/blip-logo.svg`,
 `.../public/brand/favicon.svg`, `.../app/icon.svg`) — keep them in sync.
 
+### The BugIt logo family (all carry the highlight; all must stay clipped)
+
+All of these are BugIt artwork (`aria-label="BugIt Blip"`) and share the same body +
+top highlight, so the same fix applies to every one. `scripts/check-logo.mjs` guards
+all of them:
+
+- `blip-logo.svg` — primary logo (mascot + magnifier).
+- `blip-bugit.svg` — byte-identical alias of the primary logo.
+- `blip-main.svg` / `blip-mark.svg` — the BugIt mascot mark (no magnifier).
+- `favicon.svg` (= portal `app/icon.svg`) — static favicon mark.
+
+The other `blip-*.svg` files (buildit / deployit / docsit / planit / reviewit /
+testit / watchit) are SEPARATE Taskivator product marks — not BugIt, out of scope
+here. They share the same highlight construction, so if they are ever adopted as
+BugIt assets they need the identical clip.
+
+### Google Ads brand logos & the desktop delivery folder
+
+- Google Ads pack (`Google ADs/v2/BugIt-Google-Ads-v2-Complete/`): `source/blip-logo.svg`
+  is synced to the corrected master, `OFFICIAL_LOGO_SHA256` in `validate_assets.py`
+  is updated to match, and the three brand logos are regenerated via
+  `render_logo_assets()` + `render_google_upload_logos()`. On the dark ad background the
+  corner overflow was already absorbed (0 visible artifact); regeneration keeps a single
+  source of truth. The 15 campaign creatives were NOT regenerated (ad layouts/copy are
+  out of scope) and show no artifact.
+- Desktop delivery folder `C:\Users\Ppedr\Desktop\BugIt Logo`: fully refreshed from the
+  corrected master (transparent PNGs, dark-bg brand logos, vector sources). See its
+  `README.txt`.
+
 ## The upper-corner artifact (fixed 2026-07-18)
 
 **Symptom:** two thin white lines hugging the upper-left and upper-right corners
