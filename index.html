@@ -67,7 +67,7 @@
       <img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" />
       <span><strong>BugIt</strong><em>by Taskivator</em></span>
     </a>
-    <nav class="main-nav">
+    <nav class="main-nav" data-t-aria="a11y.siteNav" aria-label="Site navigation">
       <a href="#features" data-t="nav.features">Features</a>
       <a href="#integrations" data-t="nav.integrations">Integrations</a>
       <a href="#pricing" data-t="nav.pricing">Pricing</a>
@@ -201,10 +201,13 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
     <section id="demo" class="demo shell">
       <div class="section-head"><span data-t="demo.eyebrow">SEE IT WORK</span><h2 data-t="demo.title">One agent. Different QA worlds.</h2><p data-t="demo.subtitle">Use it for web, mobile, desktop, SaaS, enterprise workflows or games.</p></div>
       <div class="demo-tabs"><button class="active" data-video="saas" data-t="demo.saas">SaaS / Web App</button><button data-video="game" data-t="demo.game">Game QA</button><button data-video="general" data-t="demo.general">General Workflow</button></div>
+      <!-- The demo clips are silent, muted visual loops with no dialogue or
+           informational audio, so captions/audio descriptions are not applicable;
+           a localized aria-label giving each demo an accessible name is the fix. -->
       <div class="video-frame"><div class="demo-stack" id="demoStack">
-        <video class="demo-video is-active" data-video="saas" muted playsinline preload="metadata" src="/public/media/BugIt-Demo-SaaS.mp4"></video>
-        <video class="demo-video" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4"></video>
-        <video class="demo-video" data-video="general" muted playsinline preload="none" src="/public/media/BugIt-Demo.mp4"></video>
+        <video class="demo-video is-active" data-video="saas" muted playsinline preload="metadata" src="/public/media/BugIt-Demo-SaaS.mp4" data-t-aria="a11y.demoSaas" aria-label="Demo video: BugIt in a SaaS web app QA workflow"></video>
+        <video class="demo-video" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4" data-t-aria="a11y.demoGame" aria-label="Demo video: BugIt in a game QA workflow"></video>
+        <video class="demo-video" data-video="general" muted playsinline preload="none" src="/public/media/BugIt-Demo.mp4" data-t-aria="a11y.demoGeneral" aria-label="Demo video: BugIt in a general QA workflow"></video>
       </div></div>
     </section>
 
@@ -254,7 +257,7 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
     <div class="docs-layout"><aside id="docNav" class="docs-sidebar"></aside><article id="docContent" class="docs-content"></article></div>
   </main>
 
-  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. All Rights Reserved.</p></div><nav><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/support" data-t="docs.support">Support</a></nav></footer>
+  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. All Rights Reserved.</p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/support" data-t="docs.support">Support</a></nav></footer>
   <script src="/app.js"></script>
 </body>
 </html>
