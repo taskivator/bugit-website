@@ -66,7 +66,12 @@
 <body>
   <div id="ambient" aria-hidden="true"><div class="grid"></div><div class="aurora a"></div><div class="aurora b"></div></div>
   <header class="nav shell">
-    <a href="#/" class="brand" data-t-aria="a11y.home" aria-label="BugIt home">
+    <!-- No aria-label here on purpose. The visible text is "BugIt by Taskivator",
+         so an accessible name of "BugIt home" broke WCAG 2.5.3 (Label in Name):
+         a voice-control user saying "BugIt by Taskivator" could not activate it.
+         With the override removed the accessible name IS the visible text. The
+         logo is aria-hidden, so the name comes from the wordmark alone. -->
+    <a href="#/" class="brand">
       <img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" />
       <span><strong>BugIt</strong><em>by Taskivator</em></span>
     </a>
