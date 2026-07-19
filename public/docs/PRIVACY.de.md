@@ -49,7 +49,11 @@ in einer Datei und niemals an Taskivator übertragen.
 
 ## Website-Analyse
 
-Die Website bugit.dev verwendet Cloudflare Web Analytics, einen datenschutzfreundlichen Dienst, um Seitenleistung und Besuchszahlen zu messen. Er verwendet keine Cookies und verfolgt Sie nicht über andere Websites hinweg. Dies gilt nur für die Website. Die Software selbst sendet, wie oben beschrieben, keinerlei Analysedaten.
+Die Website bugit.dev verwendet Cloudflare Web Analytics, einen datenschutzfreundlichen Dienst, um Seitenleistung und Besuchszahlen zu messen. Er verwendet keine Cookies und verfolgt Sie nicht über andere Websites hinweg.
+
+Mit Ihrer Einwilligung verwendet die Website außerdem Google-Messung (Google Ads), um die Wirksamkeit unserer Werbung zu beurteilen. Dies ist deaktiviert, bis Sie im Cookie-Banner Alle akzeptieren wählen oder Werbung aktivieren, und Sie können Ihre Auswahl jederzeit über den Link Cookie-Einstellungen im Footer ändern oder widerrufen. Wenn Sie es erlauben, geben wir möglicherweise den Wert, die Währung und eine anonyme Bestellreferenz eines Kaufs weiter, damit ein Verkauf einer Anzeige zugeordnet werden kann. Wir geben niemals den Inhalt Ihrer Fehlerberichte, Ihre Zahlungskartendaten oder Ihre Eingaben im Produkt weiter.
+
+Dies gilt nur für die Website. Die Software selbst sendet, wie oben beschrieben, keinerlei Analysedaten, keine Werbung und kein Tracking.
 
 ## Kontakt
 

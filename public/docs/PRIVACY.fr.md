@@ -47,7 +47,11 @@ d'exploitation — jamais dans un fichier, et jamais transmis à Taskivator.
 
 ## Statistiques du site web
 
-Le site bugit.dev utilise Cloudflare Web Analytics, un service respectueux de la vie privée, pour mesurer les performances des pages et le nombre de visites. Il n'utilise pas de cookies et ne vous suit pas sur d'autres sites. Cela concerne uniquement le site web. Le Logiciel lui-même n'envoie aucune donnée d'analyse, comme décrit ci-dessus.
+Le site bugit.dev utilise Cloudflare Web Analytics, un service respectueux de la vie privée, pour mesurer les performances des pages et le nombre de visites. Il n'utilise pas de cookies et ne vous suit pas sur d'autres sites.
+
+Avec votre consentement, le site utilise également la mesure Google (Google Ads) pour évaluer l'efficacité de notre publicité. Elle reste désactivée jusqu'à ce que vous choisissiez Tout accepter ou activiez Publicité dans le bandeau de cookies, et vous pouvez modifier ou retirer votre choix à tout moment via le lien Préférences des cookies dans le pied de page. Lorsque vous l'autorisez, nous pouvons partager le montant, la devise et une référence de commande non personnelle d'un achat afin qu'une vente puisse être attribuée à une annonce. Nous ne partageons jamais le contenu de vos rapports de bug, les informations de votre carte de paiement ni ce que vous saisissez dans le produit.
+
+Cela concerne uniquement le site web. Le Logiciel lui-même n'envoie aucune donnée d'analyse, aucune publicité ni aucun suivi, comme décrit ci-dessus.
 
 ## Contact
 

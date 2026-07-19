@@ -47,7 +47,11 @@ nunca en un archivo, y nunca se transmiten a Taskivator.
 
 ## Analítica del sitio web
 
-El sitio bugit.dev utiliza Cloudflare Web Analytics, un servicio que prioriza la privacidad, para medir el rendimiento de las páginas y el número de visitas. No usa cookies y no le rastrea entre sitios. Esto se aplica solo al sitio web. El Software en sí no envía ningún tipo de analítica, como se describe arriba.
+El sitio bugit.dev utiliza Cloudflare Web Analytics, un servicio que prioriza la privacidad, para medir el rendimiento de las páginas y el número de visitas. No usa cookies y no le rastrea entre sitios.
+
+Con su consentimiento, el sitio también utiliza la medición de Google (Google Ads) para ver el rendimiento de nuestra publicidad. Permanece desactivada hasta que elija Aceptar todo o active Publicidad en el banner de cookies, y puede cambiar o retirar su elección en cualquier momento con el enlace Preferencias de cookies del pie de página. Cuando lo permite, podemos compartir el valor, la moneda y una referencia de pedido no personal de una compra para atribuir una venta a un anuncio. Nunca compartimos el contenido de sus informes de errores, los datos de su tarjeta de pago ni nada de lo que escriba en el producto.
+
+Esto se aplica solo al sitio web. El Software en sí no envía ningún tipo de analítica, publicidad ni rastreo, como se describe arriba.
 
 ## Contacto
 
