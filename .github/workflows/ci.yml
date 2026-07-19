@@ -50,6 +50,8 @@ jobs:
         run: node scripts/check-overflow.mjs
       - name: Verify BugIt logo highlight is clipped (upper-corner artifact guard)
         run: node scripts/check-logo.mjs
+      - name: Verify trust cards have no retired glyphs beside their SVG icons
+        run: node scripts/check-trust-icons.mjs
       - name: Verify build output exists
         run: |
           test -f dist/index.html

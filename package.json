@@ -1,1 +1,22 @@
-{"name":"bugit-marketing-site","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"node server.js","build":"node build.js","preview":"node server.js","test:docs":"node scripts/check-doc-links.mjs","test:guides":"node scripts/check-docs.mjs","test:overflow":"node scripts/check-overflow.mjs","test:logo":"node scripts/check-logo.mjs"},"devDependencies":{"esbuild":"^0.28.1"},"engines":{"node":">=18.0.0"}}
+{
+  "name": "bugit-marketing-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "node build.js",
+    "preview": "node server.js",
+    "test:docs": "node scripts/check-doc-links.mjs",
+    "test:guides": "node scripts/check-docs.mjs",
+    "test:overflow": "node scripts/check-overflow.mjs",
+    "test:logo": "node scripts/check-logo.mjs",
+    "test:trust-icons": "node scripts/check-trust-icons.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
