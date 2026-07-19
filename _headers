@@ -12,7 +12,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
   Access-Control-Allow-Origin: https://bugit.dev
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self' https://portal.bugit.dev https://cloudflareinsights.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://portal.bugit.dev; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.google.com; font-src 'self'; media-src 'self'; connect-src 'self' https://portal.bugit.dev https://cloudflareinsights.com https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://portal.bugit.dev; upgrade-insecure-requests
 
 # Content-hashed assets: referenced from HTML as /app.js?v=<hash> and
 # /styles.css?v=<hash>, so a changed file always gets a NEW url (fresh fetch)
@@ -21,6 +21,8 @@
 # revalidation returning visitors used to pay. (Cloudflare matches on path, so
 # this covers the ?v= query variants.)
 /app.js
+  Cache-Control: public, max-age=31536000, immutable
+/consent.js
   Cache-Control: public, max-age=31536000, immutable
 /styles.css
   Cache-Control: public, max-age=31536000, immutable

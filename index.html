@@ -7,6 +7,9 @@
   <!-- Every page load checks the portal session cross-origin (account menu);
        warm the TLS connection early so that fetch isn't cold. -->
   <link rel="preconnect" href="https://portal.bugit.dev" crossorigin />
+  <!-- Consent Mode v2 defaults (denied) + the Google tag, loaded once BEFORE app.js.
+       External + served from 'self' so the CSP needs no inline-script allowance. -->
+  <script src="/consent.js"></script>
   <title>BugIt | QA Bug-Filing Agent for VS Code</title>
   <link rel="stylesheet" href="/public/brand/tokens.css" />
   <link rel="stylesheet" href="/styles.css" />
@@ -257,7 +260,41 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
     <div class="docs-layout"><aside id="docNav" class="docs-sidebar"></aside><article id="docContent" class="docs-content"></article></div>
   </main>
 
-  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. All Rights Reserved.</p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/support" data-t="docs.support">Support</a></nav></footer>
+  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. All Rights Reserved.</p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
+
+  <!-- Consent banner (Consent Mode v2). Hidden until app.js shows it, which only
+       happens when the bugit_consent cookie is absent. All copy is localized via
+       data-t through the existing i18n system. Denied-by-default; essential-only
+       never grants advertising. -->
+  <div id="consentBanner" class="consent" role="dialog" aria-modal="false" aria-labelledby="consentTitle" aria-describedby="consentBody" tabindex="-1" hidden>
+    <div class="consent-inner shell">
+      <div class="consent-copy">
+        <strong id="consentTitle" data-t="consent.title">Cookies and measurement</strong>
+        <p id="consentBody" data-t="consent.body">We use essential cookies to run this site. With your permission we also use Google cookies to measure our advertising and understand site usage. You can change your choice at any time.</p>
+        <a class="consent-link" href="#/docs/privacy" data-t="consent.privacyLink">Read our Privacy Policy</a>
+      </div>
+      <div class="consent-prefs" id="consentPrefs" hidden>
+        <label class="consent-opt">
+          <span><b data-t="consent.essential">Essential</b><small data-t="consent.essentialDesc">Required to run the site securely. Always active.</small></span>
+          <span class="consent-fixed-tag" data-t="consent.always">Always on</span>
+        </label>
+        <label class="consent-opt">
+          <span><b data-t="consent.analytics">Analytics</b><small data-t="consent.analyticsDesc">Helps us measure site performance and usage.</small></span>
+          <input type="checkbox" id="consentAnalytics" />
+        </label>
+        <label class="consent-opt">
+          <span><b data-t="consent.advertising">Advertising</b><small data-t="consent.advertisingDesc">Lets Google measure our ad campaigns. No bug report content is ever shared.</small></span>
+          <input type="checkbox" id="consentAdvertising" />
+        </label>
+      </div>
+      <div class="consent-actions">
+        <button type="button" id="consentManage" class="consent-btn ghost" data-t="consent.manage">Manage preferences</button>
+        <button type="button" id="consentSave" class="consent-btn ghost" data-t="consent.save" hidden>Save preferences</button>
+        <button type="button" id="consentReject" class="consent-btn ghost" data-t="consent.reject">Reject non-essential</button>
+        <button type="button" id="consentAccept" class="consent-btn primary" data-t="consent.accept">Accept all</button>
+      </div>
+    </div>
+  </div>
   <script src="/app.js"></script>
 </body>
 </html>

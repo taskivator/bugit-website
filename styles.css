@@ -246,3 +246,24 @@ html{overflow-x:clip}
 .mc-armed.mc-resetting .status-panel ul,.mc-armed.mc-resetting .report-panel>*:not(.report-head),.mc-armed.mc-resetting .mc-foot{opacity:.08!important;transition:opacity .7s ease}
 
 @media(prefers-reduced-motion:reduce){.mc-stream .mc-dot{animation:none!important}.mc-orb,.mc-mascot:before{animation:none!important}}
+
+/* --- Consent banner (Consent Mode v2). Fixed bottom bar, dark-theme tokens, no
+   horizontal overflow at any width (actions wrap; inner uses the shell width). --- */
+.consent{position:fixed;left:0;right:0;bottom:0;z-index:90;background:rgba(8,5,16,.98);border-top:1px solid var(--line);box-shadow:0 -18px 50px rgba(0,0,0,.5);backdrop-filter:blur(18px);padding:18px 0 calc(18px + env(safe-area-inset-bottom))}
+.consent-inner{display:flex;flex-direction:column;gap:14px}
+.consent-copy strong{display:block;font-size:16px;font-weight:950;margin-bottom:5px}
+.consent-copy p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;max-width:900px}
+.consent-link{display:inline-block;margin-top:7px;color:#ff86dc;font-weight:800;font-size:13px}
+.consent-prefs{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.consent-opt{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.04);cursor:pointer}
+.consent-opt>span:first-child{min-width:0}
+.consent-opt b{display:block;font-size:14px}
+.consent-opt small{display:block;color:var(--muted);font-size:12.5px;line-height:1.4;margin-top:2px}
+.consent-opt input[type=checkbox]{flex:0 0 auto;width:20px;height:20px;accent-color:var(--pink);cursor:pointer;margin-top:2px}
+.consent-fixed-tag{flex:0 0 auto;color:var(--muted);font-size:12px;font-weight:800;white-space:nowrap}
+.consent-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.consent-btn{max-width:100%;border-radius:12px;padding:12px 18px;font-weight:900;font-size:14px;cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text)}
+.consent-btn:hover{border-color:rgba(255,79,201,.5)}
+.consent-btn.primary{border:0;color:#fff;background:linear-gradient(110deg,var(--purple),var(--pink),var(--hot));box-shadow:0 12px 30px rgba(255,79,201,.22)}
+.foot-link{border:0;background:none;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;padding:0}
+.footer .foot-link:hover{color:#ff72d7}

@@ -627,7 +627,66 @@ function initMission(){
     new IntersectionObserver(function(es){ es.forEach(function(e){ visible=e.isIntersecting; sync(); }); },{threshold:.2}).observe(mission);
   } else { visible=true; sync(); }
 }
-window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();initMobileNav();applyLang(currentLang);renderDocRoute();initAuth();initMission();requestAnimationFrame(initInitialScroll)});
+/* Consent banner localization. Merged into each EXISTING per-locale dictionary
+   rather than via add()/makeLang — those set i18n[code]=merge(en,obj), which would
+   clobber the whole locale. English is the base; each locale overlays its strings,
+   and any locale without an override inherits English. */
+const consentI18n = {
+  en:{title:'Cookies and measurement',body:'We use essential cookies to run this site. With your permission we also use Google cookies to measure our advertising and understand site usage. You can change your choice at any time.',privacyLink:'Read our Privacy Policy',manage:'Manage preferences',save:'Save preferences',reject:'Reject non-essential',accept:'Accept all',essential:'Essential',essentialDesc:'Required to run the site securely. Always active.',always:'Always on',analytics:'Analytics',analyticsDesc:'Helps us measure site performance and usage.',advertising:'Advertising',advertisingDesc:'Lets Google measure our ad campaigns. No bug report content is ever shared.',prefsLink:'Cookie preferences'},
+  de:{title:'Cookies und Messung',body:'Wir verwenden notwendige Cookies für den Betrieb der Website. Mit Ihrer Einwilligung nutzen wir außerdem Google-Cookies, um unsere Werbung zu messen und die Nutzung der Website zu verstehen. Sie können Ihre Auswahl jederzeit ändern.',privacyLink:'Datenschutzerklärung lesen',manage:'Einstellungen verwalten',save:'Einstellungen speichern',reject:'Nicht notwendige ablehnen',accept:'Alle akzeptieren',essential:'Notwendig',essentialDesc:'Für den sicheren Betrieb der Website erforderlich. Immer aktiv.',always:'Immer aktiv',analytics:'Analyse',analyticsDesc:'Hilft uns, Leistung und Nutzung der Website zu messen.',advertising:'Werbung',advertisingDesc:'Ermöglicht Google, unsere Werbekampagnen zu messen. Inhalte von Fehlerberichten werden nie geteilt.',prefsLink:'Cookie-Einstellungen'},
+  es:{title:'Cookies y medición',body:'Usamos cookies esenciales para el funcionamiento del sitio. Con tu permiso, también usamos cookies de Google para medir nuestra publicidad y entender el uso del sitio. Puedes cambiar tu elección en cualquier momento.',privacyLink:'Leer nuestra Política de Privacidad',manage:'Gestionar preferencias',save:'Guardar preferencias',reject:'Rechazar no esenciales',accept:'Aceptar todo',essential:'Esenciales',essentialDesc:'Necesarias para el funcionamiento seguro del sitio. Siempre activas.',always:'Siempre activas',analytics:'Analítica',analyticsDesc:'Nos ayuda a medir el rendimiento y el uso del sitio.',advertising:'Publicidad',advertisingDesc:'Permite a Google medir nuestras campañas. Nunca se comparte el contenido de los informes de errores.',prefsLink:'Preferencias de cookies'},
+  fr:{title:'Cookies et mesure',body:'Nous utilisons des cookies essentiels pour faire fonctionner le site. Avec votre accord, nous utilisons aussi des cookies Google pour mesurer notre publicité et comprendre l’utilisation du site. Vous pouvez modifier votre choix à tout moment.',privacyLink:'Lire notre politique de confidentialité',manage:'Gérer les préférences',save:'Enregistrer les préférences',reject:'Refuser les non essentiels',accept:'Tout accepter',essential:'Essentiels',essentialDesc:'Nécessaires au fonctionnement sécurisé du site. Toujours actifs.',always:'Toujours actifs',analytics:'Analyse',analyticsDesc:'Nous aide à mesurer les performances et l’utilisation du site.',advertising:'Publicité',advertisingDesc:'Permet à Google de mesurer nos campagnes. Le contenu des rapports de bug n’est jamais partagé.',prefsLink:'Préférences des cookies'},
+  it:{title:'Cookie e misurazione',body:'Usiamo cookie essenziali per far funzionare il sito. Con il tuo consenso usiamo anche cookie di Google per misurare la nostra pubblicità e capire l’uso del sito. Puoi cambiare la tua scelta in qualsiasi momento.',privacyLink:'Leggi la nostra Informativa sulla privacy',manage:'Gestisci preferenze',save:'Salva preferenze',reject:'Rifiuta non essenziali',accept:'Accetta tutto',essential:'Essenziali',essentialDesc:'Necessari per il funzionamento sicuro del sito. Sempre attivi.',always:'Sempre attivi',analytics:'Analisi',analyticsDesc:'Ci aiuta a misurare prestazioni e utilizzo del sito.',advertising:'Pubblicità',advertisingDesc:'Consente a Google di misurare le nostre campagne. Il contenuto dei report di bug non viene mai condiviso.',prefsLink:'Preferenze cookie'},
+  'pt-br':{title:'Cookies e medição',body:'Usamos cookies essenciais para o funcionamento do site. Com sua permissão, também usamos cookies do Google para medir nossa publicidade e entender o uso do site. Você pode mudar sua escolha a qualquer momento.',privacyLink:'Ler nossa Política de Privacidade',manage:'Gerenciar preferências',save:'Salvar preferências',reject:'Recusar não essenciais',accept:'Aceitar tudo',essential:'Essenciais',essentialDesc:'Necessários para o funcionamento seguro do site. Sempre ativos.',always:'Sempre ativos',analytics:'Análise',analyticsDesc:'Ajuda a medir o desempenho e o uso do site.',advertising:'Publicidade',advertisingDesc:'Permite que o Google meça nossas campanhas. O conteúdo dos relatórios de bug nunca é compartilhado.',prefsLink:'Preferências de cookies'},
+  ja:{title:'Cookieと計測',body:'当サイトの動作に必要なCookieを使用します。ご同意いただいた場合は、広告の効果測定とサイト利用状況の把握のためにGoogleのCookieも使用します。設定はいつでも変更できます。',privacyLink:'プライバシーポリシーを読む',manage:'設定を管理',save:'設定を保存',reject:'必須以外を拒否',accept:'すべて許可',essential:'必須',essentialDesc:'サイトを安全に動作させるために必要です。常に有効です。',always:'常に有効',analytics:'分析',analyticsDesc:'サイトのパフォーマンスと利用状況の計測に役立ちます。',advertising:'広告',advertisingDesc:'Googleが当社の広告キャンペーンを計測できるようにします。バグレポートの内容が共有されることはありません。',prefsLink:'Cookie設定'},
+  ko:{title:'쿠키 및 측정',body:'사이트 운영에 필요한 필수 쿠키를 사용합니다. 동의하시면 광고 성과 측정과 사이트 이용 현황 파악을 위해 Google 쿠키도 사용합니다. 선택은 언제든지 변경할 수 있습니다.',privacyLink:'개인정보처리방침 보기',manage:'기본 설정 관리',save:'기본 설정 저장',reject:'필수 외 거부',accept:'모두 허용',essential:'필수',essentialDesc:'사이트를 안전하게 운영하는 데 필요합니다. 항상 활성화됩니다.',always:'항상 켜짐',analytics:'분석',analyticsDesc:'사이트 성능과 이용 현황 측정에 도움이 됩니다.',advertising:'광고',advertisingDesc:'Google이 당사 광고 캠페인을 측정할 수 있게 합니다. 버그 리포트 내용은 절대 공유되지 않습니다.',prefsLink:'쿠키 기본 설정'},
+  zh:{title:'Cookie 与衡量',body:'我们使用必要的 Cookie 来运行本网站。在您同意后，我们还会使用 Google 的 Cookie 来衡量广告效果并了解网站使用情况。您可以随时更改您的选择。',privacyLink:'阅读我们的隐私政策',manage:'管理偏好设置',save:'保存偏好设置',reject:'拒绝非必要',accept:'全部接受',essential:'必要',essentialDesc:'安全运行网站所必需。始终启用。',always:'始终开启',analytics:'分析',analyticsDesc:'帮助我们衡量网站性能和使用情况。',advertising:'广告',advertisingDesc:'允许 Google 衡量我们的广告活动。绝不会共享错误报告内容。',prefsLink:'Cookie 偏好设置'},
+  ru:{title:'Файлы cookie и измерение',body:'Мы используем необходимые файлы cookie для работы сайта. С вашего согласия мы также используем файлы cookie Google для оценки нашей рекламы и анализа использования сайта. Вы можете изменить свой выбор в любое время.',privacyLink:'Читать нашу Политику конфиденциальности',manage:'Управление настройками',save:'Сохранить настройки',reject:'Отклонить необязательные',accept:'Принять все',essential:'Необходимые',essentialDesc:'Требуются для безопасной работы сайта. Всегда активны.',always:'Всегда включены',analytics:'Аналитика',analyticsDesc:'Помогает измерять производительность и использование сайта.',advertising:'Реклама',advertisingDesc:'Позволяет Google оценивать наши рекламные кампании. Содержимое отчётов об ошибках никогда не передаётся.',prefsLink:'Настройки cookie'}
+};
+for(const _c in i18n){ i18n[_c].consent = Object.assign({}, consentI18n.en, consentI18n[_c]||{}); }
+
+/* Consent banner controller. The banner (index.html) is denied-by-default and only
+   auto-shows when no decision cookie exists; a footer "Cookie preferences" link
+   reopens it. Choices are persisted + mapped to Consent Mode v2 by window.BugitConsent
+   (consent.js). Advertising drives ad_storage/ad_user_data/ad_personalization together;
+   Analytics drives analytics_storage. Essential-only never grants advertising. */
+function initConsent(){
+  const C=window.BugitConsent; if(!C) return;
+  const banner=document.getElementById('consentBanner'); if(!banner) return;
+  const prefs=document.getElementById('consentPrefs');
+  const adv=document.getElementById('consentAdvertising');
+  const ana=document.getElementById('consentAnalytics');
+  const bManage=document.getElementById('consentManage');
+  const bSave=document.getElementById('consentSave');
+  const bReject=document.getElementById('consentReject');
+  const bAccept=document.getElementById('consentAccept');
+  const link=document.getElementById('cookiePrefsLink');
+  function open(managing){
+    const cur=C.read();
+    if(adv) adv.checked=!!(cur&&cur.ad_storage);
+    if(ana) ana.checked=!!(cur&&cur.analytics_storage);
+    if(prefs) prefs.hidden=!managing;
+    if(bSave) bSave.hidden=!managing;
+    if(bManage) bManage.hidden=!!managing;
+    banner.hidden=false;
+    try{banner.focus();}catch(e){}
+  }
+  function close(){ banner.hidden=true; }
+  function collapsePrefs(){ if(prefs)prefs.hidden=true; if(bSave)bSave.hidden=true; if(bManage)bManage.hidden=false; }
+  function decide(advertising,analytics){
+    C.write({ad_storage:advertising,ad_user_data:advertising,ad_personalization:advertising,analytics_storage:analytics});
+    close();
+  }
+  if(bAccept) bAccept.onclick=()=>decide(true,true);
+  if(bReject) bReject.onclick=()=>decide(false,false);
+  if(bManage) bManage.onclick=()=>open(true);
+  if(bSave) bSave.onclick=()=>decide(!!(adv&&adv.checked),!!(ana&&ana.checked));
+  if(link) link.onclick=(e)=>{e.preventDefault();open(true);};
+  banner.addEventListener('keydown',(e)=>{ if(e.key==='Escape'&&prefs&&!prefs.hidden) collapsePrefs(); });
+  if(!C.hasDecision()) open(false);
+}
+
+window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();initMobileNav();applyLang(currentLang);renderDocRoute();initAuth();initMission();initConsent();requestAnimationFrame(initInitialScroll)});
 
 /* v16 docs sync: official BugIt QA Agent documentation updates */
 const bugitV16Faq = {
