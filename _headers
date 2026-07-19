@@ -1,3 +1,26 @@
+# Google Ads CSP hosts, 2026-07-20. Verified against a live browser with consent
+# GRANTED (denied consent redacts pings and under-reports the host set), then
+# cross-checked against Google's official guide:
+#   https://developers.google.com/tag-platform/security/guides/csp
+#
+#   script-src  + googleads.g.doubleclick.net -- gtag INJECTS the view-through
+#     conversion / remarketing script from here. This site has no nonce and no
+#     'strict-dynamic', so the host must be named; the portal does not need this
+#     because 'strict-dynamic' already trusts what its nonce'd scripts load.
+#   connect/img + ad.doubleclick.net  -- Consent Mode /ccm/s/collect endpoint.
+#   connect/img + www.google.co.jp    -- the first-party user-list pixel is served
+#     from the visitor's LOCAL Google ccTLD, not google.com. This account is
+#     Japan-based (JPY, Asia/Tokyo). CSP cannot express a TLD wildcard, so each
+#     ccTLD must be named; targeting another country will need its ccTLD, which
+#     shows up as a fresh img-src violation.
+#   connect/img + google.com (apex)   -- from Google's guide, not the capture: no
+#     purchase conversion has fired in production yet, so the conversion path was
+#     never exercised, and a blocked conversion would waste a real charge.
+#
+# NOT added: frame-src (Google lists googletagmanager there, but no frame request
+# was ever observed and frame-src stays at the default-src 'self' fallback).
+# Do not prune this list by inspection -- verify against a live page.
+
 # Cloudflare Pages response headers for the marketing site. Adds the security
 # headers the portal already sends. CSP is now ENFORCED (report-only rollout
 # validated clean). The static site has no inline scripts; the ONLY cross-origin
@@ -12,7 +35,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
   Access-Control-Allow-Origin: https://bugit.dev
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://pagead2.googlesyndication.com https://www.google-analytics.com https://region1.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://portal.bugit.dev https://cloudflareinsights.com https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://pagead2.googlesyndication.com https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://portal.bugit.dev; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ad.doubleclick.net https://pagead2.googlesyndication.com https://google.com https://www.google.co.jp https://www.google-analytics.com https://region1.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://portal.bugit.dev https://cloudflareinsights.com https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ad.doubleclick.net https://pagead2.googlesyndication.com https://google.com https://www.google.co.jp https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://portal.bugit.dev; upgrade-insecure-requests
 
 # Content-hashed assets: the HASH IS IN THE FILENAME (/app.<hash>.js), so a
 # changed file is a genuinely new path while the HTML itself is always

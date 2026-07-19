@@ -156,13 +156,32 @@ check(
   directive('script-src').includes('https://www.googletagmanager.com'),
   'script-src must allow googletagmanager.com (gtag.js)',
 );
+// This site has no nonce and no 'strict-dynamic', so a script gtag INJECTS must
+// have its host named. Missing this blocks the view-through conversion and
+// remarketing tag while leaving click-through conversions working -- a partial
+// failure that looks like nothing is wrong.
+check(
+  directive('script-src').includes('https://googleads.g.doubleclick.net'),
+  'script-src must allow googleads.g.doubleclick.net (view-through conversion / remarketing tag)',
+);
+// The policy must stay an allowlist -- never a blanket https: or wildcard.
+check(
+  !/https:(?!\/\/)/.test(directive('script-src')),
+  'script-src must not fall back to a bare https: source',
+);
 const BEACON_HOSTS = [
   'https://www.googletagmanager.com',
   'https://www.google.com',
   'https://www.googleadservices.com',
   'https://googleads.g.doubleclick.net',
   'https://td.doubleclick.net',
+  // Consent Mode /ccm/s/collect. Observed blocked in a live browser 2026-07-20
+  // and listed in Google's official CSP guide.
+  'https://ad.doubleclick.net',
   'https://pagead2.googlesyndication.com',
+  // The first-party user-list pixel comes from the visitor's LOCAL Google ccTLD.
+  // CSP has no TLD wildcard, so the account's country must be named explicitly.
+  'https://www.google.co.jp',
 ];
 for (const d of ['img-src', 'connect-src']) {
   const missing = BEACON_HOSTS.filter((h) => !directive(d).includes(h));
