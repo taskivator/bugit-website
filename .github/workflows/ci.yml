@@ -54,6 +54,8 @@ jobs:
         run: node scripts/check-trust-icons.mjs
       - name: Verify Google Ads tag shape (single load, consent-first, CSP hosts)
         run: node scripts/check-ads-tag.mjs
+      - name: Verify immutable caching is confined to content-hashed filenames
+        run: node scripts/check-cache-headers.mjs
       - name: Verify build output exists
         run: |
           test -f dist/index.html
