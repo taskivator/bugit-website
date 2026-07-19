@@ -32,8 +32,8 @@ const LANGS = ['en', 'ja', 'fr', 'de', 'es', 'pt-br', 'it', 'ko', 'zh', 'ru'];
 const STATES = ['loading', 'out', 'in'];
 // Common phone widths (portrait) + two landscape phone sizes.
 const VIEWPORTS = [
-  [320, 720], [360, 780], [375, 812], [390, 844], [414, 896], [430, 932],
-  [768, 1024], [844, 390], [932, 430],
+  [320, 720], [360, 780], [375, 812], [390, 844], [412, 915], [414, 896], [430, 932],
+  [768, 1024], [1024, 768], [844, 390], [932, 430],
 ];
 
 function findChrome() {
@@ -123,16 +123,35 @@ const applyState = (s) => s === 'in'
 const MEASURE = (w) => `(function(){
   var vw=${w}, de=document.documentElement, b=document.body;
   var ph=de.style.overflowX, pb=b.style.overflowX; de.style.overflowX='visible'; b.style.overflowX='visible'; void de.offsetWidth;
+  // THE ASSERTION is trueSw below — documentElement.scrollWidth measured with the
+  // overflow-x clamps neutralized. It has no exclusions of any kind and is the
+  // only thing that decides pass/fail.
   var trueSw=de.scrollWidth, worst=null, measured=0, all=document.getElementsByTagName('*');
   for(var i=0;i<all.length;i++){ var el=all[i];
-    if(el.id==='ambient'||el.closest('#ambient')||(el.classList&&el.classList.contains('particle')))continue;
+    // Everything below only picks the human-readable CULPRIT shown when a check
+    // fails. #ambient's contents are skipped here because they are structurally
+    // clipped (see the contain:paint assertion) and would otherwise always win
+    // the "worst" contest and point the reader at a red herring.
+    //
+    // This used to be an exclusion in the assertion path, and that is exactly how
+    // this gate reported 2430 clean assertions while .particle elements painted
+    // up to 91px past the right edge on a phone: the only broken elements were
+    // the ones the test refused to look at.
     var cs=getComputedStyle(el); if(cs.display==='none'||cs.visibility==='hidden')continue;
     var r=el.getBoundingClientRect(); if(r.width===0&&r.height===0)continue;
     measured++;
+    if(el.id==='ambient'||el.closest('#ambient'))continue;
+    // 1px covers subpixel rounding.
     if(r.right>vw+1&&(!worst||r.right>worst.right)) worst={t:el.tagName.toLowerCase(),c:(''+(el.className||'')).slice(0,40),id:el.id||'',right:Math.round(r.right)};
   }
   de.style.overflowX=ph; b.style.overflowX=pb;
-  return JSON.stringify({over:Math.round(trueSw-vw), worst:worst, measured:measured});
+  // Structural guard for the actual fix: #ambient must clip its own painting.
+  // overflow:hidden alone does NOT clip position:fixed descendants (their
+  // containing block is the viewport, outside the clipper), so without
+  // contain:paint the particle field paints outside the viewport again.
+  var amb=document.getElementById('ambient');
+  var contain=amb?(getComputedStyle(amb).contain||''):'NO-AMBIENT-ELEMENT';
+  return JSON.stringify({over:Math.round(trueSw-vw), worst:worst, measured:measured, contain:contain});
 })()`;
 
 const expectedChecks = VIEWPORTS.length * ROUTES.length * LANGS.length * STATES.length;
@@ -161,8 +180,12 @@ for (const [w, h] of VIEWPORTS) {
         if (m.measured <= 0) { console.error(`check-overflow: measurement inspected no visible elements at ${w}x${h} ${route} ${lang} ${state}.`); cleanup(1); }
         if (m.over > 1) {
           fails++;
-          const wrec = m.worst ? `<${m.worst.t} class="${m.worst.c}" id="${m.worst.id}"> right=${m.worst.right}` : '(none)';
+          const wrec = m.worst ? `<${m.worst.t} class="${m.worst.c}" id="${m.worst.id}"> right=${m.worst.right}` : '(none outside #ambient — check the decorative layer)';
           failures.push(`  ${w}x${h} route=${route} lang=${lang} state=${state}  over=+${m.over}px  culprit=${wrec}`);
+        }
+        if (!/paint/.test(m.contain)) {
+          fails++;
+          failures.push(`  ${w}x${h} route=${route} lang=${lang} state=${state}  #ambient lost contain:paint (got "${m.contain}") — position:fixed particles will paint outside the viewport again`);
         }
       }
     }

@@ -110,7 +110,27 @@ function officialLogo(label,slug){
 }
 
 function icon(name,color,path){return `<span class="logo-svg"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="none" stroke="${color}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" d="${path}"/></svg></span>`}
-function renderParticles(){const root=document.getElementById('ambient');if(!root||root.dataset.ready)return;if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;root.dataset.ready='1';const SPEED=1.2;/* drift-speed multiplier: 1.0=baseline, 1.2=~20% faster; keep in sync with portal ambient.tsx PARTICLE_SPEED */const colors=['#fff','#c179ff','#ff4fc9','#18e1ff'];for(let i=0;i<160;i++){const p=document.createElement('i');p.className='particle '+(i%9===0?'big':i%3===0?'small':'');p.style.left=Math.random()*100+'vw';p.style.top=Math.random()*100+'vh';p.style.setProperty('--x',(Math.random()*190-95)+'px');p.style.setProperty('--y',(Math.random()*170-85)+'px');p.style.setProperty('--d',((10+Math.random()*18)/SPEED)+'s');p.style.setProperty('--c',colors[i%colors.length]);root.appendChild(p)}}
+/* Ambient particle field.
+   Runs exactly once: the root.dataset.ready latch below is the only guard needed,
+   and there is deliberately NO resize listener — re-rendering on resize is how you
+   get duplicate particle sets, orphaned animations and a growing layer count. The
+   particles are positioned in vw/vh and animated purely in CSS, so they already
+   follow a resize on their own with no JS involved.
+
+   Density is chosen once, from the site's own mobile breakpoint (760px, the same
+   one the mobile nav uses), because it is a rendering-cost decision rather than a
+   layout one. Desktop and tablet keep the original values exactly. */
+const PARTICLES_DESKTOP = 160;
+const PARTICLES_MOBILE = 128;   /* -20%: the count was viewport-independent, so a
+                                   390px phone was drawing desktop density into
+                                   ~1/5 the area, crowding the text behind it. */
+const DRIFT_DESKTOP = 190;      /* peak-to-peak px of horizontal travel (±95) */
+const DRIFT_MOBILE = 110;       /* ±55. On a 390px screen ±95px is ±24% of the
+                                   viewport, so the fixed layer visibly sweeps
+                                   sideways while the page scrolls vertically —
+                                   which reads as the PAGE moving sideways. Same
+                                   animation, shorter travel. */
+function renderParticles(){const root=document.getElementById('ambient');if(!root||root.dataset.ready)return;if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;root.dataset.ready='1';const mobile=!!(window.matchMedia&&window.matchMedia('(max-width: 760px)').matches);const COUNT=mobile?PARTICLES_MOBILE:PARTICLES_DESKTOP;const DRIFT=mobile?DRIFT_MOBILE:DRIFT_DESKTOP;const SPEED=1.2;/* drift-speed multiplier: 1.0=baseline, 1.2=~20% faster; keep in sync with portal ambient.tsx PARTICLE_SPEED */const colors=['#fff','#c179ff','#ff4fc9','#18e1ff'];for(let i=0;i<COUNT;i++){const p=document.createElement('i');p.className='particle '+(i%9===0?'big':i%3===0?'small':'');p.style.left=Math.random()*100+'vw';p.style.top=Math.random()*100+'vh';p.style.setProperty('--x',(Math.random()*DRIFT-DRIFT/2)+'px');p.style.setProperty('--y',(Math.random()*170-85)+'px');p.style.setProperty('--d',((10+Math.random()*18)/SPEED)+'s');p.style.setProperty('--c',colors[i%colors.length]);root.appendChild(p)}}
 function renderTools(){document.querySelectorAll('[data-tools]').forEach(row=>{row.innerHTML=row.dataset.tools.split(',').filter(Boolean).map(k=>{const t=officialLogos[k]||[toolData[k]?.[0]||k,k];return `<div class="tool" title="${t[0]}">${officialLogo(t[0],t[1])}<span>${t[0]}</span></div>`}).join('')})}
 function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}let currentLang=(function(){var m=document.cookie.match(/(?:^|; )bugitLang=([^;]+)/);return (m&&decodeURIComponent(m[1]))||localStorage.getItem('bugitLang')||'en';})();
 function applyLang(lang){if(!i18n[lang])lang='en';currentLang=lang;localStorage.setItem('bugitLang',lang);(function(){var h=location.hostname,shared=(h==='bugit.dev'||/\.bugit\.dev$/.test(h));if(shared){document.cookie='bugitLang=;path=/;max-age=0;samesite=lax';document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax;domain=.bugit.dev';}else{document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax';}})();document.documentElement.lang=lang;const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));renderFaq([reqFaqItem(lang)].concat(dict.faq.items));renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
