@@ -19,8 +19,7 @@ The only thing the Software sends to us is **license/update data**:
   is simply never sent.
 
 These go only to the Taskivator license server, and only to activate/verify your
-seat and to check whether a newer version is available. **No telemetry, no
-analytics, no tracking, no advertising — ever.**
+seat and to check whether a newer version is available.
 
 ## What stays entirely on your device
 
@@ -44,11 +43,13 @@ never transmitted to Taskivator.
 
 ## Website analytics
 
-The bugit.dev website uses Cloudflare Web Analytics, a privacy-first service, to measure page performance and visit counts. It does not use cookies and does not track you across sites.
+BugIt uses Cloudflare Web Analytics to understand general website performance and visit counts. This service is designed without cross site tracking cookies.
 
-With your consent, the website also uses Google measurement (Google Ads) to see how well our advertising works. It stays off until you choose Accept all or turn on Advertising in the cookie banner, and you can change or withdraw your choice at any time with the Cookie preferences link in the footer. When you allow it, we may share the value, currency, and a non-personal order reference for a purchase so a sale can be attributed to an ad. We never share the content of your bug reports, your payment card details, or anything you type into the product.
+With your permission, we may also use Google Ads measurement to understand whether our advertising leads to purchases. You can manage your choices at any time through Cookie preferences.
 
-This applies to the website only. The Software itself sends no analytics of any kind, no advertising, and no tracking, as described above.
+When purchase measurement is enabled, limited transaction information such as the purchase value, currency, and a unique order reference may be used for attribution. Bug report content, payment card details, and information entered into the BugIt software are not shared with Google Ads.
+
+These measurement tools apply only to the BugIt website and portal. The BugIt software does not use Google Ads measurement or send product telemetry.
 
 ## Contact
 

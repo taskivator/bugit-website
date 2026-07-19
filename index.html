@@ -216,7 +216,7 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
 
     <section id="features" class="trust shell">
       <div><strong data-t="trust.privateTitle">▣ Private by Design</strong><p data-t="trust.private">Your work goes only to the AI and tracker you connect, never to Taskivator. We never store, train on, or sell your data.</p></div>
-      <div><strong data-t="trust.telemetryTitle">◌ No Agent Telemetry</strong><p data-t="trust.telemetry">The BugIt agent sends no product analytics, only a license check. This website uses privacy-friendly Cloudflare analytics for performance.</p></div>
+      <div><strong data-t="trust.telemetryTitle">◌ No Agent Telemetry</strong><p data-t="trust.telemetry">The BugIt software does not use Google Ads measurement or send product telemetry. This website uses Cloudflare Web Analytics for performance.</p></div>
       <div><strong data-t="trust.previewTitle">✓ Preview Before Filing</strong><p data-t="trust.preview">You review every ticket and type FILE to file (or COMMENT to comment).</p></div>
       <div><strong data-t="trust.backupsTitle">◎ Local Backups</strong><p data-t="trust.backups">Your settings and activity stay on your machine. Easy backups anytime.</p></div>
       <div><strong data-t="trust.updatesTitle">◇ Secure Updates</strong><p data-t="trust.updates">Updates are cryptographically signed and verified before installation.</p></div>
@@ -275,17 +275,25 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
       </div>
       <div class="consent-prefs" id="consentPrefs" hidden>
         <label class="consent-opt">
-          <span><b data-t="consent.essential">Essential</b><small data-t="consent.essentialDesc">Required to run the site securely. Always active.</small></span>
+          <span><b data-t="consent.essential">Essential</b><small data-t="consent.essentialDesc">Required for the site to function.</small></span>
           <span class="consent-fixed-tag" data-t="consent.always">Always on</span>
         </label>
         <label class="consent-opt">
-          <span><b data-t="consent.analytics">Analytics</b><small data-t="consent.analyticsDesc">Helps us measure site performance and usage.</small></span>
+          <span><b data-t="consent.analytics">Analytics</b><small data-t="consent.analyticsDesc">Helps us understand general site performance and usage.</small></span>
           <input type="checkbox" id="consentAnalytics" />
         </label>
         <label class="consent-opt">
-          <span><b data-t="consent.advertising">Advertising</b><small data-t="consent.advertisingDesc">Lets Google measure our ad campaigns. No bug report content is ever shared.</small></span>
+          <span><b data-t="consent.advertising">Advertising</b><small data-t="consent.advertisingDesc">Helps us understand whether our advertising leads to purchases.</small></span>
           <input type="checkbox" id="consentAdvertising" />
         </label>
+        <div class="consent-detail">
+          <b data-t="consent.advMeasureTitle">Advertising measurement</b>
+          <dl class="consent-meta">
+            <div><dt data-t="consent.advProviderLabel">Provider</dt><dd data-t="consent.advProvider">Google</dd></div>
+            <div><dt data-t="consent.advPurposeLabel">Purpose</dt><dd data-t="consent.advPurpose">Advertising performance and purchase attribution</dd></div>
+            <div><dt data-t="consent.advInfoLabel">Information that may be processed</dt><dd data-t="consent.advInfo">Advertising interaction information, purchase value, currency, and a non personal order reference</dd></div>
+          </dl>
+        </div>
       </div>
       <div class="consent-actions">
         <button type="button" id="consentManage" class="consent-btn ghost" data-t="consent.manage">Manage preferences</button>

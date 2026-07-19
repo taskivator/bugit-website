@@ -20,8 +20,7 @@ L'unica cosa che il Software ci invia sono **dati di licenza/aggiornamento**:
 
 Questi dati vengono trasmessi unicamente al server delle licenze di Taskivator, e
 solo per attivare/verificare la Sua postazione e per controllare se è disponibile una
-versione più recente. **Nessuna telemetria, nessuna analisi, nessun tracciamento,
-nessuna pubblicità — mai.**
+versione più recente.
 
 ## Che cosa resta interamente sul Suo dispositivo
 
@@ -46,11 +45,13 @@ in un file e mai trasmessi a Taskivator.
 
 ## Statistiche del sito web
 
-Il sito bugit.dev utilizza Cloudflare Web Analytics, un servizio rispettoso della privacy, per misurare le prestazioni delle pagine e il numero di visite. Non usa cookie e non vi traccia tra i siti.
+BugIt utilizza Cloudflare Web Analytics per comprendere le prestazioni generali del sito web e il numero di visite. Questo servizio è progettato senza cookie di tracciamento tra siti.
 
-Con il tuo consenso, il sito utilizza anche la misurazione di Google (Google Ads) per valutare l'efficacia della nostra pubblicità. Resta disattivata finché non scegli Accetta tutto o attivi Pubblicità nel banner dei cookie, e puoi modificare o revocare la tua scelta in qualsiasi momento tramite il link Preferenze cookie nel piè di pagina. Quando lo consenti, potremmo condividere il valore, la valuta e un riferimento d'ordine non personale di un acquisto per attribuire una vendita a un annuncio. Non condividiamo mai il contenuto dei tuoi report di bug, i dati della tua carta di pagamento o ciò che digiti nel prodotto.
+Con il tuo permesso, potremmo utilizzare anche la misurazione di Google Ads per capire se la nostra pubblicità genera acquisti. Puoi gestire le tue scelte in qualsiasi momento tramite le Preferenze cookie.
 
-Questo riguarda solo il sito web. Il Software in sé non invia alcun dato di analisi, pubblicità o tracciamento, come descritto sopra.
+Quando la misurazione degli acquisti è attiva, informazioni limitate sulla transazione, come il valore dell'acquisto, la valuta e un riferimento d'ordine univoco, possono essere utilizzate per l'attribuzione. Il contenuto dei report di bug, i dati della carta di pagamento e le informazioni inserite nel software BugIt non vengono condivisi con Google Ads.
+
+Questi strumenti di misurazione si applicano solo al sito web e al portale BugIt. Il software BugIt non utilizza la misurazione di Google Ads né invia telemetria del prodotto.
 
 ## Contatti
 
