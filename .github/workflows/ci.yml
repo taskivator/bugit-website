@@ -52,6 +52,8 @@ jobs:
         run: node scripts/check-logo.mjs
       - name: Verify trust cards have no retired glyphs beside their SVG icons
         run: node scripts/check-trust-icons.mjs
+      - name: Verify Google Ads tag shape (single load, consent-first, CSP hosts)
+        run: node scripts/check-ads-tag.mjs
       - name: Verify build output exists
         run: |
           test -f dist/index.html

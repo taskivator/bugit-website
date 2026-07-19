@@ -11,7 +11,8 @@
     "test:guides": "node scripts/check-docs.mjs",
     "test:overflow": "node scripts/check-overflow.mjs",
     "test:logo": "node scripts/check-logo.mjs",
-    "test:trust-icons": "node scripts/check-trust-icons.mjs"
+    "test:trust-icons": "node scripts/check-trust-icons.mjs",
+    "test:ads-tag": "node scripts/check-ads-tag.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1"
