@@ -14,17 +14,21 @@
   Access-Control-Allow-Origin: https://bugit.dev
   Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://pagead2.googlesyndication.com https://www.google-analytics.com https://region1.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://portal.bugit.dev https://cloudflareinsights.com https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://pagead2.googlesyndication.com https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://portal.bugit.dev; upgrade-insecure-requests
 
-# Content-hashed assets: referenced from HTML as /app.js?v=<hash> and
-# /styles.css?v=<hash>, so a changed file always gets a NEW url (fresh fetch)
-# while the HTML itself is always revalidated (max-age=0). That makes the files
-# themselves safe to cache immutably for a year — eliminating the every-4h
-# revalidation returning visitors used to pay. (Cloudflare matches on path, so
-# this covers the ?v= query variants.)
-/app.js
+# Content-hashed assets: the HASH IS IN THE FILENAME (/app.<hash>.js), so a
+# changed file is a genuinely new path while the HTML itself is always
+# revalidated (max-age=0). That is what makes `immutable` for a year safe.
+#
+# It was NOT safe before. These rules used to match the bare /app.js path while
+# the hash lived in a ?v= query, and Cloudflare matches _headers on path — so
+# every query variant inherited a one-year immutable TTL on one never-changing
+# path. On 2026-07-20 a deploy raced propagation, the edge cached the OLD body
+# against the NEW ?v= key and served it as immutable, shipping new CSS with old
+# JS and no way to evict it. Keep the hash in the filename.
+/app.*.js
   Cache-Control: public, max-age=31536000, immutable
-/consent.js
+/consent.*.js
   Cache-Control: public, max-age=31536000, immutable
-/styles.css
+/styles.*.css
   Cache-Control: public, max-age=31536000, immutable
 
 # Static media + brand assets change rarely and are not render-blocking — cache
