@@ -56,6 +56,10 @@ jobs:
         run: node scripts/check-ads-tag.mjs
       - name: Verify immutable caching is confined to content-hashed filenames
         run: node scripts/check-cache-headers.mjs
+      - name: Verify the CSP grants no unused or undisclosed telemetry destination
+        run: node scripts/check-csp-telemetry.mjs
+      - name: Verify billing copy states a one-time payment in every locale
+        run: node scripts/check-billing-copy.mjs
       - name: Verify build output exists
         run: |
           test -f dist/index.html

@@ -13,7 +13,9 @@
     "test:logo": "node scripts/check-logo.mjs",
     "test:trust-icons": "node scripts/check-trust-icons.mjs",
     "test:ads-tag": "node scripts/check-ads-tag.mjs",
-    "test:cache": "node scripts/check-cache-headers.mjs"
+    "test:cache": "node scripts/check-cache-headers.mjs",
+    "test:csp": "node scripts/check-csp-telemetry.mjs",
+    "test:billing": "node scripts/check-billing-copy.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1"
