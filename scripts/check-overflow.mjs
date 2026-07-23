@@ -76,10 +76,15 @@ const chrome = spawn(CHROME, [
 ], { stdio: 'ignore' });
 console.log(`check-overflow: Chrome launched with PID ${chrome.pid}`);
 
+// 5 min: the full sweep is ~2970 real-browser assertions across 11 viewports. The
+// GitHub runner is markedly slower than a dev box; the old 2 min deadline cut the
+// passing sweep off mid-way. Raised ONLY to fit the proven normal execution time —
+// per-viewport progress + a per-500-assertion heartbeat below keep a genuine hang
+// distinguishable from a long valid run.
 const watchdog = setTimeout(() => {
   console.error('check-overflow: timed out before completing assertions.');
   cleanup(1);
-}, 120_000);
+}, 300_000);
 
 function cleanup(code) {
   clearTimeout(watchdog);
@@ -142,7 +147,16 @@ const MEASURE = (w) => `(function(){
     measured++;
     if(el.id==='ambient'||el.closest('#ambient'))continue;
     // 1px covers subpixel rounding.
-    if(r.right>vw+1&&(!worst||r.right>worst.right)) worst={t:el.tagName.toLowerCase(),c:(''+(el.className||'')).slice(0,40),id:el.id||'',right:Math.round(r.right)};
+    if(r.right>vw+1&&(!worst||r.right>worst.right)){
+      // DIAGNOSTICS ONLY (does not affect the trueSw assertion): record the culprit's
+      // computed sizing + its parent's grid/width so a Linux-font overflow is fully
+      // characterised in the CI log (element/container width, grid template, min-width,
+      // white-space, wrapping).
+      var p=el.parentElement, pcs=p?getComputedStyle(p):null, pr=p?p.getBoundingClientRect():null;
+      worst={t:el.tagName.toLowerCase(),c:(''+(el.className||'')).slice(0,40),id:el.id||'',right:Math.round(r.right),
+        w:Math.round(r.width),mw:cs.minWidth,ws:cs.whiteSpace,ow:cs.overflowWrap||cs.wordWrap,wb:cs.wordBreak,disp:cs.display,
+        par:p?{t:p.tagName.toLowerCase(),c:(''+(p.className||'')).slice(0,30),w:Math.round(pr.width),disp:pcs.display,gtc:pcs.gridTemplateColumns,mw:pcs.minWidth}:null};
+    }
   }
   de.style.overflowX=ph; b.style.overflowX=pb;
   // Structural guard for the actual fix: #ambient must clip its own painting.
@@ -176,12 +190,17 @@ for (const [w, h] of VIEWPORTS) {
         await new Promise((r) => setTimeout(r, 15));
         const m = JSON.parse(await evaluate(MEASURE(w)));
         checks++;
+        // Heartbeat: a genuine hang stops these; a long valid run keeps emitting them.
+        if (checks % 500 === 0) console.log(`check-overflow: heartbeat ${checks}/${expectedChecks} assertions...`);
         measuredElements += m.measured;
         if (m.measured <= 0) { console.error(`check-overflow: measurement inspected no visible elements at ${w}x${h} ${route} ${lang} ${state}.`); cleanup(1); }
         if (m.over > 1) {
           fails++;
-          const wrec = m.worst ? `<${m.worst.t} class="${m.worst.c}" id="${m.worst.id}"> right=${m.worst.right}` : '(none outside #ambient — check the decorative layer)';
-          failures.push(`  ${w}x${h} route=${route} lang=${lang} state=${state}  over=+${m.over}px  culprit=${wrec}`);
+          const wo = m.worst;
+          const wrec = wo ? `<${wo.t} class="${wo.c}" id="${wo.id}"> right=${wo.right}` : '(none outside #ambient — check the decorative layer)';
+          const diag = wo ? ` [w=${wo.w} disp=${wo.disp} min-width=${wo.mw} white-space=${wo.ws} overflow-wrap=${wo.ow} word-break=${wo.wb}` +
+            (wo.par ? ` | parent <${wo.par.t} class="${wo.par.c}"> w=${wo.par.w} disp=${wo.par.disp} grid-cols=${wo.par.gtc} min-width=${wo.par.mw}` : '') + ']' : '';
+          failures.push(`  ${w}x${h} route=${route} lang=${lang} state=${state}  over=+${m.over}px  culprit=${wrec}${diag}`);
         }
         if (!/paint/.test(m.contain)) {
           fails++;
