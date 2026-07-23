@@ -302,3 +302,15 @@ html{overflow-x:clip}
 .consent-btn.primary{border:0;color:#fff;background:linear-gradient(110deg,var(--purple),var(--pink),var(--hot));box-shadow:0 12px 30px rgba(255,79,201,.22)}
 .foot-link{border:0;background:none;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;padding:0}
 .footer .foot-link:hover{color:#ff72d7}
+/* RC3 320px overflow fix (localized pages). The pricing cards are grid items;
+   their default min-width:auto (== min-content) let a long localized token — e.g. the
+   German compounds "Rueckerstattungsrichtlinie" / "Projektkonfiguration" — force the
+   1fr track WIDER than a 320px phone viewport. The section then overflows and the
+   pricing-note (a sibling block filling that width) reports the horizontal scroll.
+   Fix: let the grid/flex children shrink below their content, and let long words wrap.
+   No clipping, no page-level overflow-x:hidden, no per-locale width, no tiny fonts. */
+.pricing{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.price-card{min-width:0}
+.price-card h3,.price-card li,.price-card small,.price-card em,.pricing-note{overflow-wrap:break-word;word-break:break-word;hyphens:auto}
+@media(max-width:1320px){.pricing{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media(max-width:760px){.pricing{grid-template-columns:minmax(0,1fr)}}

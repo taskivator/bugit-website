@@ -62,8 +62,11 @@ jobs:
         run: node scripts/check-billing-copy.mjs
       - name: Verify build output exists
         run: |
+          # build.js content-hashes the bundle FILENAMES and deletes the unhashed
+          # originals, so assert the hashed outputs exist — not the pre-hash names.
           test -f dist/index.html
-          test -f dist/styles.css
-          test -f dist/app.js
           test -d dist/public
-          echo "Static build verified."
+          ls dist/app.*.js       >/dev/null
+          ls dist/styles.*.css   >/dev/null
+          ls dist/consent.*.js   >/dev/null
+          echo "Static build verified (hashed bundles present)."
