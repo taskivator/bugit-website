@@ -53,6 +53,30 @@ and historical price, not just the user-count) + `check-billing-copy` + `check-d
 `check-overflow` as the completeness/rendering net. Do NOT add the strengthened guard to CI
 until every locale + structure passes it locally.
 
+## COMPLETE structural map (verified 2026-07-23) — makes the edit key-aware
+
+Only TWO source structures exist (the `\"key\":\"value\"` escaped copies seen in the bundle
+are DIST artifacts regenerated from source by build.js — fixing source is sufficient):
+
+- **Structure A — explicit `add(code,{…pricing:{…}})`**: `en` (base, `i18n.en`), and
+  `es`, `it`, `ja`, `ko`, `ru`, `zh`, **`pt-br`**. Each has named pricing keys
+  `teamTitle/seats/teamRegular/teamDevices/teamCta/teamTerm` to edit in place (key-aware),
+  a `faq.items[]` Team Q&A, and a `docPages.sections[]` Team sentence.
+- **Structure B — `makeLang(code,name,nav,cta,heroTitle,heroSub,priceLimited,soloReg,teamReg,teamCta,faqTitle,docsName)`**:
+  `de`, `fr`. Team values are POSITIONAL: `nav[6]`=teamTitle, `nav[7]`=seats,
+  `nav[14]`=teamDevices; `teamReg` (arg 9) and `teamCta` (arg 10) are separate literals; the
+  FAQ is `docsName.faq` (e.g. `frFaq`), Team sentence in `docsName.sections`.
+  NOTE: `makeLang` does NOT set `teamTerm`, so `de`/`fr` INHERIT `en`'s `teamTerm` via
+  `merge(i18n.en,obj)` — fixing `en.teamTerm` fixes them too (do not add a teamTerm to de/fr).
+
+Collision reminder: `ja` `teamCta` == `teamTitle` ("チームライセンス") — edit the value at the
+`teamCta:` key position only, never a value-global replace.
+
+Recommended execution: a Node codemod that, for each target string, asserts an EXACT expected
+occurrence count in its key/positional context BEFORE replacing, writes only if every
+assertion holds (no partial write), then rebuild + run check-team-paused (strengthened to also
+forbid the Team price/historical price) + all 11 guards + build as the completeness/rendering net.
+
 ## Existing related work
 `origin/phase-0/team-pause` (`f8bcb44`) attempts this but is NON-compliant (keeps $199 /
 $249.99, "COMING SOON", internal-engineering copy) and is not merged. Reuse its
