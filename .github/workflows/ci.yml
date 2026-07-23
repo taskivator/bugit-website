@@ -15,53 +15,71 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Marketing site is static and dependency-free: prove it builds, its assets
-# resolve, and the deployable output is produced.
+# Ordering (RC3 Approval 1): fast deterministic guards — including the Option A
+# consent behavioural test — run BEFORE the slow ~2970-assertion browser overflow
+# sweep, so Option A is proven independently and an unrelated responsive failure is
+# surfaced precisely. This is an ORDERING change only: every gate is preserved, the
+# overflow sweep stays MANDATORY (no continue-on-error, no bypass), and no locale or
+# viewport was removed. scripts/check-ci-order.mjs enforces those properties.
+#   1 install integrity → 2 secret scan → 3 static content guards →
+#   4 Option A → 5 translation/claims validators → 6 build →
+#   7 fast structural tests → 8 browser overflow sweep → 9 consolidated gate
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      # Committed-secret scan (zero-dependency, deterministic). High-confidence
-      # patterns + length anchors so nothing in this static site false-positives.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      # 1. Install integrity (esbuild is the only build-time devDependency; the
+      # shipped site stays dependency-free at runtime).
+      - name: Install (integrity)
+        run: npm ci
+      # 2. Committed-secret scan (zero-dependency, deterministic).
       - name: Secret scan
         run: |
           if git grep -nIE 'sk_live_[0-9a-zA-Z]{20}|sk-ant-api[0-9a-zA-Z_-]{20}|-----BEGIN [A-Z ]*PRIVATE KEY-----|sbp_[0-9a-f]{40}|re_[0-9a-zA-Z]{24}'; then
             echo "::error::Potential committed secret detected (see matches above)"; exit 1
           fi
           echo "No committed secrets detected."
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-      # Build-time devDependency only (esbuild, for asset minification). The
-      # shipped site stays dependency-free at runtime.
-      - name: Install build tooling
-        run: npm ci
-      - name: Build static site
-        run: node build.js
+      # 3. Static content guards (source-based; no build needed).
+      - name: Verify CI ordering (Option A before overflow; no gate/locale/viewport removed)
+        run: node scripts/check-ci-order.mjs
       - name: Verify referenced assets resolve
         run: node scripts/check-assets.mjs
       - name: Verify documentation links resolve
         run: node scripts/check-doc-links.mjs
       - name: Verify localized highlights and full PDF guides are complete
         run: node scripts/check-docs.mjs
-      - name: Verify responsive pages do not overflow
-        run: node scripts/check-overflow.mjs
       - name: Verify BugIt logo highlight is clipped (upper-corner artifact guard)
         run: node scripts/check-logo.mjs
       - name: Verify trust cards have no retired glyphs beside their SVG icons
         run: node scripts/check-trust-icons.mjs
       - name: Verify Google Ads tag shape (single load, consent-first, CSP hosts)
         run: node scripts/check-ads-tag.mjs
-      - name: Verify Option A — no advertising loads before explicit consent
-        run: node scripts/check-consent-option-a.mjs
-      - name: Verify immutable caching is confined to content-hashed filenames
-        run: node scripts/check-cache-headers.mjs
       - name: Verify the CSP grants no unused or undisclosed telemetry destination
         run: node scripts/check-csp-telemetry.mjs
       - name: Verify billing copy states a one-time payment in every locale
         run: node scripts/check-billing-copy.mjs
+      # 4. Option A consent behavioural test (proven independently, before overflow).
+      - name: Verify Option A — no advertising loads before explicit consent
+        run: node scripts/check-consent-option-a.mjs
+      # 5. Translation and claims validators available at that point.
+      #    (No Website-side Team/claims validator exists yet; the Team-unavailable
+      #    localization guard will be wired here when that remediation lands.)
+      # 6. Website build.
+      - name: Build static site
+        run: node build.js
+      # 7. Fast structural tests (need the build output).
+      - name: Verify immutable caching is confined to content-hashed filenames
+        run: node scripts/check-cache-headers.mjs
+      # 8. Browser overflow sweep — MANDATORY. ~2970 real-browser assertions across
+      #    11 widths × 9 routes × 10 locales × 3 states. A failure fails the workflow.
+      - name: Verify responsive pages do not overflow
+        run: node scripts/check-overflow.mjs
+      # 9. Final consolidated gate.
       - name: Verify build output exists
         run: |
           # build.js content-hashes the bundle FILENAMES and deletes the unhashed
