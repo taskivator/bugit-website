@@ -302,9 +302,3 @@ html{overflow-x:clip}
 .consent-btn.primary{border:0;color:#fff;background:linear-gradient(110deg,var(--purple),var(--pink),var(--hot));box-shadow:0 12px 30px rgba(255,79,201,.22)}
 .foot-link{border:0;background:none;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;padding:0}
 .footer .foot-link:hover{color:#ff72d7}
-/* RC3 localization: keep the localized refund/pricing note inside the 320px viewport.
-   Long German compounds (e.g. "Ruckerstattungsrichtlinie") must be allowed to break,
-   and the note shrinks slightly on very narrow phones so it never scrolls sideways. */
-.pricing-note{overflow-wrap:break-word;word-break:break-word;hyphens:auto}
-@media(max-width:400px){.pricing-note{font-size:13px;line-height:1.35}}
-@media(max-width:340px){.pricing-note{font-size:12px}}
