@@ -76,10 +76,14 @@ const chrome = spawn(CHROME, [
 ], { stdio: 'ignore' });
 console.log(`check-overflow: Chrome launched with PID ${chrome.pid}`);
 
+// 5 min: the full sweep is ~2970 real-browser assertions across 10 viewports. The
+// GitHub runner is markedly slower than a dev box and was cut off mid-sweep at the
+// old 2 min deadline (≈1890/2970, zero content failures) — a false timeout, not an
+// overflow. The headroom lets the passing sweep finish; the job timeout is far higher.
 const watchdog = setTimeout(() => {
   console.error('check-overflow: timed out before completing assertions.');
   cleanup(1);
-}, 120_000);
+}, 300_000);
 
 function cleanup(code) {
   clearTimeout(watchdog);

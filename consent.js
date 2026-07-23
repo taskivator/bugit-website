@@ -1,7 +1,15 @@
 /* BugIt marketing site — advertising measurement + Consent Mode v2 bootstrap.
    Loaded synchronously from <head> BEFORE app.js so the denied-by-default consent
-   state is registered before the Google tag loads. Dependency-free and served from
-   'self', so the site CSP needs no 'unsafe-inline' for this logic.
+   state is registered up front. Dependency-free and served from 'self', so the site
+   CSP needs no 'unsafe-inline' for this logic.
+
+   PRIVACY POSTURE — Option A (block before consent): the Google Ads tag script
+   (gtag.js) is NOT loaded until the visitor EXPLICITLY grants advertising. No
+   advertising script, page-view, conversion request, cookie, or attribution id is
+   issued before that grant. No choice, a rejected choice, a dismissed banner, or an
+   analytics-only choice all leave the tag unloaded. Withdrawing consent updates
+   Consent Mode to denied and prevents the tag from loading on any later page.
+   Consent Mode defaults (denied) remain as defence-in-depth once advertising is on.
 
    SHARED CONSENT CONTRACT (must match the portal exactly):
    Cookie `bugit_consent`, Domain .bugit.dev, Path /, SameSite=Lax, Secure,
@@ -67,6 +75,10 @@
       ts: Math.floor(Date.now() / 1000)
     };
     setCookie(CONSENT_COOKIE, encodeURIComponent(JSON.stringify(payload)), CONSENT_DAYS);
+    // Option A: the Google tag is loaded ONLY after advertising is explicitly
+    // granted. Load it before pushing the consent update so the granted signal is
+    // registered against a present tag. A denied/rejected decision never loads it.
+    if (payload.ad_storage) loadTag();
     applyToGtag(payload);
     captureAttribution(payload);
     return payload;
@@ -95,10 +107,12 @@
   var stored = readConsent();
   if (stored) applyToGtag(stored);
 
-  // --- Load the Google tag EXACTLY ONCE per page. A hash-route change never
-  //     re-executes this file, and the guard flag also defends against any
-  //     accidental double include. Consent Mode redacts pings while denied, so
-  //     the tag is always loaded; consent controls storage, not tag presence.
+  // --- Load the Google tag EXACTLY ONCE per page, and ONLY after advertising has
+  //     been explicitly granted (Option A). A hash-route change never re-executes
+  //     this file, and the guard flag also defends against any accidental double
+  //     include. Under Option A the tag is NOT loaded by default: no Google Ads
+  //     script, page-view, or conversion request is issued before explicit consent.
+  //     Consent Mode defaults remain denied as defence-in-depth once the tag is on.
   function loadTag() {
     if (window.__bugitTagLoaded) return;
     window.__bugitTagLoaded = true;
@@ -109,7 +123,9 @@
     gtag('js', new Date());
     gtag('config', ADS_ID);
   }
-  loadTag();
+  // Option A: only replay a prior ADVERTISING grant. Absence of the cookie, a
+  // rejected decision, or an analytics-only decision leaves the tag unloaded.
+  if (stored && stored.ad_storage) loadTag();
 
   // --- gclid/gbraid/wbraid attribution capture. Stored in `bugit_gclid` ONLY when
   //     ad_storage is granted, so the portal can read attribution after the user

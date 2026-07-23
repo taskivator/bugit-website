@@ -15,7 +15,8 @@
     "test:ads-tag": "node scripts/check-ads-tag.mjs",
     "test:cache": "node scripts/check-cache-headers.mjs",
     "test:csp": "node scripts/check-csp-telemetry.mjs",
-    "test:billing": "node scripts/check-billing-copy.mjs"
+    "test:billing": "node scripts/check-billing-copy.mjs",
+    "test:consent": "node scripts/check-consent-option-a.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1"
