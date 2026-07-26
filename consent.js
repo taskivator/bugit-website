@@ -66,9 +66,19 @@
       ad_personalization: !!c.ad_personalization,
       ts: Math.floor(Date.now() / 1000)
     };
+    var prev = readConsent();
     setCookie(CONSENT_COOKIE, encodeURIComponent(JSON.stringify(payload)), CONSENT_DAYS);
     applyToGtag(payload);
     captureAttribution(payload);
+    // STRICT GATING (owner policy 2026-07-27): the Google tag loads ONLY when advertising
+    // is granted. If a prior grant is being REVOKED this session (the tag is already
+    // loaded), reload so the loaded Google runtime state is purged and no further Google
+    // request can fire (owner rule 9). No decision / Reject never loads the tag.
+    if (prev && prev.ad_storage && !payload.ad_storage && window.__bugitTagLoaded) {
+      try { location.reload(); } catch (e) {}
+      return payload;
+    }
+    maybeLoadTag(payload);
     return payload;
   }
   function toState(c) {
@@ -95,10 +105,11 @@
   var stored = readConsent();
   if (stored) applyToGtag(stored);
 
-  // --- Load the Google tag EXACTLY ONCE per page. A hash-route change never
-  //     re-executes this file, and the guard flag also defends against any
-  //     accidental double include. Consent Mode redacts pings while denied, so
-  //     the tag is always loaded; consent controls storage, not tag presence.
+  // --- Load the Google tag EXACTLY ONCE per page, and ONLY after advertising consent
+  //     is GRANTED (owner strict-gating policy, 2026-07-27). Before any choice, and after
+  //     "Reject non-essential", NO Google script and NO Consent Mode ping may touch the
+  //     network — denied-default Consent Mode pings are explicitly NOT sufficient for
+  //     BugIt. The __bugitTagLoaded guard also makes any accidental double include inert.
   function loadTag() {
     if (window.__bugitTagLoaded) return;
     window.__bugitTagLoaded = true;
@@ -109,7 +120,14 @@
     gtag('js', new Date());
     gtag('config', ADS_ID);
   }
-  loadTag();
+  // Load the tag iff advertising consent is (or becomes) granted. A null/absent decision
+  // and a Reject decision both leave ad_storage false, so the tag is never loaded.
+  function maybeLoadTag(c) {
+    var consent = c || readConsent();
+    if (consent && consent.ad_storage) loadTag();
+  }
+  // On page load, load the tag ONLY if a STORED decision granted advertising.
+  maybeLoadTag(stored);
 
   // --- gclid/gbraid/wbraid attribution capture. Stored in `bugit_gclid` ONLY when
   //     ad_storage is granted, so the portal can read attribution after the user

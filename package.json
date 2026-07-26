@@ -17,10 +17,12 @@
     "test:csp": "node scripts/check-csp-telemetry.mjs",
     "test:billing": "node scripts/check-billing-copy.mjs",
     "test:team-paused": "node scripts/check-team-paused.mjs",
-    "test:activation": "node scripts/check-activation-copy.mjs"
+    "test:activation": "node scripts/check-activation-copy.mjs",
+    "test:consent-network": "node scripts/check-consent-network.mjs"
   },
   "devDependencies": {
-    "esbuild": "^0.28.1"
+    "esbuild": "^0.28.1",
+    "playwright": "^1.61.1"
   },
   "engines": {
     "node": ">=18.0.0"

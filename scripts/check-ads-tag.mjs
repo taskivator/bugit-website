@@ -54,6 +54,23 @@ check(
   'app.js must not load gtag.js (consent.js owns the single load)',
 );
 
+// --- 1b. STRICT prior-consent gating (owner 2026-07-27). gtag.js must load ONLY behind
+//         an explicit advertising grant — never unconditionally at page load. Consent
+//         Mode v2 denied-default pings are NOT sufficient for BugIt: the tag itself
+//         (and its /ccm/collect ping) must stay off the network until Accept.
+check(
+  /consent\.ad_storage\)\s*loadTag\(\)/.test(consent),
+  'consent.js must gate loadTag() on granted advertising consent (consent.ad_storage)',
+);
+check(
+  /maybeLoadTag\(/.test(consent),
+  'consent.js must route tag loading through the consent-gated maybeLoadTag()',
+);
+check(
+  !/(^|\n)\s*loadTag\(\)\s*;/.test(consent),
+  'consent.js must NOT call loadTag() unconditionally at page load (strict prior-consent gating)',
+);
+
 // --- 2. Exactly one js + one config call, site-wide.
 for (const [cmd, re] of [
   ["gtag('js')", /gtag\(\s*['"]js['"]/g],
