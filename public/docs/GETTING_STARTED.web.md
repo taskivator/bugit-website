@@ -7,15 +7,25 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. Window
 - Install the latest VS Code and sign in to GitHub Copilot.
 - Install a release-qualified Python 3.10 through 3.13 interpreter.
 - Download BugIt from your account dashboard and unzip it to a local folder.
-- Keep license keys, tokens, customer data, and private source code out of chat and configuration files.
+- Keep tokens, customer data, and private source code out of chat and configuration files.
 
 ## Activate and configure
 
 - Open the unzipped BugIt folder as a trusted VS Code workspace.
-- In Copilot Chat, select the BugIt QA Agent and type `Activate`.
-- Enter the license key only in the masked terminal prompt.
+- In Copilot Chat, select the BugIt QA Agent and type `Activate` (add `--solo` or `--team` if your account has both).
+- BugIt opens the BugIt Portal in your browser. Sign in with your own BugIt account — your password stays in the browser and is never entered in VS Code.
+- Choose the Solo or Team entitlement for this machine, then review and approve this device.
+- Return to VS Code. BugIt finishes authorizing automatically — there is no license key to copy, paste, or reveal.
 - Type `Begin setup` and choose only the integrations your team uses.
 - Let BugIt verify the selected service and project before filing a ticket.
+
+## Manage your access
+
+- One installation uses one active entitlement at a time. To move this machine to a different Solo or Team entitlement, type `Switch license` and approve again in the browser; if you cancel, your current entitlement stays in place.
+- `Deactivate` removes the entitlement from this machine only. Seats, devices, memberships, roles, and billing are managed in the Portal, not in VS Code.
+- Team access is per person: every member signs in with their own BugIt account and an active membership. There is no shared key and no shared login.
+- After a successful online check, BugIt keeps working offline for up to 72 hours on both Solo and Team, and applies the latest Portal state as soon as it reconnects.
+- Updates are authorized by your signed entitlement, so downloading a new build never asks for a key.
 
 ## Connection status
 
@@ -33,4 +43,4 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. Window
 
 ## Get help
 
-Run `Check status` or `Check readiness` in the BugIt agent first. If the problem remains, open a support ticket from your BugIt account dashboard without including secrets or confidential project material.
+Run `Check status` or `Check readiness` in the BugIt agent first. If the problem remains, open a support ticket from your BugIt account dashboard without including secrets or confidential project material. Support is handled in English only.
