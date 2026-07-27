@@ -5,6 +5,83 @@ import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(root,'dist');
+
+// ---- FAQ language-contamination guard (2026-07-22) --------------------------
+// A Russian answer was once pasted into EVERY language's "What is included in
+// Team?" FAQ entry, so English/Japanese/etc. all showed Russian. This fails the
+// build if any localized FAQ block contains a script that does not belong to it
+// (Cyrillic outside `ru`, Kana outside `ja`, Hangul outside `ko`, and any of
+// those in a Latin-script block). It scans line-by-line, tracking the current
+// `<lang>: [ … ]` block, so a wrong-language paste can never ship again.
+{
+  const appSrc = fs.readFileSync(path.join(root,'app.js'),'utf8');
+  const SCRIPTS = {
+    cyrillic:/[Ѐ-ӿ]/, kana:/[぀-ヿ]/,
+    hangul:/[가-힣]/,   han:/[一-鿿]/,
+  };
+  const forbid = {
+    en:['cyrillic','kana','hangul','han'], es:['cyrillic','kana','hangul','han'],
+    fr:['cyrillic','kana','hangul','han'], de:['cyrillic','kana','hangul','han'],
+    it:['cyrillic','kana','hangul','han'], 'pt-br':['cyrillic','kana','hangul','han'],
+    ru:['kana','hangul','han'], ja:['cyrillic','hangul'], ko:['cyrillic','kana'],
+    zh:['cyrillic','kana','hangul'],
+  };
+  const lines = appSrc.split('\n'); let cur=null; const problems=[];
+  const head=/^\s*'?(en|ja|es|fr|de|pt-br|it|ko|zh|ru)'?\s*:\s*\[/;
+  for (let i=0;i<lines.length;i++){
+    const ln=lines[i]; const h=head.exec(ln);
+    if (h){ cur=h[1]; continue; }
+    if (/^\s*\][,;)]?\s*$/.test(ln)){ cur=null; continue; }
+    if (!cur) continue;
+    const t=ln.trim();
+    if (!(t.startsWith("['")||t.startsWith('["'))) continue; // a ['question','answer'] entry
+    for (const s of (forbid[cur]||[])) if (SCRIPTS[s].test(ln))
+      problems.push(`${cur} FAQ (line ${i+1}) has ${s} script it should not: ${t.slice(0,70)}`);
+  }
+  if (problems.length){
+    console.error('build: FAQ language contamination — a localized answer is in the wrong language:\n  '+problems.join('\n  '));
+    process.exit(1);
+  }
+
+  // Second, structure-independent guard: the "What is included in Team?" answer
+  // exists in the base i18n object, the bugitV16 doc-FAQ, AND the minified add()
+  // overrides (single- and double-quoted). Once, Spanish/English/Russian were
+  // pasted into the wrong language across all three. This asserts each known Team
+  // question is followed by an answer containing THAT language's fingerprint, so a
+  // wrong-language paste (even Latin→Latin, which the script guard cannot see)
+  // fails the build regardless of which structure it lives in.
+  const Q2LANG = {
+    'What is included in Team?':'en','¿Qué incluye Team?':'es','Que contient Team ?':'fr',
+    'Que comprend Team ?':'fr','Was ist in Team enthalten?':'de','Was enthält Team?':'de',
+    'O que está incluído no Team?':'pt-br','Cosa include Team?':'it','Что входит в Team?':'ru',
+    'Teamには何が含まれますか？':'ja','Team에는 무엇이 포함되나요?':'ko','Team 包含什么？':'zh',
+  };
+  const FINGERPRINT = {
+    en:'temporarily unavailable for purchase', es:'no está disponible para comprar',
+    fr:'temporairement pas disponible', de:'derzeit nicht käuflich',
+    'pt-br':'temporariamente indisponível', it:'non è temporaneamente disponibile',
+    ru:'временно недоступен для покупки', ja:'現在ご購入いただけません',
+    ko:'현재 구매할 수 없습니다', zh:'暂时无法购买',
+  };
+  const esc = (s)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const faqProblems = [];
+  for (const [q,lang] of Object.entries(Q2LANG)){
+    const re = new RegExp(esc(q)+"['\"]\\s*,\\s*(['\"])([\\s\\S]*?)\\1","g");
+    let mm;
+    while ((mm = re.exec(appSrc))){
+      if (!mm[2].includes(FINGERPRINT[lang])){
+        const line = appSrc.slice(0,mm.index).split('\n').length;
+        faqProblems.push(`Team FAQ (line ${line}) for "${q}" is NOT in ${lang}: ${mm[2].slice(0,50)}`);
+      }
+    }
+  }
+  if (faqProblems.length){
+    console.error('build: Team FAQ language mismatch — an answer is in the wrong language:\n  '+faqProblems.join('\n  '));
+    process.exit(1);
+  }
+  console.log('build: FAQ language guard OK (block scripts + Team-FAQ fingerprints).');
+}
+
 fs.rmSync(dist,{recursive:true,force:true}); fs.mkdirSync(dist,{recursive:true});
 for (const item of ['index.html','styles.css','app.js','consent.js','server.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','.well-known']) {
   const src = path.join(root,item); if (fs.existsSync(src)) fs.cpSync(src,path.join(dist,item),{recursive:true});

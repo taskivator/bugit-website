@@ -7,15 +7,25 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 - Installa l'ultima versione di VS Code e accedi a GitHub Copilot.
 - Installa un interprete Python qualificato per la release.
 - Scarica BugIt dalla dashboard del tuo account ed estrailo in una cartella locale.
-- Tieni chiavi di licenza, token, dati dei clienti e codice sorgente privato fuori dalla chat e dai file di configurazione.
+- Tieni token, dati dei clienti e codice sorgente privato fuori dalla chat e dai file di configurazione.
 
 ## Attiva e configura
 
 - Apri la cartella BugIt estratta come workspace VS Code attendibile.
-- In Copilot Chat, seleziona il QA Agent di BugIt e digita `Activate`.
-- Inserisci la chiave di licenza solo nel prompt mascherato del terminale.
+- In Copilot Chat, seleziona il QA Agent di BugIt e digita `Activate` (aggiungi `--solo` o `--team` se il tuo account ha entrambi).
+- BugIt apre il BugIt Portal nel browser. Accedi con il tuo account BugIt: la password resta nel browser e non viene mai inserita in VS Code.
+- Scegli il diritto Solo o Team per questa macchina, quindi controlla e approva questo dispositivo.
+- Torna a VS Code. BugIt completa l'autorizzazione automaticamente: non c'è alcuna chiave di licenza da copiare, incollare o mostrare.
 - Digita `Begin setup` e scegli solo le integrazioni utilizzate dal tuo team.
 - Lascia che BugIt verifichi il servizio e il progetto selezionati prima di aprire un ticket.
+
+## Gestisci il tuo accesso
+
+- Un'installazione usa un solo diritto attivo per volta. Per spostare questa macchina su un altro diritto Solo o Team, digita `Switch license` e approva di nuovo nel browser; se annulli, resta il diritto attuale.
+- `Deactivate` rimuove il diritto solo da questa macchina. Posti, dispositivi, iscrizioni, ruoli e fatturazione si gestiscono nel Portal, non in VS Code.
+- L'accesso Team è per persona: ogni membro accede con il proprio account BugIt e un'iscrizione attiva. Non esiste alcuna chiave condivisa né un accesso condiviso.
+- Dopo una verifica online riuscita, BugIt continua a funzionare offline fino a 72 ore, sia per Solo sia per Team, e applica l'ultimo stato del Portal appena si riconnette.
+- Gli aggiornamenti sono autorizzati dal tuo diritto firmato, quindi scaricare una nuova versione non richiede mai una chiave.
 
 ## Stato della connessione
 
@@ -33,4 +43,4 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 
 ## Ottenere assistenza
 
-Esegui prima `Check status` o `Check readiness` nell'agente BugIt. Se il problema persiste, apri un ticket di supporto dalla dashboard del tuo account BugIt senza includere segreti o materiale di progetto riservato.
+Esegui prima `Check status` o `Check readiness` nell'agente BugIt. Se il problema persiste, apri un ticket di supporto dalla dashboard del tuo account BugIt senza includere segreti o materiale di progetto riservato. Il supporto è disponibile solo in inglese.

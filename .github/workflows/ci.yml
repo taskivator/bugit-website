@@ -67,3 +67,14 @@ jobs:
           test -f dist/app.js
           test -d dist/public
           echo "Static build verified."
+      # Strict prior-consent Google-tag gating — real-browser NETWORK PROOF. Consent
+      # Mode v2 denied-default pings are NOT sufficient for BugIt: zero Google requests
+      # before consent and after Reject; the tag loads only after Accept. One lean job,
+      # single Chromium, no matrix.
+      - name: Install Chromium for the consent network test
+        run: npx playwright install --with-deps chromium
+      - name: Prove strict prior-consent tag gating (browser network capture)
+        run: |
+          PORT=3123 node server.js &
+          for i in $(seq 1 20); do curl -sf http://localhost:3123/ >/dev/null && break; sleep 0.5; done
+          CONSENT_TEST_URL=http://localhost:3123 node scripts/check-consent-network.mjs
