@@ -49,7 +49,10 @@ const dist = path.join(root,'dist');
   // pasted into the wrong language across all three. This asserts each known Team
   // question is followed by an answer containing THAT language's fingerprint, so a
   // wrong-language paste (even Latin→Latin, which the script guard cannot see)
-  // fails the build regardless of which structure it lives in.
+  // fails the build regardless of which structure it lives in. The fingerprints
+  // are the launched-state "available now" phrasing (Team went on sale 2026-07-27);
+  // they double as the availability guard — a stale "unavailable" answer no longer
+  // carries its language's fingerprint and fails the build.
   const Q2LANG = {
     'What is included in Team?':'en','¿Qué incluye Team?':'es','Que contient Team ?':'fr',
     'Que comprend Team ?':'fr','Was ist in Team enthalten?':'de','Was enthält Team?':'de',
@@ -57,11 +60,11 @@ const dist = path.join(root,'dist');
     'Teamには何が含まれますか？':'ja','Team에는 무엇이 포함되나요?':'ko','Team 包含什么？':'zh',
   };
   const FINGERPRINT = {
-    en:'temporarily unavailable for purchase', es:'no está disponible para comprar',
-    fr:'temporairement pas disponible', de:'derzeit nicht käuflich',
-    'pt-br':'temporariamente indisponível', it:'non è temporaneamente disponibile',
-    ru:'временно недоступен для покупки', ja:'現在ご購入いただけません',
-    ko:'현재 구매할 수 없습니다', zh:'暂时无法购买',
+    en:'available now', es:'ya está disponible',
+    fr:'disponible dès maintenant', de:'jetzt verfügbar',
+    'pt-br':'já está disponível', it:'è disponibile ora',
+    ru:'уже доступен', ja:'現在ご利用いただけます',
+    ko:'지금 이용할 수 있습니다', zh:'现已推出',
   };
   const esc = (s)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   const faqProblems = [];
