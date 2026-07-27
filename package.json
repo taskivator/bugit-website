@@ -18,6 +18,7 @@
     "test:billing": "node scripts/check-billing-copy.mjs",
     "test:team-paused": "node scripts/check-team-paused.mjs",
     "test:activation": "node scripts/check-activation-copy.mjs",
+    "test:legal-dataflow": "node scripts/check-legal-dataflow.mjs",
     "test:consent-network": "node scripts/check-consent-network.mjs"
   },
   "devDependencies": {

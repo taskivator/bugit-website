@@ -5,19 +5,21 @@ Il presente software e la relativa documentazione («il Software») sono concess
 licenza, non venduti. Acquistando, attivando o utilizzando il Software, l'utente
 («il Licenziatario») accetta i presenti termini.
 
-1. Concessione. All'atto dell'acquisto e dell'attivazione con una chiave di licenza
-   valida, Taskivator concede al Licenziatario una licenza non esclusiva e non
-   trasferibile per utilizzare il Software a fini interni di QA e di segnalazione di
-   bug, sul numero di dispositivi consentito dal piano acquistato (Solo = 1
-   dispositivo alla volta; Team = 5 dispositivi alla volta).
+1. Concessione. All'atto dell'acquisto e dell'attivazione tramite il Portale BugIt,
+   Taskivator concede al Licenziatario una licenza non esclusiva e non trasferibile
+   per utilizzare il Software a fini interni di QA e di segnalazione di bug, sul
+   numero di dispositivi consentito dal piano acquistato (Solo = 1 dispositivo alla
+   volta; Team = fino a 5 membri, ciascuno con il proprio account BugIt e un
+   dispositivo attivo, per un massimo di 5 dispositivi per team).
 
-2. Chiavi di licenza e postazioni. Ogni chiave di licenza è personale del
-   Licenziatario. Il Licenziatario non può condividere, pubblicare, rivendere,
-   concedere in sublicenza o trasferire una chiave di licenza. Taskivator può
-   sospendere o revocare una chiave che sia stata condivisa, pubblicata, rimborsata,
-   oggetto di storno (chargeback), oppure utilizzata in modo fraudolento o in
-   violazione dei presenti termini; una chiave revocata cessa di attivarsi su nuovi
-   dispositivi.
+2. Diritti d'uso, account e dispositivi. L'attivazione è legata al Suo account BugIt:
+   Lei accede tramite il Portale BugIt e approva ciascun dispositivo; non c'è alcuna
+   chiave di licenza da inserire o condividere. Il Suo diritto d'uso è personale del
+   Licenziatario e non può essere condiviso, pubblicato, rivenduto, concesso in
+   sublicenza o trasferito. Taskivator può sospendere o revocare un diritto d'uso che
+   sia stato condiviso, pubblicato, rimborsato, oggetto di storno (chargeback), oppure
+   utilizzato in modo fraudolento o in violazione dei presenti termini; un diritto
+   d'uso revocato cessa di attivarsi su nuovi dispositivi.
 
 3. Modifica e divieto di elusione. Il Licenziatario può modificare i file di
    configurazione, di glossario, di template e di istruzioni per il proprio uso

@@ -7,21 +7,41 @@ Tout s'exécute sur votre propre machine.
 
 ## Ce que le Logiciel envoie à Taskivator
 
-La seule chose que le Logiciel nous envoie, ce sont des **données de licence/mise à jour** :
+BugIt s'active via votre navigateur web : vous vous connectez à votre propre
+compte BugIt sur le Portal BugIt et vous approuvez cet appareil. Il n'y a
+**aucune clé de licence** à saisir, à coller ou à partager.
 
-- votre **clé de licence**,
+Pour activer et maintenir votre licence valide, le Logiciel n'envoie que ce qui
+est nécessaire pour lier votre droit d'utilisation à cette installation et à cet
+appareil — des **données de licence/activation** :
+
+- un **identifiant d'installation** — une valeur aléatoire créée une seule fois
+  pour cette installation de BugIt. Il n'est pas dérivé de votre matériel et ne
+  vous identifie pas,
 - une **empreinte d'appareil anonyme, hachée à sens unique** — un hachage de
   16 caractères dérivé d'attributs de base de la machine. Il ne peut pas être
-  inversé pour vous identifier, vous ou votre matériel, et
-- **uniquement si vous en définissez un lors de la configuration initiale**, un
-  court libellé de siège que vous avez choisi afin de pouvoir distinguer les
-  sièges d'une licence Team (par ex. un nom, un nom d'utilisateur ou un e-mail —
-  jamais tenu d'être réel, et jamais vérifié). Si vous n'en définissez pas, il
-  n'est tout simplement jamais envoyé.
+  inversé pour vous identifier, vous ou votre matériel,
+- un **libellé d'appareil** — le nom d'hôte de votre ordinateur, afin que vous
+  puissiez reconnaître cet appareil dans votre compte et le supprimer depuis le
+  Portal quand vous le souhaitez,
+- le **nom de votre système d'exploitation** et la **version de BugIt**, pour
+  vérifier la compatibilité et si une mise à jour est disponible, et
+- du **matériel d'activation** de courte durée — un défi à usage unique et un
+  jeton d'approbation utilisés uniquement pour finaliser la connexion, ainsi
+  qu'un hachage à sens unique d'un secret de confirmation local. Le secret
+  lui-même ne quitte jamais votre machine, et le défi et le jeton bruts ne sont
+  jamais stockés.
 
-Ces éléments ne sont transmis qu'au serveur de licences de Taskivator, et
-uniquement pour activer/vérifier votre siège et pour vérifier si une version plus
-récente est disponible.
+La connexion à votre compte s'effectue dans votre navigateur, sur le Portal. En
+retour, le Portal délivre un **droit d'utilisation signé** lié à cet appareil et
+à cette installation, que le Logiciel vérifie localement.
+
+Ces éléments ne sont transmis qu'au Portal BugIt, et uniquement pour activer et
+vérifier votre licence, gérer vos appareils et vérifier si une version plus
+récente est disponible. Lorsque vous téléchargez une mise à jour, le Portal
+enregistre également le téléchargement — y compris l'adresse IP et l'agent
+utilisateur du navigateur de la requête — à des fins de sécurité et de prévention
+des abus.
 
 ## Ce qui reste entièrement sur votre appareil
 

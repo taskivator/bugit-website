@@ -5,18 +5,23 @@ Este software y su documentación («el Software») se licencian, no se venden. 
 comprar, activar o utilizar el Software, usted («el Licenciatario») acepta estos
 términos.
 
-1. Concesión. Tras la compra y la activación con una clave de licencia válida,
+1. Concesión. Tras la compra y la activación a través del Portal de BugIt,
    Taskivator concede al Licenciatario una licencia no exclusiva e intransferible
    para utilizar el Software con fines internos de control de calidad (QA) y de
    reporte de bugs, en el número de dispositivos que permita el plan adquirido
-   (Solo = 1 dispositivo a la vez; Team = 5 dispositivos a la vez).
+   (Solo = 1 dispositivo a la vez; Team = hasta 5 miembros, cada uno con su propia
+   cuenta de BugIt y un dispositivo activo, hasta un máximo de 5 dispositivos por
+   equipo).
 
-2. Claves de licencia y puestos. Cada clave de licencia es personal del
-   Licenciatario. El Licenciatario no podrá compartir, publicar, revender,
-   sublicenciar ni transferir una clave de licencia. Taskivator podrá suspender o
-   revocar una clave que se comparta, publique, reembolse, sea objeto de devolución
-   de cargo (chargeback) o se utilice de forma fraudulenta o en incumplimiento de
-   estos términos; una clave revocada deja de activarse en nuevos dispositivos.
+2. Derechos de uso, cuentas y dispositivos. La activación está vinculada a su
+   cuenta de BugIt: usted inicia sesión a través del Portal de BugIt y aprueba
+   cada dispositivo; no hay ninguna clave de licencia que introducir ni
+   compartir. Su derecho de uso es personal del Licenciatario y no podrá
+   compartirse, publicarse, revenderse, sublicenciarse ni transferirse. Taskivator
+   podrá suspender o revocar un derecho de uso que se comparta, publique,
+   reembolse, sea objeto de devolución de cargo (chargeback) o se utilice de forma
+   fraudulenta o en incumplimiento de estos términos; un derecho de uso revocado
+   deja de activarse en nuevos dispositivos.
 
 3. Modificación y anticircunvención. El Licenciatario podrá editar los archivos de
    configuración, glosario, plantillas e instrucciones para su propio uso interno.

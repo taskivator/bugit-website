@@ -5,16 +5,19 @@ This software and its documentation ("the Software") are licensed, not sold. By
 purchasing, activating, or using the Software you ("the Licensee") agree to these
 terms.
 
-1. Grant. On purchase and activation with a valid license key, Taskivator grants
+1. Grant. On purchase and activation through the BugIt Portal, Taskivator grants
    the Licensee a non-exclusive, non-transferable license to use the Software for
    internal QA and bug-reporting purposes, on the number of devices allowed by the
-   purchased tier (Solo = 1 device at a time; Team = 5 devices at a time).
+   purchased tier (Solo = 1 device at a time; Team = up to 5 members, each with
+   their own BugIt account and one active device, for up to 5 devices per team).
 
-2. License keys & seats. Each license key is personal to the Licensee. The
-   Licensee may not share, publish, resell, sublicense, or transfer a license key.
-   Taskivator may suspend or revoke a key that is shared, published, refunded,
-   charged back, or used fraudulently or in breach of these terms; a revoked key
-   stops activating on new devices.
+2. Entitlements, accounts & devices. Activation is tied to your BugIt account: you
+   sign in through the BugIt Portal and approve each device; there is no license key
+   to enter or share. Your entitlement is personal to the Licensee and may not be
+   shared, published, resold, sublicensed, or transferred. Taskivator may suspend or
+   revoke an entitlement that is shared, published, refunded, charged back, or used
+   fraudulently or in breach of these terms; a revoked entitlement stops activating
+   on new devices.
 
 3. Modification & anti-circumvention. The Licensee may edit configuration,
    glossary, templates, and instruction files for their own internal use. The

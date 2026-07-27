@@ -8,12 +8,13 @@
  * as a customer credential, or describe a shared Team key.
  *
  * Scope decisions (deliberate, matched to the activation-doc migration):
- *  - NEGATIVE patterns target the removed FLOW (a verb/flag + key), never the
- *    bare noun "license key". Two noun-only mentions are intentionally retained
- *    pending a coupled legal / agent-PRIVACY reconciliation: the "license/update
- *    data … your license key" privacy disclosure and the "Keys may not be
- *    shared…" licensing restriction. Both are data/legal statements, not the
- *    activation flow, so this guard must not fire on them.
+ *  - NEGATIVE patterns target the removed FLOW (a verb/flag + key). The legal /
+ *    agent-PRIVACY reconciliation is now COMPLETE (BugIt 1.1.0 Phase A): the
+ *    privacy disclosure and the licensing terms no longer make the "your license
+ *    key" / "seat label" data claims. Those retired-model noun claims are asserted
+ *    absent by the dedicated data-flow guard (check-legal-dataflow.mjs), which
+ *    scans PRIVACY/LICENSE across all locales; this guard stays focused on the
+ *    activation FLOW in the app + getting-started guides.
  *  - The stale-OVERRIDE check asserts the app.js FAQ (base + add() overrides)
  *    no longer answers "renewals stack" with an "activate a new KEY" model, in
  *    every localized script — the exact regression that hides in the minified

@@ -5,19 +5,22 @@ Diese Software und ihre Dokumentation („die Software") werden lizenziert, nich
 verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären Sie
 („der Lizenznehmer") sich mit diesen Bedingungen einverstanden.
 
-1. Lizenzgewährung. Mit Kauf und Aktivierung unter Verwendung eines gültigen
-   Lizenzschlüssels gewährt Taskivator dem Lizenznehmer eine nicht-exklusive,
-   nicht übertragbare Lizenz zur Nutzung der Software für interne QA- und
-   Fehlerberichtszwecke, auf der Anzahl von Geräten, die die erworbene Stufe
-   zulässt (Solo = 1 Gerät gleichzeitig; Team = 5 Geräte gleichzeitig).
+1. Lizenzgewährung. Mit Kauf und Aktivierung über das BugIt-Portal gewährt
+   Taskivator dem Lizenznehmer eine nicht-exklusive, nicht übertragbare Lizenz
+   zur Nutzung der Software für interne QA- und Fehlerberichtszwecke, auf der
+   Anzahl von Geräten, die die erworbene Stufe zulässt (Solo = 1 Gerät
+   gleichzeitig; Team = bis zu 5 Mitglieder, jedes mit einem eigenen BugIt-Konto
+   und einem aktiven Gerät, für bis zu 5 Geräte pro Team).
 
-2. Lizenzschlüssel & Plätze. Jeder Lizenzschlüssel ist persönlich an den
-   Lizenznehmer gebunden. Der Lizenznehmer darf einen Lizenzschlüssel nicht
-   weitergeben, veröffentlichen, weiterverkaufen, unterlizenzieren oder
-   übertragen. Taskivator kann einen Schlüssel sperren oder widerrufen, der
+2. Berechtigungen, Konten & Geräte. Die Aktivierung ist an Ihr BugIt-Konto
+   gebunden: Sie melden sich über das BugIt-Portal an und bestätigen jedes Gerät;
+   es gibt keinen Lizenzschlüssel, den Sie eingeben oder weitergeben müssen. Ihre
+   Berechtigung ist persönlich an den Lizenznehmer gebunden und darf nicht
+   weitergegeben, veröffentlicht, weiterverkauft, unterlizenziert oder übertragen
+   werden. Taskivator kann eine Berechtigung sperren oder widerrufen, die
    weitergegeben, veröffentlicht, rückerstattet, rückbelastet oder betrügerisch
-   bzw. unter Verstoß gegen diese Bedingungen verwendet wird; ein widerrufener
-   Schlüssel lässt sich auf neuen Geräten nicht mehr aktivieren.
+   bzw. unter Verstoß gegen diese Bedingungen verwendet wird; eine widerrufene
+   Berechtigung lässt sich auf neuen Geräten nicht mehr aktivieren.
 
 3. Änderung & Umgehungsverbot. Der Lizenznehmer darf Konfigurations-, Glossar-,
    Vorlagen- und Anweisungsdateien für seine eigene interne Nutzung bearbeiten.

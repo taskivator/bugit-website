@@ -7,20 +7,38 @@ raccoglie. Tutto viene eseguito sulla Sua macchina.
 
 ## Che cosa il Software invia a Taskivator
 
-L'unica cosa che il Software ci invia sono **dati di licenza/aggiornamento**:
+BugIt si attiva tramite il Suo browser web: Lei accede al Suo account BugIt sul
+Portale BugIt e approva questo dispositivo. Non c'è **alcuna chiave di licenza** da
+inserire, incollare o condividere.
 
-- la Sua **chiave di licenza**,
+Per attivare e mantenere valida la Sua licenza, il Software invia soltanto ciò che è
+necessario per vincolare il Suo diritto d'uso a questa installazione e a questo
+dispositivo — **dati di licenza/attivazione**:
+
+- un **identificativo di installazione** — un valore casuale creato una sola volta per
+  questa installazione di BugIt. Non deriva dal Suo hardware e non La identifica,
 - un'**impronta del dispositivo anonima, sottoposta ad hash a senso unico** — un hash
   di 16 caratteri derivato da attributi di base della macchina. Non può essere
-  invertito per identificare Lei o il Suo hardware, e
-- **solo se ne imposta una durante la configurazione iniziale**, una breve etichetta
-  di postazione da Lei scelta, così da poter distinguere le postazioni di una licenza
-  Team (ad es. un nome, un nome utente o un'email — mai obbligatoriamente reale e mai
-  verificata). Se non ne imposta alcuna, semplicemente non viene mai inviata.
+  invertito per identificare Lei o il Suo hardware,
+- un'**etichetta del dispositivo** — il nome host del Suo computer, così da poter
+  riconoscere questo dispositivo nel Suo account e rimuoverlo dal Portale quando
+  desidera,
+- il **nome del Suo sistema operativo** e la **versione di BugIt**, per verificare la
+  compatibilità e se è disponibile un aggiornamento, e
+- **materiale di attivazione** di breve durata — una sfida (challenge) monouso e un
+  token di approvazione utilizzati unicamente per completare l'accesso, oltre a un hash
+  a senso unico di un segreto di conferma locale. Il segreto stesso non lascia mai la
+  Sua macchina, e la sfida e il token grezzi non vengono mai memorizzati.
 
-Questi dati vengono trasmessi unicamente al server delle licenze di Taskivator, e
-solo per attivare/verificare la Sua postazione e per controllare se è disponibile una
-versione più recente.
+L'accesso al Suo account avviene nel Suo browser sul Portale. In cambio, il Portale
+emette un **diritto d'uso firmato** vincolato a questo dispositivo e a questa
+installazione, che il Software verifica localmente.
+
+Questi dati vengono trasmessi unicamente al Portale BugIt, e solo per attivare e
+verificare la Sua licenza, gestire i Suoi dispositivi e controllare se è disponibile
+una versione più recente. Quando scarica un aggiornamento, il Portale registra anche
+il download — compresi l'indirizzo IP della richiesta e lo user-agent del browser —
+per finalità di sicurezza e prevenzione degli abusi.
 
 ## Che cosa resta interamente sul Suo dispositivo
 

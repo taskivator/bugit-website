@@ -7,22 +7,42 @@ was nicht. Alles läuft auf Ihrem eigenen Rechner.
 
 ## Was die Software an Taskivator sendet
 
-Das Einzige, was die Software an uns sendet, sind **Lizenz-/Update-Daten**:
+BugIt aktiviert sich über Ihren Webbrowser: Sie melden sich bei Ihrem eigenen
+BugIt-Konto im BugIt-Portal an und bestätigen dieses Gerät. Es gibt **keinen
+Lizenzschlüssel**, den Sie eingeben, einfügen oder weitergeben müssen.
 
-- Ihr **Lizenzschlüssel**,
-- ein **anonymer, mit einem Einweg-Hash versehener Geräte-Fingerabdruck** — ein
+Um Ihre Lizenz zu aktivieren und gültig zu halten, sendet die Software nur das,
+was nötig ist, um Ihre Berechtigung an diese Installation und dieses Gerät zu
+binden — **Lizenz-/Aktivierungsdaten**:
+
+- eine **Installationskennung** — ein zufälliger Wert, der einmalig für diese
+  BugIt-Installation erstellt wird. Er wird nicht aus Ihrer Hardware abgeleitet
+  und identifiziert Sie nicht,
+- einen **anonymen, mit einem Einweg-Hash versehenen Geräte-Fingerabdruck** — ein
   16-stelliger Hash, der aus grundlegenden Geräteattributen abgeleitet wird. Er
   kann nicht rückgängig gemacht werden, um Sie oder Ihre Hardware zu
-  identifizieren, und
-- **nur wenn Sie bei der Ersteinrichtung eine festlegen**, eine kurze
-  Platzbezeichnung Ihrer Wahl, damit sich die Plätze einer Team-Lizenz
-  unterscheiden lassen (z. B. ein Name, ein Benutzername oder eine E-Mail-Adresse
-  — nie muss es eine echte sein, und sie wird nie überprüft). Wenn Sie keine
-  festlegen, wird diese schlicht nie gesendet.
+  identifizieren,
+- eine **Gerätebezeichnung** — den Hostnamen Ihres Computers, damit Sie dieses
+  Gerät in Ihrem Konto wiedererkennen und es jederzeit über das Portal entfernen
+  können,
+- den **Namen Ihres Betriebssystems** und die **BugIt-Version**, um die
+  Kompatibilität zu prüfen und festzustellen, ob ein Update verfügbar ist, und
+- kurzlebiges **Aktivierungsmaterial** — eine einmalige Challenge und ein
+  Bestätigungs-Token, die nur zum Abschluss der Anmeldung verwendet werden, sowie
+  ein Einweg-Hash eines lokalen Bestätigungsgeheimnisses. Das Geheimnis selbst
+  verlässt niemals Ihren Rechner, und die rohe Challenge sowie das Token werden
+  niemals gespeichert.
 
-Diese gelangen ausschließlich an den Lizenzserver von Taskivator und dienen nur
-dazu, Ihren Platz zu aktivieren/zu verifizieren und zu prüfen, ob eine neuere
-Version verfügbar ist.
+Ihre Kontoanmeldung erfolgt in Ihrem Browser im Portal. Im Gegenzug stellt das
+Portal eine **signierte Berechtigung** aus, die an dieses Gerät und diese
+Installation gebunden ist und die die Software lokal verifiziert.
+
+Diese gelangen ausschließlich an das BugIt-Portal und dienen nur dazu, Ihre
+Lizenz zu aktivieren und zu verifizieren, Ihre Geräte zu verwalten und zu prüfen,
+ob eine neuere Version verfügbar ist. Wenn Sie ein Update herunterladen,
+protokolliert das Portal außerdem den Download — einschließlich der IP-Adresse und
+des Browser-User-Agents der Anfrage — zur Sicherheit und zur
+Missbrauchsprävention.
 
 ## Was vollständig auf Ihrem Gerät verbleibt
 

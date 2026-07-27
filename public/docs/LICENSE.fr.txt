@@ -5,20 +5,23 @@ Ce logiciel et sa documentation (« le Logiciel ») font l'objet d'une licence,
 et non d'une vente. En achetant, en activant ou en utilisant le Logiciel, vous
 (« le Titulaire de la licence ») acceptez les présentes conditions.
 
-1. Octroi. À l'achat et à l'activation au moyen d'une clé de licence valide,
-   Taskivator accorde au Titulaire de la licence une licence non exclusive et
-   non transférable d'utilisation du Logiciel à des fins internes d'assurance
-   qualité (QA) et de signalement de bugs, sur le nombre d'appareils autorisé
-   par la formule achetée (Solo = 1 appareil à la fois ; Team = 5 appareils à
-   la fois).
+1. Octroi. À l'achat et à l'activation via le Portal BugIt, Taskivator accorde
+   au Titulaire de la licence une licence non exclusive et non transférable
+   d'utilisation du Logiciel à des fins internes d'assurance qualité (QA) et de
+   signalement de bugs, sur le nombre d'appareils autorisé par la formule achetée
+   (Solo = 1 appareil à la fois ; Team = jusqu'à 5 membres, chacun disposant de
+   son propre compte BugIt et d'un appareil actif, pour un maximum de 5 appareils
+   par équipe).
 
-2. Clés de licence et sièges. Chaque clé de licence est personnelle au
-   Titulaire de la licence. Le Titulaire ne peut pas partager, publier,
-   revendre, sous-licencier ni transférer une clé de licence. Taskivator peut
-   suspendre ou révoquer une clé qui est partagée, publiée, remboursée, ayant
-   fait l'objet d'une rétrofacturation, ou utilisée de manière frauduleuse ou
-   en violation des présentes conditions ; une clé révoquée cesse de s'activer
-   sur de nouveaux appareils.
+2. Droits d'utilisation, comptes et appareils. L'activation est liée à votre
+   compte BugIt : vous vous connectez via le Portal BugIt et vous approuvez
+   chaque appareil ; il n'y a aucune clé de licence à saisir ni à partager. Votre
+   droit d'utilisation est personnel au Titulaire de la licence et ne peut pas
+   être partagé, publié, revendu, sous-licencié ni transféré. Taskivator peut
+   suspendre ou révoquer un droit d'utilisation qui est partagé, publié,
+   remboursé, ayant fait l'objet d'une rétrofacturation, ou utilisé de manière
+   frauduleuse ou en violation des présentes conditions ; un droit d'utilisation
+   révoqué cesse de s'activer sur de nouveaux appareils.
 
 3. Modification et anti-contournement. Le Titulaire de la licence peut modifier
    les fichiers de configuration, de glossaire, de modèles et d'instructions

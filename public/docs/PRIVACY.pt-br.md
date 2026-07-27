@@ -7,20 +7,37 @@ Um resumo em linguagem simples do que o Software coleta e do que não coleta. Tu
 
 ## O que o Software envia à Taskivator
 
-A única coisa que o Software nos envia são **dados de licença/atualização**:
+O BugIt é ativado por meio do seu navegador web: você entra na sua própria conta
+BugIt no Portal do BugIt e aprova este dispositivo. **Não há nenhuma chave de
+licença** para inserir, colar ou compartilhar.
 
-- sua **chave de licença**,
+Para ativar e manter a sua licença válida, o Software envia apenas o necessário para
+vincular o seu direito de uso a esta instalação e a este dispositivo — **dados de
+licença/ativação**:
+
+- um **identificador de instalação** — um valor aleatório criado uma única vez para
+  esta instalação do BugIt. Ele não é derivado do seu hardware e não identifica você,
 - uma **impressão digital de dispositivo anônima, com hash de mão única** — um hash
   de 16 caracteres derivado de atributos básicos da máquina. Ele não pode ser
-  revertido para identificar você ou o seu hardware, e
-- **somente se você definir um durante a configuração inicial**, um rótulo de
-  assento curto que você escolheu, para que os assentos de uma licença Team possam
-  ser diferenciados (por exemplo, um nome, um nome de usuário ou um e-mail — nunca
-  precisa ser real, e nunca é verificado). Se você não definir um, ele simplesmente
-  nunca é enviado.
+  revertido para identificar você ou o seu hardware,
+- um **rótulo de dispositivo** — o nome de host do seu computador, para que você
+  possa reconhecer este dispositivo na sua conta e removê-lo do Portal quando quiser,
+- o **nome do seu sistema operacional** e a **versão do BugIt**, para verificar a
+  compatibilidade e se há uma atualização disponível, e
+- **material de ativação** de curta duração — um desafio de uso único e um token de
+  aprovação usados apenas para concluir o login, além de um hash de mão única de um
+  segredo local de confirmação. O segredo em si nunca sai da sua máquina, e o desafio
+  e o token brutos nunca são armazenados.
 
-Esses dados vão apenas para o servidor de licenças da Taskivator, e apenas para
-ativar/verificar o seu assento e para checar se há uma versão mais nova disponível.
+O login na sua conta acontece no seu navegador, no Portal. Em troca, o Portal emite
+um **direito de uso assinado** vinculado a este dispositivo e a esta instalação, que
+o Software verifica localmente.
+
+Esses dados vão apenas para o Portal do BugIt, e apenas para ativar e verificar a sua
+licença, gerenciar os seus dispositivos e checar se há uma versão mais nova
+disponível. Quando você baixa uma atualização, o Portal também registra o download —
+incluindo o endereço IP da solicitação e o user-agent do navegador — para fins de
+segurança e prevenção de abuso.
 
 ## O que permanece inteiramente no seu dispositivo
 

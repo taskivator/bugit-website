@@ -7,20 +7,39 @@ ejecuta en su propia máquina.
 
 ## Qué envía el Software a Taskivator
 
-Lo único que el Software nos envía son **datos de licencia/actualización**:
+BugIt se activa a través de su navegador web: usted inicia sesión en su propia
+cuenta de BugIt en el Portal de BugIt y aprueba este dispositivo. No hay **ninguna
+clave de licencia** que introducir, pegar ni compartir.
 
-- su **clave de licencia**,
+Para activar y mantener válida su licencia, el Software envía únicamente lo
+necesario para vincular su derecho de uso a esta instalación y a este dispositivo
+— **datos de licencia/activación**:
+
+- un **identificador de instalación**: un valor aleatorio creado una sola vez para
+  esta instalación de BugIt. No se deriva de su hardware y no le identifica,
 - una **huella de dispositivo anónima y con hash unidireccional**: un hash de 16
   caracteres derivado de atributos básicos de la máquina. No puede revertirse para
-  identificarle a usted ni a su hardware, y
-- **solo si define una en la configuración inicial**, una etiqueta de puesto breve
-  que usted eligió, para poder distinguir los puestos de una licencia Team (p. ej.,
-  un nombre, un nombre de usuario o un correo electrónico; nunca es obligatorio que
-  sea real, y nunca se verifica). Si no define ninguna, sencillamente no se envía
-  nunca.
+  identificarle a usted ni a su hardware,
+- una **etiqueta de dispositivo**: el nombre de host de su equipo, para que pueda
+  reconocer este dispositivo en su cuenta y eliminarlo desde el Portal cuando
+  quiera,
+- el **nombre de su sistema operativo** y la **versión de BugIt**, para comprobar
+  la compatibilidad y si hay una actualización disponible, y
+- **material de activación** de corta duración: un desafío de un solo uso y un
+  token de aprobación utilizados únicamente para completar el inicio de sesión,
+  además de un hash unidireccional de un secreto de confirmación local. El secreto
+  en sí nunca sale de su máquina, y el desafío y el token sin procesar nunca se
+  almacenan.
 
-Estos datos van únicamente al servidor de licencias de Taskivator, y solo para
-activar/verificar su puesto y comprobar si hay disponible una versión más reciente.
+El inicio de sesión de su cuenta ocurre en su navegador, en el Portal. A cambio,
+el Portal emite un **derecho de uso firmado** vinculado a este dispositivo y a
+esta instalación, que el Software verifica localmente.
+
+Estos datos van únicamente al Portal de BugIt, y solo para activar y verificar su
+licencia, gestionar sus dispositivos y comprobar si hay disponible una versión más
+reciente. Cuando descarga una actualización, el Portal también registra la
+descarga —incluida la dirección IP y el agente de usuario del navegador de la
+solicitud— por seguridad y para la prevención de abusos.
 
 ## Qué permanece por completo en su dispositivo
 

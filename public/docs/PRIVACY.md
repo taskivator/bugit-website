@@ -7,19 +7,35 @@ runs on your own machine.
 
 ## What the Software sends to Taskivator
 
-The only thing the Software sends to us is **license/update data**:
+BugIt activates through your web browser: you sign in to your own BugIt account on
+the BugIt Portal and approve this device. There is **no license key** to enter,
+paste, or share.
 
-- your **license key**,
+To activate and keep your license valid, the Software sends only what is needed to
+bind your entitlement to this installation and device — **license/activation data**:
+
+- an **installation identifier** — a random value created once for this BugIt
+  installation. It is not derived from your hardware and does not identify you,
 - an **anonymous, one-way hashed device fingerprint** — a 16-character hash derived
   from basic machine attributes. It cannot be reversed to identify you or your
-  hardware, and
-- **only if you set one at first-run setup**, a short seat label you chose so a
-  Team license's seats can be told apart (e.g. a name, a username, or an email —
-  never required to be a real one, and never verified). If you don't set one, this
-  is simply never sent.
+  hardware,
+- a **device label** — your computer's hostname, so you can recognize this device
+  in your account and remove it from the Portal when you like,
+- your **operating system name** and the **BugIt version**, to check compatibility
+  and whether an update is available, and
+- short-lived **activation material** — a one-time challenge and approval token used
+  only to complete sign-in, plus a one-way hash of a local acknowledgement secret.
+  The secret itself never leaves your machine, and the raw challenge and token are
+  never stored.
 
-These go only to the Taskivator license server, and only to activate/verify your
-seat and to check whether a newer version is available.
+Your account sign-in happens in your browser on the Portal. In return, the Portal
+issues a **signed entitlement** bound to this device and installation, which the
+Software verifies locally.
+
+These go only to the BugIt Portal, and only to activate and verify your license,
+manage your devices, and check whether a newer version is available. When you
+download an update, the Portal also records the download — including the request's
+IP address and browser user-agent — for security and abuse prevention.
 
 ## What stays entirely on your device
 

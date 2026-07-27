@@ -5,18 +5,21 @@ Este software e sua documentação ("o Software") são licenciados, não vendido
 Ao comprar, ativar ou usar o Software, você ("o Licenciado") concorda com estes
 termos.
 
-1. Concessão. Mediante a compra e a ativação com uma chave de licença válida, a
+1. Concessão. Mediante a compra e a ativação por meio do Portal do BugIt, a
    Taskivator concede ao Licenciado uma licença não exclusiva e intransferível
    para usar o Software para fins internos de QA e de relato de bugs, no número de
    dispositivos permitido pelo plano adquirido (Solo = 1 dispositivo por vez;
-   Team = 5 dispositivos por vez).
+   Team = até 5 membros, cada um com sua própria conta BugIt e um dispositivo
+   ativo, até 5 dispositivos por equipe).
 
-2. Chaves de licença e assentos. Cada chave de licença é pessoal e destinada ao
-   Licenciado. O Licenciado não pode compartilhar, publicar, revender,
-   sublicenciar ou transferir uma chave de licença. A Taskivator pode suspender ou
-   revogar uma chave que seja compartilhada, publicada, reembolsada, estornada, ou
-   usada de forma fraudulenta ou em violação destes termos; uma chave revogada
-   deixa de ativar em novos dispositivos.
+2. Direitos de uso, contas e dispositivos. A ativação está vinculada à sua conta
+   BugIt: você entra por meio do Portal do BugIt e aprova cada dispositivo; não há
+   chave de licença para inserir ou compartilhar. Seu direito de uso é pessoal e
+   destinado ao Licenciado e não pode ser compartilhado, publicado, revendido,
+   sublicenciado ou transferido. A Taskivator pode suspender ou revogar um direito
+   de uso que seja compartilhado, publicado, reembolsado, estornado, ou usado de
+   forma fraudulenta ou em violação destes termos; um direito de uso revogado deixa
+   de ativar em novos dispositivos.
 
 3. Modificação e proibição de contornar mecanismos. O Licenciado pode editar os
    arquivos de configuração, glossário, templates e de instruções para seu próprio
