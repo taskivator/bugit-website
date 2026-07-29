@@ -8,7 +8,7 @@ terms.
 1. Grant. On purchase and activation with a valid license key, Taskivator grants
    the Licensee a non-exclusive, non-transferable license to use the Software for
    internal QA and bug-reporting purposes, on the number of devices allowed by the
-   purchased tier (Solo = 1 device at a time; Team = 5 devices at a time).
+   purchased tier (Solo = 1 device at a time; Team = up to 5 members / device seats).
 
 2. License keys & seats. Each license key is personal to the Licensee. The
    Licensee may not share, publish, resell, sublicense, or transfer a license key.

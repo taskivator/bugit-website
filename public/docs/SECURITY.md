@@ -3,7 +3,7 @@
 BugIt QA Agent is a human-in-the-loop assistant. It only acts through your VS Code session and the integrations you enable.
 
 ## What BugIt does to protect you
-- **No write without confirmation.** Every create/comment/attach/notify is previewed; irreversible filings need a typed confirm.
+- **No write without confirmation.** Every create/comment/attach/notify is previewed; irreversible filings need a one-click Approve in the BugIt VS Code extension.
 - **Dry run = read-only.** `QA_AGENT_DRY_RUN=1` or "dry run" blocks all writes; helpers run reads only.
 - **No secrets in files.** `config.json` holds orgs/URLs only; tokens live in your OS credential store. The validator flags anything secret-shaped. `redact.py` makes a best-effort pass to scrub emails/tokens/IPs from drafts.
 - **Off by default.** Every integration ships disabled — nothing connects or files until you opt in.
