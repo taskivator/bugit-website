@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node server.js",
+    "test": "node scripts/test-all.mjs",
     "build": "node build.js",
     "preview": "node server.js",
     "test:docs": "node scripts/check-doc-links.mjs",

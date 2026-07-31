@@ -216,10 +216,60 @@ const BASE_TITLE='BugIt | QA Bug-Filing Agent for VS Code';
 function fetchFirstText(urls){
   return urls.reduce((p,u)=>p.catch(()=>fetch(u).then(x=>x.ok?x.text():Promise.reject())),Promise.reject());
 }
+// Point the skip link at whichever <main> is currently active (AUD-1.1.0-008) and, on activation,
+// move focus there (href-jump alone does not reliably move AT focus).
+function updateSkipTarget(){
+  const skip=document.getElementById('skipLink');if(!skip)return;
+  const doc=document.getElementById('docView');
+  skip.setAttribute('href','#'+((doc&&!doc.hidden)?'docView':'homeView'));
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const skip=document.getElementById('skipLink');if(!skip)return;
+  skip.addEventListener('click',e=>{
+    e.preventDefault();
+    const doc=document.getElementById('docView');
+    const main=(doc&&!doc.hidden)?doc:document.getElementById('homeView');
+    if(main){main.focus();main.scrollIntoView();}
+  });
+});
+// A localized not-found view for unknown SPA routes (AUD-1.1.0-009): an unknown `#/...` route must
+// NOT silently render the homepage. Rendered into the docView container with a recovery link home.
+function notFoundText(lang){
+  const t={
+    en:{title:'Page not found',body:'That page does not exist.',home:'Go to the homepage'},
+    ja:{title:'ページが見つかりません',body:'そのページは存在しません。',home:'ホームページへ'},
+    fr:{title:'Page introuvable',body:"Cette page n'existe pas.",home:"Aller à l'accueil"},
+    de:{title:'Seite nicht gefunden',body:'Diese Seite existiert nicht.',home:'Zur Startseite'},
+    es:{title:'Página no encontrada',body:'Esa página no existe.',home:'Ir a la página de inicio'},
+    'pt-br':{title:'Página não encontrada',body:'Essa página não existe.',home:'Ir para a página inicial'},
+    it:{title:'Pagina non trovata',body:'Questa pagina non esiste.',home:'Vai alla home'},
+    ko:{title:'페이지를 찾을 수 없습니다',body:'해당 페이지가 존재하지 않습니다.',home:'홈페이지로 이동'},
+    zh:{title:'页面未找到',body:'该页面不存在。',home:'返回首页'},
+    ru:{title:'Страница не найдена',body:'Такой страницы не существует.',home:'На главную'}
+  };
+  return t[lang]||t.en;
+}
+function renderNotFound(){
+  const home=document.getElementById('homeView'),doc=document.getElementById('docView');
+  const lang=i18n[currentLang]?currentLang:'en';
+  const nf=notFoundText(lang);
+  home.hidden=true;doc.hidden=false;
+  doc.innerHTML='<section class="shell doc-notfound" style="padding:96px 0;text-align:center">'
+    +'<h1>'+nf.title+'</h1><p>'+nf.body+'</p>'
+    +'<p><a class="doc-btn" href="#/">'+nf.home+'</a></p></section>';
+  document.title=nf.title+' | '+BASE_TITLE;
+  updateSkipTarget();
+}
 function renderDocRoute(){
   const r=route();
   const home=document.getElementById('homeView'),doc=document.getElementById('docView');
-  if(!docRoutes.includes(r)){home.hidden=false;doc.hidden=true;document.title=BASE_TITLE;return}
+  // A route is a SPA route only when the hash begins with "#/". Bare "#anchor" links (e.g. the
+  // header's #features/#pricing) are in-page anchors and must fall through to the homepage.
+  const isSpaRoute=location.hash.startsWith('#/');
+  if(!docRoutes.includes(r)){
+    if(r!==''&&isSpaRoute){renderNotFound();return}      // unknown SPA route -> localized not-found
+    home.hidden=false;doc.hidden=true;document.title=BASE_TITLE;updateSkipTarget();return
+  }
   home.hidden=true;doc.hidden=false;
   const lang=i18n[currentLang]?currentLang:'en';
   const d={...i18n.en.docPages,...(i18n[lang].docPages||{})};
@@ -311,6 +361,7 @@ function renderDocRoute(){
       .then(txt=>{if(box)box.innerHTML=formatMarkdownDoc(txt);})
       .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The refund policy is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
   }
+  updateSkipTarget();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}

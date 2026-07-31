@@ -64,6 +64,7 @@
   </script>
 </head>
 <body>
+  <a href="#homeView" class="skip-link" id="skipLink">Skip to main content</a>
   <div id="ambient" aria-hidden="true"><div class="grid"></div><div class="aurora a"></div><div class="aurora b"></div></div>
   <header class="nav shell">
     <!-- No aria-label here on purpose. The visible text is "BugIt by Taskivator",
@@ -122,7 +123,7 @@
     </nav>
   </div>
 
-  <main id="homeView">
+  <main id="homeView" tabindex="-1">
     <section id="top" class="hero shell">
       <div class="hero-copy">
         <div class="pill"><span></span> <span data-t="hero.badge">BugIt QA Agent</span></div>
@@ -261,7 +262,7 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
     </div></section>
   </main>
 
-  <main id="docView" hidden class="docs-page shell">
+  <main id="docView" hidden tabindex="-1" class="docs-page shell">
     <div class="docs-layout"><aside id="docNav" class="docs-sidebar"></aside><article id="docContent" class="docs-content"></article></div>
   </main>
 
