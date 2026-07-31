@@ -5,22 +5,27 @@ This software and its documentation ("the Software") are licensed, not sold. By
 purchasing, activating, or using the Software you ("the Licensee") agree to these
 terms.
 
-1. Grant. On purchase and activation with a valid license key, Taskivator grants
-   the Licensee a non-exclusive, non-transferable license to use the Software for
-   internal QA and bug-reporting purposes, on the number of devices allowed by the
-   purchased tier (Solo = 1 device at a time; Team = up to 5 members or device seats).
+1. Grant. On purchase and activation of the Licensee's BugIt account — a browser
+   sign-in to the BugIt Portal that approves the device; there is no license key
+   to enter — Taskivator grants the Licensee a non-exclusive, non-transferable
+   license to use the Software for internal QA and bug-reporting purposes, on the
+   number of devices allowed by the purchased tier (Solo = 1 device at a time;
+   Team = up to 5 members (seats), each activating their own device, managed in
+   the BugIt Portal).
 
-2. License keys & seats. Each license key is personal to the Licensee. The
-   Licensee may not share, publish, resell, sublicense, or transfer a license key.
-   Taskivator may suspend or revoke a key that is shared, published, refunded,
-   charged back, or used fraudulently or in breach of these terms; a revoked key
-   stops activating on new devices.
+2. Accounts & seats. The Licensee's BugIt account and its entitlement are personal
+   to the Licensee. The Licensee may not share, publish, resell, sublicense, or
+   transfer the account, its entitlement, or its device authorizations. Taskivator
+   may suspend or revoke an entitlement (or an individual Team seat) that is
+   shared, published, refunded, charged back, or used fraudulently or in breach of
+   these terms; a revoked entitlement stops activating on new devices and its
+   active devices lose authorization.
 
 3. Modification & anti-circumvention. The Licensee may edit configuration,
    glossary, templates, and instruction files for their own internal use. The
    Licensee may NOT disable, bypass, remove, or circumvent the Software's
-   licensing, activation, seat, or update-verification mechanisms, nor use the
-   Software without a valid license.
+   licensing, activation, seat, device-binding, or update-verification mechanisms,
+   nor use the Software without a valid, active license.
 
 4. Restrictions. The Licensee may not resell, sublicense, redistribute, publish,
    or make the Software (original or modified) available to third parties, or
