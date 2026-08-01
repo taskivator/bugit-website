@@ -1,99 +1,96 @@
-# Commercial Transaction Disclosure
+# Commercial Transactions
 
-*(English reference version of the Japanese page 特定商取引法に基づく表記.)*
+**Last updated: 2 August 2026**
 
-**Last updated: 1 August 2026**
+This page sets out the commercial information for the sale of BugIt, including the
+information provided for mail order sales in Japan under the Act on Specified
+Commercial Transactions (特定商取引法).
 
-This page provides commercial-transaction information for the sale of BugIt. It is
-provided for transparency to customers, including customers in Japan, where the
-Act on Specified Commercial Transactions (特定商取引法) applies to mail-order
-(distance) sales.
+## Seller information
 
-## Important notice on seller identification
+The seller's legal name, business address, and telephone number will be provided
+without delay upon request before purchase. Requests may be sent to
+[support@bugit.dev](mailto:support@bugit.dev).
 
-Certain seller identification details are not published by owner decision.
-Requests may be directed to the published support email. This disclosure has not
-been certified as satisfying all applicable statutory seller-identification
-requirements.
+BugIt is sold under the Taskivator trading name.
 
-The seller name, address, and telephone number are **not published** for this
-reason. They are shown as "not published" below rather than filled with
-substitute or placeholder information.
+## Contact
 
-## Disclosures
+Email: [support@bugit.dev](mailto:support@bugit.dev)
 
-**Trading name (brand):** Taskivator / BugIt
+This is the contact point for purchase, delivery, licensing, refund, and support
+enquiries. Support is provided in English.
 
-**Seller legal name:** Not published (see the notice above).
+## Products and prices
 
-**Address:** Not published (see the notice above). Available on request via the
-support email.
+BugIt is downloadable software that runs inside Visual Studio Code and helps QA
+teams draft, review, and file bug reports to their tracker.
 
-**Telephone number:** Not published (see the notice above). Enquiries are handled
-by email; a contact telephone number is available on request via the support
-email.
+- BugIt Solo: US$39.99
+- BugIt Team: US$199.00
 
-**Contact / support:** support@bugit.dev — this is the operational contact for all
-purchase, delivery, refund, and support enquiries.
-
-**Price:**
-- BugIt Solo — introductory price US$39.99 (regular price US$59.99).
-- BugIt Team — introductory price US$199 (regular price US$249.99).
-
-Prices are shown in US dollars. The price payable is the amount displayed at
+Prices are shown in US dollars. The amount charged is the amount displayed at
 checkout at the time of purchase.
 
-**Additional charges beyond the product price:** Any consumption tax, VAT, or GST
-required for your location is calculated and shown at checkout before payment.
-You are responsible for your own internet and data charges. There are no other
-recurring or hidden fees.
+## Additional charges and taxes
 
-**Accepted payment methods:** Payment is processed by Stripe. The card and other
-payment methods offered by Stripe Checkout at the time of purchase are accepted.
+The amount shown at checkout is the total charged for the product. Any tax we are
+required to collect is shown at checkout before payment. You are responsible for
+your own internet access and any charges from your own service providers. There
+are no recurring charges and no other fees.
 
-**Timing of payment:** Payment is taken in full at the time of purchase. BugIt is a
-one-time purchase — there is no subscription and no automatic renewal, and you are
-never charged automatically after purchase.
+## Payment methods and payment timing
 
-**Timing of delivery / provision:** Delivery is digital and immediate. Immediately
-after successful payment, the download and the browser-based Portal activation are
-made available to you. Because delivery begins immediately at your request, please
-see the cancellation terms below.
+Payment is processed by Stripe. The card and other payment methods offered by
+Stripe Checkout at the time of purchase are accepted. Payment is taken in full at
+the time of purchase. BugIt is a one time purchase: there is no subscription, no
+automatic renewal, and no further charge after purchase.
 
-**What you buy (term and scope):**
-- A one-time purchase granting a **one-year license** that begins at first
-  activation. It **does not automatically renew**; when the year ends the license
-  expires and continued use requires a new license, which you may choose to buy.
-- **365 days of included updates** and license/activation services during the term.
-- **Solo:** usable on **1 device at a time** (one user).
-- **Team:** **up to 5 members**, each with their own BugIt account and their own
-  device activation, managed centrally in the Portal.
+## Digital delivery timing
 
-**System requirements:** BugIt runs inside Visual Studio Code with GitHub Copilot,
-on a supported operating system, and needs internet access to activate and to
-verify the license periodically (it then works offline for up to 72 hours between
-checks).
+Delivery is digital. Immediately after payment is confirmed, the download and
+browser based activation in the BugIt Portal become available in your account.
 
-**Returns, cancellation, and refunds:**
-- BugIt offers a **voluntary 7-day refund policy** according to its terms (see the
-  Refund Policy).
-- Where you are a consumer in a jurisdiction with a statutory cancellation or
-  withdrawal right (for example the EU/EEA or the UK), that right may be reduced or
-  lost once you have requested and received immediate digital delivery — you are
-  asked to acknowledge this at checkout before payment.
-- Your **mandatory statutory rights** as a consumer are not excluded or limited by
-  this page or by the voluntary refund policy.
+## License term and product scope
 
-**Faulty or non-conforming product:** If the digital content is faulty,
-misdescribed, or does not conform to what was purchased, contact support@bugit.dev.
-Your mandatory legal rights regarding faulty or non-conforming digital content are
-unaffected.
+- Your purchase grants a license that lasts 1 year, beginning at first activation.
+  It does not renew automatically. When the year ends the license expires, and
+  continued use requires a new purchase.
+- Updates and license services are included for 365 days during the term.
+- BugIt Solo may be used on 1 device at a time by one user.
+- BugIt Team covers up to 5 members. Each member has their own BugIt account and
+  activates their own device, managed centrally in the BugIt Portal.
 
-**Support procedure:** Email support@bugit.dev. Support is provided in English.
+## System requirements
 
----
+BugIt runs inside Visual Studio Code and needs an AI provider that you supply,
+either GitHub Copilot or your own OpenAI or Anthropic key, together with a
+supported version of Python. Filing to a tracker also uses the BugIt extension
+included in your download. Internet access is needed to activate and to verify the
+license periodically. Between those checks BugIt continues to work offline for up
+to 72 hours.
 
-*Nothing on this page is a claim of full compliance with, or certification under,
-the Act on Specified Commercial Transactions or any other law. Where seller
-identification details are not published, that requirement is not satisfied by this
-page; it is an accepted risk of the seller, honestly disclosed here.*
+## Cancellations and refunds
+
+BugIt offers a voluntary 7 day refund policy, which applies according to its terms.
+See the [Refund Policy](#/docs/refund).
+
+Because delivery is digital and begins immediately at your request, a statutory
+cancellation or withdrawal right may be affected once delivery has started. Where
+this applies, you are asked to acknowledge it at checkout before payment.
+
+Nothing in this disclosure limits any consumer right that cannot lawfully be
+excluded.
+
+## Faulty or nonconforming digital content
+
+If the digital content is faulty, does not match its description, or does not
+conform to what was purchased, contact
+[support@bugit.dev](mailto:support@bugit.dev). Your legal rights in respect of
+faulty or nonconforming digital content are not affected.
+
+## Customer support
+
+Email [support@bugit.dev](mailto:support@bugit.dev). Support is provided in
+English. Please do not include confidential source code, customer data, private
+tickets, or secrets in your message.

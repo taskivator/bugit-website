@@ -1,180 +1,169 @@
-# Política de Privacidade — BugIt
+# Política de Privacidade do BugIt
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Última atualização: 1 de agosto de 2026**
+**Última atualização: 2 de agosto de 2026**
 
-Esta política explica quais dados pessoais são tratados quando você usa o site do
-BugIt (bugit.dev), o BugIt Portal (gerenciamento de conta, compra e licenças) e o
-software BugIt QA Agent, bem como as escolhas e os direitos que você tem. Ela é escrita
-em linguagem clara e pretende ser fiel ao modo como o produto realmente funciona.
+Esta política explica quais dados pessoais tratamos quando você usa o site do BugIt
+(bugit.dev), o BugIt Portal (gerenciamento de conta, compra e licenças) e o software
+BugIt QA Agent, bem como as escolhas e os direitos que você tem.
 
-## Quem é responsável pelos seus dados
+## Operador e contato de privacidade
 
-O BugIt é operado sob o nome comercial **Taskivator / BugIt**. O contato operacional
-para todas as questões e solicitações de privacidade é **support@bugit.dev**.
+O BugIt é operado sob o nome comercial Taskivator. Dúvidas sobre privacidade,
+solicitações relativas a dados pessoais e pedidos da razão social e dos dados de
+contato comerciais do operador podem ser enviados para
+[support@bugit.dev](mailto:support@bugit.dev). As informações solicitadas sobre o
+operador são fornecidas sem demora.
 
-**O proprietário optou por não publicar os dados pessoais de identificação do
-controlador de dados. Isso permanece um risco de conformidade legal aceito e não
-recebeu aprovação jurídica externa.** Um nome comercial isoladamente não cumpre a
-obrigação legal de identificar o controlador de dados; portanto, essa obrigação
-**não** é considerada cumprida por esta política. Por esse motivo, os dados
-registrados de identidade do controlador não são publicados; quando a lei lhe der
-direito a eles, você pode solicitá-los em support@bugit.dev.
+## Em resumo
 
-## A versão curta
+- O software BugIt é executado na sua própria máquina. Seus relatórios de bugs,
+  especificações, glossários, capturas de tela, código, configurações e tickets não
+  são transmitidos à Taskivator.
+- Para operar sua conta, sua compra, sua licença e o suporte, o site e o Portal
+  tratam uma quantidade limitada de dados pessoais.
+- Não vendemos dados pessoais. A medição de publicidade fica desativada por padrão e
+  só funciona se você a ativar.
 
-- O **software QA Agent é executado na sua máquina.** Seus relatórios de bug,
-  especificações, glossário, capturas de tela, código, configurações e tickets **não**
-  são enviados à Taskivator.
-- Para operar sua conta, sua compra, sua licença e o suporte, o **site e o Portal**
-  tratam um conjunto limitado de dados pessoais (seu e-mail, registros de compra,
-  licenças e ativações de dispositivos e mensagens de suporte), usando os provedores
-  de serviço listados abaixo.
-- **Não** vendemos seus dados pessoais. A medição de publicidade fica **desativada por
-  padrão** e é executada somente com o seu consentimento.
+## O que o software BugIt envia para nós
 
-## O que o software QA Agent envia à Taskivator
+O BugIt é ativado pelo navegador: você entra no BugIt Portal e aprova o dispositivo.
+Não há chave de licença para digitar ou guardar. Do seu dispositivo, o software envia
+somente o necessário para operar sua licença:
 
-O BugIt usa **ativação baseada em navegador** — você faz login no BugIt Portal no seu
-navegador e aprova o dispositivo; **não há nenhuma chave de licença** para inserir,
-colar ou armazenar. Do seu dispositivo, o software envia apenas dados de
-licença/atualização:
+- um registro assinado de direito de uso e de ativação do dispositivo, gerado nesse
+  acesso ao Portal, para que o dispositivo possa ser autorizado e verificado
+  novamente depois, junto com a versão do aplicativo,
+- um identificador de dispositivo pseudonimizado, usado para ativação da licença,
+  limites de dispositivos e prevenção a fraudes, e
+- um nome curto de dispositivo ou de assento, apenas se você escolheu defini-lo
+  durante a configuração, para distinguir os dispositivos de uma conta Team. É
+  opcional e nunca é verificado.
 
-- um **registro assinado de direito de uso / ativação de dispositivo** proveniente
-  desse login no Portal (para que o seu dispositivo possa ser autorizado e
-  reverificado) e a versão do aplicativo,
-- uma **impressão digital de dispositivo anônima, com hash de mão única** — um hash de
-  16 caracteres derivado de atributos básicos da máquina; ele não pode ser revertido
-  para identificar você ou o seu hardware, e
-- **somente se você definir um durante a configuração inicial**, um rótulo curto de
-  dispositivo/assento que você escolher, para que as autorizações de dispositivos de
-  uma conta Team possam ser diferenciadas. Nunca é exigido que seja real e nunca é
-  verificado. Se você não definir um, nada é enviado.
+Esses dados vão para o serviço de licenças da Taskivator, para ativar e verificar seu
+assento e para checar se há uma versão mais recente.
 
-Esses dados vão apenas para o serviço de licenças da Taskivator, para ativar/verificar
-o seu assento e verificar se há uma versão mais nova disponível.
+## O que permanece no seu dispositivo
 
-## O que permanece inteiramente no seu dispositivo
+- Suas especificações, glossários, estilo editorial e correções aprendidas
+- Seu arquivo `config.json` e seus arquivos locais de projeto
+- Seus tokens de API, guardados no cofre de credenciais do sistema operacional
 
-- Suas especificações, glossário, estilo da casa e correções aprendidas
-- Seu `config.json` e os arquivos de projeto locais
-- Seus tokens de API (mantidos no armazenamento de credenciais do seu sistema
-  operacional — nunca em um arquivo e nunca transmitidos à Taskivator)
+Essas informações não são transmitidas à Taskivator.
 
-Nada disso é transmitido para lugar algum.
+## O que vai para os serviços que você conecta
 
-## O que vai apenas para os serviços que *você* conecta
+Para redigir e registrar um ticket, o texto do seu relatório é enviado ao provedor de
+IA que você usa (GitHub Copilot, ou sua própria chave da OpenAI ou da Anthropic) e ao
+rastreador em que você registra, como Jira ou Azure DevOps. São os serviços que você
+escolheu e conectou, e as informações enviadas a eles não passam pela Taskivator nem
+são copiadas para ela. Os provedores de IA e rastreadores conectados tratam as
+informações segundo seus próprios termos e políticas de privacidade, portanto
+recomendamos consultá-los antes de conectar um serviço.
 
-Para redigir e registrar um ticket, o texto do seu relatório é enviado ao modelo de IA
-que você usa (GitHub Copilot, ou a sua própria chave OpenAI/Anthropic) e ao tracker no
-qual você registra (como o Jira ou o Azure DevOps). Essa é a IA e as ferramentas que
-**você** escolheu e conectou — nada disso é encaminhado pela, copiado para, ou visto
-pela Taskivator, que não é a controladora desses serviços. Apenas os metadados
-necessários para o registro (id/URL do item e o conteúdo que você aprovar) são
-trocados com eles.
+## Dados pessoais que tratamos para o site e o Portal
 
-## Dados pessoais que tratamos, e por quê (site + Portal)
+- **Dados de conta e de acesso**, incluindo seu e-mail, para criar e proteger sua
+  conta
+- **Registros de compra e de pedido**, incluindo recibos e registros fiscais
+- **Dados de pagamento**, tratados pelo nosso processador de pagamentos. Não
+  armazenamos números completos de cartão.
+- **Direitos de uso e licenças**, para entregar e verificar o que você comprou
+- **Ativações de dispositivo**, incluindo o identificador de dispositivo
+  pseudonimizado, o nome que você tenha definido e o sistema operacional e a versão
+  do aplicativo, para que os limites de assentos e dispositivos funcionem e você
+  possa gerenciar seus próprios dispositivos
+- **Participação em Team e convites**, para o plano Team
+- **Reembolsos, contestações e estornos**, quando ocorrerem
+- **Correspondência de suporte**, para podermos responder a você
+- **Registros de segurança e administração**, para detectar abusos e manter uma
+  trilha de auditoria
+- **As configurações de conexão que você salva** para rastreadores como Jira ou
+  Azure DevOps. Guardamos as configurações de conexão, não o conteúdo existente
+  nessas ferramentas.
+- **Suas escolhas de consentimento** sobre cookies e medição de publicidade,
+  incluindo a retirada, e a confirmação registrada na finalização da compra onde um
+  mercado a exige
 
-| Dados | Por quê (finalidade) | Base legal (GDPR/UK GDPR) |
-|-------|----------------------|---------------------------|
-| E-mail da conta + dados de autenticação | Criar e proteger sua conta, fazer seu login, MFA de administrador | Contrato; legítimo interesse (segurança da conta) |
-| Direitos de uso / licenças | Entregar e verificar o que você comprou | Contrato |
-| Ativações de dispositivos (impressão digital com hash, rótulo opcional, versão do SO/do app) | Aplicar os limites por dispositivo/assento; permitir que você gerencie dispositivos | Contrato |
-| Participação em Team + convites | Fornecer o plano Team (até 5 membros) | Contrato |
-| Registros de compra / pedido | Cumprir a venda, recibos, emissão de licença | Contrato; obrigação legal (contabilidade) |
-| Dados de pagamento | Receber o pagamento (tratado pela Stripe — não armazenamos os números completos de cartão) | Contrato |
-| Reembolsos / disputas / chargebacks | Tratar reembolsos e disputas de pagamento | Contrato; obrigação legal |
-| Registros fiscais | Cumprir obrigações fiscais/contábeis | Obrigação legal |
-| Correspondência de suporte | Responder às suas perguntas e prestar suporte | Contrato; legítimo interesse |
-| Registros de segurança, de log e de auditoria de administração | Detectar abusos, proteger contas, manter uma trilha de auditoria | Legítimo interesse (segurança) |
-| Configuração de provedor/tracker que você salva | Permitir que você conecte Jira/Azure DevOps etc.; armazenamos metadados de conexão, não os seus dados nessas ferramentas | Contrato |
-| Escolhas de consentimento (cookies/anúncios e sua retirada) | Respeitar e comprovar suas escolhas | Consentimento; obrigação legal (comprovação) |
-| Análise do site | Entender o desempenho geral do site (sem cookies) | Legítimo interesse |
-| Medição de publicidade | Entender se os anúncios levam a compras | Consentimento (desativada por padrão) |
-| Consentimento UE/RU de entrega imediata / arrependimento | Comprovar seu reconhecimento no checkout | Obrigação legal; contrato |
+Usamos esses dados para fornecer e dar suporte ao produto que você comprou, receber o
+pagamento e cumprir nossas obrigações fiscais e contábeis, manter contas e licenças
+seguras e, quando você tiver consentido, medir a publicidade. Dependendo de onde você
+mora, a base legal costuma ser a execução do nosso contrato com você, o cumprimento
+de obrigação legal, nosso legítimo interesse em manter o serviço seguro ou o seu
+consentimento.
 
-## Provedores de serviço (operadores) e transferências internacionais
+## Prestadores de serviços
 
-Usamos os provedores a seguir para operar o BugIt. Cada um trata dados pessoais apenas
-para nos prestar o seu serviço. Quando dados pessoais são transferidos para fora do
-EEE/do Reino Unido, apoiamo-nos no Adendo de Tratamento de Dados do provedor e, quando
-aplicável, nas Cláusulas Contratuais Padrão (ou em um mecanismo de transferência
-equivalente).
+Utilizamos prestadores de serviços para autenticação e hospedagem, processamento de
+pagamentos, e-mail transacional, entrega e segurança do site e medição de publicidade
+baseada em consentimento. Esses prestadores tratam apenas as informações necessárias
+para nos prestar seus serviços e não podem usá-las para fins próprios.
 
-| Provedor | Finalidade | Categorias de dados | Local provável de tratamento | Base da transferência | Retenção / exclusão |
-|----------|------------|---------------------|------------------------------|-----------------------|----------------------|
-| **Supabase** | Banco de dados + autenticação (contas, direitos de uso, dispositivos, pedidos, logs de auditoria) | Dados de conta, direito de uso, dispositivo, pedido e log | Estados Unidos e/ou UE (região do projeto) | Adendo de tratamento + Cláusulas Contratuais Padrão quando aplicável | Mantidos enquanto sua conta estiver ativa; excluídos ou anonimizados quando não forem mais necessários (ver a tabela de retenção) |
-| **Stripe** | Processamento de pagamentos, reembolsos, disputas, cálculo de impostos | Dados de pagamento, faturamento e transação | Estados Unidos + global | Adendo de tratamento + Cláusulas Contratuais Padrão | Retidos pela Stripe conforme sua política e os requisitos legais/contábeis |
-| **Cloudflare** | Entrega do site, segurança, análise web sem cookies | Dados de rede/técnicos; análise agregada | Rede edge global | Adendo de tratamento + Cláusulas Contratuais Padrão | De curta duração; a análise é agregada e sem cookies |
-| **Vercel** | Hospedagem do aplicativo do site/Portal | Dados de requisição/técnicos | Estados Unidos + global | Adendo de tratamento + Cláusulas Contratuais Padrão | Logs operacionais mantidos por curto prazo |
-| **Resend** | Envio de e-mail transacional (recibos, licença, suporte) | Endereço de e-mail, metadados da mensagem | Estados Unidos | Adendo de tratamento + Cláusulas Contratuais Padrão | Retidos conforme a política do provedor; logs de entrega por curto prazo |
-| **Google Ads** | Medição de publicidade (somente com consentimento) | Valor da compra, moeda, referência de pedido não identificadora | Estados Unidos + global | Adendo de tratamento + Cláusulas Contratuais Padrão | Somente com consentimento; nenhum conteúdo de bug ou dado de cartão é compartilhado |
+Os principais prestadores são Supabase (contas e banco de dados), Stripe (pagamentos,
+reembolsos e contestações), Vercel (hospedagem do Portal), Cloudflare (entrega e
+segurança do site e análise sem cookies), Resend (e-mail transacional) e Google
+(medição de publicidade, somente com o seu consentimento).
 
-**Não** vendemos dados pessoais, e a medição de publicidade nunca recebe seus
-relatórios de bug, o conteúdo do software BugIt ou os detalhes do cartão de pagamento.
+Alguns desses prestadores operam fora do seu país, inclusive nos Estados Unidos.
+Quando há transferência internacional de dados pessoais, apoiamo-nos nas cláusulas de
+proteção de dados oferecidas pelo prestador.
 
-## Por quanto tempo mantemos os dados (retenção)
+A medição de publicidade nunca recebe seus relatórios de bugs, o conteúdo do software
+BugIt nem os dados do seu cartão de pagamento.
 
-Quando um prazo não é fixado por lei, mantemos os dados apenas pelo tempo necessário à
-finalidade e, em seguida, os excluímos ou anonimizamos.
+## Por quanto tempo guardamos os dados
 
-| Categoria | Retenção |
-|-----------|----------|
-| Contas | Enquanto ativas; excluídas/anonimizadas após a exclusão da conta (sujeito a retenções legais) |
-| Registros de autenticação | Enquanto a conta estiver ativa |
-| Direitos de uso / licenças | Durante a vigência da licença e por um período limitado depois, para suporte e disputas |
-| Dispositivos / ativações | Enquanto o direito de uso estiver ativo; liberados quando você remove um dispositivo ou a licença termina |
-| Participações em Team / convites | Enquanto a licença Team estiver ativa; os convites expiram |
-| Pagamentos | Durante a vigência da licença mais o período exigido para contabilidade/impostos |
-| Reembolsos / disputas / chargebacks | Durante o período necessário para tratá-los e comprová-los, mais os períodos contábeis |
-| Registros fiscais / contábeis | Conforme exigido pela legislação fiscal aplicável (por exemplo, até 7 anos) |
-| Logs de segurança | Um período limitado suficiente para segurança e detecção de abusos |
-| Logs de auditoria de administração | Retidos como registro de integridade por um período limitado |
-| Correspondência de suporte | Enquanto necessária para atendê-lo e por um período limitado depois |
-| Consentimento de marketing | Enquanto o consentimento permanecer e depois como comprovação |
-| Retiradas de consentimento | Retidas como comprovação de que uma escolha foi respeitada |
-| Backups de contas excluídas | Purgados dos backups de rotina dentro do ciclo normal de rotação de backups após a exclusão |
+Guardamos dados pessoais apenas enquanto necessários à finalidade para a qual foram
+coletados e, depois, os excluímos ou anonimizamos. Na prática:
+
+- Registros de conta, licença e dispositivos são mantidos enquanto sua conta e sua
+  licença estiverem ativas e por um período limitado depois, para podermos tratar
+  suporte e contestações.
+- Registros de pagamento, fiscais e contábeis são mantidos pelo período exigido por
+  lei.
+- Mensagens de suporte, registros de segurança e registros de consentimento são
+  mantidos por um período limitado; os de consentimento servem como prova de que sua
+  escolha foi respeitada.
+
+Se você excluir sua conta, excluímos ou anonimizamos seus dados, exceto os registros
+que somos obrigados a manter.
 
 ## Cookies e publicidade
 
-O site usa apenas cookies essenciais para funcionar. Cookies não essenciais (de
-publicidade) ficam **desativados por padrão** e só são carregados se você optar por
-eles no banner de cookies ou nas **Preferências de cookies**. Usamos o Cloudflare Web
-Analytics, que não usa cookies e não rastreia você entre sites. Você pode alterar ou
-retirar sua escolha a qualquer momento.
+O site usa cookies essenciais para funcionar. Cookies de publicidade ficam
+desativados por padrão e só são carregados se você os ativar no aviso de cookies ou
+em **Preferências de cookies**. Usamos o Cloudflare Web Analytics para acompanhar o
+desempenho geral do site; ele funciona sem cookies e não rastreia você entre sites.
+Você pode alterar ou retirar sua escolha a qualquer momento.
 
 ## Seus direitos
 
-Dependendo de onde você mora (por exemplo, sob o GDPR da UE/RU ou a APPI do Japão),
-você pode ter o direito de:
+Dependendo de onde você mora, por exemplo sob o GDPR da UE ou do Reino Unido, a LGPD
+brasileira ou a APPI japonesa, você pode ter o direito de acessar os dados pessoais
+que mantemos sobre você, corrigi-los, excluí-los, restringir ou se opor a
+determinados tratamentos, recebê-los em formato portável e retirar o consentimento a
+qualquer momento, sem afetar o tratamento já realizado.
 
-- **Acessar** os dados pessoais que mantemos sobre você
-- **Corrigir** dados imprecisos
-- **Excluir** seus dados (e sua conta)
-- **Restringir** ou **se opor a** determinados tratamentos
-- **Portabilidade** — receber determinados dados em um formato portável
-- **Retirar o consentimento** (por exemplo, da medição de publicidade) a qualquer
-  momento, sem afetar o tratamento lícito anterior
+Para exercer qualquer um desses direitos, escreva para
+[support@bugit.dev](mailto:support@bugit.dev) a partir do endereço da sua conta. Você
+também pode excluir sua conta pelo painel. Responderemos dentro do prazo exigido pela
+lei aplicável a você.
 
-Para exercer qualquer um desses direitos, envie um e-mail para **support@bugit.dev** a
-partir do endereço da sua conta. Você também pode **excluir sua conta** para remover
-seus dados (sujeito aos registros que devemos manter por lei, como registros fiscais).
-Responderemos dentro do prazo exigido pela legislação aplicável.
-
-**Reclamações.** Se você estiver no EEE, pode reclamar à sua autoridade local de
-proteção de dados; no Reino Unido, ao Information Commissioner's Office (ico.org.uk);
-no Japão, à Personal Information Protection Commission (ppc.go.jp). Agradeceríamos a
-oportunidade de resolver primeiro a sua preocupação em support@bugit.dev.
+Se não ficar satisfeito, você pode apresentar reclamação à autoridade de proteção de
+dados: no Brasil, à ANPD (gov.br/anpd); no EEE, à autoridade local; no Reino Unido, à
+Information Commissioner's Office (ico.org.uk); no Japão, à Personal Information
+Protection Commission (ppc.go.jp). Agradecemos a oportunidade de resolver sua questão
+antes disso.
 
 ## Alterações
 
-Podemos atualizar esta política conforme o produto ou a lei mudar; a data de "última
-atualização" acima reflete a versão atual. Documentos relacionados: a divulgação de
-Transações Comerciais (特定商取引法に基づく表記 — informações nos termos da Lei
-japonesa sobre Transações Comerciais Específicas) e a Política de Reembolso.
+Podemos atualizar esta política conforme o produto ou a legislação mudarem. A data
+acima indica a versão vigente. Consulte também a página
+[Transações Comerciais](#/docs/commerce) (特定商取引法に基づく表記) e a
+[Política de Reembolso](#/docs/refund).
 
 ## Contato
 
-Perguntas ou solicitações de privacidade: **support@bugit.dev**. Você também pode
-abrir um ticket de suporte a partir do seu painel do BugIt em **bugit.dev**.
+Dúvidas ou solicitações de privacidade:
+[support@bugit.dev](mailto:support@bugit.dev).

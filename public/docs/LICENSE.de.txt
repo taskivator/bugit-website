@@ -1,52 +1,58 @@
-BugIt QA Agent — Kommerzieller Endbenutzer-Lizenzvertrag (EULA)
+BugIt QA Agent Kommerzieller Endbenutzer Lizenzvertrag (EULA)
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
 Diese Software und ihre Dokumentation („die Software") werden lizenziert, nicht
 verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären Sie
 („der Lizenznehmer") sich mit diesen Bedingungen einverstanden.
 
-1. Lizenzgewährung. Mit Kauf und Aktivierung des BugIt-Kontos des Lizenznehmers —
-   einer Anmeldung im BugIt Portal über den Browser, die das Gerät freigibt; es
-   gibt keinen Lizenzschlüssel zur Eingabe — gewährt Taskivator dem Lizenznehmer
-   eine nicht-exklusive, nicht übertragbare Lizenz zur Nutzung der Software für
-   interne QA- und Fehlerberichtszwecke, auf der Anzahl von Geräten, die die
-   erworbene Stufe zulässt (Solo = 1 Gerät gleichzeitig; Team = bis zu 5 Mitglieder
-   (Plätze), von denen jedes sein eigenes Gerät aktiviert).
+1. Lizenzgewährung. Mit Kauf und Aktivierung des BugIt Kontos des Lizenznehmers
+   (einer Anmeldung im BugIt Portal über den Browser, die das Gerät freigibt, ohne
+   einzugebenden Lizenzschlüssel) gewährt Taskivator dem Lizenznehmer eine nicht
+   ausschließliche, nicht übertragbare Lizenz zur Nutzung der Software für interne
+   Zwecke der Qualitätssicherung und Fehlerberichterstattung, auf der Anzahl von
+   Geräten, die die erworbene Stufe zulässt (Solo: 1 Gerät gleichzeitig; Team: bis
+   zu 5 Mitglieder, von denen jedes sein eigenes Gerät aktiviert, verwaltet im BugIt
+   Portal).
 
-2. Konten & Plätze. Das BugIt-Konto des Lizenznehmers und dessen Berechtigung
-   sind persönlich an den Lizenznehmer gebunden. Der Lizenznehmer darf das Konto,
-   dessen Berechtigung oder dessen Gerätefreigaben nicht weitergeben,
-   veröffentlichen, weiterverkaufen, unterlizenzieren oder übertragen. Taskivator
-   kann eine Berechtigung (oder einen einzelnen Team-Platz) sperren oder
-   widerrufen, die weitergegeben, veröffentlicht, rückerstattet, rückbelastet oder
-   betrügerisch bzw. unter Verstoß gegen diese Bedingungen verwendet wird; eine
+2. Konten und Plätze. Das BugIt Konto des Lizenznehmers und dessen Berechtigung sind
+   persönlich an den Lizenznehmer gebunden. Der Lizenznehmer darf das Konto, dessen
+   Berechtigung oder dessen Gerätefreigaben nicht weitergeben, veröffentlichen,
+   weiterverkaufen, unterlizenzieren oder übertragen. Taskivator kann eine
+   Berechtigung oder einen einzelnen Team Platz sperren oder widerrufen, die
+   weitergegeben, veröffentlicht, rückerstattet, rückbelastet oder betrügerisch
+   beziehungsweise unter Verstoß gegen diese Bedingungen verwendet wird; eine
    widerrufene Berechtigung lässt sich auf neuen Geräten nicht mehr aktivieren und
    ihre aktiven Geräte verlieren die Freigabe.
 
-3. Änderung & Umgehungsverbot. Der Lizenznehmer darf Konfigurations-, Glossar-,
-   Vorlagen- und Anweisungsdateien für seine eigene interne Nutzung bearbeiten.
-   Der Lizenznehmer darf die Lizenzierungs-, Aktivierungs-, Platz- oder
-   Update-Verifizierungsmechanismen der Software NICHT deaktivieren, umgehen,
-   entfernen oder aushebeln und die Software nicht ohne eine gültige Lizenz nutzen.
+3. Änderung und Umgehungsverbot. Der Lizenznehmer darf Konfigurations-, Glossar-,
+   Vorlagen- und Anweisungsdateien für seine eigene interne Nutzung bearbeiten. Der
+   Lizenznehmer darf die Mechanismen der Software für Lizenzierung, Aktivierung,
+   Platzverwaltung, Gerätebindung oder Update-Verifizierung nicht deaktivieren,
+   umgehen, entfernen oder aushebeln und die Software nicht ohne eine gültige,
+   aktive Lizenz nutzen.
 
-4. Beschränkungen. Der Lizenznehmer darf die Software (im Original oder
-   verändert) nicht weiterverkaufen, unterlizenzieren, weiterverbreiten,
-   veröffentlichen oder Dritten zugänglich machen und diesen Hinweis oder
-   jegliche Urheberrechts- oder Lizenzinformationen weder entfernen noch verändern.
+4. Beschränkungen. Der Lizenznehmer darf die Software, im Original oder verändert,
+   nicht weiterverkaufen, unterlizenzieren, weiterverbreiten, veröffentlichen oder
+   Dritten zugänglich machen und diesen Hinweis oder jegliche Urheberrechts- oder
+   Lizenzinformationen weder entfernen noch verändern. Das Bearbeiten von Dateien
+   für die eigene interne Nutzung nach Ziffer 3 erlaubt es nicht, die Software, ihre
+   Anweisungen, Prompts, Vorlagen oder Werkzeuge in ein anderes Projekt, Produkt
+   oder Agentensystem zu kopieren oder sie einer anderen Person oder einem anderen
+   Team zu überlassen.
 
-5. Eigentum. Taskivator behält sämtliche Rechte, Titel und Anteile an der
-   Software, einschließlich aller Rechte des geistigen Eigentums. Diese Lizenz
-   gewährt ausschließlich Nutzungsrechte; sie überträgt kein Eigentum.
+5. Eigentum. Taskivator behält sämtliche Rechte, Titel und Anteile an der Software,
+   einschließlich aller Rechte des geistigen Eigentums. Diese Lizenz gewährt
+   ausschließlich Nutzungsrechte; sie überträgt kein Eigentum.
 
-6. Ihre Daten. Einstellungen in config.json und alle von Ihnen erstellten
-   Inhalte gehören Ihnen. Die Software läuft auf dem Rechner des Lizenznehmers
-   und sendet keine Projekt-, Ticket-, Glossar- oder Tracker-Daten an Taskivator.
-   Siehe PRIVACY.md.
+6. Ihre Daten. Einstellungen in config.json und alle von Ihnen erstellten Inhalte
+   gehören Ihnen. Die Software läuft auf dem Rechner des Lizenznehmers und sendet
+   keine Projekt-, Ticket-, Glossar- oder Tracker-Daten an Taskivator. Siehe
+   PRIVACY.md.
 
 7. Laufzeit. BugIt ist ein einmaliger Kauf, kein Abonnement: Sie zahlen einmal, und
    es gibt keine automatische Verlängerung und keine wiederkehrende Belastung. Ihr
-   Kauf gewährt eine einjährige Lizenz — einschließlich Updates und Lizenz-/
-   Aktivierungsdiensten —, die mit der ersten Aktivierung beginnt. Mit Ablauf des
+   Kauf gewährt eine einjährige Lizenz, einschließlich Updates sowie Lizenz- und
+   Aktivierungsdiensten, die mit der ersten Aktivierung beginnt. Mit Ablauf des
    Jahres erlischt die Lizenz; die fortgesetzte Nutzung erfordert eine neue Lizenz,
    die Sie erwerben können, und Taskivator belastet Sie niemals automatisch. Bei
    Widersprüchen zwischen einer Übersetzung dieser Bedingungen und der englischen
@@ -56,61 +62,60 @@ verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären 
    zwingenden Recht Ihres Wohnsitzlandes zustehen und die nicht rechtswirksam
    ausgeschlossen werden können.
 
-8. Verantwortung des Lizenznehmers & Risikoübernahme. Die Software unterstützt
-   beim Verfassen und Einreichen von Fehlerberichten; sie ersetzt nicht das
-   eigene Urteilsvermögen des Lizenznehmers. Nach dem Kauf liegen die Art und
-   Weise der Nutzung der Software — sowie die Sicherheit und Integrität der
-   Projekte, Daten, Repositories, Tracker und Systeme des Lizenznehmers — in der
-   alleinigen Verantwortung des Lizenznehmers. Der Lizenznehmer ist dafür
-   verantwortlich, jeden Bericht, Kommentar oder jede Änderung vor der Einreichung
-   oder Übermittlung zu prüfen und freizugeben und die Software im Einklang mit den
-   Bedingungen und Richtlinien der Werkzeuge zu nutzen, mit denen sie verbunden ist.
-   Die Software bietet Schutzvorkehrungen (Vorschau vor dem Schreiben, ausdrückliche
-   Bestätigung für unumkehrbare Aktionen, einen schreibfreien „dry run"-Modus sowie
-   die Schwärzung von Geheimnissen), die das Risiko verringern sollen, doch dies
-   sind Hilfsmittel, keine Garantien, und sie heben die Verpflichtung des
-   Lizenznehmers zur Überprüfung der Ergebnisse nicht auf. Taskivator ist nicht
-   verantwortlich für Verluste, Schäden oder Folgen, die aus der Nutzung oder dem
-   Missbrauch der Software durch den Lizenznehmer entstehen, einschließlich falsch
-   eingereichter, unrichtiger oder unerwünschter Tickets, Kommentare, Datenänderungen
-   oder Offenlegungen.
+8. Prüfung dessen, was Sie einreichen. Die Software unterstützt Sie beim Verfassen
+   und Einreichen von Fehlerberichten; sie ersetzt nicht Ihr eigenes
+   Urteilsvermögen. Bitte prüfen Sie jeden Bericht, jeden Kommentar und jede
+   Änderung, bevor Sie sie freigeben, und nutzen Sie die Software im Einklang mit
+   den Bedingungen der Werkzeuge, die Sie mit ihr verbinden. BugIt zeigt vor jedem
+   externen Schreibvorgang eine Vorschau, verlangt für jeden einzelnen eine direkte
+   Freigabe, bietet einen schreibfreien „dry run" Modus und schwärzt erkannte
+   Geheimnisse. Diese Schutzvorkehrungen sollen Ihnen helfen, Fehler zu erkennen,
+   bevor sie Ihren Rechner verlassen, und sie wirken am besten zusammen mit Ihrer
+   eigenen Prüfung.
 
 9. Kein Gewährleistungsanspruch. Die Software wird „WIE BESEHEN" bereitgestellt,
    ohne jegliche ausdrückliche oder stillschweigende Gewährleistung, einschließlich
-   der Marktgängigkeit und der Eignung für einen bestimmten Zweck.
+   der Marktgängigkeit und der Eignung für einen bestimmten Zweck, mit Ausnahme
+   solcher Gewährleistungen, die nicht rechtswirksam ausgeschlossen werden können.
 
 10. Haftungsbeschränkung. Soweit gesetzlich zulässig, ist die Gesamthaftung von
-    Taskivator für jegliche aus der Software entstehende Ansprüche auf den Betrag
+    Taskivator für Ansprüche, die aus der Software entstehen, auf den Betrag
     beschränkt, den der Lizenznehmer dafür gezahlt hat, und Taskivator haftet nicht
-    für indirekte, zufällige, Folge- oder Sonderschäden noch für Daten, die in
-    externe Tracker oder Werkzeuge eingereicht oder darin geändert werden.
+    für indirekte, zufällige, Folge- oder Sonderschäden. Nichts in dieser Ziffer
+    beschränkt eine Haftung, die nicht rechtswirksam beschränkt werden kann,
+    einschließlich der Haftung für Tod oder Körperverletzung infolge Fahrlässigkeit
+    sowie für Arglist.
 
-11. Freistellung. Der Lizenznehmer verpflichtet sich, Taskivator gegen jeden
-    Anspruch, jede Forderung, jeden Verlust, jede Haftung oder Ausgabe Dritter
-    (einschließlich angemessener Anwaltskosten) zu verteidigen, schadlos zu halten
-    und freizustellen, die aus der Nutzung oder dem Missbrauch der Software durch
-    den Lizenznehmer entstehen oder damit zusammenhängen, einschließlich jedes
-    Tickets, Kommentars, jeder Datenänderung oder Offenlegung, die dadurch
-    eingereicht oder vorgenommen wird.
+11. Freistellung. Soweit gesetzlich zulässig, wird der Lizenznehmer Taskivator gegen
+    Ansprüche Dritter verteidigen und freistellen, die aus einer rechtswidrigen
+    Nutzung der Software, ihrem vorsätzlichen Missbrauch oder aus Inhalten
+    entstehen, die der Lizenznehmer über sie bereitgestellt hat. Diese Ziffer gilt
+    nicht für die gewöhnliche, vertragsgemäße Nutzung der Software und nicht dort,
+    wo das Recht des Wohnsitzlandes des Lizenznehmers dies nicht zulässt.
 
 12. Beendigung. Diese Lizenz endet automatisch, wenn gegen ihre Bedingungen
     verstoßen wird. Bei Beendigung muss der Lizenznehmer die Nutzung der Software
     einstellen.
 
 13. Anwendbares Recht. Dieser Vertrag unterliegt dem Recht Japans, ohne
-    Berücksichtigung der Regeln des Kollisionsrechts.
+    Berücksichtigung der Regeln des Kollisionsrechts. Wenn Sie Verbraucher sind,
+    entzieht Ihnen dies nicht den Schutz des zwingenden Rechts Ihres Wohnsitzlandes.
 
-14. Streitbeilegung. Jede Streitigkeit, die aus diesem Vertrag oder der Software
-    entsteht oder damit zusammenhängt, ist ausschließlich vor den Gerichten Japans
-    zu erheben, und jede Partei unterwirft sich dieser Gerichtsbarkeit und diesem
-    Gerichtsstand. Diese Klausel beschränkt nicht das Recht einer Partei, einen
-    Anspruch gegebenenfalls vor einem örtlich vorgeschriebenen Bagatellgericht
-    geltend zu machen.
+14. Streitigkeiten. Ansprüche im Zusammenhang mit diesem Vertrag oder der Software
+    können vor den Gerichten Japans geltend gemacht werden. Wenn Sie Verbraucher
+    sind, berührt dies nicht Ihr Recht, ein Verfahren vor den Gerichten Ihres
+    Wohnsitzlandes einzuleiten, oder ein sonstiges Recht auf einen Gerichtsstand,
+    das Ihnen das zwingende Recht dieses Landes gewährt.
 
-Rückerstattungen werden über den Store abgewickelt, in dem Sie gekauft haben.
+15. Paketkennung. Jeder Download kann eine pseudonyme Paketkennung enthalten, die
+    der Lizenzverwaltung und der Aufklärung unbefugter Weiterverbreitung dient. Sie
+    enthält keine Zugangsdaten und übermittelt von sich aus keine Daten. Siehe
+    PRIVACY.md.
+
+Rückerstattungen richten sich nach der Rückerstattungsrichtlinie auf bugit.dev.
 Fragen, Hilfe bei der Aktivierung oder Übertragungsanfragen: bugit.dev oder
 support@bugit.dev.
 
-Angaben zum Verkäufer und zur Transaktion, einschließlich Lieferzeit und
-Rückgaben, finden Sie in der Offenlegung zu Handelsgeschäften
-(特定商取引法に基づく表記) auf bugit.dev (Dokumentation → Handelsgeschäfte).
+Angaben zum Verkäufer und zur Transaktion, einschließlich Lieferzeit und Rückgaben,
+finden Sie in den Handelsrechtlichen Angaben (特定商取引法に基づく表記), verlinkt in
+der Fußzeile auf bugit.dev.
