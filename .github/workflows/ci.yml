@@ -63,8 +63,11 @@ jobs:
       - name: Verify build output exists
         run: |
           test -f dist/index.html
-          test -f dist/styles.css
-          test -f dist/app.js
+          # build.js content-hashes the CSS/JS bundles and DELETES the unhashed
+          # originals (commit 485782a), so verify the hashed bundles exist rather
+          # than the fixed dist/styles.css / dist/app.js names, which never survive a build.
+          ls dist/styles.*.css  >/dev/null 2>&1 || { echo "::error::hashed styles.*.css bundle missing from dist"; exit 1; }
+          ls dist/app.*.js      >/dev/null 2>&1 || { echo "::error::hashed app.*.js bundle missing from dist"; exit 1; }
           test -d dist/public
           echo "Static build verified."
       # Strict prior-consent Google-tag gating — real-browser NETWORK PROOF. Consent
