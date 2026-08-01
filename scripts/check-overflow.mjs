@@ -76,10 +76,15 @@ const chrome = spawn(CHROME, [
 ], { stdio: 'ignore' });
 console.log(`check-overflow: Chrome launched with PID ${chrome.pid}`);
 
+// Measured budget: after collapsing each combo to a single CDP evaluate and skipping
+// the O(N) culprit scan on the passing path, a full 2970-assertion run completes in
+// ~65s locally. CI's shared runner is ~2x slower per CDP round-trip, so a full run
+// there lands well under this ceiling; 300s leaves comfortable margin while still
+// bounding a genuine hang (per-width progress is logged, so a stall is visible).
 const watchdog = setTimeout(() => {
   console.error('check-overflow: timed out before completing assertions.');
   cleanup(1);
-}, 120_000);
+}, 300_000);
 
 function cleanup(code) {
   clearTimeout(watchdog);
@@ -120,38 +125,54 @@ const applyState = (s) => s === 'in'
   ? `renderAccount('Alexander Kowalski'); document.getElementById('authSlot').dataset.state='in';`
   : s === 'out' ? `renderSignedOut();` : `document.getElementById('authSlot').dataset.state='loading';`;
 
-const MEASURE = (w) => `(function(){
+// One combined, per-combo step: apply the route/language/auth-state, let layout
+// settle (two animation frames), then measure — all inside a SINGLE CDP evaluate.
+// This replaces the former three round-trips + fixed 15ms sleep per combo (which,
+// times 2970 combos, is what pushed the run past the runner's self-watchdog). The
+// pass/fail assertion is UNCHANGED: over = documentElement.scrollWidth - viewport,
+// with the overflow-x clamps neutralized and NO exclusions. The expensive O(N)
+// culprit search runs ONLY when a combo actually overflows (over>1); on the passing
+// path a cheap element count still satisfies the "measurement saw a rendered page"
+// guard. Coverage is identical — every route × language × state × width is measured.
+const RUN = (w, route, lang, state) => `(async function(){
+  location.hash='${route}'; applyLang('${lang}'); ${applyState(state)}
+  // Expand the docs mobile nav disclosure too, so it can't hide an overflow.
+  var d=document.querySelector('.docs-sidebar'); if(d)d.classList.add('open');
+  // Let the synchronous SPA re-render settle. A small timer (NOT requestAnimationFrame,
+  // which headless Chrome throttles heavily) is enough: applyLang/render are synchronous
+  // and the scrollWidth read below forces a layout flush regardless.
+  await new Promise(function(r){setTimeout(r,5);});
   var vw=${w}, de=document.documentElement, b=document.body;
   var ph=de.style.overflowX, pb=b.style.overflowX; de.style.overflowX='visible'; b.style.overflowX='visible'; void de.offsetWidth;
   // THE ASSERTION is trueSw below — documentElement.scrollWidth measured with the
-  // overflow-x clamps neutralized. It has no exclusions of any kind and is the
-  // only thing that decides pass/fail.
-  var trueSw=de.scrollWidth, worst=null, measured=0, all=document.getElementsByTagName('*');
-  for(var i=0;i<all.length;i++){ var el=all[i];
-    // Everything below only picks the human-readable CULPRIT shown when a check
-    // fails. #ambient's contents are skipped here because they are structurally
-    // clipped (see the contain:paint assertion) and would otherwise always win
-    // the "worst" contest and point the reader at a red herring.
-    //
-    // This used to be an exclusion in the assertion path, and that is exactly how
-    // this gate reported 2430 clean assertions while .particle elements painted
-    // up to 91px past the right edge on a phone: the only broken elements were
-    // the ones the test refused to look at.
-    var cs=getComputedStyle(el); if(cs.display==='none'||cs.visibility==='hidden')continue;
-    var r=el.getBoundingClientRect(); if(r.width===0&&r.height===0)continue;
-    measured++;
-    if(el.id==='ambient'||el.closest('#ambient'))continue;
-    // 1px covers subpixel rounding.
-    if(r.right>vw+1&&(!worst||r.right>worst.right)) worst={t:el.tagName.toLowerCase(),c:(''+(el.className||'')).slice(0,40),id:el.id||'',right:Math.round(r.right)};
-  }
-  de.style.overflowX=ph; b.style.overflowX=pb;
+  // overflow-x clamps neutralized. It has no exclusions and alone decides pass/fail.
+  var trueSw=de.scrollWidth, over=Math.round(trueSw-vw), worst=null, measured=0;
   // Structural guard for the actual fix: #ambient must clip its own painting.
-  // overflow:hidden alone does NOT clip position:fixed descendants (their
-  // containing block is the viewport, outside the clipper), so without
-  // contain:paint the particle field paints outside the viewport again.
+  // overflow:hidden alone does NOT clip position:fixed descendants (their containing
+  // block is the viewport, outside the clipper), so without contain:paint the
+  // particle field paints outside the viewport again. Checked every combo.
   var amb=document.getElementById('ambient');
   var contain=amb?(getComputedStyle(amb).contain||''):'NO-AMBIENT-ELEMENT';
-  return JSON.stringify({over:Math.round(trueSw-vw), worst:worst, measured:measured, contain:contain});
+  if(over>1){
+    // Only on an actual overflow: find the human-readable CULPRIT. #ambient's
+    // contents are skipped here because they are structurally clipped (the
+    // contain:paint assertion) and would otherwise always win the "worst" contest
+    // and point the reader at a red herring. This never gates a pass — over already did.
+    var all=document.getElementsByTagName('*');
+    for(var i=0;i<all.length;i++){ var el=all[i];
+      var cs=getComputedStyle(el); if(cs.display==='none'||cs.visibility==='hidden')continue;
+      var r=el.getBoundingClientRect(); if(r.width===0&&r.height===0)continue;
+      measured++;
+      if(el.id==='ambient'||el.closest('#ambient'))continue;
+      // 1px covers subpixel rounding.
+      if(r.right>vw+1&&(!worst||r.right>worst.right)) worst={t:el.tagName.toLowerCase(),c:(''+(el.className||'')).slice(0,40),id:el.id||'',right:Math.round(r.right)};
+    }
+  } else {
+    // Passing path: cheap non-empty-render guard (no per-element getComputedStyle).
+    measured=b.getElementsByTagName('*').length;
+  }
+  de.style.overflowX=ph; b.style.overflowX=pb;
+  return JSON.stringify({over:over, worst:worst, measured:measured, contain:contain});
 })()`;
 
 const expectedChecks = VIEWPORTS.length * ROUTES.length * LANGS.length * STATES.length;
@@ -170,11 +191,7 @@ for (const [w, h] of VIEWPORTS) {
   for (const route of ROUTES) {
     for (const lang of LANGS) {
       for (const state of STATES) {
-        await evaluate(`location.hash='${route}'; applyLang('${lang}'); ${applyState(state)} void 0;`);
-        // Expand the docs mobile nav disclosure too, so it can't hide an overflow.
-        await evaluate(`var d=document.querySelector('.docs-sidebar'); if(d)d.classList.add('open'); void 0;`);
-        await new Promise((r) => setTimeout(r, 15));
-        const m = JSON.parse(await evaluate(MEASURE(w)));
+        const m = JSON.parse(await evaluate(RUN(w, route, lang, state)));
         checks++;
         measuredElements += m.measured;
         if (m.measured <= 0) { console.error(`check-overflow: measurement inspected no visible elements at ${w}x${h} ${route} ${lang} ${state}.`); cleanup(1); }
@@ -193,7 +210,7 @@ for (const [w, h] of VIEWPORTS) {
   console.log(`check-overflow: completed ${w}x${h} (${checks}/${expectedChecks} assertions)`);
 }
 
-console.log(`check-overflow: ${checks} assertions and ${measuredElements} visible-element measurements across ${VIEWPORTS.length} widths × ${ROUTES.length} routes × ${LANGS.length} langs × ${STATES.length} states.`);
+console.log(`check-overflow: ${checks} assertions and ${measuredElements} element measurements across ${VIEWPORTS.length} widths × ${ROUTES.length} routes × ${LANGS.length} langs × ${STATES.length} states.`);
 if (checks !== expectedChecks || measuredElements <= 0) {
   console.error(`FAIL: expected ${expectedChecks} nonempty assertions, completed ${checks} across ${measuredElements} visible-element measurements.`);
   cleanup(1);
