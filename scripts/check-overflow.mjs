@@ -165,7 +165,7 @@ const RUN = (w, route, lang, state) => `(async function(){
       measured++;
       if(el.id==='ambient'||el.closest('#ambient'))continue;
       // 1px covers subpixel rounding.
-      if(r.right>vw+1&&(!worst||r.right>worst.right)) worst={t:el.tagName.toLowerCase(),c:(''+(el.className||'')).slice(0,40),id:el.id||'',right:Math.round(r.right)};
+      if(r.right>vw+1&&(!worst||r.right>worst.right)) worst={t:el.tagName.toLowerCase(),c:(''+(el.className||'')).slice(0,40),id:el.id||'',right:Math.round(r.right),ow:cs.overflowWrap||cs.wordWrap,ws:cs.whiteSpace,sw:Math.round(el.scrollWidth),ow2:el.getBoundingClientRect().width>vw?(''+(el.textContent||'')).replace(/\\s+/g,' ').trim().slice(0,50):''};
     }
   } else {
     // Passing path: cheap non-empty-render guard (no per-element getComputedStyle).
@@ -197,7 +197,7 @@ for (const [w, h] of VIEWPORTS) {
         if (m.measured <= 0) { console.error(`check-overflow: measurement inspected no visible elements at ${w}x${h} ${route} ${lang} ${state}.`); cleanup(1); }
         if (m.over > 1) {
           fails++;
-          const wrec = m.worst ? `<${m.worst.t} class="${m.worst.c}" id="${m.worst.id}"> right=${m.worst.right}` : '(none outside #ambient — check the decorative layer)';
+          const wrec = m.worst ? `<${m.worst.t} class="${m.worst.c}" id="${m.worst.id}"> right=${m.worst.right} sw=${m.worst.sw} overflow-wrap=${m.worst.ow} white-space=${m.worst.ws} text="${m.worst.ow2}"` : '(none outside #ambient — check the decorative layer)';
           failures.push(`  ${w}x${h} route=${route} lang=${lang} state=${state}  over=+${m.over}px  culprit=${wrec}`);
         }
         if (!/paint/.test(m.contain)) {
