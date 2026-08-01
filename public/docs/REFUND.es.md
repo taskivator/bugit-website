@@ -25,15 +25,19 @@ Antes de comprar, revisa los requisitos: Visual Studio Code, un proveedor de IA 
 
 ## Qué ocurre cuando se aprueba un reembolso
 
-Cuando aprobamos un reembolso, se revierte la compra y se retira la licencia asociada:
+Cuando aprobamos un reembolso **total**, se revierte la compra y se retira la licencia asociada:
 
 - La licencia asociada se revoca de forma permanente
 - Se detienen las futuras activaciones con esa licencia
 - Se detienen las futuras actualizaciones de esa licencia
 - Finaliza el soporte vinculado a esa licencia
 
+Un reembolso **parcial** (por ejemplo, un ajuste por buena voluntad) mantiene tu licencia activa, salvo que los importes reembolsados sumen en conjunto el precio total de compra, en cuyo caso se trata como un reembolso total y la licencia se revoca. Abrir una disputa de pago no pone fin por sí solo a tu acceso; una disputa perdida o un contracargo (chargeback) finalizado se trata como un reembolso total.
+
 ## Cómo solicitar un reembolso
 
 Escribe a [support@bugit.dev](mailto:support@bugit.dev) desde la cuenta usada para la compra, dentro de los 7 días, y describe el problema. No incluyas código fuente confidencial, datos de clientes, tickets privados ni secretos. Confirmaremos el resultado por correo electrónico.
 
 Esta política cubre solo los reembolsos y no limita los derechos que puedas tener según la legislación de protección al consumidor aplicable.
+
+Consulta también la [información sobre transacciones comerciales](#/docs/commerce) (特定商取引法に基づく表記) para conocer los datos del vendedor y de la transacción, incluidos los plazos de entrega y el efecto de la entrega digital inmediata sobre cualquier derecho de desistimiento legal.

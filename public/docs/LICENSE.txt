@@ -29,7 +29,10 @@ terms.
 
 4. Restrictions. The Licensee may not resell, sublicense, redistribute, publish,
    or make the Software (original or modified) available to third parties, or
-   remove or alter this notice or any copyright or license information.
+   remove or alter this notice or any copyright or license information. Editing
+   files for the Licensee's own internal use (clause 3) does not permit copying the
+   Software, its instructions, prompts, templates, or tools into another project,
+   product, or agent, or giving them to another person or team.
 
 5. Ownership. Taskivator retains all right, title, and interest in the Software,
    including all intellectual-property rights. This license grants use rights
@@ -39,9 +42,16 @@ terms.
    Software runs on the Licensee's own machine and sends no project, ticket,
    glossary, or tracker data to Taskivator. See PRIVACY.md.
 
-7. Term. Licenses are sold on an annual term that begins at first activation and
-   continues until it expires or is terminated. Continued use requires a current
-   license.
+7. Term. BugIt is a one-time purchase, not a subscription: you pay once, and
+   there is no automatic renewal and no recurring charge. Your purchase grants a
+   one-year license — including updates and license/activation services — that
+   begins at first activation. When the year ends the license expires; continued
+   use requires a new license, which you may choose to buy, and Taskivator never
+   charges you automatically. If there is any conflict between a translation of
+   these terms and the English version, the English version governs, except where
+   mandatory local law provides otherwise. Nothing in these terms excludes or
+   limits any right or remedy you have as a consumer under the mandatory law of
+   your country of residence that cannot lawfully be excluded.
 
 8. Licensee responsibility & assumption of risk. The Software assists with
    drafting and filing bug reports; it does not replace the Licensee's own
@@ -87,5 +97,19 @@ terms.
     either party's right to bring a claim in a locally mandated small-claims
     forum where applicable.
 
-Refunds are handled through the store you purchased from. Questions, activation
+15. Package identification. Each licensed copy carries a non-secret Package ID
+    (shown in MANIFEST.json, LICENSE-NOTICE.txt, and the BUILD stamp in the
+    download). It is an opaque identifier that contains no personal data, no
+    account credentials, and no license key of any kind (the product uses none).
+    If a copy is published or redistributed in breach of these terms, Taskivator
+    may use the Package ID to trace the copy to the license under which it was
+    issued. The identifier is used solely for license enforcement and leak tracing;
+    it adds no telemetry, collects no project data, and transmits nothing on its
+    own. See PRIVACY.md.
+
+Refunds are handled under the Refund Policy at bugit.dev. Questions, activation
 help, or transfer requests: bugit.dev or support@bugit.dev.
+
+For seller and transaction details, including delivery timing and returns, see the
+Commercial Transactions disclosure (特定商取引法に基づく表記) at bugit.dev
+(Documentation → Commercial Transactions).

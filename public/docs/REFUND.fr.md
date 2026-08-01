@@ -25,15 +25,19 @@ Avant d’acheter, vérifiez les prérequis : Visual Studio Code, un fournisseur
 
 ## Ce qui se passe lorsqu’un remboursement est approuvé
 
-Lorsque nous approuvons un remboursement, l’achat est annulé et la licence associée est retirée :
+Lorsque nous approuvons un remboursement **intégral**, l’achat est annulé et la licence associée est retirée :
 
 - La licence associée est définitivement révoquée
 - Les futures activations avec cette licence cessent
 - Les futures mises à jour de cette licence cessent
 - Le support lié à cette licence prend fin
 
+Un remboursement **partiel** (par exemple un geste commercial) laisse votre licence active, sauf si les montants remboursés atteignent ensemble le prix d’achat total — auquel cas il est traité comme un remboursement intégral et la licence est révoquée. L’ouverture d’un litige de paiement ne met pas fin, à elle seule, à votre accès ; un litige perdu ou une rétrofacturation finalisée est traité comme un remboursement intégral.
+
 ## Comment demander un remboursement
 
 Écrivez à [support@bugit.dev](mailto:support@bugit.dev) depuis le compte utilisé pour l’achat, dans un délai de 7 jours, et décrivez le problème. N’incluez pas de code source confidentiel, de données clients, de tickets privés ni de secrets. Nous confirmerons le résultat par e-mail.
 
 Cette politique concerne uniquement les remboursements et ne limite pas les droits dont vous pourriez bénéficier au titre du droit de la consommation applicable.
+
+Consultez également la [divulgation relative aux transactions commerciales](#/docs/commerce) (特定商取引法に基づく表記) pour les informations sur le vendeur et la transaction, y compris les délais de livraison et l’effet de la livraison numérique immédiate sur tout droit de rétractation légal.
