@@ -5,20 +5,23 @@ Ce logiciel et sa documentation (« le Logiciel ») font l'objet d'une licence,
 et non d'une vente. En achetant, en activant ou en utilisant le Logiciel, vous
 (« le Titulaire de la licence ») acceptez les présentes conditions.
 
-1. Octroi. À l'achat et à l'activation au moyen d'une clé de licence valide,
-   Taskivator accorde au Titulaire de la licence une licence non exclusive et
-   non transférable d'utilisation du Logiciel à des fins internes d'assurance
-   qualité (QA) et de signalement de bugs, sur le nombre d'appareils autorisé
-   par la formule achetée (Solo = 1 appareil à la fois ; Team = 5 appareils à
-   la fois).
+1. Octroi. À l'achat et à l'activation du compte BugIt du Titulaire de la licence
+   — une connexion au BugIt Portal via le navigateur qui approuve l'appareil ; il
+   n'y a aucune clé de licence à saisir —, Taskivator accorde au Titulaire de la
+   licence une licence non exclusive et non transférable d'utilisation du Logiciel
+   à des fins internes d'assurance qualité (QA) et de signalement de bugs, sur le
+   nombre d'appareils autorisé par la formule achetée (Solo = 1 appareil à la
+   fois ; Team = jusqu'à 5 membres (sièges), chacun activant son propre appareil).
 
-2. Clés de licence et sièges. Chaque clé de licence est personnelle au
-   Titulaire de la licence. Le Titulaire ne peut pas partager, publier,
-   revendre, sous-licencier ni transférer une clé de licence. Taskivator peut
-   suspendre ou révoquer une clé qui est partagée, publiée, remboursée, ayant
-   fait l'objet d'une rétrofacturation, ou utilisée de manière frauduleuse ou
-   en violation des présentes conditions ; une clé révoquée cesse de s'activer
-   sur de nouveaux appareils.
+2. Comptes et sièges. Le compte BugIt du Titulaire de la licence et le droit
+   d'utilisation qui y est attaché sont personnels au Titulaire de la licence. Le
+   Titulaire ne peut pas partager, publier, revendre, sous-licencier ni transférer
+   le compte, son droit d'utilisation ou ses autorisations d'appareil. Taskivator
+   peut suspendre ou révoquer un droit d'utilisation (ou un siège Team individuel)
+   qui est partagé, publié, remboursé, ayant fait l'objet d'une rétrofacturation,
+   ou utilisé de manière frauduleuse ou en violation des présentes conditions ; un
+   droit d'utilisation révoqué cesse de s'activer sur de nouveaux appareils et ses
+   appareils actifs perdent leur autorisation.
 
 3. Modification et anti-contournement. Le Titulaire de la licence peut modifier
    les fichiers de configuration, de glossaire, de modèles et d'instructions
@@ -42,9 +45,17 @@ et non d'une vente. En achetant, en activant ou en utilisant le Logiciel, vous
    Titulaire de la licence et n'envoie à Taskivator aucune donnée de projet, de
    ticket, de glossaire ni d'outil de suivi. Voir PRIVACY.md.
 
-7. Durée. Les licences sont vendues pour une durée annuelle qui commence à la
-   première activation et se poursuit jusqu'à son expiration ou sa résiliation.
-   La poursuite de l'utilisation nécessite une licence en cours de validité.
+7. Durée. BugIt est un achat unique, et non un abonnement : vous payez une seule
+   fois, et il n'y a ni renouvellement automatique ni facturation récurrente. Votre
+   achat accorde une licence d'un an — incluant les mises à jour et les services de
+   licence/activation — qui commence à la première activation. À la fin de l'année,
+   la licence expire ; la poursuite de l'utilisation nécessite une nouvelle licence,
+   que vous pouvez choisir d'acheter, et Taskivator ne vous facture jamais
+   automatiquement. En cas de conflit entre une traduction des présentes conditions
+   et la version anglaise, la version anglaise prévaut, sauf disposition contraire du
+   droit local impératif. Rien dans les présentes conditions n'exclut ni ne limite
+   un droit ou un recours dont vous disposez en tant que consommateur en vertu du
+   droit impératif de votre pays de résidence et qui ne peut être légalement exclu.
 
 8. Responsabilité du Titulaire et acceptation des risques. Le Logiciel aide à
    rédiger et à créer des rapports de bug ; il ne remplace pas le jugement propre
@@ -101,3 +112,8 @@ et non d'une vente. En achetant, en activant ou en utilisant le Logiciel, vous
 Les remboursements sont gérés par la boutique auprès de laquelle vous avez
 effectué votre achat. Pour toute question, aide à l'activation ou demande de
 transfert : bugit.dev ou support@bugit.dev.
+
+Pour les informations sur le vendeur et la transaction, y compris les délais de
+livraison et les retours, consultez la divulgation relative aux transactions
+commerciales (特定商取引法に基づく表記) sur bugit.dev (Documentation →
+Transactions commerciales).

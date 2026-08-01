@@ -5,18 +5,23 @@ Este software y su documentación («el Software») se licencian, no se venden. 
 comprar, activar o utilizar el Software, usted («el Licenciatario») acepta estos
 términos.
 
-1. Concesión. Tras la compra y la activación con una clave de licencia válida,
-   Taskivator concede al Licenciatario una licencia no exclusiva e intransferible
-   para utilizar el Software con fines internos de control de calidad (QA) y de
-   reporte de bugs, en el número de dispositivos que permita el plan adquirido
-   (Solo = 1 dispositivo a la vez; Team = 5 dispositivos a la vez).
+1. Concesión. Tras la compra y la activación de la cuenta BugIt del Licenciatario
+   —un inicio de sesión en el BugIt Portal desde el navegador que aprueba el
+   dispositivo; no hay ninguna clave de licencia que introducir—, Taskivator
+   concede al Licenciatario una licencia no exclusiva e intransferible para
+   utilizar el Software con fines internos de control de calidad (QA) y de reporte
+   de bugs, en el número de dispositivos que permita el plan adquirido (Solo = 1
+   dispositivo a la vez; Team = hasta 5 miembros (puestos), cada uno de los cuales
+   activa su propio dispositivo).
 
-2. Claves de licencia y puestos. Cada clave de licencia es personal del
-   Licenciatario. El Licenciatario no podrá compartir, publicar, revender,
-   sublicenciar ni transferir una clave de licencia. Taskivator podrá suspender o
-   revocar una clave que se comparta, publique, reembolse, sea objeto de devolución
-   de cargo (chargeback) o se utilice de forma fraudulenta o en incumplimiento de
-   estos términos; una clave revocada deja de activarse en nuevos dispositivos.
+2. Cuentas y puestos. La cuenta BugIt del Licenciatario y su derecho de uso son
+   personales del Licenciatario. El Licenciatario no podrá compartir, publicar,
+   revender, sublicenciar ni transferir la cuenta, su derecho de uso o sus
+   autorizaciones de dispositivo. Taskivator podrá suspender o revocar un derecho de
+   uso (o un puesto Team individual) que se comparta, publique, reembolse, sea
+   objeto de devolución de cargo (chargeback) o se utilice de forma fraudulenta o en
+   incumplimiento de estos términos; un derecho de uso revocado deja de activarse en
+   nuevos dispositivos y sus dispositivos activos pierden la autorización.
 
 3. Modificación y anticircunvención. El Licenciatario podrá editar los archivos de
    configuración, glosario, plantillas e instrucciones para su propio uso interno.
@@ -38,9 +43,17 @@ términos.
    envía a Taskivator ningún dato de proyectos, tickets, glosario ni del tracker.
    Consulte PRIVACY.md.
 
-7. Vigencia. Las licencias se venden por un plazo anual que comienza en la primera
-   activación y continúa hasta su vencimiento o resolución. El uso continuado
-   requiere una licencia vigente.
+7. Vigencia. BugIt es una compra única, no una suscripción: paga una sola vez, y no
+   hay renovación automática ni cargo recurrente. Su compra concede una licencia de
+   un año —incluidas las actualizaciones y los servicios de licencia/activación— que
+   comienza en la primera activación. Cuando el año termina, la licencia caduca; el
+   uso continuado requiere una nueva licencia, que usted puede optar por comprar, y
+   Taskivator nunca le cobra de forma automática. Si existe algún conflicto entre una
+   traducción de estos términos y la versión en inglés, prevalece la versión en
+   inglés, salvo que la ley local imperativa disponga otra cosa. Nada en estos
+   términos excluye ni limita ningún derecho o recurso que a usted le corresponda
+   como consumidor con arreglo a la ley imperativa de su país de residencia que no
+   pueda excluirse lícitamente.
 
 8. Responsabilidad del Licenciatario y asunción de riesgo. El Software ayuda a
    redactar y registrar reportes de bugs; no sustituye el criterio propio del
@@ -93,3 +106,8 @@ términos.
 Los reembolsos se gestionan a través de la tienda en la que realizó la compra. Para
 consultas, ayuda con la activación o solicitudes de transferencia: bugit.dev o
 support@bugit.dev.
+
+Para conocer los datos del vendedor y de la transacción, incluidos los plazos de
+entrega y las devoluciones, consulte la información sobre transacciones
+comerciales (特定商取引法に基づく表記) en bugit.dev (Documentación →
+Transacciones comerciales).

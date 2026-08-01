@@ -29,13 +29,19 @@ version of Python. BugIt does not include an AI model or subscription.
 
 ## What Happens When a Refund Is Approved
 
-When we approve a refund, the purchase is reversed and the associated license is
-retired. Specifically:
+When we approve a **full** refund, the purchase is reversed and the associated
+license is retired. Specifically:
 
 - The associated license is permanently revoked
 - Future activations with that license stop
 - Future updates for that license stop
 - Support tied to that license ends
+
+A **partial** refund (for example a goodwill adjustment) leaves your license active,
+unless the amounts refunded together add up to the full purchase price — in which
+case it is treated as a full refund and the license is revoked. Opening a payment
+dispute does not by itself end your access; a lost dispute or a finalized chargeback
+is treated like a full refund.
 
 ## How to Request a Refund
 
@@ -46,3 +52,7 @@ your message. We will confirm the outcome by email.
 
 This policy covers refunds only and does not limit any rights you may have under
 applicable consumer-protection law.
+
+See also the [Commercial Transactions disclosure](#/docs/commerce) (特定商取引法に基づく表記)
+for seller and transaction details, including delivery timing and the effect of
+immediate digital delivery on any statutory cancellation right.

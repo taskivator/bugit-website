@@ -5,19 +5,23 @@ Diese Software und ihre Dokumentation („die Software") werden lizenziert, nich
 verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären Sie
 („der Lizenznehmer") sich mit diesen Bedingungen einverstanden.
 
-1. Lizenzgewährung. Mit Kauf und Aktivierung unter Verwendung eines gültigen
-   Lizenzschlüssels gewährt Taskivator dem Lizenznehmer eine nicht-exklusive,
-   nicht übertragbare Lizenz zur Nutzung der Software für interne QA- und
-   Fehlerberichtszwecke, auf der Anzahl von Geräten, die die erworbene Stufe
-   zulässt (Solo = 1 Gerät gleichzeitig; Team = 5 Geräte gleichzeitig).
+1. Lizenzgewährung. Mit Kauf und Aktivierung des BugIt-Kontos des Lizenznehmers —
+   einer Anmeldung im BugIt Portal über den Browser, die das Gerät freigibt; es
+   gibt keinen Lizenzschlüssel zur Eingabe — gewährt Taskivator dem Lizenznehmer
+   eine nicht-exklusive, nicht übertragbare Lizenz zur Nutzung der Software für
+   interne QA- und Fehlerberichtszwecke, auf der Anzahl von Geräten, die die
+   erworbene Stufe zulässt (Solo = 1 Gerät gleichzeitig; Team = bis zu 5 Mitglieder
+   (Plätze), von denen jedes sein eigenes Gerät aktiviert).
 
-2. Lizenzschlüssel & Plätze. Jeder Lizenzschlüssel ist persönlich an den
-   Lizenznehmer gebunden. Der Lizenznehmer darf einen Lizenzschlüssel nicht
-   weitergeben, veröffentlichen, weiterverkaufen, unterlizenzieren oder
-   übertragen. Taskivator kann einen Schlüssel sperren oder widerrufen, der
-   weitergegeben, veröffentlicht, rückerstattet, rückbelastet oder betrügerisch
-   bzw. unter Verstoß gegen diese Bedingungen verwendet wird; ein widerrufener
-   Schlüssel lässt sich auf neuen Geräten nicht mehr aktivieren.
+2. Konten & Plätze. Das BugIt-Konto des Lizenznehmers und dessen Berechtigung
+   sind persönlich an den Lizenznehmer gebunden. Der Lizenznehmer darf das Konto,
+   dessen Berechtigung oder dessen Gerätefreigaben nicht weitergeben,
+   veröffentlichen, weiterverkaufen, unterlizenzieren oder übertragen. Taskivator
+   kann eine Berechtigung (oder einen einzelnen Team-Platz) sperren oder
+   widerrufen, die weitergegeben, veröffentlicht, rückerstattet, rückbelastet oder
+   betrügerisch bzw. unter Verstoß gegen diese Bedingungen verwendet wird; eine
+   widerrufene Berechtigung lässt sich auf neuen Geräten nicht mehr aktivieren und
+   ihre aktiven Geräte verlieren die Freigabe.
 
 3. Änderung & Umgehungsverbot. Der Lizenznehmer darf Konfigurations-, Glossar-,
    Vorlagen- und Anweisungsdateien für seine eigene interne Nutzung bearbeiten.
@@ -39,9 +43,18 @@ verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären 
    und sendet keine Projekt-, Ticket-, Glossar- oder Tracker-Daten an Taskivator.
    Siehe PRIVACY.md.
 
-7. Laufzeit. Lizenzen werden mit einer jährlichen Laufzeit verkauft, die mit der
-   ersten Aktivierung beginnt und bis zu ihrem Ablauf oder ihrer Kündigung
-   fortbesteht. Die fortgesetzte Nutzung erfordert eine gültige Lizenz.
+7. Laufzeit. BugIt ist ein einmaliger Kauf, kein Abonnement: Sie zahlen einmal, und
+   es gibt keine automatische Verlängerung und keine wiederkehrende Belastung. Ihr
+   Kauf gewährt eine einjährige Lizenz — einschließlich Updates und Lizenz-/
+   Aktivierungsdiensten —, die mit der ersten Aktivierung beginnt. Mit Ablauf des
+   Jahres erlischt die Lizenz; die fortgesetzte Nutzung erfordert eine neue Lizenz,
+   die Sie erwerben können, und Taskivator belastet Sie niemals automatisch. Bei
+   Widersprüchen zwischen einer Übersetzung dieser Bedingungen und der englischen
+   Fassung ist die englische Fassung maßgeblich, sofern nicht zwingendes lokales
+   Recht etwas anderes vorsieht. Nichts in diesen Bedingungen schließt Rechte oder
+   Rechtsbehelfe aus oder beschränkt sie, die Ihnen als Verbraucher nach dem
+   zwingenden Recht Ihres Wohnsitzlandes zustehen und die nicht rechtswirksam
+   ausgeschlossen werden können.
 
 8. Verantwortung des Lizenznehmers & Risikoübernahme. Die Software unterstützt
    beim Verfassen und Einreichen von Fehlerberichten; sie ersetzt nicht das
@@ -97,3 +110,7 @@ verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären 
 Rückerstattungen werden über den Store abgewickelt, in dem Sie gekauft haben.
 Fragen, Hilfe bei der Aktivierung oder Übertragungsanfragen: bugit.dev oder
 support@bugit.dev.
+
+Angaben zum Verkäufer und zur Transaktion, einschließlich Lieferzeit und
+Rückgaben, finden Sie in der Offenlegung zu Handelsgeschäften
+(特定商取引法に基づく表記) auf bugit.dev (Dokumentation → Handelsgeschäfte).

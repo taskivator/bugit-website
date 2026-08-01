@@ -25,15 +25,19 @@ Prima dell’acquisto, verifica i requisiti: Visual Studio Code, un provider di 
 
 ## Cosa succede quando un rimborso è approvato
 
-Quando approviamo un rimborso, l’acquisto viene annullato e la licenza associata viene ritirata:
+Quando approviamo un rimborso **totale**, l’acquisto viene annullato e la licenza associata viene ritirata:
 
 - La licenza associata viene revocata in modo permanente
 - Le future attivazioni con quella licenza si interrompono
 - I futuri aggiornamenti per quella licenza si interrompono
 - L’assistenza legata a quella licenza termina
 
+Un rimborso **parziale** (ad esempio un adeguamento a titolo di cortesia) lascia la tua licenza attiva, a meno che gli importi rimborsati non raggiungano complessivamente l’intero prezzo di acquisto, nel qual caso viene trattato come un rimborso totale e la licenza viene revocata. L’apertura di una contestazione di pagamento non pone fine di per sé al tuo accesso; una contestazione persa o uno storno (chargeback) finalizzato viene trattato come un rimborso totale.
+
 ## Come richiedere un rimborso
 
 Scrivi a [support@bugit.dev](mailto:support@bugit.dev) dall’account usato per l’acquisto, entro 7 giorni, descrivendo il problema. Non includere codice sorgente riservato, dati dei clienti, ticket privati o segreti. Confermeremo l’esito via e-mail.
 
 Questa politica riguarda solo i rimborsi e non limita i diritti che puoi avere ai sensi della normativa applicabile a tutela dei consumatori.
+
+Consulta anche l’[informativa sulle transazioni commerciali](#/docs/commerce) (特定商取引法に基づく表記) per i dettagli sul venditore e sulla transazione, inclusi i tempi di consegna e l’effetto della consegna digitale immediata su qualsiasi diritto di recesso previsto dalla legge.

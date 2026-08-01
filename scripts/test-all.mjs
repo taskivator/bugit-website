@@ -34,7 +34,7 @@ if (!ready) { console.error(`server did not become ready at ${base}`); shutdown(
 const SUITES = [
   "check-doc-links.mjs", "check-docs.mjs", "check-overflow.mjs", "check-logo.mjs",
   "check-trust-icons.mjs", "check-ads-tag.mjs", "check-cache-headers.mjs", "check-csp-telemetry.mjs",
-  "check-billing-copy.mjs", "check-team-paused.mjs", "check-activation-copy.mjs", "check-consent-network.mjs",
+  "check-billing-copy.mjs", "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {
