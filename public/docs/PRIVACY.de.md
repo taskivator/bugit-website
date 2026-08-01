@@ -1,191 +1,175 @@
-# Datenschutzerklärung — BugIt
+# Datenschutzerklärung für BugIt
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Zuletzt aktualisiert: 1. August 2026**
+**Zuletzt aktualisiert: 2. August 2026**
 
-Diese Erklärung beschreibt, welche personenbezogenen Daten verarbeitet werden, wenn
-Sie die BugIt-Website (bugit.dev), das BugIt Portal (Konto-, Kauf- und
-Lizenzverwaltung) und die BugIt QA Agent-Software nutzen, sowie welche Wahlmöglichkeiten
-und Rechte Sie haben. Sie ist in klarer Sprache verfasst und soll genau abbilden, wie
-das Produkt tatsächlich funktioniert.
+Diese Erklärung beschreibt, welche personenbezogenen Daten wir verarbeiten, wenn Sie
+die BugIt Website (bugit.dev), das BugIt Portal (Konto, Kauf und Lizenzverwaltung)
+und die BugIt QA Agent Software nutzen, und welche Wahlmöglichkeiten und Rechte Sie
+haben.
 
-## Wer für Ihre Daten verantwortlich ist
+## Betreiber und Datenschutzkontakt
 
-BugIt wird unter dem Handelsnamen **Taskivator / BugIt** betrieben. Der operative
-Ansprechpartner für alle Datenschutzfragen und -anfragen ist **support@bugit.dev**.
+BugIt wird unter der Geschäftsbezeichnung Taskivator betrieben. Datenschutzfragen,
+Anfragen zu personenbezogenen Daten sowie Anfragen nach dem vollständigen Namen und
+den geschäftlichen Kontaktdaten des Betreibers richten Sie bitte an
+[support@bugit.dev](mailto:support@bugit.dev). Angefragte Betreiberangaben werden
+unverzüglich mitgeteilt.
 
-**Der Eigentümer hat sich dafür entschieden, persönliche Angaben zur Identifizierung
-des Verantwortlichen nicht zu veröffentlichen. Dies bleibt ein akzeptiertes
-Rechtskonformitätsrisiko und wurde keiner externen rechtlichen Prüfung und Freigabe
-unterzogen.** Ein Handelsname allein erfüllt nicht die gesetzliche Pflicht, den
-für die Datenverarbeitung Verantwortlichen zu benennen; diese Pflicht gilt durch
-diese Erklärung daher **nicht** als erfüllt. Aus diesem Grund werden die
-registrierten Angaben zur Identität des Verantwortlichen nicht veröffentlicht; soweit
-Ihnen das Gesetz einen Anspruch darauf einräumt, können Sie sie unter
-support@bugit.dev anfordern.
+## Kurz gefasst
 
-## Die Kurzfassung
+- Die BugIt Software läuft auf Ihrem eigenen Rechner. Ihre Fehlerberichte,
+  Spezifikationen, Glossare, Screenshots, Ihr Code, Ihre Einstellungen und Tickets
+  werden nicht an Taskivator übermittelt.
+- Für Konto, Kauf, Lizenz und Support verarbeiten die Website und das Portal eine
+  begrenzte Menge personenbezogener Daten.
+- Wir verkaufen keine personenbezogenen Daten. Die Werbemessung ist standardmäßig
+  ausgeschaltet und läuft nur, wenn Sie sie aktivieren.
 
-- Die **QA Agent-Software läuft auf Ihrem Rechner.** Ihre Fehlerberichte,
-  Spezifikationen, Ihr Glossar, Ihre Screenshots, Ihr Code, Ihre Einstellungen und
-  Ihre Tickets werden **nicht** an Taskivator gesendet.
-- Um Ihr Konto, Ihren Kauf, Ihre Lizenz und den Support abzuwickeln, verarbeiten die
-  **Website und das Portal** einen begrenzten Satz personenbezogener Daten (Ihre
-  E-Mail-Adresse, Kaufunterlagen, Lizenz- und Geräteaktivierungen sowie
-  Support-Nachrichten), wobei die unten aufgeführten Dienstleister eingesetzt werden.
-- Wir **verkaufen** Ihre personenbezogenen Daten **nicht**. Die Werbemessung ist
-  **standardmäßig deaktiviert** und läuft nur mit Ihrer Einwilligung.
+## Was die BugIt Software an uns sendet
 
-## Was die QA Agent-Software an Taskivator sendet
+BugIt wird über Ihren Browser aktiviert: Sie melden sich im BugIt Portal an und geben
+das Gerät frei. Es gibt keinen Lizenzschlüssel, den Sie eingeben oder speichern
+müssten. Von Ihrem Gerät sendet die Software nur das, was für den Betrieb Ihrer
+Lizenz erforderlich ist:
 
-BugIt verwendet eine **browserbasierte Aktivierung** — Sie melden sich im Browser
-beim BugIt Portal an und bestätigen das Gerät; **es gibt keinen Lizenzschlüssel**,
-den Sie eingeben, einfügen oder speichern müssten. Von Ihrem Gerät sendet die
-Software nur Lizenz-/Update-Daten:
+- einen signierten Berechtigungs- und Geräteaktivierungsnachweis aus dieser
+  Anmeldung im Portal, damit Ihr Gerät autorisiert und später erneut geprüft werden
+  kann, zusammen mit der App Version,
+- eine pseudonyme Gerätekennung, die für Lizenzaktivierung, Gerätebegrenzungen und
+  Betrugsprävention verwendet wird, und
+- eine kurze Geräte- oder Platzbezeichnung, aber nur wenn Sie bei der Einrichtung
+  eine festgelegt haben, damit die Geräte eines Team Kontos unterscheidbar sind. Sie
+  ist freiwillig und wird nicht überprüft.
 
-- einen **signierten Berechtigungs-/Geräteaktivierungsnachweis** aus dieser
-  Portal-Anmeldung (damit Ihr Gerät autorisiert und erneut verifiziert werden kann)
-  sowie die App-Version,
-- einen **anonymen, mit einem Einweg-Hash versehenen Geräte-Fingerabdruck** — einen
-  16-stelligen Hash, der aus grundlegenden Geräteattributen abgeleitet wird; er kann
-  nicht zurückgerechnet werden, um Sie oder Ihre Hardware zu identifizieren, und
-- **nur wenn Sie bei der Ersteinrichtung eine festlegen**, eine kurze von Ihnen
-  gewählte Geräte-/Platzbezeichnung, damit sich die Geräteautorisierungen eines
-  Team-Kontos unterscheiden lassen. Sie muss niemals echt sein und wird niemals
-  überprüft. Wenn Sie keine festlegen, wird nichts gesendet.
+Diese Angaben gehen an den Lizenzdienst von Taskivator, um Ihren Platz zu aktivieren
+und zu prüfen und um festzustellen, ob eine neuere Version verfügbar ist.
 
-Diese gelangen ausschließlich an den Lizenzdienst von Taskivator, um Ihren Platz zu
-aktivieren/zu verifizieren und zu prüfen, ob eine neuere Version verfügbar ist.
+## Was auf Ihrem Gerät bleibt
 
-## Was vollständig auf Ihrem Gerät verbleibt
+- Ihre Spezifikationen, Glossare, Ihr Hausstil und gelernte Korrekturen
+- Ihre `config.json` und Ihre lokalen Projektdateien
+- Ihre API Token, die im Anmeldeinformationsspeicher Ihres Betriebssystems liegen
 
-- Ihre Spezifikationen, Ihr Glossar, Ihr Hausstil und Ihre erlernten Korrekturen
-- Ihre `config.json` und lokalen Projektdateien
-- Ihre API-Tokens (aufbewahrt im Anmeldeinformationsspeicher Ihres Betriebssystems —
-  niemals in einer Datei und niemals an Taskivator übertragen)
+Diese Informationen werden nicht an Taskivator übermittelt.
 
-Nichts davon wird irgendwohin übertragen.
+## Was an die von Ihnen verbundenen Dienste geht
 
-## Was ausschließlich an die von *Ihnen* verbundenen Dienste geht
+Zum Erstellen und Einreichen eines Tickets wird Ihr Berichtstext an den von Ihnen
+genutzten KI Anbieter (GitHub Copilot oder Ihren eigenen OpenAI oder Anthropic
+Schlüssel) und an das Ticketsystem gesendet, in dem Sie einreichen, etwa Jira oder
+Azure DevOps. Das sind die Dienste, die Sie ausgewählt und verbunden haben; die
+dorthin gesendeten Informationen werden weder über Taskivator geleitet noch dorthin
+kopiert. Verbundene KI Anbieter und Ticketsysteme verarbeiten Informationen nach
+ihren eigenen Bedingungen und Datenschutzerklärungen. Bitte prüfen Sie diese, bevor
+Sie einen Dienst verbinden.
 
-Um ein Ticket zu verfassen und einzureichen, wird Ihr Berichtstext an das von Ihnen
-genutzte KI-Modell (GitHub Copilot oder Ihr eigener OpenAI-/Anthropic-Schlüssel) und
-an den Tracker gesendet, bei dem Sie einreichen (etwa Jira oder Azure DevOps). Das
-sind die KI und die Werkzeuge, die **Sie** ausgewählt und verbunden haben — sie
-werden niemals über Taskivator geleitet, dorthin kopiert oder von Taskivator
-eingesehen, das nicht der Verantwortliche für diese Dienste ist. Mit ihnen werden nur
-die zum Einreichen erforderlichen Metadaten ausgetauscht (Vorgangs-ID/-URL sowie die
-von Ihnen freigegebenen Inhalte).
+## Personenbezogene Daten, die wir für Website und Portal verarbeiten
 
-## Personenbezogene Daten, die wir verarbeiten, und warum (Website + Portal)
+- **Konto- und Anmeldedaten**, einschließlich Ihrer E-Mail-Adresse, um Ihr Konto
+  anzulegen und zu schützen
+- **Kauf- und Bestelldaten**, einschließlich Belegen und Steuerunterlagen
+- **Zahlungsdaten**, die von unserem Zahlungsdienstleister verarbeitet werden. Wir
+  speichern keine vollständigen Kartennummern.
+- **Berechtigungen und Lizenzen**, damit wir liefern und prüfen können, was Sie
+  gekauft haben
+- **Geräteaktivierungen**, einschließlich der pseudonymen Gerätekennung, einer von
+  Ihnen vergebenen Bezeichnung sowie Betriebssystem und App Version, damit Platz-
+  und Gerätegrenzen funktionieren und Sie Ihre Geräte selbst verwalten können
+- **Team Mitgliedschaften und Einladungen** für den Team Tarif
+- **Erstattungen, Streitfälle und Rückbuchungen**, soweit sie auftreten
+- **Supportkorrespondenz**, damit wir Ihnen antworten können
+- **Sicherheits- und Verwaltungsprotokolle**, damit wir Missbrauch erkennen und
+  einen Prüfpfad führen können
+- **Von Ihnen gespeicherte Verbindungseinstellungen** für Ticketsysteme wie Jira
+  oder Azure DevOps. Wir speichern die Verbindungseinstellungen, nicht die Inhalte
+  in diesen Werkzeugen.
+- **Ihre Einwilligungsentscheidungen** zu Cookies und Werbemessung, einschließlich
+  Widerruf, sowie die im Checkout erfasste Bestätigung, wo ein Markt sie verlangt
 
-| Daten | Warum (Zweck) | Rechtsgrundlage (DSGVO/UK GDPR) |
-|-------|---------------|---------------------------------|
-| Konto-E-Mail + Authentifizierungsdaten | Ihr Konto erstellen und schützen, Sie anmelden, Admin-MFA | Vertrag; berechtigtes Interesse (Kontosicherheit) |
-| Berechtigungen / Lizenzen | Das von Ihnen Gekaufte bereitstellen und verifizieren | Vertrag |
-| Geräteaktivierungen (gehashter Fingerabdruck, optionale Bezeichnung, Betriebssystem-/App-Version) | Geräte-/Platzgrenzen durchsetzen; Ihnen die Geräteverwaltung ermöglichen | Vertrag |
-| Team-Mitgliedschaft + Einladungen | Den Team-Plan bereitstellen (bis zu 5 Mitglieder) | Vertrag |
-| Kauf- / Bestellunterlagen | Den Verkauf abwickeln, Belege, Lizenzausstellung | Vertrag; gesetzliche Pflicht (Buchhaltung) |
-| Zahlungsdaten | Zahlungen entgegennehmen (durch Stripe abgewickelt — wir speichern keine vollständigen Kartennummern) | Vertrag |
-| Erstattungen / Streitfälle / Rückbuchungen | Erstattungen und Zahlungsstreitigkeiten bearbeiten | Vertrag; gesetzliche Pflicht |
-| Steuerunterlagen | Steuer-/Buchhaltungspflichten erfüllen | Gesetzliche Pflicht |
-| Support-Korrespondenz | Ihre Fragen beantworten und Support leisten | Vertrag; berechtigtes Interesse |
-| Sicherheits-, Protokoll- und Admin-Audit-Aufzeichnungen | Missbrauch erkennen, Konten schützen, einen Prüfpfad führen | Berechtigtes Interesse (Sicherheit) |
-| Von Ihnen gespeicherte Anbieter-/Tracker-Konfiguration | Ihnen die Verbindung von Jira/Azure DevOps usw. ermöglichen; wir speichern Verbindungsmetadaten, nicht Ihre Daten in diesen Tools | Vertrag |
-| Einwilligungsentscheidungen (Cookies/Werbung sowie deren Widerruf) | Ihre Entscheidungen respektieren und nachweisen | Einwilligung; gesetzliche Pflicht (Nachweis) |
-| Website-Analyse | Die allgemeine Website-Leistung verstehen (cookielos) | Berechtigtes Interesse |
-| Werbemessung | Verstehen, ob Anzeigen zu Käufen führen | Einwilligung (standardmäßig deaktiviert) |
-| EU/UK-Einwilligung zu Sofortlieferung / Widerruf | Ihre Bestätigung an der Kasse nachweisen | Gesetzliche Pflicht; Vertrag |
+Wir nutzen diese Daten, um das gekaufte Produkt bereitzustellen und zu unterstützen,
+Zahlungen entgegenzunehmen und unsere steuerlichen und buchhalterischen Pflichten zu
+erfüllen, Konten und Lizenzen zu schützen und, sofern Sie eingewilligt haben, Werbung
+zu messen. Je nach Wohnsitz ist die Rechtsgrundlage in der Regel die Erfüllung
+unseres Vertrags mit Ihnen, die Erfüllung einer rechtlichen Verpflichtung, unser
+berechtigtes Interesse an der Sicherheit des Dienstes oder Ihre Einwilligung.
 
-## Dienstleister (Auftragsverarbeiter) und internationale Datenübermittlungen
+## Dienstleister
 
-Wir setzen die folgenden Anbieter ein, um BugIt zu betreiben. Jeder verarbeitet
-personenbezogene Daten ausschließlich, um uns seinen Dienst zu erbringen. Soweit
-personenbezogene Daten außerhalb des EWR/des Vereinigten Königreichs übermittelt
-werden, stützen wir uns auf den Auftragsverarbeitungszusatz des Anbieters und, sofern
-anwendbar, auf die Standardvertragsklauseln (oder einen gleichwertigen
-Übermittlungsmechanismus).
+Wir setzen Dienstleister für Authentifizierung und Hosting, Zahlungsabwicklung,
+Transaktions-E-Mails, Auslieferung und Sicherheit der Website sowie für
+einwilligungsbasierte Werbemessung ein. Diese Dienstleister verarbeiten nur die
+Informationen, die zur Erbringung ihrer Leistung für uns erforderlich sind, und
+dürfen sie nicht für eigene Zwecke nutzen.
 
-| Anbieter | Zweck | Datenkategorien | Wahrscheinlicher Verarbeitungsort | Übermittlungsgrundlage | Aufbewahrung / Löschung |
-|----------|-------|-----------------|-----------------------------------|------------------------|-------------------------|
-| **Supabase** | Datenbank + Authentifizierung (Konten, Berechtigungen, Geräte, Bestellungen, Audit-Protokolle) | Konto-, Berechtigungs-, Geräte-, Bestell-, Protokolldaten | Vereinigte Staaten und/oder EU (Projektregion) | Auftragsverarbeitungszusatz + SCCs, sofern anwendbar | Wird aufbewahrt, solange Ihr Konto aktiv ist; gelöscht oder anonymisiert, wenn nicht mehr benötigt (siehe Aufbewahrungstabelle) |
-| **Stripe** | Zahlungsabwicklung, Erstattungen, Streitfälle, Steuerberechnung | Zahlungs-, Abrechnungs-, Transaktionsdaten | Vereinigte Staaten + weltweit | Auftragsverarbeitungszusatz + SCCs | Von Stripe gemäß seiner Richtlinie und den gesetzlichen/buchhalterischen Anforderungen aufbewahrt |
-| **Cloudflare** | Website-Auslieferung, Sicherheit, cookielose Web-Analyse | Netzwerk-/technische Daten; aggregierte Analysedaten | Globales Edge-Netzwerk | Auftragsverarbeitungszusatz + SCCs | Kurzlebig; die Analyse ist aggregiert und cookielos |
-| **Vercel** | Hosting der Website-/Portal-Anwendung | Anfrage-/technische Daten | Vereinigte Staaten + weltweit | Auftragsverarbeitungszusatz + SCCs | Betriebsprotokolle kurzzeitig aufbewahrt |
-| **Resend** | Versand transaktionaler E-Mails (Belege, Lizenz, Support) | E-Mail-Adresse, Nachrichten-Metadaten | Vereinigte Staaten | Auftragsverarbeitungszusatz + SCCs | Gemäß Anbieterrichtlinie aufbewahrt; Zustellprotokolle kurzzeitig |
-| **Google Ads** | Werbemessung (nur mit Einwilligung) | Kaufwert, Währung, nicht identifizierende Bestellreferenz | Vereinigte Staaten + weltweit | Auftragsverarbeitungszusatz + SCCs | Nur mit Einwilligung; keine Fehlerbericht-Inhalte oder Kartendaten weitergegeben |
+Die wichtigsten Dienstleister sind Supabase (Konten und Datenbank), Stripe
+(Zahlungen, Erstattungen und Streitfälle), Vercel (Hosting des Portals), Cloudflare
+(Auslieferung und Sicherheit der Website sowie cookiefreie Analyse), Resend
+(Transaktions-E-Mails) und Google (Werbemessung, nur mit Ihrer Einwilligung).
 
-Wir **verkaufen** keine personenbezogenen Daten, und die Werbemessung erhält niemals
-Ihre Fehlerberichte, die Inhalte der BugIt-Software oder Zahlungskartendaten.
+Einige dieser Dienstleister arbeiten außerhalb Ihres Landes, unter anderem in den
+Vereinigten Staaten. Wenn personenbezogene Daten international übermittelt werden,
+stützen wir uns auf die Datenschutzbedingungen des jeweiligen Anbieters.
 
-## Wie lange wir Daten aufbewahren (Aufbewahrung)
+Die Werbemessung erhält niemals Ihre Fehlerberichte, die Inhalte der BugIt Software
+oder Ihre Zahlungskartendaten.
 
-Soweit eine Frist nicht gesetzlich festgelegt ist, bewahren wir Daten nur so lange
-auf, wie es für den Zweck erforderlich ist, und löschen oder anonymisieren sie
-anschließend.
+## Wie lange wir Daten speichern
 
-| Kategorie | Aufbewahrung |
-|-----------|--------------|
-| Konten | Solange aktiv; nach Kontolöschung gelöscht/anonymisiert (vorbehaltlich gesetzlicher Aufbewahrungspflichten) |
-| Authentifizierungsaufzeichnungen | Solange das Konto aktiv ist |
-| Berechtigungen / Lizenzen | Für die Lizenzlaufzeit und einen begrenzten Zeitraum danach für Support und Streitfälle |
-| Geräte / Aktivierungen | Solange die Berechtigung aktiv ist; freigegeben, wenn Sie ein Gerät entfernen oder die Lizenz endet |
-| Team-Mitgliedschaften / Einladungen | Solange die Team-Lizenz aktiv ist; Einladungen verfallen |
-| Zahlungen | Für die Lizenzlaufzeit zuzüglich des für Buchhaltung/Steuer erforderlichen Zeitraums |
-| Erstattungen / Streitfälle / Rückbuchungen | Für den zu ihrer Bearbeitung und ihrem Nachweis erforderlichen Zeitraum zuzüglich der Buchhaltungszeiträume |
-| Steuer- / Buchhaltungsunterlagen | Wie nach dem geltenden Steuerrecht erforderlich (zum Beispiel bis zu 7 Jahre) |
-| Sicherheitsprotokolle | Ein begrenzter Zeitraum, der für Sicherheit und Missbrauchserkennung ausreicht |
-| Admin-Audit-Protokolle | Als Integritätsnachweis für einen begrenzten Zeitraum aufbewahrt |
-| Support-Korrespondenz | Solange sie zur Unterstützung erforderlich ist, und einen begrenzten Zeitraum danach |
-| Marketing-Einwilligung | Solange die Einwilligung besteht, und danach zum Nachweis |
-| Einwilligungswiderrufe | Als Nachweis aufbewahrt, dass eine Entscheidung respektiert wurde |
-| Sicherungen gelöschter Konten | Nach der Löschung im Rahmen der üblichen Backup-Rotation aus den routinemäßigen Sicherungen entfernt |
+Wir speichern personenbezogene Daten nur so lange, wie wir sie für den Zweck
+benötigen, für den sie erhoben wurden, und löschen oder anonymisieren sie danach. In
+der Praxis bedeutet das:
+
+- Konto-, Lizenz- und Gerätedaten werden gespeichert, solange Ihr Konto und Ihre
+  Lizenz aktiv sind, und für einen begrenzten Zeitraum danach, damit wir Support und
+  Streitfälle bearbeiten können.
+- Zahlungs-, Steuer- und Buchhaltungsunterlagen werden für den gesetzlich
+  vorgeschriebenen Zeitraum aufbewahrt.
+- Supportnachrichten, Sicherheitsprotokolle und Einwilligungsnachweise werden für
+  einen begrenzten Zeitraum gespeichert; Einwilligungsnachweise dienen als Beleg
+  dafür, dass Ihre Entscheidung beachtet wurde.
+
+Wenn Sie Ihr Konto löschen, löschen oder anonymisieren wir Ihre Daten mit Ausnahme
+der Unterlagen, die wir aufbewahren müssen.
 
 ## Cookies und Werbung
 
-Die Website verwendet nur essenzielle Cookies, um zu funktionieren. Nicht
-essenzielle (Werbe-)Cookies sind **standardmäßig deaktiviert** und werden nur
-geladen, wenn Sie über das Cookie-Banner oder die **Cookie-Einstellungen** zustimmen.
-Wir verwenden Cloudflare Web Analytics, das cookielos ist und Sie nicht
-seitenübergreifend verfolgt. Sie können Ihre Auswahl jederzeit ändern oder
-widerrufen.
+Die Website verwendet notwendige Cookies, um zu funktionieren. Werbe-Cookies sind
+standardmäßig ausgeschaltet und werden nur geladen, wenn Sie sie im Cookie Banner
+oder unter **Cookie Einstellungen** aktivieren. Für die allgemeine
+Website-Performance nutzen wir Cloudflare Web Analytics; dies kommt ohne Cookies aus
+und verfolgt Sie nicht websiteübergreifend. Sie können Ihre Entscheidung jederzeit
+ändern oder widerrufen.
 
 ## Ihre Rechte
 
-Je nach Ihrem Wohnort (zum Beispiel nach der EU-/UK-DSGVO oder Japans APPI) haben Sie
-möglicherweise das Recht:
+Je nach Wohnsitz, etwa nach der DSGVO in der EU und im Vereinigten Königreich oder
+nach dem japanischen APPI, haben Sie unter Umständen das Recht, Auskunft über die bei
+uns gespeicherten personenbezogenen Daten zu erhalten, diese berichtigen oder löschen
+zu lassen, bestimmte Verarbeitungen einschränken zu lassen oder ihnen zu
+widersprechen, die Daten in einem übertragbaren Format zu erhalten und Ihre
+Einwilligung jederzeit zu widerrufen, ohne dass die bereits erfolgte Verarbeitung
+davon berührt wird.
 
-- auf **Auskunft** über die personenbezogenen Daten, die wir über Sie speichern
-- auf **Berichtigung** unrichtiger Daten
-- auf **Löschung** Ihrer Daten (und Ihres Kontos)
-- auf **Einschränkung** oder **Widerspruch** gegen bestimmte Verarbeitungen
-- auf **Datenübertragbarkeit** — bestimmte Daten in einem übertragbaren Format zu
-  erhalten
-- auf **Widerruf der Einwilligung** (z. B. Werbemessung) jederzeit, ohne die
-  Rechtmäßigkeit der zuvor erfolgten Verarbeitung zu berühren
+Um eines dieser Rechte auszuüben, schreiben Sie bitte von Ihrer Kontoadresse an
+[support@bugit.dev](mailto:support@bugit.dev). Sie können Ihr Konto auch selbst über
+Ihr Dashboard löschen. Wir antworten innerhalb der für Sie geltenden gesetzlichen
+Frist.
 
-Um eines dieser Rechte auszuüben, senden Sie eine E-Mail von Ihrer Konto-Adresse an
-**support@bugit.dev**. Sie können auch **Ihr Konto löschen**, um Ihre Daten zu
-entfernen (vorbehaltlich der Aufzeichnungen, die wir gesetzlich aufbewahren müssen,
-etwa Steuerunterlagen). Wir antworten innerhalb der nach geltendem Recht
-erforderlichen Frist.
-
-**Beschwerden.** Wenn Sie sich im EWR befinden, können Sie sich bei Ihrer örtlichen
-Datenschutzbehörde beschweren; im Vereinigten Königreich beim Information
-Commissioner's Office (ico.org.uk); in Japan bei der Personal Information Protection
-Commission (ppc.go.jp). Wir würden uns freuen, Ihr Anliegen zunächst selbst unter
-support@bugit.dev klären zu dürfen.
+Wenn Sie nicht zufrieden sind, können Sie sich bei Ihrer Datenschutzbehörde
+beschweren: im EWR bei Ihrer örtlichen Behörde, im Vereinigten Königreich beim
+Information Commissioner's Office (ico.org.uk), in Japan bei der Personal Information
+Protection Commission (ppc.go.jp). Wir würden uns freuen, Ihr Anliegen zuvor selbst
+zu klären.
 
 ## Änderungen
 
-Wir können diese Erklärung aktualisieren, wenn sich das Produkt oder die Rechtslage
-ändert; das oben genannte Datum „Zuletzt aktualisiert" gibt die aktuelle Fassung
-wieder. Verwandte Dokumente: die Offenlegung zu gewerblichen Transaktionen
-(特定商取引法に基づく表記 — Angaben nach dem japanischen Gesetz über gewerbliche
-Transaktionen) und die Rückerstattungsrichtlinie.
+Wir können diese Erklärung anpassen, wenn sich das Produkt oder die Rechtslage
+ändert. Das Datum oben zeigt die aktuelle Fassung. Siehe auch die Seite
+[Handelsrechtliche Angaben](#/docs/commerce) (特定商取引法に基づく表記) und die
+[Rückerstattungsrichtlinie](#/docs/refund).
 
 ## Kontakt
 
-Datenschutzfragen oder -anfragen: **support@bugit.dev**. Sie können auch ein
-Support-Ticket über Ihr BugIt-Dashboard unter **bugit.dev** öffnen.
+Datenschutzfragen und Anfragen: [support@bugit.dev](mailto:support@bugit.dev).

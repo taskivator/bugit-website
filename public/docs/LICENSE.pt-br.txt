@@ -1,108 +1,108 @@
-BugIt QA Agent — Contrato de Licença de Usuário Final Comercial (EULA)
+BugIt QA Agent Contrato de Licença de Usuário Final Comercial (EULA)
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-Este software e sua documentação ("o Software") são licenciados, não vendidos.
-Ao comprar, ativar ou usar o Software, você ("o Licenciado") concorda com estes
-termos.
+Este software e sua documentação ("o Software") são licenciados, não vendidos. Ao
+comprar, ativar ou usar o Software, você ("o Licenciado") concorda com estes termos.
 
-1. Concessão. Mediante a compra e a ativação da conta BugIt do Licenciado — um
-   login no BugIt Portal pelo navegador que aprova o dispositivo; não há nenhuma
-   chave de licença a inserir —, a Taskivator concede ao Licenciado uma licença não
-   exclusiva e intransferível para usar o Software para fins internos de QA e de
-   relato de bugs, no número de dispositivos permitido pelo plano adquirido (Solo =
-   1 dispositivo por vez; Team = até 5 membros (assentos), cada um ativando o seu
-   próprio dispositivo).
+1. Concessão. Com a compra e a ativação da conta BugIt do Licenciado (um login no
+   BugIt Portal pelo navegador que aprova o dispositivo, sem nenhuma chave de licença
+   a digitar), a Taskivator concede ao Licenciado uma licença não exclusiva e
+   intransferível para usar o Software para fins internos de QA e registro de bugs,
+   no número de dispositivos permitido pelo plano adquirido (Solo: 1 dispositivo por
+   vez; Team: até 5 membros, cada um ativando o próprio dispositivo, gerenciados no
+   BugIt Portal).
 
-2. Contas e assentos. A conta BugIt do Licenciado e o seu direito de uso são
-   pessoais e destinados ao Licenciado. O Licenciado não pode compartilhar,
-   publicar, revender, sublicenciar ou transferir a conta, o seu direito de uso ou
-   as suas autorizações de dispositivo. A Taskivator pode suspender ou revogar um
-   direito de uso (ou um assento Team individual) que seja compartilhado, publicado,
-   reembolsado, estornado, ou usado de forma fraudulenta ou em violação destes
-   termos; um direito de uso revogado deixa de ativar em novos dispositivos e os
-   seus dispositivos ativos perdem a autorização.
+2. Contas e assentos. A conta BugIt do Licenciado e seu direito de uso são pessoais
+   do Licenciado. O Licenciado não pode compartilhar, publicar, revender,
+   sublicenciar ou transferir a conta, seu direito de uso ou suas autorizações de
+   dispositivo. A Taskivator pode suspender ou revogar um direito de uso, ou um
+   assento individual de Team, que seja compartilhado, publicado, reembolsado, objeto
+   de estorno, ou usado de forma fraudulenta ou em violação destes termos; um direito
+   de uso revogado deixa de ativar em novos dispositivos e seus dispositivos ativos
+   perdem a autorização.
 
-3. Modificação e proibição de contornar mecanismos. O Licenciado pode editar os
-   arquivos de configuração, glossário, templates e de instruções para seu próprio
-   uso interno. O Licenciado NÃO pode desativar, contornar, remover ou burlar os
-   mecanismos de licenciamento, ativação, controle de assentos ou verificação de
-   atualizações do Software, nem usar o Software sem uma licença válida.
+3. Modificação e não contorno. O Licenciado pode editar arquivos de configuração,
+   glossário, modelos e instruções para seu próprio uso interno. O Licenciado não
+   pode desativar, contornar, remover ou burlar os mecanismos de licenciamento,
+   ativação, assentos, vínculo de dispositivo ou verificação de atualizações do
+   Software, nem usar o Software sem uma licença válida e ativa.
 
-4. Restrições. O Licenciado não pode revender, sublicenciar, redistribuir,
-   publicar ou disponibilizar o Software (original ou modificado) a terceiros, nem
-   remover ou alterar este aviso ou qualquer informação de copyright ou de licença.
+4. Restrições. O Licenciado não pode revender, sublicenciar, redistribuir, publicar
+   ou disponibilizar a terceiros o Software, original ou modificado, nem remover ou
+   alterar este aviso ou qualquer informação de direitos autorais ou de licença. A
+   edição de arquivos para uso interno do próprio Licenciado, nos termos da cláusula
+   3, não permite copiar o Software, suas instruções, prompts, modelos ou
+   ferramentas para outro projeto, produto ou agente, nem entregá-los a outra pessoa
+   ou equipe.
 
-5. Titularidade. A Taskivator mantém todos os direitos, títulos e interesses sobre
-   o Software, incluindo todos os direitos de propriedade intelectual. Esta licença
-   concede apenas direitos de uso; ela não transfere a titularidade.
+5. Titularidade. A Taskivator mantém todos os direitos, títulos e interesses sobre o
+   Software, incluindo todos os direitos de propriedade intelectual. Esta licença
+   concede apenas direitos de uso; não transfere a titularidade.
 
-6. Seus dados. As configurações em config.json e qualquer conteúdo que você criar
-   são seus. O Software é executado na própria máquina do Licenciado e não envia
-   nenhum dado de projeto, ticket, glossário ou tracker à Taskivator. Consulte o
-   PRIVACY.md.
+6. Seus dados. As configurações do config.json e todo o conteúdo que você criar são
+   seus. O Software é executado na máquina do Licenciado e não envia dados de
+   projeto, ticket, glossário ou rastreador para a Taskivator. Consulte PRIVACY.md.
 
-7. Vigência. O BugIt é uma compra única, não uma assinatura: você paga uma vez, e
-   não há renovação automática nem cobrança recorrente. Sua compra concede uma
-   licença de um ano — incluindo atualizações e serviços de licença/ativação — que
-   se inicia na primeira ativação. Quando o ano termina, a licença expira; o uso
-   contínuo exige uma nova licença, que você pode optar por comprar, e a Taskivator
-   nunca cobra de você automaticamente. Se houver qualquer conflito entre uma
-   tradução destes termos e a versão em inglês, prevalece a versão em inglês, exceto
-   quando a lei local imperativa dispuser de outra forma. Nada nestes termos exclui
-   ou limita qualquer direito ou recurso que você tenha como consumidor sob a lei
-   imperativa do seu país de residência que não possa ser legalmente excluído.
+7. Prazo. O BugIt é uma compra única, não uma assinatura: você paga uma vez e não há
+   renovação automática nem cobrança recorrente. Sua compra concede uma licença de um
+   ano, incluindo atualizações e serviços de licença e ativação, que começa na
+   primeira ativação. Ao fim do ano a licença expira; continuar usando exige uma nova
+   licença, que você pode optar por comprar, e a Taskivator nunca cobra
+   automaticamente. Havendo conflito entre uma tradução destes termos e a versão em
+   inglês, prevalece a versão em inglês, salvo se a lei local imperativa dispuser de
+   outro modo. Nada nestes termos exclui ou limita qualquer direito ou remédio que
+   você tenha como consumidor sob a lei imperativa do seu país de residência e que não
+   possa ser legalmente excluído.
 
-8. Responsabilidade do Licenciado e assunção de risco. O Software auxilia na
-   elaboração e no registro de relatórios de bug; ele não substitui o próprio
-   julgamento do Licenciado. Após a compra, a forma como o Software é usado — bem
-   como a segurança e a integridade dos projetos, dados, repositórios, trackers e
-   sistemas do Licenciado — são de responsabilidade exclusiva do Licenciado. O
-   Licenciado é responsável por revisar e aprovar cada relatório, comentário ou
-   alteração antes de ser registrado ou enviado, e por usar o Software em
-   conformidade com os termos e as políticas das ferramentas às quais ele está
-   conectado. O Software oferece salvaguardas (preview antes da gravação,
-   confirmação explícita para ações irreversíveis, um modo de simulação sem
-   gravação ("dry run") e a remoção de segredos) destinadas a reduzir o risco, mas
-   estas são auxílios, não garantias, e não eliminam a obrigação do Licenciado de
-   verificar os resultados. A Taskivator não é responsável por qualquer perda, dano
-   ou consequência decorrente do uso ou uso indevido do Software pelo Licenciado,
-   incluindo tickets, comentários, alterações de dados ou divulgações registrados
-   de forma incorreta, equivocada ou indesejada.
+8. Revisão do que você registra. O Software ajuda a redigir e registrar relatórios de
+   bugs; ele não substitui o seu julgamento. Revise cada relatório, comentário ou
+   alteração antes de aprová-lo e use o Software de acordo com os termos das
+   ferramentas que você conecta a ele. O BugIt mostra uma prévia antes de qualquer
+   escrita externa, pede uma aprovação direta para cada uma delas, oferece um modo de
+   teste que não escreve nada e oculta os segredos que detecta. Essas proteções foram
+   pensadas para ajudar você a perceber erros antes que eles saiam da sua máquina, e
+   funcionam melhor junto com a sua revisão.
 
-9. Ausência de garantia. O Software é fornecido "NO ESTADO EM QUE SE ENCONTRA", sem
-   garantia de qualquer tipo, expressa ou implícita, incluindo comerciabilidade e
-   adequação a uma finalidade específica.
+9. Sem garantia. O Software é fornecido "NO ESTADO EM QUE SE ENCONTRA", sem garantia
+   de qualquer tipo, expressa ou implícita, incluindo comerciabilidade e adequação a
+   uma finalidade específica, exceto quanto às garantias que não possam ser
+   legalmente excluídas.
 
-10. Limitação de responsabilidade. Na extensão máxima permitida por lei, a
-    responsabilidade total da Taskivator por qualquer reclamação decorrente do
-    Software limita-se ao valor pago pelo Licenciado por ele, e a Taskivator não se
-    responsabiliza por quaisquer danos indiretos, incidentais, consequenciais ou
-    especiais, nem por quaisquer dados registrados em, ou alterados em, trackers ou
-    ferramentas externas.
+10. Limitação de responsabilidade. Na máxima extensão permitida por lei, a
+    responsabilidade total da Taskivator por qualquer reivindicação decorrente do
+    Software limita-se ao valor pago pelo Licenciado, e a Taskivator não responde por
+    danos indiretos, incidentais, consequenciais ou especiais. Nada nesta cláusula
+    limita responsabilidade que não possa ser legalmente limitada, incluindo a
+    responsabilidade por morte ou lesão corporal causada por negligência, ou por
+    dolo.
 
-11. Indenização. O Licenciado concorda em defender, indenizar e isentar a
-    Taskivator de qualquer reclamação, demanda, perda, responsabilidade ou despesa
-    de terceiros (incluindo honorários advocatícios razoáveis) decorrentes de ou
-    relacionados ao uso ou uso indevido do Software pelo Licenciado, incluindo
-    qualquer ticket, comentário, alteração de dados ou divulgação registrado ou
-    feito por meio dele.
+11. Indenização. Na medida permitida por lei, o Licenciado defenderá e indenizará a
+    Taskivator contra reivindicações de terceiros decorrentes do uso ilícito do
+    Software pelo Licenciado, de seu uso indevido intencional ou do conteúdo que o
+    Licenciado tenha fornecido por meio dele. Esta cláusula não se aplica ao uso
+    comum do Software em conformidade com estes termos, nem onde a lei do país de
+    residência do Licenciado não a permitir.
 
-12. Rescisão. Esta licença termina automaticamente se seus termos forem violados.
-    Após a rescisão, o Licenciado deve deixar de usar o Software.
+12. Rescisão. Esta licença termina automaticamente se seus termos forem violados. Na
+    rescisão, o Licenciado deve parar de usar o Software.
 
-13. Lei aplicável. Este contrato é regido pelas leis do Japão, sem consideração às
-    regras de conflito de leis.
+13. Lei aplicável. Este contrato é regido pelas leis do Japão, sem considerar as
+    regras de conflito de leis. Se você for consumidor, isso não o priva da proteção
+    da lei imperativa do seu país de residência.
 
-14. Resolução de disputas. Qualquer disputa decorrente de ou relacionada a este
-    contrato ou ao Software será submetida exclusivamente aos tribunais do Japão, e
-    cada parte consente com essa jurisdição e foro. Esta cláusula não limita o
-    direito de qualquer das partes de apresentar uma reclamação em um foro de
-    pequenas causas legalmente obrigatório, quando aplicável.
+14. Controvérsias. As reivindicações relativas a este contrato ou ao Software podem
+    ser propostas nos tribunais do Japão. Se você for consumidor, isso não afeta seu
+    direito de propor ação nos tribunais do seu país de residência, nem qualquer
+    outro direito de foro que a lei imperativa desse país lhe assegure.
 
-Os reembolsos são processados por meio da loja em que você realizou a compra.
-Dúvidas, ajuda com ativação ou pedidos de transferência: bugit.dev ou
-support@bugit.dev.
+15. Identificação do pacote. Cada download pode conter um identificador de pacote
+    pseudonimizado, usado para administração de licenças e apuração de
+    redistribuição não autorizada. Ele não contém credenciais de conta e não
+    transmite dados por conta própria. Consulte PRIVACY.md.
 
-Para obter os dados do vendedor e da transação, incluindo prazos de entrega e
-devoluções, consulte a divulgação sobre transações comerciais
-(特定商取引法に基づく表記) em bugit.dev (Documentação → Transações comerciais).
+Os reembolsos seguem a Política de Reembolso em bugit.dev. Dúvidas, ajuda com
+ativação ou pedidos de transferência: bugit.dev ou support@bugit.dev.
+
+Para dados do vendedor e da transação, incluindo prazos de entrega e devoluções,
+consulte a página Transações Comerciais (特定商取引法に基づく表記), com link no rodapé
+de bugit.dev.

@@ -83,6 +83,7 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
 .doc-back:hover{color:#ff86dc}
 .license-doc{margin:6px 0 10px}
 .license-doc .license-title{font-size:22px;letter-spacing:-.01em;margin:8px 0 6px;color:var(--text)}
+.license-doc .license-subtitle{font-size:17px;letter-spacing:-.005em;margin:14px 0 5px;color:var(--text)}
 .license-doc .license-copy{color:var(--muted);margin:0 0 18px}
 .license-doc p,.license-doc .license-clause{margin:0 0 13px;line-height:1.75;color:var(--muted)}
 .license-doc .license-clause b{color:var(--text);margin-right:2px}
