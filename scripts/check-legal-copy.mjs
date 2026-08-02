@@ -187,6 +187,27 @@ for (const [, code, json] of generated) {
     `app.js locale "${code}" has no docPages.commerceTitle, so its commerce page would show the English heading`);
   check(!!dict.docPages?.commerceIntro,
     `app.js locale "${code}" has no docPages.commerceIntro`);
+
+  // Refund Policy chrome. The REFUND.<code>.md bodies were translated long before
+  // the UI around them was, so every locale rendered an English "Refund Policy"
+  // heading above a fully translated document. Tie the rendered page title to the
+  // document's own H1 so the two can never drift apart again.
+  check(!!dict.docs?.refund,
+    `app.js locale "${code}" has no docs.refund label, so its footer link would fall back to English`);
+  check(!!dict.docPages?.refundTitle,
+    `app.js locale "${code}" has no docPages.refundTitle, so the refund page would show an English heading`);
+  check(!!dict.docPages?.refundIntro,
+    `app.js locale "${code}" has no docPages.refundIntro`);
+  const refundDoc = path.join(docs, `REFUND.${code}.md`);
+  if (fs.existsSync(refundDoc) && dict.docPages?.refundTitle) {
+    const h1 = fs.readFileSync(refundDoc, "utf8").split("\n")[0].replace(/^#\s*/, "").trim();
+    check(h1 === dict.docPages.refundTitle,
+      `app.js locale "${code}" refundTitle does not match the REFUND.${code}.md heading`,
+      `page title "${dict.docPages.refundTitle}" vs document heading "${h1}"`);
+  } else if (dict.docPages?.refundTitle) {
+    check(false, `public/docs/REFUND.${code}.md is missing but locale "${code}" links to it`);
+  }
+
   if (code === "ja") {
     // The Japanese label and heading must stay legally recognizable.
     check(dict.docs.commerce === JA_TITLE,

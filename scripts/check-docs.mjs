@@ -62,5 +62,64 @@ for (const rel of ["app.js", "index.html"]) {
   if (m2) fail(`version number in site copy ${rel} (found "${m2[0]}")`);
 }
 
-console.log(`\nlanguages: ${langs.length} · highlights + PDF guides + version-neutrality · errors: ${errors}`);
+// 4) Locale CHROME completeness: every registered locale must carry every doc
+// label and page title the site actually renders.
+//
+// app.js declares each locale twice — a readable literal near the top and a
+// generated `add("<code>", {...})` line further down. `add()` rebuilds the
+// dictionary from the English base, so the LATER call wins and the earlier
+// literal is inert. A key present only in the literal is dead, and because the
+// English base fills the gap the site silently renders an English label inside
+// an otherwise translated page. That is exactly how the Commercial Transactions
+// and Refund Policy pages ended up with English headings above translated
+// documents. This derives the required keys from what index.html and app.js
+// actually reference, so adding a new doc page automatically extends the gate.
+const requiredDocLabels = [...new Set(
+  [...readFileSync(join(root, "index.html"), "utf8").matchAll(/data-t="docs\.(\w+)"/g)]
+    .map((m) => m[1]),
+)];
+
+// docRoutes drives the docs sidebar and the page-title lookup; each route needs
+// its localized title. Route "docs/foo-bar" -> title key "fooBarTitle".
+const routeMatch = appjs.match(/const docRoutes=\[([^\]]*)\]/);
+if (!routeMatch) fail("could not find `docRoutes` in app.js");
+const titleKeyFor = (route) => {
+  if (route === "docs") return "homeTitle";
+  if (route === "support") return "supportTitle";
+  const stem = route.replace(/^docs\//, "").replace(/-(\w)/g, (_m, c) => c.toUpperCase());
+  return `${stem}Title`;
+};
+const requiredTitles = [...new Set(
+  (routeMatch ? routeMatch[1].split(",") : [])
+    .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
+    .filter(Boolean)
+    // getting-started / user-guide render their heading from docDownloadLabels,
+    // not docPages, so they are covered by the guide checks above instead.
+    .filter((r) => !["docs/getting-started", "docs/user-guide"].includes(r))
+    .map(titleKeyFor),
+)];
+
+const generated = [...appjs.matchAll(/^add\("([a-z-]+)", (\{.*\})\);$/gm)];
+if (!generated.length) fail("app.js has no generated add() locale dictionaries");
+for (const [, code, json] of generated) {
+  let dict;
+  try {
+    dict = JSON.parse(json);
+  } catch {
+    fail(`locale ${code}: generated dictionary is not valid JSON`);
+    continue;
+  }
+  for (const key of requiredDocLabels) {
+    dict?.docs?.[key]
+      ? ok(`locale ${code} docs.${key}`)
+      : fail(`locale ${code} is missing docs.${key} (would fall back to English)`);
+  }
+  for (const key of requiredTitles) {
+    dict?.docPages?.[key]
+      ? ok(`locale ${code} docPages.${key}`)
+      : fail(`locale ${code} is missing docPages.${key} (page would show an English heading)`);
+  }
+}
+
+console.log(`\nlanguages: ${langs.length} · locales: ${generated.length} · highlights + PDF guides + version-neutrality + locale chrome · errors: ${errors}`);
 process.exit(errors ? 1 : 0);
