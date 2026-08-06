@@ -62,11 +62,24 @@
   Cache-Control: public, max-age=604800
 
 # Current web guides must revalidate after every release so version switches are
-# atomic across the website, portal, and update service.
+# atomic across the website, portal, and update service. This covers the PDFs too
+# — see below for why they get no exemption.
 /public/docs/*
   Content-Disposition: inline
   Cache-Control: public, max-age=0, must-revalidate
 
-# Published PDFs are immutable and can remain cached for a week.
-/public/docs/*.pdf
-  Cache-Control: public, max-age=604800
+# There is deliberately NO /public/docs/*.pdf override here. There used to be one,
+# reading "published PDFs are immutable and can remain cached for a week", and the
+# premise was false: every release regenerates the twenty guides IN PLACE, at the
+# same twenty URLs. Immutability is a property of the URL, not of the file format.
+#
+# On 2026-08-07 that override held five guides at the edge after a deploy had
+# already replaced them at the origin — bugit.dev served 1 August PDFs while the
+# site around them was current, and nothing short of a manual purge could evict
+# them. It is the same mistake as the ?v= incident above: a stable path carrying a
+# long TTL over content that changes underneath it.
+#
+# Revalidation is nearly free — these carry ETags, so an unchanged guide costs a
+# 304 rather than a re-download. A week of wrong documentation costs considerably
+# more. If PDFs ever need real caching, put the release in the filename and the
+# hashed-asset rules above will apply honestly.
