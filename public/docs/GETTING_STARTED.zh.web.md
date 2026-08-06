@@ -29,8 +29,8 @@ BugIt 可在 VS Code 内将粗略的测试记录转化为经过审阅的缺陷�
 
 ## 连接状态
 
-- Jira Cloud 与 Confluence Cloud 采用引导式的 Atlassian Rovo MCP 路径，需要浏览器身份验证以及实时能力检查。
-- Azure DevOps 采用 Microsoft 面向组织范围的远程 MCP 公开预览，需要实时验证。
+- Jira Cloud 与 Azure DevOps 使用您在自己账户中创建的 API 令牌，通过跟踪系统的 REST API 直接提交。设置过程会先验证连接，然后您才依赖它。
+- Confluence Cloud 通过使用浏览器登录的引导式 Atlassian Rovo MCP 路径，作为知识源接入。
 - Sentry、GitHub、Linear 与 Notion 在其服务前置条件与实时检查通过之前，均属实验性功能。
 - 其他所列服务需要由组织自行提供的兼容 MCP 服务器。BugIt 提供设置指导，但不随附也不测试这些服务器。
 

@@ -29,8 +29,8 @@ BugItは、大まかなテストメモをVS Code内でレビュー済みのバ�
 
 ## 接続状態
 
-- Jira CloudおよびConfluence Cloudは、ガイド付きのAtlassian Rovo MCP経路を使用し、ブラウザ認証とライブ機能チェックを必要とします。
-- Azure DevOpsは、Microsoftの組織スコープのリモートMCPパブリックプレビューを使用し、ライブ検証を必要とします。
+- Jira CloudとAzure DevOpsは、ご自身のアカウントで作成したAPIトークンを使い、トラッカーのREST APIに直接起票します。セットアップで接続を検証してから利用できます。
+- Confluence Cloudは、ブラウザー サインインを使うガイド付きのAtlassian Rovo MCP経路でナレッジソースとして接続します。
 - Sentry、GitHub、Linear、Notionは、各サービスの前提条件とライブチェックを満たすまでは実験的機能です。
 - その他の記載サービスには、組織が提供する互換MCPサーバーが必要です。BugItはセットアップの手引きを提供しますが、それらのサーバーの提供やテストは行いません。
 

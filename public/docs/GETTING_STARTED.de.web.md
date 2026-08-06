@@ -29,8 +29,8 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 
 ## Verbindungsstatus
 
-- Jira Cloud und Confluence Cloud nutzen den geführten Atlassian Rovo MCP-Pfad und erfordern eine Browser-Authentifizierung sowie Live-Funktionsprüfungen.
-- Azure DevOps nutzt die organisationsbezogene Remote-MCP-Vorschau von Microsoft und erfordert eine Live-Verifizierung.
+- Jira Cloud und Azure DevOps senden direkt über die REST-API des Trackers, mit einem API-Token, das Sie in Ihrem eigenen Konto erstellen. Die Einrichtung prüft die Verbindung, bevor Sie sich darauf verlassen.
+- Confluence Cloud wird als Wissensquelle über den geführten Atlassian Rovo MCP-Pfad angebunden, der die Browser-Anmeldung nutzt.
 - Sentry, GitHub, Linear und Notion sind experimentell, bis ihre Dienstvoraussetzungen und Live-Prüfungen bestanden sind.
 - Andere genannte Dienste erfordern einen von der Organisation bereitgestellten kompatiblen MCP-Server. BugIt bietet Einrichtungshinweise, liefert oder testet diese Server jedoch nicht.
 

@@ -7,6 +7,7 @@
 //
 // Run: `node scripts/check-docs.mjs` (npm run test:guides). No dependencies.
 
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -44,6 +45,40 @@ for (const lang of langs) {
     existsSync(join(guides, lang, pdf))
       ? ok(`pdf guides/${lang}/${pdf}`)
       : fail(`pdf guides/${lang}/${pdf}`);
+  }
+}
+
+// 2b) The PDFs must be the bytes scripts/sync-guides.mjs copied from the agent's published
+// guides — not merely present.
+//
+// EXISTENCE IS NOT FRESHNESS. Every guide above passed while all twenty were a release behind:
+// the site kept its own copies, nothing tied them to the originals, and a stale file satisfies
+// `existsSync` exactly as well as a current one. The site's guides then described a bundled VS
+// Code extension and an MCP filing path that had both been removed from the product.
+//
+// guides-manifest.json is written by the sync and records, per file, the sha256 served and the
+// HTML source it was printed from. Comparing against it proves the served bytes are the ones that
+// were synced; running `node scripts/sync-guides.mjs --agent <path> --check` proves those are
+// still what the agent publishes (it needs the agent repo, so it is a seller step, not a CI one).
+const manifestPath = join(guides, "guides-manifest.json");
+if (!existsSync(manifestPath)) {
+  fail("guides-manifest.json (run scripts/sync-guides.mjs)");
+} else {
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  const expected = langs.length * 2;
+  if (manifest.guides?.length !== expected) {
+    fail(`guides-manifest.json lists ${manifest.guides?.length} guides, expected ${expected}`);
+  }
+  for (const g of manifest.guides ?? []) {
+    const path = join(guides, g.file);
+    if (!existsSync(path)) {
+      fail(`guides-manifest.json references a missing ${g.file}`);
+      continue;
+    }
+    const actual = createHash("sha256").update(readFileSync(path)).digest("hex");
+    actual === g.sha256
+      ? ok(`hash guides/${g.file}`)
+      : fail(`guides/${g.file} does not match guides-manifest.json — re-run scripts/sync-guides.mjs`);
   }
 }
 

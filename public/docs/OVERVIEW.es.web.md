@@ -20,8 +20,8 @@ BugIt es un agente comercial de Copilot para VS Code que convierte notas de prue
 
 ## Niveles de integración
 
-- Guiado: Jira Cloud y Confluence Cloud a través de Atlassian Rovo MCP.
-- Vista previa pública guiada: Azure DevOps a través del servicio MCP remoto de Microsoft.
+- Mapeo de campos integrado y probado: Jira Cloud y Azure DevOps, a través de la API REST del gestor de incidencias con un token de API que creas en tu propia cuenta.
+- Fuente de conocimiento guiada: Confluence Cloud a través de Atlassian Rovo MCP, con inicio de sesión en el navegador.
 - Experimental con verificación en vivo: Sentry, GitHub, Linear y Notion.
 - Solo orientación de configuración: servidores compatibles proporcionados por la organización para otros gestores de incidencias, herramientas de fallos, gestión de pruebas, comunicaciones y servicios de conocimiento.
 - No compatible con la configuración automática: conectores de almacenamiento S3, Google Drive y Azure Blob.

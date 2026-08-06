@@ -29,8 +29,8 @@ O BugIt transforma anotações informais de teste em relatórios de bug revisado
 
 ## Status da conexão
 
-- O Jira Cloud e o Confluence Cloud usam o caminho guiado do Atlassian Rovo MCP e exigem autenticação no navegador, além de verificações de capacidade ao vivo.
-- O Azure DevOps usa a prévia pública do MCP remoto da Microsoft com escopo de organização e exige verificação ao vivo.
+- O Jira Cloud e o Azure DevOps registram diretamente pela API REST do rastreador, com um token de API criado por você na sua própria conta. A configuração verifica a conexão antes de você depender dela.
+- O Confluence Cloud se conecta como fonte de conhecimento pelo caminho guiado do Atlassian Rovo MCP, que usa login no navegador.
 - Sentry, GitHub, Linear e Notion são experimentais até que seus pré-requisitos de serviço e as verificações ao vivo sejam aprovados.
 - Outros serviços mencionados exigem um servidor MCP compatível fornecido pela organização. O BugIt oferece orientação de configuração, mas não fornece nem testa esses servidores.
 

@@ -14,7 +14,7 @@
    painting to its box. Since the box is fixed inset:0 (exactly the viewport) and
    particles are positioned in vw/vh units, every particle keeps its exact
    coordinates — desktop is pixel-identical — but nothing can paint outside any more. */
-#ambient{position:fixed;inset:0;z-index:-5;overflow:hidden;contain:paint;background:radial-gradient(circle at 9% 18%,rgba(144,35,128,.58),transparent 28%),radial-gradient(circle at 80% 18%,rgba(74,37,176,.56),transparent 34%),linear-gradient(135deg,#070612 0%,#090412 48%,#1c0619 100%)}#ambient .grid{position:absolute;inset:-10%;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:92px 92px;animation:gridDrift 28s linear infinite alternate;opacity:.9}.aurora{position:absolute;width:70vw;height:70vw;border-radius:50%;filter:blur(95px);opacity:.25;mix-blend-mode:screen}.aurora.a{left:-22vw;top:14vh;background:#ff38c8;animation:auroraA 24s ease-in-out infinite alternate}.aurora.b{right:-28vw;bottom:-25vw;background:#8b45ff;animation:auroraB 31s ease-in-out infinite alternate}@keyframes gridDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-42px,31px,0)}}@keyframes auroraA{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(9vw,7vh,0) scale(1.15)}}@keyframes auroraB{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-10vw,-8vh,0) scale(1.1)}}.particle{position:fixed;width:3px;height:3px;border-radius:50%;background:var(--c,#fff);opacity:.55;box-shadow:0 0 10px var(--c,#fff);z-index:-4;animation:floatParticle var(--d,16s) ease-in-out infinite alternate;will-change:transform,opacity;pointer-events:none}.particle.small{width:2px;height:2px;opacity:.4}.particle.big{width:4px;height:4px;opacity:.76}
+#ambient{position:fixed;inset:0;z-index:-5;overflow:hidden;contain:paint;background:radial-gradient(circle at 9% 18%,rgba(144,35,128,.58),transparent 28%),radial-gradient(circle at 80% 18%,rgba(74,37,176,.56),transparent 34%),linear-gradient(135deg,#070612 0%,#090412 48%,#1c0619 100%)}#ambient .aurora{position:absolute;width:70vw;height:70vw;border-radius:50%;filter:blur(95px);opacity:.25;mix-blend-mode:screen}.aurora.a{left:-22vw;top:14vh;background:#ff38c8;animation:auroraA 24s ease-in-out infinite alternate}.aurora.b{right:-28vw;bottom:-25vw;background:#8b45ff;animation:auroraB 31s ease-in-out infinite alternate}}@keyframes auroraA{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(9vw,7vh,0) scale(1.15)}}@keyframes auroraB{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-10vw,-8vh,0) scale(1.1)}}.particle{position:fixed;width:3px;height:3px;border-radius:50%;background:var(--c,#fff);opacity:.55;box-shadow:0 0 10px var(--c,#fff);z-index:-4;animation:floatParticle var(--d,16s) ease-in-out infinite alternate;will-change:transform,opacity;pointer-events:none}.particle.small{width:2px;height:2px;opacity:.4}.particle.big{width:4px;height:4px;opacity:.76}
 /* Phones only (same 760px breakpoint as the mobile nav and the JS particle count).
    will-change promotes every particle to its own compositor layer — fine for 160
    of them on a desktop GPU, expensive on a phone, and it is the kind of pressure
@@ -308,3 +308,14 @@ html{overflow-x:clip}
 .consent-btn.primary{border:0;color:#fff;background:linear-gradient(110deg,var(--purple),var(--pink),var(--hot));box-shadow:0 12px 30px rgba(255,79,201,.22)}
 .foot-link{border:0;background:none;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;padding:0}
 .footer .foot-link:hover{color:#ff72d7}
+
+/* Homepage FAQ: two columns so six questions read as a compact block rather than a stack.
+   `align-items:start` matters -- without it an opened <details> stretches its neighbour to the
+   same height and the grid jumps. Collapses to one column at the site's existing 760px
+   breakpoint, where two columns of question text would be unreadable. */
+.faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:1000px;margin:0 auto;align-items:start}
+.faq-grid details{margin:0;max-width:none}
+.faq-more{text-align:center;margin:24px auto 0}
+.faq-more a{color:#ff72d7;font-weight:900}
+.faq-more a[hidden]{display:none}
+@media(max-width:760px){.faq-grid{grid-template-columns:1fr;max-width:680px}}

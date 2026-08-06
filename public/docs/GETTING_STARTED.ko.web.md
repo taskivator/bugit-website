@@ -29,8 +29,8 @@ BugIt는 대략적인 테스트 메모를 VS Code 안에서 검토된 버그 리
 
 ## 연결 상태
 
-- Jira Cloud와 Confluence Cloud는 가이드형 Atlassian Rovo MCP 경로를 사용하며, 브라우저 인증과 실시간 기능 확인이 필요합니다.
-- Azure DevOps는 Microsoft의 조직 범위 원격 MCP 공개 미리 보기를 사용하며, 실시간 검증이 필요합니다.
+- Jira Cloud와 Azure DevOps는 사용자가 자신의 계정에서 만든 API 토큰으로 트래커의 REST API에 직접 등록합니다. 설정 과정에서 연결을 먼저 확인합니다.
+- Confluence Cloud는 브라우저 로그인을 사용하는 가이드형 Atlassian Rovo MCP 경로를 통해 지식 소스로 연결됩니다.
 - Sentry, GitHub, Linear, Notion은 각 서비스의 사전 조건과 실시간 확인을 통과하기 전까지 실험적 단계에 있습니다.
 - 그 밖에 명시된 서비스에는 조직에서 제공하는 호환 MCP 서버가 필요합니다. BugIt는 설정 안내를 제공하지만 해당 서버를 배포하거나 테스트하지는 않습니다.
 

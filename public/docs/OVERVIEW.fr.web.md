@@ -20,8 +20,8 @@ BugIt est un agent commercial VS Code Copilot qui transforme des notes de test b
 
 ## Niveaux d'intégration
 
-- Assisté : Jira Cloud et Confluence Cloud via Atlassian Rovo MCP.
-- Assisté en préversion publique : Azure DevOps via le service MCP distant de Microsoft.
+- Mappage de champs intégré et testé : Jira Cloud et Azure DevOps, via l'API REST du traqueur avec un jeton d'API que vous créez dans votre propre compte.
+- Source de connaissances assistée : Confluence Cloud via Atlassian Rovo MCP, avec connexion par navigateur.
 - Expérimental avec vérification en direct : Sentry, GitHub, Linear et Notion.
 - Accompagnement à la configuration uniquement : serveurs compatibles fournis par l'organisation pour d'autres traqueurs, outils de plantage, gestion des tests, communications et services de connaissances.
 - Non pris en charge par la configuration automatisée : connecteurs de stockage S3, Google Drive et Azure Blob.

@@ -20,8 +20,8 @@ BugIt 是一款商用的 VS Code Copilot 代理，可将零散的测试记录转
 
 ## 集成层级
 
-- 引导式：通过 Atlassian Rovo MCP 接入 Jira Cloud 与 Confluence Cloud。
-- 引导式公开预览：通过 Microsoft 的远程 MCP 服务接入 Azure DevOps。
+- 内置且经过测试的字段映射：Jira Cloud 与 Azure DevOps，使用您在自己账户中创建的 API 令牌，通过跟踪系统的 REST API 直接提交。
+- 引导式知识源：通过 Atlassian Rovo MCP 接入 Confluence Cloud（浏览器登录）。
 - 实验性并支持实时验证：Sentry、GitHub、Linear 与 Notion。
 - 仅提供设置指导：由组织自行提供的兼容服务器，用于对接其他跟踪系统、崩溃分析工具、测试管理、沟通及知识库服务。
 - 自动化设置不支持：S3、Google Drive 与 Azure Blob 存储连接器。

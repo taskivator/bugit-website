@@ -20,8 +20,8 @@ BugItは、雑多なテストメモを一貫性のあるバグレポートに変
 
 ## 連携ティア
 
-- ガイド付き: Atlassian Rovo MCPを介したJira CloudおよびConfluence Cloud。
-- ガイド付きパブリックプレビュー: MicrosoftのリモートMCPサービスを介したAzure DevOps。
+- 組み込みのテスト済みフィールドマッピング: Jira CloudおよびAzure DevOps。ご自身のアカウントで作成したAPIトークンを使い、トラッカーのREST APIに直接起票します。
+- ガイド付きナレッジソース: Atlassian Rovo MCPを介したConfluence Cloud（ブラウザーでサインイン）。
 - ライブ検証付きの実験的機能: Sentry、GitHub、Linear、Notion。
 - セットアップ手引きのみ: その他のトラッカー、クラッシュ解析ツール、テスト管理、コミュニケーション、ナレッジサービス向けに組織が提供する互換サーバー。
 - 自動セットアップ非対応: S3、Google Drive、Azure Blobのストレージコネクタ。

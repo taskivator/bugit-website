@@ -65,8 +65,8 @@ browser based activation in the BugIt Portal become available in your account.
 
 BugIt runs inside Visual Studio Code and needs an AI provider that you supply,
 either GitHub Copilot or your own OpenAI or Anthropic key, together with a
-supported version of Python. Filing to a tracker also uses the BugIt extension
-included in your download. Internet access is needed to activate and to verify the
+supported version of Python. Filing to a tracker uses an API token that you create in your own tracker
+account and paste into BugIt. Internet access is needed to activate and to verify the
 license periodically. Between those checks BugIt continues to work offline for up
 to 72 hours.
 
