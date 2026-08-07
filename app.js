@@ -279,6 +279,25 @@ function setMetaDescription(text){if(typeof text!=='string')return;var m=documen
 function fetchFirstText(urls){
   return urls.reduce((p,u)=>p.catch(()=>fetch(u).then(x=>x.ok?x.text():Promise.reject())),Promise.reject());
 }
+/* The docs sidebar, built once and used by BOTH the doc pages and the not-found page.
+   `active` is the current route, or null when there isn't one (the 404), in which case no
+   link is marked current and the mobile disclosure shows the section name rather than
+   claiming to be on a page that doesn't exist. */
+function renderDocNav(lang,active){
+  const dn=document.getElementById('docNav');
+  if(!dn)return;
+  const labels={...i18n.en.docs,...(i18n[lang]&&i18n[lang].docs||{})};
+  const navLabel=(i18n[lang]&&i18n[lang].nav||i18n.en.nav).docs;
+  const nav=[['#/docs',navLabel],['#/docs/license',labels.license],['#/docs/privacy',labels.privacy],['#/docs/refund',labels.refund],['#/docs/faq','FAQ'],['#/support',labels.support]];
+  dn.classList.remove('open');/* every render starts collapsed on mobile */
+  const current=active==null?null:nav.find(([h])=>h.slice(2)===active);
+  const currentLabel=(current||nav[0])[1];
+  const links=nav.map(([href,label])=>{
+    const isCurrent=active!=null&&href.slice(2)===active;
+    return `<a class="${isCurrent?'active':''}"${isCurrent?' aria-current="page"':''} href="${href}">${label}</a>`;
+  }).join('');
+  dn.innerHTML=`<button type="button" class="docs-nav-toggle" aria-expanded="false" aria-controls="docNavList"><span class="docs-nav-current">${currentLabel}</span><span class="docs-nav-caret" aria-hidden="true">▾</span></button><div class="docs-nav-list" id="docNavList">${links}</div>`;
+}
 function renderDocRoute(){
   const r=route();
   const home=document.getElementById('homeView'),doc=document.getElementById('docView');
@@ -291,7 +310,11 @@ function renderDocRoute(){
     if(/^#\/.+/.test(location.hash)){
       home.hidden=true;doc.hidden=false;
       const nf={...i18n.en.notFound,...(i18n[lang].notFound||{})};
-      const _dn=document.getElementById('docNav');if(_dn){_dn.classList.remove('open');_dn.innerHTML='';}
+      // The docs sidebar STAYS. Emptying it left a mistyped doc link — the ordinary way
+      // someone arrives here — as a dead end with two links out, when the reader was one
+      // click from the page they actually wanted. `null` marks no active item, so nothing
+      // in the list claims to be the current page.
+      renderDocNav(lang,null);
       document.getElementById('docContent').innerHTML=`<div data-notfound><span class="eyebrow">${nf.eyebrow}</span><h1>${nf.title}</h1><p>${nf.body}</p>`
         +`<div class="doc-actions"><a class="doc-button" href="#/docs">${nf.docs}</a> <a class="doc-btn doc-btn-preview" href="/">${nf.home}</a></div></div>`;
       document.title=`${nf.title} · BugIt`;
@@ -311,11 +334,7 @@ function renderDocRoute(){
   const labels={...i18n.en.docs,...(i18n[lang].docs||{})};
   const dl=docDownloadLabels[lang]||docDownloadLabels.en;
   const ui={...docUiText.en,...(docUiText[lang]||{})};
-  const nav=[['#/docs',i18n[lang].nav.docs],['#/docs/license',labels.license],['#/docs/privacy',labels.privacy],['#/docs/refund',labels.refund],['#/docs/faq','FAQ'],['#/support',labels.support]];
-  const _dn=document.getElementById('docNav');_dn.classList.remove('open');/* every render starts collapsed on mobile */
-  const _activeLabel=(nav.find(([h])=>h.slice(2)===r)||nav[0])[1];
-  const _links=nav.map(([href,label])=>`<a class="${href.slice(2)===r?'active':''}"${href.slice(2)===r?' aria-current="page"':''} href="${href}">${label}</a>`).join('');
-  _dn.innerHTML=`<button type="button" class="docs-nav-toggle" aria-expanded="false" aria-controls="docNavList"><span class="docs-nav-current">${_activeLabel}</span><span class="docs-nav-caret" aria-hidden="true">▾</span></button><div class="docs-nav-list" id="docNavList">${_links}</div>`;
+  renderDocNav(lang,r);
   const titles={docs:d.homeTitle,'docs/getting-started':dl.userGuide,'docs/user-guide':dl.overview,'docs/license':d.licenseTitle,'docs/privacy':d.privacyTitle,'docs/refund':d.refundTitle,'docs/faq':d.faqTitle,support:d.supportTitle};
   let body='';
   if(r==='docs'){
