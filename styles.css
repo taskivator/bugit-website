@@ -322,6 +322,12 @@ html{overflow-x:clip}
    and `[dir="ltr"]` isolate them; the rule below makes that isolation visible to the
    layout as well as to the text engine.
    ================================================================================== */
+/* Bypass Blocks (WCAG 2.4.1). Off-screen until focused, then a real, visible target --
+   a skip link that never becomes visible helps a screen reader and abandons the
+   sighted keyboard user, who is the person most likely to need it. */
+.skip-link{position:fixed;top:12px;left:12px;z-index:1000;transform:translateY(-200%);background:var(--pink,#ff4fc9);color:#fff;font-weight:900;padding:12px 18px;border-radius:10px;text-decoration:none;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.skip-link:focus,.skip-link:focus-visible{transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){.skip-link{transition:none}}
 [dir="rtl"] .nav-cta{margin-left:0;margin-right:8px}
 [dir="rtl"] .mm-title em{margin-left:0;margin-right:6px}
 [dir="rtl"] .lang button{text-align:right}

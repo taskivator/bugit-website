@@ -64,6 +64,13 @@
   </script>
 </head>
 <body>
+  <!-- Bypass Blocks (WCAG 2.4.1). Every page here starts with the same header: a
+       logo, five nav links, a language menu, an account menu and a CTA. A keyboard
+       or screen-reader user had to tab through all of it on every navigation before
+       reaching a word of content, and there was no way to skip it. First focusable
+       element in the document, visible only when focused, and localized like the
+       rest of the chrome. -->
+  <a class="skip-link" href="#top" data-t="a11y.skipToContent">Skip to content</a>
   <div id="ambient" aria-hidden="true"><div class="grid"></div><div class="aurora a"></div><div class="aurora b"></div></div>
   <header class="nav shell">
     <!-- No aria-label here on purpose. The visible text is "BugIt by Taskivator",
@@ -96,7 +103,7 @@
           <div id="acctList" class="acct-list" role="menu"></div>
         </div>
       </div>
-      <a class="nav-cta" href="https://portal.bugit.dev/pricing"><span data-t="cta.early">Get BugIt</span> <b data-t="pricing.limitedTag">LIMITED</b><small>$39.99 one-time · <span data-t="pricing.limited">Introductory price</span></small></a>
+      <a class="nav-cta" href="https://portal.bugit.dev/pricing"><span data-t="cta.early">Get BugIt</span> <b data-t="pricing.limitedTag">LIMITED</b><small>$39.99<span data-t="pricing.perYear"> one-time</span> · <span data-t="pricing.limited">Introductory price</span></small></a>
       <button class="nav-toggle" id="navToggle" type="button" data-t-aria="a11y.openMenu" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
@@ -265,7 +272,7 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
     <div class="docs-layout"><aside id="docNav" class="docs-sidebar"></aside><article id="docContent" class="docs-content"></article></div>
   </main>
 
-  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. All Rights Reserved.</p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
+  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. <span data-t="footer.rights">All Rights Reserved.</span></p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
 
   <!-- Consent banner (Consent Mode v2). Hidden until app.js shows it, which only
        happens when the bugit_consent cookie is absent. All copy is localized via
