@@ -35,7 +35,15 @@ try {
   await page.click("#consentReject");
   await page.waitForTimeout(200);
 
-  for (const lang of ["en", "ar", "ja", "de", "ru"]) {
+  // Arabic is intentionally NOT offered yet -- check-legal-copy requires a shipped
+  // locale to have its own LICENSE/PRIVACY/REFUND, and the Arabic legal corpus does
+  // not exist. Assert it is absent so re-enabling it cannot happen by accident.
+  {
+    await page.goto(base, { waitUntil: "networkidle" });
+    const arOffered = await page.locator('#langList button[data-lang="ar"]').count();
+    if (arOffered) fail.push("ar is offered but ships no Arabic legal documents");
+  }
+  for (const lang of ["en", "ja", "de", "ru"]) {
     // Switch language the way a reader does. The cookie beats localStorage and is
     // rewritten on every load, so poking storage directly would be a no-op.
     await page.goto(base, { waitUntil: "networkidle" });
@@ -65,6 +73,9 @@ try {
       fail.push(`${lang}: first Tab does not reach the skip link (got "${focusedClass}")`);
 
     // 2. It becomes VISIBLE on focus (an invisible skip link abandons sighted keyboard users).
+    // The link transitions in (transition:top .15s), so measuring in the same frame reads
+    // the START of the animation. Wait for it to settle; the assertion below is unchanged.
+    await page.waitForTimeout(400);
     const box = await page.evaluate(() =>
       document.querySelector(".skip-link").getBoundingClientRect().toJSON());
     const inView = box && box.y >= 0 && box.y < 200;
