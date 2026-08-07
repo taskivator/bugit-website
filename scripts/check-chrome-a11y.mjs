@@ -35,15 +35,7 @@ try {
   await page.click("#consentReject");
   await page.waitForTimeout(200);
 
-  // Arabic is intentionally NOT offered yet -- check-legal-copy requires a shipped
-  // locale to have its own LICENSE/PRIVACY/REFUND, and the Arabic legal corpus does
-  // not exist. Assert it is absent so re-enabling it cannot happen by accident.
-  {
-    await page.goto(base, { waitUntil: "networkidle" });
-    const arOffered = await page.locator('#langList button[data-lang="ar"]').count();
-    if (arOffered) fail.push("ar is offered but ships no Arabic legal documents");
-  }
-  for (const lang of ["en", "ja", "de", "ru"]) {
+  for (const lang of ["en", "ar", "ja", "de", "ru"]) {
     // Switch language the way a reader does. The cookie beats localStorage and is
     // rewritten on every load, so poking storage directly would be a no-op.
     await page.goto(base, { waitUntil: "networkidle" });

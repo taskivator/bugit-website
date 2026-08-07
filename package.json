@@ -20,6 +20,7 @@
     "test:team-paused": "node scripts/check-team-paused.mjs",
     "test:activation": "node scripts/check-activation-copy.mjs",
     "test:consent-network": "node scripts/check-consent-network.mjs",
+    "test:legal-copy": "node scripts/check-legal-copy.mjs",
     "test:legal-dataflow": "node scripts/check-legal-dataflow.mjs",
     "test:a11y": "node scripts/check-a11y.mjs",
     "test:languages": "node scripts/check-languages.mjs",
