@@ -17,7 +17,11 @@
    composited anyway, so dropping the hint costs nothing visually and removes ~128
    layers. Desktop and tablet keep will-change untouched. */
 @media(max-width:760px){.particle{will-change:auto}}@keyframes floatParticle{from{transform:translate3d(0,0,0) scale(1);opacity:.25}50%{opacity:.95}to{transform:translate3d(var(--x,40px),var(--y,-55px),0) scale(1.16);opacity:.5}}
-.nav{height:92px;display:flex;align-items:center;justify-content:space-between;gap:26px}.brand{display:flex;align-items:center;gap:12px;font-weight:950}.brand strong{font-size:28px;display:block;line-height:1}.brand em{display:block;color:var(--pink);font-style:normal;font-size:13px;letter-spacing:1px;margin-top:4px}.main-nav{display:flex;gap:38px;font-weight:800}.main-nav a:hover{color:#ff86dc}.nav-actions{display:flex;align-items:center;gap:14px}.nav-cta{background:linear-gradient(110deg,var(--purple),var(--pink),var(--hot));border-radius:12px;padding:12px 18px 11px;display:grid;gap:4px;text-align:center;font-weight:950;box-shadow:0 18px 45px rgba(255,79,201,.22)}/* #ff3970 on white is 3.46:1 — below AA 4.5:1, and this badge ("LIMITED") sits
+.nav{height:92px;display:flex;align-items:center;justify-content:space-between;gap:26px}.brand{display:flex;align-items:center;gap:12px;font-weight:950}.brand strong{font-size:28px;display:block;line-height:1}/* margin-top has to clear the descender of the "g" in BugIt: the wordmark is set
+   solid (line-height:1), so that tail hangs into the space below it and at 4px the
+   byline was sitting inside it. Kept in step with the portal's Logo component,
+   which uses the same ratio against its own wordmark size. */
+.brand em{display:block;color:var(--pink);font-style:normal;font-size:13px;letter-spacing:1px;margin-top:7px}.main-nav{display:flex;gap:38px;font-weight:800}.main-nav a:hover{color:#ff86dc}.nav-actions{display:flex;align-items:center;gap:14px}.nav-cta{background:linear-gradient(110deg,var(--purple),var(--pink),var(--hot));border-radius:12px;padding:12px 18px 11px;display:grid;gap:4px;text-align:center;font-weight:950;box-shadow:0 18px 45px rgba(255,79,201,.22)}/* #ff3970 on white is 3.46:1 — below AA 4.5:1, and this badge ("LIMITED") sits
    on the pricing card, i.e. inside the purchase journey. #d81b52 is 5.00:1 and
    still reads as the brand pink. Do not lighten without re-measuring. */
 .nav-cta b,.primary b{background:white;color:#d81b52;border-radius:999px;padding:4px 8px;font-size:11px;margin-left:8px}.nav-cta small{font-size:12px;color:white;opacity:.92}
@@ -59,7 +63,7 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
 .docs-nav-caret{transition:transform .2s ease;font-size:12px;opacity:.8}
 .docs-sidebar.open .docs-nav-caret{transform:rotate(180deg)}
 .docs-nav-list{display:none;margin-top:8px;padding:6px;border:1px solid var(--line);border-radius:12px;background:rgba(5,4,12,.94)}
-.docs-sidebar.open .docs-nav-list{display:block}.trust div{border-right:0;border-bottom:1px solid var(--line)}.footer{flex-direction:column;align-items:flex-start}.footer nav{gap:18px}.section-head h2{font-size:38px}.hero{min-height:auto;padding-top:25px}.docs-content{padding:24px}.docs-content h1{font-size:42px}.lang button{min-width:126px}.brand strong{font-size:22px}.brand em{font-size:10px}.bug-logo.mini{width:44px;height:44px}.lower{padding-top:20px}}
+.docs-sidebar.open .docs-nav-list{display:block}.trust div{border-right:0;border-bottom:1px solid var(--line)}.footer{flex-direction:column;align-items:flex-start}.footer nav{gap:18px}.section-head h2{font-size:38px}.hero{min-height:auto;padding-top:25px}.docs-content{padding:24px}.docs-content h1{font-size:42px}.lang button{min-width:126px}.brand strong{font-size:22px}.brand em{font-size:10px;margin-top:5px}.bug-logo.mini{width:44px;height:44px}.lower{padding-top:20px}}
 
 /* --- Launch prep: nav Sign in button + documentation PDF download cards --- */
 .nav-login{display:inline-flex;align-items:center;padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:800;color:var(--text);transition:.18s;white-space:nowrap}
