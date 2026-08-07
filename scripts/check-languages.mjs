@@ -124,7 +124,11 @@ if (!/const langTag=c=>i18n\[c\]\.name;/.test(app))
 if (!/i18n\.en\.meta=\{title:/.test(app)) fail.push("English homepage meta (title/description) missing");
 if (!/i18n\.en\.notFound=\{/.test(app)) fail.push("English not-found strings missing");
 if (!/\(i18n\[lang\]\.meta\)\|\|i18n\.en\.meta/.test(app)) fail.push("homepage meta lacks explicit English fallback");
-if (!/\{\.\.\.i18n\.en\.notFound,\.\.\.\(i18n\[lang\]\.notFound\|\|\{\}\)\}/.test(app))
+// Two spellings of the same guarantee: the spread form, or notFoundText()'s own
+// `t[lang]||t.en`. Either is an explicit English fallback; what must never happen is a
+// locale rendering an undefined string. check-chrome-a11y asserts the rendered result.
+if (!/\{\.\.\.i18n\.en\.notFound,\.\.\.\(i18n\[lang\]\.notFound\|\|\{\}\)\}/.test(app)
+    && !/return t\[lang\]\|\|t\.en;/.test(app))
   fail.push("not-found render lacks explicit English fallback");
 // Unknown route-style hash renders the not-found page (not the homepage).
 if (!/\/\^#\\\/\.\+\/\.test\(location\.hash\)/.test(app))
