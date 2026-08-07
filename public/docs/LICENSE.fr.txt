@@ -52,8 +52,9 @@ Titulaire de la licence ») acceptez les présentes conditions.
    reconduction automatique ni prélèvement récurrent. Votre achat confère une licence
    d'un an, comprenant les mises à jour ainsi que les services de licence et
    d'activation, qui débute à la première activation. À l'issue de l'année, la
-   licence expire ; la poursuite de l'utilisation nécessite une nouvelle licence, que
-   vous pouvez choisir d'acheter, et Taskivator ne vous prélève jamais
+   licence expire ; une période de grâce de 3 jours suit, pendant laquelle le Logiciel
+   continue de fonctionner. La poursuite de l'utilisation nécessite ensuite une
+   nouvelle licence, que vous pouvez choisir d'acheter, et Taskivator ne vous prélève jamais
    automatiquement. En cas de contradiction entre une traduction des présentes
    conditions et la version anglaise, la version anglaise prévaut, sauf disposition
    impérative contraire du droit local. Rien dans les présentes conditions n'exclut

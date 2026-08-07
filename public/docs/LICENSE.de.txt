@@ -53,8 +53,9 @@ verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären 
    es gibt keine automatische Verlängerung und keine wiederkehrende Belastung. Ihr
    Kauf gewährt eine einjährige Lizenz, einschließlich Updates sowie Lizenz- und
    Aktivierungsdiensten, die mit der ersten Aktivierung beginnt. Mit Ablauf des
-   Jahres erlischt die Lizenz; die fortgesetzte Nutzung erfordert eine neue Lizenz,
-   die Sie erwerben können, und Taskivator belastet Sie niemals automatisch. Bei
+   Jahres erlischt die Lizenz; es folgt eine Schonfrist von 3 Tagen, in der die
+   Software weiterhin funktioniert. Die fortgesetzte Nutzung erfordert danach eine
+   neue Lizenz, die Sie erwerben können, und Taskivator belastet Sie niemals automatisch. Bei
    Widersprüchen zwischen einer Übersetzung dieser Bedingungen und der englischen
    Fassung ist die englische Fassung maßgeblich, sofern nicht zwingendes lokales
    Recht etwas anderes vorsieht. Nichts in diesen Bedingungen schließt Rechte oder
