@@ -37,6 +37,33 @@ catch {
   catch { console.error("SKIP: install a browser driver first (npm i -D playwright && npx playwright install chromium)"); process.exit(2); }
 }
 
+// PRECONDITION: the origin has to actually be serving the site.
+//
+// Six of the nine checks below are "ZERO Google requests" checks, and a page that never
+// loaded makes zero requests of any kind. Run with nothing listening on the port, this
+// harness printed six `ok` lines and failed only the three that need a rendered page — a
+// consent gate reporting mostly-pass against a dead socket. The zero-request result is
+// only evidence when there was a page that could have made one.
+{
+  let reachable = false, why = "";
+  try {
+    const res = await fetch(BASE, { redirect: "follow" });
+    const body = await res.text();
+    reachable = res.ok && /id="langList"|class="brand"/.test(body);
+    why = res.ok ? "served a page with no BugIt markup in it" : `answered HTTP ${res.status}`;
+  } catch (e) {
+    why = e.code || e.message || String(e);
+  }
+  if (!reachable) {
+    console.error(
+      `check-consent-network CANNOT RUN: ${BASE} ${why}.\n` +
+      "  Nothing was proven — a page that never loads makes zero Google requests too.\n" +
+      "  Start the site first:  node build.js && PORT=3123 node server.js\n" +
+      "  Or point the harness at a deployed origin:  CONSENT_TEST_URL=https://bugit.dev");
+    process.exit(1);
+  }
+}
+
 const EXE = process.env.CHROME_EXE || undefined;
 let fails = 0;
 const ok = (cond, label, extra) => { if (cond) { console.log(`  ok   ${label}`); } else { fails++; console.error(`  FAIL ${label}${extra ? ` — ${extra}` : ""}`); } };
