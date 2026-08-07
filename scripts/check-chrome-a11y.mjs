@@ -164,6 +164,48 @@ try {
     if (lang === "ar" && meta.dir !== "rtl") fail.push("ar: direction is not rtl");
     if (lang !== "en" && meta.title.startsWith("BugIt | QA Bug-Filing Agent"))
       fail.push(`${lang}: <title> is still the English default`);
+
+    // 8. Arabic typography, measured on the rendered page.
+    //
+    // Arabic is cursive: the letters of a word are JOINED, so letter-spacing pulls those
+    // joins apart and the word stops reading as a word. Twenty rules in this sheet set a
+    // non-zero value, including -.035em on section headings, and only four of them had
+    // ever been switched off for RTL. And the headline was set at 102px in a 470px
+    // column, which Latin survives because its words are short: Arabic came out one word
+    // per line, eight lines, 1063px of heading in a 620px slot.
+    //
+    // Read from the real cascade, because the first attempt at the tracking fix was
+    // written correctly and lost on specificity -- which grepping the stylesheet would
+    // have called a pass.
+    if (lang === "ar") {
+      const type = await page.evaluate(() => {
+        const read = (sel) => {
+          const el = document.querySelector(sel);
+          if (!el) return null;
+          const cs = getComputedStyle(el);
+          const r = el.getBoundingClientRect();
+          return { sel, ls: cs.letterSpacing, fs: parseFloat(cs.fontSize),
+                   lh: parseFloat(cs.lineHeight), h: Math.round(r.height) };
+        };
+        const tracked = [...document.querySelectorAll("h1,h2,h3,h4,p,span,a,b,strong,small,li")]
+          .filter((el) => {
+            if (el.closest("bdi,code,kbd,pre,.mono")) return false;   // Latin runs may track
+            const ls = getComputedStyle(el).letterSpacing;
+            return ls !== "normal" && Math.abs(parseFloat(ls)) > 0.01;
+          })
+          .map((el) => `${el.tagName.toLowerCase()}.${el.className.toString().split(" ")[0]}`);
+        return { title: read(".hero-title"), tracked: [...new Set(tracked)] };
+      });
+      if (type.tracked.length)
+        fail.push(`ar: ${type.tracked.length} element(s) still letter-spaced, which breaks Arabic joining: ${type.tracked.slice(0, 6).join(", ")}`);
+      if (type.title) {
+        note(`hero title: ${type.title.fs}px lh=${type.title.lh}px box height=${type.title.h}px`);
+        if (type.title.fs > 80)
+          fail.push(`ar: hero title is ${type.title.fs}px; at that size one Arabic word fills the column`);
+        if (type.title.h > 520)
+          fail.push(`ar: hero title occupies ${type.title.h}px, far more than the other locales`);
+      }
+    }
   }
 
   if (errors.length) fail.push("page errors: " + errors.join(" | "));
