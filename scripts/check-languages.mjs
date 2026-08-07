@@ -38,6 +38,24 @@ function extractObject(src, marker) {
   catch (e) { return null; }
 }
 
+// Brace-match a named function so a guard can assert over ONE function's body
+// instead of the whole file — "(Preview)" may legitimately appear in a comment
+// elsewhere; what matters is that it never reaches the rendered menu.
+function extractFunctionBody(src, marker) {
+  const at = src.indexOf(marker);
+  if (at < 0) return null;
+  let i = src.indexOf("{", at);
+  if (i < 0) return null;
+  let depth = 0;
+  const start = i;
+  for (; i < src.length; i++) {
+    const c = src[i];
+    if (c === "{") depth++;
+    else if (c === "}") { depth--; if (depth === 0) { i++; break; } }
+  }
+  return src.slice(start, i);
+}
+
 const cat = extractObject(app, "const languageCatalogue=");
 if (!cat) fail.push("languageCatalogue object not found / not parseable in app.js");
 
@@ -87,9 +105,20 @@ if (cat) {
   }
 }
 
-// --- Picker tags every non-English locale as "(Preview)" ----------------------
-if (!/c==='en'\?i18n\[c\]\.name:`\$\{i18n\[c\]\.name\} \(Preview\)`/.test(app))
-  fail.push("language picker no longer tags non-English locales as '(Preview)'");
+// --- Picker shows each language's own name and nothing else -------------------
+// The Supported/Preview tiering above is catalogue data and stays enforced. It is
+// deliberately NOT surfaced as a picker label: the person reading that menu is by
+// definition looking for a language other than English, so an English "(Preview)"
+// tag is noise they cannot read. This asserts both halves — the plain label is
+// present, and no tag has crept back into the menu.
+if (!/const langTag=c=>i18n\[c\]\.name;/.test(app))
+  fail.push("language picker no longer renders the plain endonym (langTag changed)");
+{
+  const initLang = extractFunctionBody(app, "function initLang()");
+  if (initLang === null) fail.push("initLang() not found — cannot verify the picker label");
+  else if (/\(Preview\)|\(preview\)/.test(initLang))
+    fail.push("language picker tags locales as '(Preview)' again — owner removed that label");
+}
 
 // --- Localized homepage metadata + not-found present + English fallback --------
 if (!/i18n\.en\.meta=\{title:/.test(app)) fail.push("English homepage meta (title/description) missing");
