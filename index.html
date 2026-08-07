@@ -64,7 +64,7 @@
   </script>
 </head>
 <body>
-  <a href="#homeView" class="skip-link" id="skipLink">Skip to main content</a>
+  <a href="#homeView" class="skip-link" id="skipLink" data-t="a11y.skipToContent">Skip to content</a>
   <div id="ambient" aria-hidden="true"><div class="aurora a"></div><div class="aurora b"></div></div>
   <header class="nav shell">
     <!-- No aria-label here on purpose. The visible text is "BugIt by Taskivator",
@@ -209,14 +209,14 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
 
     <section id="demo" class="demo shell">
       <div class="section-head"><span data-t="demo.eyebrow">SEE IT WORK</span><h2 data-t="demo.title">One agent. Different QA worlds.</h2><p data-t="demo.subtitle">Use it for web, mobile, desktop, SaaS, enterprise workflows or games.</p></div>
-      <div class="demo-tabs"><button class="active" data-video="saas" data-t="demo.saas">SaaS / Web App</button><button data-video="game" data-t="demo.game">Game QA</button><button data-video="general" data-t="demo.general">General Workflow</button></div>
+      <div class="demo-tabs" role="tablist" data-t-aria="a11y.demoTabs" aria-label="Choose a demo"><button class="active" role="tab" id="demotab-saas" aria-selected="true" aria-controls="demopanel-saas" tabindex="0" data-video="saas" data-t="demo.saas">SaaS / Web App</button><button role="tab" id="demotab-game" aria-selected="false" aria-controls="demopanel-game" tabindex="-1" data-video="game" data-t="demo.game">Game QA</button><button role="tab" id="demotab-general" aria-selected="false" aria-controls="demopanel-general" tabindex="-1" data-video="general" data-t="demo.general">General Workflow</button></div>
       <!-- The demo clips are silent, muted visual loops with no dialogue or
            informational audio, so captions/audio descriptions are not applicable;
            a localized aria-label giving each demo an accessible name is the fix. -->
       <div class="video-frame"><div class="demo-stack" id="demoStack">
-        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video is-active" data-video="saas" muted playsinline preload="metadata" src="/public/media/BugIt-Demo-SaaS.mp4" data-t-aria="a11y.demoSaas" aria-label="Demo video: BugIt in a SaaS web app QA workflow"></video>
-        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4" data-t-aria="a11y.demoGame" aria-label="Demo video: BugIt in a game QA workflow"></video>
-        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" data-video="general" muted playsinline preload="none" src="/public/media/BugIt-Demo.mp4" data-t-aria="a11y.demoGeneral" aria-label="Demo video: BugIt in a general QA workflow"></video>
+        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video is-active" role="tabpanel" id="demopanel-saas" aria-labelledby="demotab-saas" tabindex="0" data-video="saas" muted playsinline preload="metadata" src="/public/media/BugIt-Demo-SaaS.mp4" data-t-aria="a11y.demoSaas" aria-label="Demo video: BugIt in a SaaS web app QA workflow"></video>
+        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-game" aria-labelledby="demotab-game" tabindex="-1" aria-hidden="true" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4" data-t-aria="a11y.demoGame" aria-label="Demo video: BugIt in a game QA workflow"></video>
+        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-general" aria-labelledby="demotab-general" tabindex="-1" aria-hidden="true" data-video="general" muted playsinline preload="none" src="/public/media/BugIt-Demo.mp4" data-t-aria="a11y.demoGeneral" aria-label="Demo video: BugIt in a general QA workflow"></video>
       </div></div>
     </section>
 
@@ -267,7 +267,7 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
     <div class="docs-layout"><aside id="docNav" class="docs-sidebar"></aside><article id="docContent" class="docs-content"></article></div>
   </main>
 
-  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. All Rights Reserved.</p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/docs/commerce" data-t="docs.commerce">Commercial Transactions</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
+  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. <span data-t="footer.rights">All Rights Reserved.</span></p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/docs/commerce" data-t="docs.commerce">Commercial Transactions</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
 
   <!-- Consent banner (Consent Mode v2). Hidden until app.js shows it, which only
        happens when the bugit_consent cookie is absent. All copy is localized via
