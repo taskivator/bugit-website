@@ -13,8 +13,9 @@
 //  - no public surface may carry a personal name, private address, or personal
 //    telephone number. The check is pattern-based on purpose: a private value must
 //    never be hardcoded into a test just to assert its absence;
-//  - Commercial Transactions stays reachable from the footer and from the purchase
-//    flow, but is no longer a Documentation card;
+//  - Commercial Transactions stays reachable from the footer, from the purchase
+//    flow, and — since the owner's 2026-08-07 decision — from a Documentation card,
+//    with a short card blurb rather than the full page paragraph;
 //  - every supported Privacy Policy and License translation exists and is complete;
 //  - no document makes a FALSE legal-certification claim, and no FAQ answer is
 //    written in the wrong language.
@@ -158,9 +159,14 @@ const pricingNote = index.match(/<p class="pricing-note">[\s\S]*?<\/p>/);
 check(!!pricingNote && /#\/docs\/commerce/.test(pricingNote[0]),
   "the purchase flow (pricing note) no longer links the Commercial Transactions page");
 
+// OWNER DECISION 2026-08-07, superseding the 2026-08-02 presentation rule: the page
+// IS a Documentation card. The 08-02 remediation removed the card to keep the seller
+// disclosure low-key; the owner has since asked for it back twice. Nothing about the
+// disclosure itself changed — the page content, the request-based wording and the
+// name/address/phone bans above are all untouched. This is placement only.
 const docCards = index.match(/<div class="doc-cards">[\s\S]*?<\/div>/);
-check(!!docCards && !/#\/docs\/commerce/.test(docCards[0]),
-  "Commercial Transactions is still a Documentation card (it should only be in the footer and purchase flow)");
+check(!!docCards && /#\/docs\/commerce/.test(docCards[0]),
+  "Commercial Transactions is missing from the Documentation cards");
 
 // It must stay in the docs sidebar so the page is navigable once opened.
 check(/\['#\/docs\/commerce',labels\.commerce\]/.test(app),
@@ -187,6 +193,19 @@ for (const [, code, json] of generated) {
     `app.js locale "${code}" has no docPages.commerceTitle, so its commerce page would show the English heading`);
   check(!!dict.docPages?.commerceIntro,
     `app.js locale "${code}" has no docPages.commerceIntro`);
+
+  // The Documentation card needs a SHORT blurb, like every card beside it. Each
+  // locale originally set docs.commerceDesc to the full docPages.commerceIntro
+  // paragraph, which was invisible while the card did not exist — the moment the
+  // card shipped, nine languages would have rendered a wall of text next to
+  // one-line siblings. Tie the two apart so they cannot re-converge.
+  const cardDesc = dict.docs?.commerceDesc;
+  check(!!cardDesc,
+    `app.js locale "${code}" has no docs.commerceDesc, so its card blurb would fall back to English`);
+  check(!cardDesc || cardDesc !== dict.docPages?.commerceIntro,
+    `app.js locale "${code}" reuses the full commerceIntro paragraph as the card blurb`);
+  check(!cardDesc || cardDesc.length <= 80,
+    `app.js locale "${code}" has a ${cardDesc?.length}-character commerce card blurb (max 80)`);
 
   // Refund Policy chrome. The REFUND.<code>.md bodies were translated long before
   // the UI around them was, so every locale rendered an English "Refund Policy"
