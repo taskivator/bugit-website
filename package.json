@@ -25,6 +25,7 @@
     "test:a11y": "node scripts/check-a11y.mjs",
     "test:languages": "node scripts/check-languages.mjs",
     "test:doc-hygiene": "node scripts/check-doc-hygiene.mjs",
+    "test:spa-routing": "node scripts/check-spa-routing.mjs",
     "test:chrome-a11y": "node scripts/check-chrome-a11y.mjs"
   },
   "devDependencies": {
