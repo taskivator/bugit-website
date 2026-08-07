@@ -3,19 +3,35 @@
 // so grepping app.js proves nothing about what a reader actually gets.
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
+import net from "node:net";
 
-const PORT = 8791;
+// A free port, asked for at run time. The port used to be hardcoded, which meant this
+// harness could answer to a server it had not started: if the port was already taken its
+// own server exited immediately, `fetch` succeeded against the OTHER process, and the run
+// then died halfway through with ERR_CONNECTION_REFUSED when that process went away.
+// Worse than the crash is the quiet version -- passing against a stale build.
+const PORT = await new Promise((resolve, reject) => {
+  const probe = net.createServer();
+  probe.on("error", reject);
+  probe.listen(0, "127.0.0.1", () => {
+    const { port } = probe.address();
+    probe.close(() => resolve(port));
+  });
+});
 const server = spawn(process.execPath, ["server.js"], {
   cwd: process.cwd(),
   env: { ...process.env, PORT: String(PORT) },
   stdio: "ignore",
 });
+let serverExit = null;
+server.on("exit", (code, signal) => { serverExit = signal || `code ${code}`; });
 const base = `http://127.0.0.1:${PORT}`;
 const fail = [];
 const note = (m) => console.log("  " + m);
 
 const waitForServer = async () => {
   for (let i = 0; i < 60; i++) {
+    if (serverExit) throw new Error(`the site server exited before serving anything (${serverExit})`);
     try { await fetch(base); return true; } catch { await new Promise(r => setTimeout(r, 250)); }
   }
   return false;

@@ -10,11 +10,23 @@
 // what the renderer leaves behind, not of any string in app.js.
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
+import net from "node:net";
 
-const PORT = 8793;
+// Ephemeral port, and the server's own exit is watched: a hardcoded port lets a harness
+// answer to somebody else's server, which is how it passes against a stale build.
+const PORT = await new Promise((resolve, reject) => {
+  const probe = net.createServer();
+  probe.on("error", reject);
+  probe.listen(0, "127.0.0.1", () => {
+    const { port } = probe.address();
+    probe.close(() => resolve(port));
+  });
+});
 const server = spawn(process.execPath, ["server.js"], {
   cwd: process.cwd(), env: { ...process.env, PORT: String(PORT) }, stdio: "ignore",
 });
+let serverExit = null;
+server.on("exit", (code, signal) => { serverExit = signal || `code ${code}`; });
 const base = `http://127.0.0.1:${PORT}`;
 const fail = [];
 
@@ -35,7 +47,10 @@ const go = async (page, hash) => {
 };
 
 try {
-  for (let i = 0; i < 60; i++) { try { await fetch(base); break; } catch { await new Promise(r => setTimeout(r, 250)); } }
+  for (let i = 0; i < 60; i++) {
+    if (serverExit) throw new Error(`the site server exited before serving anything (${serverExit})`);
+    try { await fetch(base); break; } catch { await new Promise(r => setTimeout(r, 250)); }
+  }
   const browser = await chromium.launch();
   const page = await browser.newPage();
   const errors = [];
