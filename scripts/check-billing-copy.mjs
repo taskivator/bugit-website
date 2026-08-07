@@ -82,6 +82,7 @@ const ONE_TIME_MARKERS = [
   'разовый платёж',      // ru
   'paiement unique',     // fr
   'einmalzahlung',       // de
+  'دفعة واحدة',           // ar — "a single payment"
 ];
 for (const value of perYear) {
   check(
@@ -99,7 +100,10 @@ check(teamTerms.length === perYear.length, 'every locale defines teamTerm');
 
 // "1 year" expressed in each shipped language, plus a no-renewal marker.
 const YEAR_MARKERS = ['1-year', '1 year', '1年', '1 año', '1 ano', '1 anno', '1년', '1 年',
-  'на 1 год', '1 an', '1-jahres'];
+  'на 1 год', '1 an', '1-jahres',
+  // ar — "for a period of one year". Arabic states the duration in words, not as "1 …",
+  // so a digit-based marker would never match however the sentence was written.
+  'لمدة سنة'];
 const NO_RENEW_MARKERS = [
   'does not auto-renew', 'auto-renew',
   '自動更新なし',                       // ja
@@ -111,6 +115,7 @@ const NO_RENEW_MARKERS = [
   'без автопродления',                 // ru
   'sans reconduction automatique',     // fr
   'keine automatische verlängerung',   // de
+  'لا يُجدَّد تلقائيًا',                    // ar — "does not renew automatically"
 ];
 for (const [label, list] of [['soloTerm', soloTerms], ['teamTerm', teamTerms]]) {
   for (const value of list) {

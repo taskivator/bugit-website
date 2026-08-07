@@ -306,3 +306,46 @@ html{overflow-x:clip}
 .consent-btn.primary{border:0;color:#fff;background:linear-gradient(110deg,var(--purple),var(--pink),var(--hot));box-shadow:0 12px 30px rgba(255,79,201,.22)}
 .foot-link{border:0;background:none;color:inherit;font:inherit;font-weight:inherit;cursor:pointer;padding:0}
 .footer .foot-link:hover{color:#ff72d7}
+
+/* ===== Arabic / right-to-left =====================================================
+   An RTL page is a MIRRORED LAYOUT, not right-aligned text. `dir="rtl"` on <html>
+   (set by applyLang) flips the inline axis for flex, grid and text on its own; what it
+   cannot flip is a rule written in PHYSICAL directions — margin-left, padding-left,
+   text-align:left — because those mean "left" in every language.
+
+   Rather than rewrite the whole sheet into logical properties in one go, the physical
+   rules that actually affect layout are mirrored here under [dir="rtl"]. Anything not
+   listed either uses a symmetric value or is already direction-agnostic.
+
+   Latin runs — commands, paths, prices, version numbers, BugIt/Jira/VS Code — must not
+   be reordered by the bidi algorithm when they sit inside an Arabic sentence. `bdi`
+   and `[dir="ltr"]` isolate them; the rule below makes that isolation visible to the
+   layout as well as to the text engine.
+   ================================================================================== */
+[dir="rtl"] .nav-cta{margin-left:0;margin-right:8px}
+[dir="rtl"] .mm-title em{margin-left:0;margin-right:6px}
+[dir="rtl"] .lang button{text-align:right}
+[dir="rtl"] .lang-caret{margin-left:0;margin-right:15px}
+[dir="rtl"] .report-checked span:not(.rc-label){margin-right:0;margin-left:2px}
+[dir="rtl"] .price-card li{padding-left:0;padding-right:22px}
+[dir="rtl"] .price-card li:before{left:auto;right:0}
+[dir="rtl"] .brand em{letter-spacing:0}          /* letter-spacing breaks Arabic joining */
+[dir="rtl"] .eyebrow{letter-spacing:0}
+[dir="rtl"] .groups h3{letter-spacing:0}
+[dir="rtl"] .price-card h3{letter-spacing:0}
+
+/* The docs sidebar and its mobile disclosure sit on the reading-start side. */
+[dir="rtl"] .docs-nav-list a{text-align:right}
+[dir="rtl"] .docs-nav-toggle{text-align:right}
+
+/* Skip link: it is the first focusable element, so it has to appear where focus starts. */
+[dir="rtl"] .skip-link:focus{left:auto;right:12px}
+
+/* Keep Latin technical text in logical order inside Arabic prose. */
+[dir="rtl"] bdi,[dir="rtl"] code,[dir="rtl"] kbd,[dir="rtl"] pre,[dir="rtl"] .mono{
+  direction:ltr;unicode-bidi:isolate;text-align:left}
+
+/* Arabic renders taller than Latin at the same px size; a little more leading keeps the
+   diacritics and descenders from colliding in the dense cards. */
+[dir="rtl"] body{line-height:1.75}
+[dir="rtl"] .hero-title{line-height:1.3}
