@@ -32,6 +32,10 @@ if (!ready) { console.error(`server did not become ready at ${base}`); shutdown(
 
 // 4. Run every declared suite against the served site.
 const SUITES = [
+  // check-assets and check-chrome-a11y used to run only in CI, or nowhere at all, so a local
+  // `npm test` could pass while CI failed and vice versa. Both lists are now checked against
+  // each other by scripts/check-ci-coverage.mjs.
+  "check-assets.mjs", "check-chrome-a11y.mjs",
   "check-doc-links.mjs", "check-docs.mjs", "check-overflow.mjs", "check-logo.mjs",
   // check-logo.mjs proves the rendered logo has no clipping artifact; this proves
   // the asset it renders is the one the brand pipeline produced and was not

@@ -90,3 +90,27 @@ jobs:
           PORT=3123 node server.js &
           for i in $(seq 1 20); do curl -sf http://localhost:3123/ >/dev/null && break; sleep 0.5; done
           CONSENT_TEST_URL=http://localhost:3123 node scripts/check-consent-network.mjs
+      # Eight guards below were declared in scripts/test-all.mjs but had never been run by CI,
+      # so `npm test` failed locally while every push showed green. check-legal-dataflow was
+      # among them: the published privacy policy had stopped disclosing the entitlement fields
+      # the agent actually transmits, and nothing caught it. check-chrome-a11y was in neither
+      # list and had no runner at all. The coverage guard at the end of this job is what stops
+      # this from recurring: adding a scripts/check-*.mjs and forgetting to wire it is now a
+      # build failure rather than a silent gap.
+      - name: Verify copy that must not drift (Team, activation, legal, docs, languages)
+        run: |
+          node scripts/check-team-paused.mjs
+          node scripts/check-activation-copy.mjs
+          node scripts/check-legal-copy.mjs
+          node scripts/check-legal-dataflow.mjs
+          node scripts/check-languages.mjs
+          node scripts/check-doc-hygiene.mjs
+      - name: Verify accessibility, routing and rendered a11y against the served site
+        run: |
+          PORT=3124 node server.js &
+          for i in $(seq 1 20); do curl -sf http://localhost:3124/ >/dev/null && break; sleep 0.5; done
+          BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-a11y.mjs
+          BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-spa-routing.mjs
+          BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-chrome-a11y.mjs
+      - name: Verify every guard in scripts/ is actually wired into CI
+        run: node scripts/check-ci-coverage.mjs

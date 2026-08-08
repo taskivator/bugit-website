@@ -27,20 +27,27 @@ operator information will be provided without delay.
 ## What the BugIt software sends to us
 
 BugIt activates through your browser: you sign in to the BugIt Portal and approve
-the device. There is no license key to enter or store. From your device, the
-software sends only what is needed to run your license:
+the device. There is no license key to enter or store. When you activate, and when
+your license is checked again later, your device sends only the following:
 
-- a signed entitlement and device activation record from that Portal sign in, so
-  your device can be authorized and checked again later, together with the app
-  version,
-- a pseudonymous device identifier used for license activation, device limits, and
-  fraud prevention, and
-- a short device or seat label, only if you chose to set one during setup, so that
-  the devices on a Team account can be told apart. It is optional and never
-  verified.
+- an **installation identifier**, which distinguishes this copy of BugIt so that a
+  change to your license is applied to the right installation,
+- a **hashed device fingerprint**: a 16 character one way hash of stable machine
+  attributes, used to recognise the same computer again for device limits and fraud
+  prevention. We receive the hash, never the attributes it was derived from,
+- a **device label**, which is your computer's network name, so that you can
+  recognise your own devices in your account and tell them apart,
+- the **operating system name** and release, and the **BugIt version**, so that we
+  can tell you whether a newer version is available,
+- short lived **activation material**: a random value created for that one request,
+  held in memory only, and never written to disk. It proves that the approval you
+  gave in your browser belongs to that request and cannot be replayed.
 
-These go to the Taskivator license service to activate and verify your seat, and to
-check whether a newer version is available.
+In return, your device receives a **signed entitlement** recording what you are
+licensed to use and until when.
+
+These go to the Taskivator license service only, to activate and verify your
+license and to check whether a newer version is available.
 
 ## What stays on your device
 
@@ -67,9 +74,9 @@ and privacy policies, so please review those before connecting a service.
 - **Payment data**, handled by our payment processor. We do not store full card
   numbers.
 - **Entitlements and licenses**, so we can deliver and verify what you bought
-- **Device activations**, including the pseudonymous device identifier, any label
-  you set, and the operating system and app version, so seat and device limits work
-  and you can manage your own devices
+- **Device activations**, including the installation identifier, the hashed device
+  fingerprint, the device label, and the operating system name and BugIt version, so
+  device limits work and you can manage your own devices
 - **Team membership and invitations**, for the Team plan
 - **Refunds, disputes, and chargebacks**, where these arise
 - **Support correspondence**, so we can answer you

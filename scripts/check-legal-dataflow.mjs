@@ -78,9 +78,23 @@ for (const [needle, why] of [
 ]) {
   if (!enPrivacy.includes(needle)) fail(`PRIVACY.md missing browser-entitlement disclosure: ${why} ("${needle}")`);
 }
-const enLicense = read(licenseFile(""));
-for (const needle of ["BugIt Portal", "Entitlements, accounts", "up to 5 members", "one active device"]) {
-  if (!enLicense.includes(needle)) fail(`LICENSE.txt missing browser/Team term ("${needle}")`);
+// The licence is a wrapped plain-text document, so a literal substring check is defeated by a
+// line break falling inside the phrase: "up to 5 members" is stated, but with a newline after
+// "5". Normalise whitespace first. Each requirement is then a set of accepted phrasings, because
+// what has to be true is that the licence STATES the thing, not that it uses one exact wording.
+// (An earlier revision of this guard demanded literals the document never used, so it failed on
+// clauses that were present and correct. See the same trap in the agent repo's locale checks:
+// an absence found by substring match is not evidence of an absence.)
+const enLicense = read(licenseFile("")).replace(/\s+/g, " ");
+for (const [why, accepted] of [
+  ["the Portal is named", ["BugIt Portal"]],
+  ["entitlements/accounts clause", ["Entitlements, accounts", "Accounts and seats"]],
+  ["Team member count", ["up to 5 members"]],
+  ["per-device limit", ["one active device", "1 device at a time"]],
+]) {
+  if (!accepted.some((n) => enLicense.includes(n))) {
+    fail(`LICENSE.txt missing browser/Team term: ${why} (none of ${JSON.stringify(accepted)})`);
+  }
 }
 
 // ---------------------------------------------------------------------------
