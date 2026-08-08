@@ -48,10 +48,12 @@ if (!existsSync(agentManifestPath)) {
   process.exit(2);
 }
 const agent = JSON.parse(readFileSync(agentManifestPath, "utf8"));
-if (!Array.isArray(agent.pdfs) || agent.pdfs.length !== 20) {
-  // The agent's own builder refuses to run unless it finds exactly twenty. If that ever changes,
-  // this must be looked at rather than quietly copying whatever is there.
-  console.error(`expected 20 PDFs in the agent manifest, found ${agent.pdfs?.length}`);
+// Eleven languages x two documents, since Arabic joined the set on 2026-08-08.
+const EXPECTED_PDFS = 22;
+if (!Array.isArray(agent.pdfs) || agent.pdfs.length !== EXPECTED_PDFS) {
+  // The agent's own builder refuses to run unless it finds exactly this many. If that ever
+  // changes, this must be looked at rather than quietly copying whatever is there.
+  console.error(`expected ${EXPECTED_PDFS} PDFs in the agent manifest, found ${agent.pdfs?.length}`);
   process.exit(2);
 }
 

@@ -1,5 +1,7 @@
 # Erste Schritte mit BugIt
 
+> **Hinweis zur Übersetzung.** Dieses Dokument wurde maschinell übersetzt und nicht von Muttersprachlern geprüft. Maßgeblich ist die englische Fassung: Bei Abweichungen gilt der englische Text. Für den genauesten und aktuellsten Wortlaut ziehen Sie bitte das englische Dokument heran.
+
 BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code. Windows 11 mit VS Code und GitHub Copilot ist der für die Veröffentlichung qualifizierte Client-Pfad.
 
 ## Bevor Sie beginnen

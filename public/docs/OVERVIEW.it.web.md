@@ -1,5 +1,7 @@
 # QA Agent di BugIt — Panoramica
 
+> **Avviso sulla traduzione.** Questo documento è stato tradotto automaticamente e non è stato revisionato da madrelingua. Fa fede la versione inglese: in caso di difformità prevale il testo inglese. Per la formulazione più accurata e aggiornata, faccia riferimento al documento in inglese.
+
 BugIt è un agente commerciale VS Code Copilot che trasforma appunti di test grezzi in bug report coerenti. Redige le bozze in locale, nel tuo workspace, e scrive sui servizi collegati solo dopo l'anteprima e la conferma.
 
 ## Flusso di lavoro principale

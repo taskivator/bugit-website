@@ -1,5 +1,7 @@
 # Politica di rimborso
 
+> **Avviso sulla traduzione.** Questo documento è stato tradotto automaticamente e non è stato revisionato da madrelingua. Fa fede la versione inglese: in caso di difformità prevale il testo inglese. Per la formulazione più accurata e aggiornata, faccia riferimento al documento in inglese.
+
 BugIt è un prodotto su licenza di Taskivator. Questa politica spiega quando un acquisto può essere rimborsato.
 
 ## Finestra di rimborso di 7 giorni

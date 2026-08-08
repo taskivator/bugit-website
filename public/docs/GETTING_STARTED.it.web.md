@@ -1,5 +1,7 @@
 # Introduzione a BugIt
 
+> **Avviso sulla traduzione.** Questo documento è stato tradotto automaticamente e non è stato revisionato da madrelingua. Fa fede la versione inglese: in caso di difformità prevale il testo inglese. Per la formulazione più accurata e aggiornata, faccia riferimento al documento in inglese.
+
 BugIt trasforma appunti di test approssimativi in bug report revisionati direttamente all'interno di VS Code. Windows 11 con VS Code e GitHub Copilot è il percorso client qualificato per la release.
 
 ## Prima di iniziare

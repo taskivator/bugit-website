@@ -1,5 +1,7 @@
 # Agent QA BugIt — Présentation
 
+> **Avertissement sur la traduction.** Ce document a été traduit automatiquement et n'a pas été relu par des locuteurs natifs. La version anglaise fait foi : en cas de divergence, le texte anglais prévaut. Pour la formulation la plus exacte et la plus à jour, veuillez vous reporter au document en anglais.
+
 BugIt est un agent commercial VS Code Copilot qui transforme des notes de test brutes en rapports de bogues cohérents. Il rédige localement dans votre espace de travail et n'écrit dans les services connectés qu'après un aperçu et une confirmation.
 
 ## Fonctionnement essentiel

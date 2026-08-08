@@ -1,6 +1,8 @@
 BugIt QA Agent Contratto di Licenza Commerciale con l'Utente Finale (EULA)
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
+**Avviso sulla traduzione.** Questo documento è stato tradotto automaticamente e non è stato revisionato da madrelingua. Fa fede la versione inglese: in caso di difformità prevale il testo inglese. Per la formulazione più accurata e aggiornata, faccia riferimento al documento in inglese.
+
 Il presente software e la relativa documentazione («il Software») sono concessi in
 licenza, non venduti. Acquistando, attivando o utilizzando il Software, l'utente
 («il Licenziatario») accetta i presenti termini.

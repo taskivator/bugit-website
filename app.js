@@ -250,7 +250,7 @@ const docDownloadLabels={
 };
 // Languages that have a full localized PDF guide set under /public/docs/guides/<lang>/
 // (User Guide + Overview). A language outside this list falls back to the English PDF.
-const docGuideLangs=['en','de','es','fr','it','ja','ko','pt-br','ru','zh'];
+const docGuideLangs=['ar','en','de','es','fr','it','ja','ko','pt-br','ru','zh'];
 const BASE_TITLE='BugIt | QA Bug-Filing Agent for VS Code';
 // --- Localized homepage <title> + meta description (WEB Phase H) --------------
 // English is the explicit fallback: every locale inherits i18n.en.meta unless it
@@ -482,9 +482,14 @@ function renderDocRoute(){
       .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The refund policy is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
   }else if(r==='docs/commerce'){
     const box=document.getElementById('commerceText');
-    // Japan-specific statutory page: serve the Japanese 特定商取引法 text to ja, the
-    // English reference version to everyone else (falls back to English on miss).
-    const urls=lang==='ja'?['/public/docs/TOKUSHOHO.ja.md','/public/docs/TOKUSHOHO.md']:['/public/docs/TOKUSHOHO.md'];
+    // The heading and the intro line above this box are localized for every language, so
+    // hard-wiring the BODY to English (as this did for everything except ja) produced a
+    // page that opened in the reader's language and then switched to English for the
+    // disclosure itself — the one part with legal weight. Every locale now has its own
+    // TOKUSHOHO.<lang>.md and is loaded the same way as the licence, privacy and refund
+    // documents above, with English kept as the fallback so a missing file degrades to a
+    // readable page rather than an error.
+    const urls=lang==='en'?['/public/docs/TOKUSHOHO.md']:['/public/docs/TOKUSHOHO.'+lang+'.md','/public/docs/TOKUSHOHO.md'];
     fetchFirstText(urls)
       .then(txt=>{if(box)box.innerHTML=formatMarkdownDoc(txt);})
       .catch(()=>{if(box)box.innerHTML='<p class="license-copy">This disclosure is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});

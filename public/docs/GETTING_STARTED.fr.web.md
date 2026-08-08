@@ -1,5 +1,7 @@
 # Prise en main de BugIt
 
+> **Avertissement sur la traduction.** Ce document a été traduit automatiquement et n'a pas été relu par des locuteurs natifs. La version anglaise fait foi : en cas de divergence, le texte anglais prévaut. Pour la formulation la plus exacte et la plus à jour, veuillez vous reporter au document en anglais.
+
 BugIt transforme des notes de test sommaires en rapports de bogues révisés au sein de VS Code. Windows 11 avec VS Code et GitHub Copilot constitue le parcours client qualifié pour la version.
 
 ## Avant de commencer

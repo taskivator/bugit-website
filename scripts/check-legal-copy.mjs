@@ -113,6 +113,48 @@ check(tkJa.includes(JA_TITLE),
 check(tkJa.includes("support@bugit.dev"),
   "TOKUSHOHO.ja.md does not give support@bugit.dev as the request address");
 
+// --- 2b. Every locale gets the disclosure in ITS OWN language ------------------
+// The page heading and the intro line above the document were localized for all
+// eleven languages, but the document itself was hard-wired to English for every
+// locale except ja. A reader opened a page in their own language and then met the
+// disclosure — the one part with legal weight — in English. Each locale now has its
+// own file, and the sentence below is the load-bearing one: the promise to give the
+// seller's legal name, address and telephone number on request before purchase. If
+// a translation is ever replaced by one that drops it, the disclosure the whole
+// [[legal-copy-request-based-disclosure]] decision rests on would silently vanish
+// in that language only, which is exactly the failure this file exists to prevent.
+//
+// Matched against the whitespace-flattened text, so the wording may wrap freely.
+const COMMERCE_DISCLOSURE = {
+  ar: "دون تأخير عند الطلب قبل الشراء",
+  de: "auf Anfrage vor dem Kauf unverzüglich mitgeteilt",
+  es: "sin demora, previa solicitud, antes de la compra",
+  fr: "communiqués sans délai sur demande, avant l’achat",
+  it: "comunicati senza indugio su richiesta, prima dell’acquisto",
+  ko: "구매 전 요청 시 지체 없이 제공됩니다",
+  "pt-br": "sem demora mediante solicitação, antes da compra",
+  ru: "без промедления по запросу до покупки",
+  zh: "将在购买前应请求不迟延地提供",
+};
+for (const [loc, phrase] of Object.entries(COMMERCE_DISCLOSURE)) {
+  const file = `TOKUSHOHO.${loc}.md`;
+  const p = path.join(docs, file);
+  check(fs.existsSync(p), `${file} is missing, so locale "${loc}" would fall back to English`);
+  if (!fs.existsSync(p)) continue;
+  const text = fs.readFileSync(p, "utf8");
+  check(flat(text).includes(phrase),
+    `${file} is missing the disclosure-on-request sentence`);
+  check(text.includes("support@bugit.dev"),
+    `${file} does not give support@bugit.dev as the request address`);
+  check(text.trim().length > 1500, `${file} looks truncated`, `${text.trim().length} chars`);
+  // Every locale's body must answer the same statutory headings as the English
+  // source. A short translation that quietly drops "cancellations and refunds" or
+  // "delivery timing" is worse than an English page, because it looks complete.
+  const headings = (text.match(/^##\s+/gm) || []).length;
+  check(headings >= 11,
+    `${file} has ${headings} sections, expected at least 11 as in TOKUSHOHO.md`);
+}
+
 // The Privacy Policy discloses the operator on request rather than naming them.
 const privacy = flat(read("public/docs/PRIVACY.md"));
 check(/requests? for the operator's legal name and business contact details/i.test(privacy),
@@ -263,6 +305,7 @@ for (const loc of LOCALES) {
 // --- 6. No em/en dash punctuation in the rewritten legal copy ------------------
 const REWRITTEN = [
   "TOKUSHOHO.md", "TOKUSHOHO.ja.md",
+  ...Object.keys(COMMERCE_DISCLOSURE).map((l) => `TOKUSHOHO.${l}.md`),
   ...LOCALES.map((l) => (l ? `PRIVACY.${l}.md` : "PRIVACY.md")),
   ...LOCALES.map((l) => (l ? `LICENSE.${l}.txt` : "LICENSE.txt")),
 ];

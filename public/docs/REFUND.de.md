@@ -1,5 +1,7 @@
 # Rückerstattungsrichtlinie
 
+> **Hinweis zur Übersetzung.** Dieses Dokument wurde maschinell übersetzt und nicht von Muttersprachlern geprüft. Maßgeblich ist die englische Fassung: Bei Abweichungen gilt der englische Text. Für den genauesten und aktuellsten Wortlaut ziehen Sie bitte das englische Dokument heran.
+
 BugIt ist ein lizenziertes Produkt von Taskivator. Diese Richtlinie erklärt, wann ein Kauf erstattet werden kann.
 
 ## 7-Tage-Rückerstattungsfrist

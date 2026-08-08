@@ -1,5 +1,7 @@
 # Politique de Confidentialité de BugIt
 
+> **Avertissement sur la traduction.** Ce document a été traduit automatiquement et n'a pas été relu par des locuteurs natifs. La version anglaise fait foi : en cas de divergence, le texte anglais prévaut. Pour la formulation la plus exacte et la plus à jour, veuillez vous reporter au document en anglais.
+
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
 **Dernière mise à jour : 2 août 2026**

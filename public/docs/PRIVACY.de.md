@@ -1,5 +1,7 @@
 # Datenschutzerklärung für BugIt
 
+> **Hinweis zur Übersetzung.** Dieses Dokument wurde maschinell übersetzt und nicht von Muttersprachlern geprüft. Maßgeblich ist die englische Fassung: Bei Abweichungen gilt der englische Text. Für den genauesten und aktuellsten Wortlaut ziehen Sie bitte das englische Dokument heran.
+
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
 **Zuletzt aktualisiert: 2. August 2026**
