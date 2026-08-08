@@ -50,6 +50,15 @@ jobs:
         run: node scripts/check-overflow.mjs
       - name: Verify BugIt logo highlight is clipped (upper-corner artifact guard)
         run: node scripts/check-logo.mjs
+      # The brand source of truth lives outside this repo and outside git, so CI
+      # here cannot regenerate the assets to compare against them — which is why
+      # brand staleness kept going unnoticed twice, each time as a pipeline step
+      # that reported success into a folder nothing builds from. The sync now
+      # writes a receipt of every file it wrote plus its hash; this re-hashes them
+      # in the tree being built. check-brand-sync.mjs is itself generated and
+      # covered by that receipt, so editing the detector fails the detector.
+      - name: Verify brand assets match the brand pipeline
+        run: node scripts/check-brand-sync.mjs
       - name: Verify trust cards have no retired glyphs beside their SVG icons
         run: node scripts/check-trust-icons.mjs
       - name: Verify Google Ads tag shape (single load, consent-first, CSP hosts)
