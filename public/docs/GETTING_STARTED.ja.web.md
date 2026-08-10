@@ -31,10 +31,10 @@ BugItは、大まかなテストメモをVS Code内でレビュー済みのバ�
 
 ## 接続状態
 
-- Jira CloudとAzure DevOpsは、ご自身のアカウントで作成したAPIトークンを使い、トラッカーのREST APIに直接起票します。セットアップで接続を検証してから利用できます。
+- BugIt は 11 のトラッカーに、それぞれの REST API 経由で、お客様がご自身のアカウントで作成した資格情報を使って起票します: Jira Cloud、Azure DevOps、GitHub Issues、GitLab Issues、Bugzilla、YouTrack、Linear、Shortcut、ClickUp、Asana、Trello。セットアップは、頼りにする前に接続を検証します。
 - Confluence Cloudは、ブラウザー サインインを使うガイド付きのAtlassian Rovo MCP経路でナレッジソースとして接続します。
-- Sentry、GitHub、Linear、Notionは、各サービスの前提条件とライブチェックを満たすまでは実験的機能です。
-- その他の記載サービスには、組織が提供する互換MCPサーバーが必要です。BugItはセットアップの手引きを提供しますが、それらのサーバーの提供やテストは行いません。
+- Confluence Cloud はナレッジソースとして、ガイド付きの Atlassian Rovo MCP 経路（ブラウザーでサインイン）で接続します。Sentry と Notion は、前提条件とライブチェックに通るまで実験的機能です。
+- 他の記載サービスには、組織が提供する互換 MCP サーバーが必要です。BugIt はセットアップの手引きを示しますが、それらのサーバーの提供や検証は行いません。
 
 ## 最初のレポート
 

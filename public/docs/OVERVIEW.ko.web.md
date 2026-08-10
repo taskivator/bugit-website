@@ -22,10 +22,10 @@ BugIt는 정리되지 않은 테스트 메모를 일관된 버그 리포트로 �
 
 ## 통합 등급
 
-- 기본 제공되는 검증된 필드 매핑: Jira Cloud 및 Azure DevOps. 사용자가 자신의 계정에서 만든 API 토큰으로 트래커의 REST API에 직접 등록합니다.
+- 사용자가 자신의 계정에서 만든 자격 증명으로 등록하며 실제 계정으로 검증됨: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana, Trello. 열한 곳 모두에 각 추적 시스템의 API로 등록합니다.
 - 가이드형 지식 소스: Atlassian Rovo MCP를 통한 Confluence Cloud(브라우저 로그인).
-- 실시간 검증을 동반한 실험적 지원: Sentry, GitHub, Linear, Notion.
-- 설정 안내만 제공: 다른 트래커, 크래시 도구, 테스트 관리, 커뮤니케이션, 지식 관리 서비스를 위해 조직에서 제공하는 호환 서버.
+- 가이드형 지식 소스, 읽기 전용: Atlassian Rovo MCP를 통한 Confluence Cloud(브라우저 로그인). Sentry와 Notion은 실시간 점검을 통과할 때까지 실험적입니다.
+- 설정 안내만 제공: 크래시 도구, 테스트 관리, 커뮤니케이션, 지식 관리 서비스를 위해 조직에서 제공하는 호환 서버.
 - 자동 설정 미지원: S3, Google Drive, Azure Blob 스토리지 커넥터.
 
 ## 릴리스 범위

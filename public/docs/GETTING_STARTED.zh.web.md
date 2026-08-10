@@ -31,10 +31,10 @@ BugIt 可在 VS Code 内将粗略的测试记录转化为经过审阅的缺陷�
 
 ## 连接状态
 
-- Jira Cloud 与 Azure DevOps 使用您在自己账户中创建的 API 令牌，通过跟踪系统的 REST API 直接提交。设置过程会先验证连接，然后您才依赖它。
+- BugIt 会向十一个跟踪系统提交，各自通过其 REST API，并使用你在自己账户中创建的凭据：Jira Cloud、Azure DevOps、GitHub Issues、GitLab Issues、Bugzilla、YouTrack、Linear、Shortcut、ClickUp、Asana 和 Trello。设置会在你依赖它之前先验证连接。
 - Confluence Cloud 通过使用浏览器登录的引导式 Atlassian Rovo MCP 路径，作为知识源接入。
-- Sentry、GitHub、Linear 与 Notion 在其服务前置条件与实时检查通过之前，均属实验性功能。
-- 其他所列服务需要由组织自行提供的兼容 MCP 服务器。BugIt 提供设置指导，但不随附也不测试这些服务器。
+- Confluence Cloud 作为知识来源，通过引导式的 Atlassian Rovo MCP 路径连接（浏览器登录）。Sentry 和 Notion 在其前置条件与实时检查通过之前仍为实验性。
+- 其他列出的服务需要由所在组织提供的兼容 MCP 服务器。BugIt 提供配置指引，但不附带也不测试这些服务器。
 
 ## 你的第一份报告
 

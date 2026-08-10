@@ -22,10 +22,10 @@ BugItは、雑多なテストメモを一貫性のあるバグレポートに変
 
 ## 連携ティア
 
-- 組み込みのテスト済みフィールドマッピング: Jira CloudおよびAzure DevOps。ご自身のアカウントで作成したAPIトークンを使い、トラッカーのREST APIに直接起票します。
+- ご自身のアカウントで作成した資格情報で起票し、実アカウントに対して認証済み: Jira Cloud、Azure DevOps、GitHub Issues、GitLab Issues、Bugzilla、YouTrack、Linear、Shortcut、ClickUp、Asana、Trello。11 か所すべてに、各トラッカー自身の API 経由で起票します。
 - ガイド付きナレッジソース: Atlassian Rovo MCPを介したConfluence Cloud（ブラウザーでサインイン）。
-- ライブ検証付きの実験的機能: Sentry、GitHub、Linear、Notion。
-- セットアップ手引きのみ: その他のトラッカー、クラッシュ解析ツール、テスト管理、コミュニケーション、ナレッジサービス向けに組織が提供する互換サーバー。
+- ガイド付きナレッジソース（読み取り専用）: Atlassian Rovo MCP を介した Confluence Cloud（ブラウザーでサインイン）。Sentry と Notion はライブ検証に通るまで実験的機能です。
+- セットアップ手引きのみ: クラッシュ解析ツール、テスト管理、コミュニケーション、ナレッジサービス向けに組織が提供する互換サーバー。
 - 自動セットアップ非対応: S3、Google Drive、Azure Blobのストレージコネクタ。
 
 ## リリース範囲

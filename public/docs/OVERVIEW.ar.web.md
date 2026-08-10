@@ -22,10 +22,10 @@
 
 ## مستويات التكامل
 
-- تعيين حقول مضمّن ومُختبَر: <bdi dir="ltr">Jira Cloud</bdi> و<bdi dir="ltr">Azure DevOps</bdi>، يُودَعان مباشرة عبر واجهة <bdi dir="ltr">REST API</bdi> لنظام التتبع باستخدام رمز وصول تنشئه في حسابك.
+- يسجّل ببيانات اعتماد تنشئها في حسابك الخاص، وجرى اعتماده مقابل حساب حقيقي: <bdi dir="ltr">Jira Cloud</bdi> و<bdi dir="ltr">Azure DevOps</bdi> و<bdi dir="ltr">GitHub Issues</bdi> و<bdi dir="ltr">GitLab Issues</bdi> و<bdi dir="ltr">Bugzilla</bdi> و<bdi dir="ltr">YouTrack</bdi> و<bdi dir="ltr">Linear</bdi> و<bdi dir="ltr">Shortcut</bdi> و<bdi dir="ltr">ClickUp</bdi> و<bdi dir="ltr">Asana</bdi> و<bdi dir="ltr">Trello</bdi>. الأحد عشر جميعًا، عبر واجهة <bdi dir="ltr">API</bdi> الخاصة بكل نظام تتبع.
 - مصدر معرفة موجّه: <bdi dir="ltr">Confluence Cloud</bdi> عبر <bdi dir="ltr">Atlassian Rovo MCP</bdi>، مع تسجيل الدخول في المتصفح.
-- تجريبي مع فحص مباشر: <bdi dir="ltr">Sentry</bdi> و<bdi dir="ltr">GitHub</bdi> و<bdi dir="ltr">Linear</bdi> و<bdi dir="ltr">Notion</bdi>.
-- إرشادات إعداد فقط: خوادم متوافقة توفرها مؤسستك لأنظمة التتبع الأخرى وأدوات التعطل وإدارة الاختبارات والتواصل وخدمات المعرفة.
+- مصدر معرفة موجّه، للقراءة فقط: <bdi dir="ltr">Confluence Cloud</bdi> عبر <bdi dir="ltr">Atlassian Rovo MCP</bdi>، مع تسجيل الدخول في المتصفح. ويبقى <bdi dir="ltr">Sentry</bdi> و<bdi dir="ltr">Notion</bdi> تجريبيين إلى أن تنجح فحوصهما المباشرة.
+- إرشادات إعداد فقط: خوادم متوافقة توفرها مؤسستك لأدوات التعطل وإدارة الاختبارات والتواصل وخدمات المعرفة.
 - غير مدعومة بالإعداد التلقائي: موصلات <bdi dir="ltr">S3</bdi> و<bdi dir="ltr">Google Drive</bdi> و<bdi dir="ltr">Azure Blob</bdi>.
 
 ## نطاق الإصدار

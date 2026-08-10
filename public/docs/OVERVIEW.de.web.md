@@ -22,10 +22,10 @@ BugIt ist ein kommerzieller VS Code Copilot-Agent, der aus rohen Testnotizen ein
 
 ## Integrationsstufen
 
-- Integriertes, getestetes Feld-Mapping: Jira Cloud und Azure DevOps – direkt über die REST-API des Trackers, mit einem API-Token, das Sie in Ihrem eigenen Konto erstellen.
+- Reicht mit einer Zugangsberechtigung ein, die Sie in Ihrem eigenen Konto anlegen, gegen ein echtes Konto zertifiziert: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana und Trello. Alle elf, jeweils über die eigene API des Trackers.
 - Geführte Wissensquelle: Confluence Cloud über Atlassian Rovo MCP, mit Browser-Anmeldung.
-- Experimentell mit Live-Verifizierung: Sentry, GitHub, Linear und Notion.
-- Nur Einrichtungshinweise: von der Organisation bereitgestellte kompatible Server für weitere Tracker, Crash-Tools, Testmanagement, Kommunikation und Wissensdienste.
+- Geführte Wissensquelle, nur lesend: Confluence Cloud über Atlassian Rovo MCP, mit Browser-Anmeldung. Sentry und Notion bleiben experimentell, bis ihre Live-Prüfungen bestehen.
+- Nur Einrichtungshinweise: von der Organisation bereitgestellte kompatible Server für Crash-Tools, Testmanagement, Kommunikation und Wissensdienste.
 - Von der automatisierten Einrichtung nicht unterstützt: Speicher-Connectoren für S3, Google Drive und Azure Blob.
 
 ## Umfang der Veröffentlichung

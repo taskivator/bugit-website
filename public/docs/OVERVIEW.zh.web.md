@@ -22,10 +22,10 @@ BugIt 是一款商用的 VS Code Copilot 代理，可将零散的测试记录转
 
 ## 集成层级
 
-- 内置且经过测试的字段映射：Jira Cloud 与 Azure DevOps，使用您在自己账户中创建的 API 令牌，通过跟踪系统的 REST API 直接提交。
+- 使用你在自己账户中创建的凭据提交，并已对着真实账户认证：Jira Cloud、Azure DevOps、GitHub Issues、GitLab Issues、Bugzilla、YouTrack、Linear、Shortcut、ClickUp、Asana 和 Trello。全部十一个，各自通过其自身的 API 提交。
 - 引导式知识源：通过 Atlassian Rovo MCP 接入 Confluence Cloud（浏览器登录）。
-- 实验性并支持实时验证：Sentry、GitHub、Linear 与 Notion。
-- 仅提供设置指导：由组织自行提供的兼容服务器，用于对接其他跟踪系统、崩溃分析工具、测试管理、沟通及知识库服务。
+- 引导式知识库来源，只读：通过 Atlassian Rovo MCP 连接的 Confluence Cloud（浏览器登录）。Sentry 和 Notion 在通过实时检查前仍为实验性。
+- 仅提供配置指引：由所在组织提供的兼容服务器，用于崩溃工具、测试管理、通讯和知识服务。
 - 自动化设置不支持：S3、Google Drive 与 Azure Blob 存储连接器。
 
 ## 发布范围
