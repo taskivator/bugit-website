@@ -164,8 +164,11 @@
             </div>
           </div>
           <!-- Phone-only connector. On desktop the two panels sit side by side and the
-               cause/effect is obvious; stacked on a phone it is not, so it is stated. -->
-          <p class="mc-flow" data-t="mission.produces">BugIt wrote the report below</p>
+               cause/effect is obvious; stacked on a phone it is not.
+               The sentence is kept for assistive tech but hidden visually: as a visible
+               line it cost ~40px of a screen where the whole point is getting both panels
+               into one view, and a chevron says the same thing in 22px. -->
+          <p class="mc-flow"><span class="mc-flow-label" data-t="mission.produces">BugIt wrote the report below</span></p>
           <div class="report-panel">
             <div class="report-head">
               <small data-t="report.label">AI QA ANALYSIS</small>

@@ -263,8 +263,18 @@ html{overflow-x:clip}
   .status-panel li:before{top:50%;left:8px;transform:translateY(-50%);width:13px;height:13px;font-size:9px}
   .status-panel li.awaiting{flex:1 0 100%;text-align:center;padding-left:11px;background:rgba(255,79,201,.10);border-color:rgba(255,79,201,.34)}
   .status-panel li.awaiting:before{display:none}
-  .mc-flow{display:block;margin:12px 0 4px;text-align:center;font-size:12px;font-weight:800;color:var(--muted)}
-  .mc-flow:before{content:'';display:block;width:1px;height:15px;margin:0 auto 7px;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,79,201,.8))}
+  /* The connector: a 22px chevron, not a line of copy. The sentence stays in the DOM for
+     assistive tech (.mc-flow-label) so the relationship is still announced. */
+  .mc-flow{display:block;height:22px;margin:6px 0 4px;position:relative}
+  .mc-flow-label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+  .mc-flow:before{content:'';position:absolute;left:50%;top:2px;width:9px;height:9px;margin-left:-6px;border-right:2px solid var(--pink);border-bottom:2px solid var(--pink);transform:rotate(45deg);opacity:.85}
+  .mc-flow:after{content:'';position:absolute;left:50%;top:0;width:1px;height:20px;background:linear-gradient(180deg,rgba(255,79,201,0),rgba(255,79,201,.55))}
+  /* Both panels have to fit one screen, so the report's own blocks tighten too: the meta
+     grid was four stacked rows (259px) and the title ran to three lines. */
+  .report-meta{grid-template-columns:1fr 1fr;gap:8px}
+  .report-panel h2{font-size:19px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .status-panel li{padding:6px 10px 6px 25px;font-size:11.5px}
+  .status-panel ul{gap:6px;margin-top:10px}
   .report-more-toggle{display:inline-flex;align-items:center;gap:7px;margin-top:4px;padding:10px 15px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-size:13px;font-weight:900;cursor:pointer}
   .report-more-toggle:after{content:'';width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translate(-2px,-2px);transition:transform .2s ease}
   .report-more-toggle[aria-expanded="true"]:after{transform:rotate(-135deg) translate(-3px,-3px)}
