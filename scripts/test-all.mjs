@@ -36,7 +36,7 @@ const SUITES = [
   // `npm test` could pass while CI failed and vice versa. Both lists are now checked against
   // each other by scripts/check-ci-coverage.mjs.
   "check-assets.mjs", "check-chrome-a11y.mjs",
-  "check-doc-links.mjs", "check-docs.mjs", "check-overflow.mjs", "check-logo.mjs",
+  "check-doc-links.mjs", "check-docs.mjs", "check-overflow.mjs", "check-mission-pause.mjs", "check-logo.mjs",
   // check-logo.mjs proves the rendered logo has no clipping artifact; this proves
   // the asset it renders is the one the brand pipeline produced and was not
   // hand-edited afterwards. The two are complements, not duplicates.

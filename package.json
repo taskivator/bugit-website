@@ -11,6 +11,7 @@
     "test:docs": "node scripts/check-doc-links.mjs",
     "test:guides": "node scripts/check-docs.mjs",
     "test:overflow": "node scripts/check-overflow.mjs",
+    "test:mission-pause": "node scripts/check-mission-pause.mjs",
     "test:logo": "node scripts/check-logo.mjs",
     "test:brand": "node scripts/check-brand-sync.mjs",
     "test:trust-icons": "node scripts/check-trust-icons.mjs",

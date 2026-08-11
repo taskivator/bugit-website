@@ -900,12 +900,58 @@ function initMission(){
   function stopLoop(){ running=false; if(raf) cancelAnimationFrame(raf); raf=0; }
 
   // active only while on-screen AND not being inspected by the user
-  var visible=false, userPaused=false, resumeT=0;
+  var visible=false, userPaused=false, resumeT=0, guardT=0;
   function sync(){ var a=visible&&!userPaused; if(a) startLoop(); else stopLoop(); }
-  function pauseNow(){ clearTimeout(resumeT); userPaused=true; sync(); }
-  function resumeSoon(){ clearTimeout(resumeT); resumeT=setTimeout(function(){ userPaused=false; sync(); },900); }
-  mission.addEventListener('mouseenter',pauseNow); mission.addEventListener('mouseleave',resumeSoon);
-  mission.addEventListener('focusin',pauseNow);    mission.addEventListener('focusout',resumeSoon);
+
+  // A pause must have an exit. Both pause sources are EDGE-triggered pairs — hover
+  // pauses on mouseenter and resumes on mouseleave, focus pauses on focusin and
+  // resumes on focusout — so a lost second event strands the simulation with no way back.
+  // While paused, re-read the real state instead of trusting the pair to complete.
+  function checkPause(){
+    if(!userPaused){ clearInterval(guardT); guardT=0; return; }
+    var hovering=false; try{ hovering=mission.matches(':hover'); }catch(_){}
+    if(!hovering && !mission.contains(document.activeElement)){
+      userPaused=false; clearInterval(guardT); guardT=0; sync();
+    }
+  }
+  function pauseNow(){ clearTimeout(resumeT); userPaused=true; sync(); if(!guardT) guardT=setInterval(checkPause,1500); }
+  function resumeSoon(){ clearTimeout(resumeT); resumeT=setTimeout(function(){ userPaused=false; if(guardT){clearInterval(guardT);guardT=0;} sync(); },900); }
+
+  // THE PAUSE IS DRIVEN BY INPUT MODALITY, not by the event alone.
+  //
+  // A finger produces the FIRST half of each pair and never the second. The tap
+  // synthesizes a mouseenter that has no mouseleave until you tap something else, and
+  // it leaves focus sitting on whatever was tapped, so focusout cannot fire either.
+  // Every tap inside Mission Control therefore froze it at whatever half-built state
+  // it was in, permanently. Reproduced 2026-08-12 at 390x844: tapping "Show full
+  // report" mid-generation left the bar at scaleX(0.4153) and "Loading severity · 42%"
+  // for as long as the page stayed open, and tapping the report TITLE — which changes
+  // no focus at all — froze it identically, so this was never specific to the toggle.
+  //
+  // Touch does not pause: there is no hover on a phone, and a visitor who taps the
+  // report open is asking to SEE it finish. Mouse hover and KEYBOARD focus still pause,
+  // because those are inspection states that genuinely end. The watchdog above covers
+  // the remaining case of a mouseleave the browser never delivers.
+  var touching=false, touchClear=0;
+  function markTouch(){
+    touching=true; clearTimeout(touchClear);
+    // Outlast the synthesized mouse/focus events the tap emits just after it.
+    touchClear=setTimeout(function(){ touching=false; },700);
+    resumeSoon();
+  }
+  mission.addEventListener('touchstart',markTouch,{passive:true});
+  mission.addEventListener('pointerdown',function(e){ if(e.pointerType!=='mouse') markTouch(); },{passive:true});
+  mission.addEventListener('mouseenter',function(){ if(!touching) pauseNow(); });
+  mission.addEventListener('mouseleave',resumeSoon);
+  mission.addEventListener('focusin',function(e){
+    // Keyboard focus only. A pointer that focused a control is not someone reading.
+    var kb=!touching;
+    try{ kb=kb&&e.target.matches(':focus-visible'); }catch(_){}
+    // A mouse click on a control is left alone: hover already owns the pause and
+    // mouseleave will release it. Only a touch needs the explicit release.
+    if(kb) pauseNow(); else if(touching) resumeSoon();
+  });
+  mission.addEventListener('focusout',resumeSoon);
 
   newCycle();
   if('IntersectionObserver'in window){

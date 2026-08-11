@@ -48,6 +48,13 @@ jobs:
         run: node scripts/check-docs.mjs
       - name: Verify responsive pages do not overflow
         run: node scripts/check-overflow.mjs
+      # Mission Control pauses so visitors can read the report. Both pause sources were
+      # edge-triggered pairs, and a finger only ever produces the first half of each, so
+      # every tap froze the simulation permanently on a phone. This asserts a tap keeps
+      # it running AND that hover/keyboard still pause it, so the freeze cannot be
+      # "fixed" by deleting the feature.
+      - name: Verify Mission Control cannot latch paused
+        run: node scripts/check-mission-pause.mjs
       - name: Verify BugIt logo highlight is clipped (upper-corner artifact guard)
         run: node scripts/check-logo.mjs
       # The brand source of truth lives outside this repo and outside git, so CI

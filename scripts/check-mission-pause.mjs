@@ -1,0 +1,296 @@
+// Mission Control must never be able to latch paused.
+//
+// WHY THIS EXISTS. Mission Control pauses while a visitor is inspecting the report, and
+// both pause sources were EDGE-triggered pairs: hover paused on `mouseenter` and resumed
+// on `mouseleave`, focus paused on `focusin` and resumed on `focusout`. A finger produces
+// the first half of each pair and never the second — the synthesized `mouseenter` gets no
+// `mouseleave` until you tap something else, and a tap leaves focus sitting on whatever
+// was tapped. So on a phone EVERY tap inside the panel froze the simulation at whatever
+// half-built state it was in, for as long as the page stayed open.
+//
+// Reported against the disclosure button ("expands the report half way through report
+// generation and gets stuck"), but reproduced at 390x844 on the report TITLE too, which
+// changes no focus at all — the hover half alone was enough. A visitor tapping "Show full
+// report" mid-generation got a report frozen at "Loading severity · 42%" that never
+// finished, which is the opposite of what the tap asked for.
+//
+// The four assertions below are the actual contract, and two of them are the FEATURE
+// rather than the bug: deleting the pause outright would "fix" the freeze and quietly
+// remove the ability to read the report on a desktop, so hover-pause and keyboard-pause
+// are asserted to still work. Progress is read from the real driven value —
+// `.report-progress i`'s scaleX, which initMission writes every frame.
+//
+// Like the other browser guards here it drives system Chrome over the DevTools Protocol
+// with Node built-ins only (no npm dependency), and it runs against the SOURCE tree the
+// same way check-overflow.mjs does. Run: `node scripts/check-mission-pause.mjs`.
+
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const PORT = 3216;
+const DBG = 9416;
+
+function findChrome() {
+  const envs = [process.env.CHROME_BIN, process.env.CHROME_PATH, process.env.GOOGLE_CHROME_BIN].filter(Boolean);
+  const win = [
+    'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+  ];
+  const mac = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'];
+  const nix = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium-browser', '/usr/bin/chromium', '/snap/bin/chromium'];
+  for (const c of [...envs, ...win, ...mac, ...nix]) { try { if (c && fs.existsSync(c)) return c; } catch {} }
+  return null;
+}
+
+const CHROME = findChrome();
+if (!CHROME) {
+  console.error('check-mission-pause: no Chrome found; set CHROME_BIN to run required assertions.');
+  process.exit(1);
+}
+console.log(`check-mission-pause: using ${CHROME}`);
+
+const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.pdf': 'application/pdf', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.ico': 'image/x-icon' };
+const server = http.createServer((req, res) => {
+  const clean = decodeURIComponent(req.url.split('?')[0]);
+  let file = path.join(ROOT, clean === '/' ? 'index.html' : clean);
+  if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end('Forbidden'); }
+  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
+  if (!fs.existsSync(file)) file = path.join(ROOT, 'index.html');
+  res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream' });
+  fs.createReadStream(file).pipe(res);
+});
+await new Promise((r) => server.listen(PORT, '127.0.0.1', r));
+
+const udir = fs.mkdtempSync(path.join(os.tmpdir(), 'bugit-mission-'));
+const chrome = spawn(CHROME, [
+  '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
+  '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage',
+  '--force-device-scale-factor=1', `--remote-debugging-port=${DBG}`, `--user-data-dir=${udir}`, 'about:blank',
+], { stdio: 'ignore' });
+
+const watchdog = setTimeout(() => {
+  console.error('check-mission-pause: timed out before completing assertions.');
+  cleanup(1);
+}, 180_000);
+
+function cleanup(code) {
+  clearTimeout(watchdog);
+  try { chrome.kill(); } catch {}
+  try { server.close(); } catch {}
+  try { fs.rmSync(udir, { recursive: true, force: true }); } catch {}
+  process.exitCode = code;
+  if (code !== 0) throw new Error('check-mission-pause aborted before completing its assertions.');
+}
+
+const getJSON = async (u) => (await fetch(u)).json();
+let version;
+for (let i = 0; i < 80; i++) { try { version = await getJSON(`http://127.0.0.1:${DBG}/json/version`); break; } catch { await new Promise((r) => setTimeout(r, 150)); } }
+if (!version) { console.error('check-mission-pause: Chrome DevTools endpoint never came up.'); cleanup(1); }
+
+const targets = await getJSON(`http://127.0.0.1:${DBG}/json/list`);
+const pageTarget = targets.find((t) => t.type === 'page' && t.webSocketDebuggerUrl);
+if (!pageTarget) { console.error('check-mission-pause: Chrome exposed no debuggable page target.'); cleanup(1); }
+
+const ws = new WebSocket(pageTarget.webSocketDebuggerUrl);
+await new Promise((res, rej) => {
+  const to = setTimeout(() => rej(new Error('CDP page WebSocket did not open within 5 seconds.')), 5_000);
+  ws.onopen = () => { clearTimeout(to); res(); };
+  ws.onerror = (e) => { clearTimeout(to); rej(e); };
+});
+let msgId = 0; const pending = new Map();
+ws.onmessage = (ev) => { const m = JSON.parse(ev.data); if (m.id && pending.has(m.id)) { const { res, rej } = pending.get(m.id); pending.delete(m.id); m.error ? rej(new Error(m.error.message)) : res(m.result); } };
+const send = (method, params = {}) => { const id = ++msgId; return new Promise((res, rej) => { pending.set(id, { res, rej }); ws.send(JSON.stringify({ id, method, params })); }); };
+
+await send('Page.enable');
+await send('Runtime.enable');
+async function evaluate(expr) {
+  const r = await send('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true });
+  if (r.exceptionDetails) throw new Error(r.exceptionDetails.text);
+  return r.result.value;
+}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Progress is read from the value initMission actually drives every frame.
+const PROGRESS = `(function(){var b=document.querySelector('.report-progress i');
+  if(!b)return -1; var m=/scaleX\\(([0-9.]+)\\)/.exec(b.style.transform||''); return m?parseFloat(m[1]):-1;})()`;
+const STATE = `JSON.stringify({
+  p:${PROGRESS},
+  pct:(document.querySelector('.report-pct')||{}).textContent||'',
+  collapsed:document.querySelector('.report-panel').classList.contains('is-collapsed'),
+  focus:(document.activeElement&&document.activeElement.id)||'',
+  hover:(function(){try{return document.querySelector('.mission').matches(':hover')}catch(e){return false}})()
+})`;
+const state = async () => JSON.parse(await evaluate(STATE));
+
+async function load(w, h, touch) {
+  await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: touch, screenWidth: w, screenHeight: h });
+  // maxTouchPoints must be >= 1 even when disabling, or CDP rejects the call.
+  await send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: touch ? 5 : 1 });
+  await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/?mission-pause-check` });
+  for (let i = 0; i < 80; i++) {
+    try { if (await evaluate(`!!(document.querySelector('.mission')&&document.querySelector('.mission').classList.contains('mc-armed'))`)) break; } catch {}
+    await sleep(150);
+  }
+  // The IntersectionObserver only runs the loop while the panel is on screen.
+  await evaluate(`document.querySelector('.mission').scrollIntoView({block:'center',behavior:'instant'}); 1`);
+  await sleep(600);
+}
+
+// Wait until the report is genuinely MID-generation. The cycle ends with a ~20s hold at
+// 100% where "progress did not change" is correct behavior, so sampling blind would be
+// flaky; every cycle passes through this window.
+async function midGeneration(label) {
+  for (let i = 0; i < 200; i++) {
+    const s = await state();
+    if (s.p > 0.05 && s.p < 0.6) return s;
+    await sleep(200);
+  }
+  fail(`${label}: the report never reached mid-generation — the simulation is not running at all.`);
+  return state();
+}
+
+async function boxOf(sel) {
+  const raw = await evaluate(`(function(){var e=document.querySelector(${JSON.stringify(sel)});
+    if(!e)return 'null'; e.scrollIntoView({block:'center',behavior:'instant'});
+    var r=e.getBoundingClientRect();
+    return JSON.stringify({x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2),
+                           w:Math.round(r.width),h:Math.round(r.height),disp:getComputedStyle(e).display});})()`);
+  if (raw === 'null') fail(`selector not found: ${sel}`);
+  return JSON.parse(raw);
+}
+
+async function tap(sel) {
+  const b = await boxOf(sel);
+  if (b.w === 0 || b.h === 0 || b.disp === 'none') fail(`cannot tap ${sel}: it is not visible (display:${b.disp}, ${b.w}x${b.h}).`);
+  await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: b.x, y: b.y }] });
+  await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await sleep(350);
+  return b;
+}
+
+async function mouseTo(x, y) {
+  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y, button: 'none', buttons: 0, pointerType: 'mouse' });
+  await sleep(300);
+}
+
+let failures = 0;
+function fail(msg) { failures++; console.error(`FAIL: ${msg}`); }
+function pass(msg) { console.log(`ok  ${msg}`); }
+
+// ---------------------------------------------------------------------------
+// 1 + 2. PHONE: a tap must never stop the simulation.
+// ---------------------------------------------------------------------------
+for (const [label, sel, expectExpand] of [
+  ['tapping "Show full report"', '#reportMoreToggle', true],
+  ['tapping the report title', '.report-panel h2', false],
+]) {
+  await load(390, 844, true);
+  const before = await midGeneration(label);
+  const b = await tap(sel);
+  const after = await state();
+  if (expectExpand) {
+    if (after.collapsed) fail(`${label}: the report did not expand (still .is-collapsed).`);
+    else pass(`${label} expands the report`);
+  }
+  await sleep(2200);
+  const later = await state();
+  if (!(later.p > after.p)) {
+    fail(`${label} at 390x844 FROZE Mission Control: progress ${after.p} -> ${later.p} over 2.2s ` +
+         `(pct "${later.pct}", focus "${later.focus}", :hover ${later.hover}). ` +
+         `A tap has no mouseleave and no focusout, so an edge-triggered pause can never be released.`);
+  } else {
+    pass(`${label} at 390x844 keeps generating (${before.p} -> ${after.p} -> ${later.p})`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3. DESKTOP: hovering must still pause, and leaving must resume. This is the
+//    feature the phone fix had to preserve rather than delete.
+// ---------------------------------------------------------------------------
+{
+  await load(1280, 900, false);
+  await mouseTo(4, 4);
+  await midGeneration('desktop hover');
+  const b = await boxOf('.mission');
+  await mouseTo(b.x, b.y);
+  const held = await state();
+  await sleep(1800);
+  const stillHeld = await state();
+  if (!held.hover) fail('desktop hover: the pointer never registered as hovering the mission; the assertion below would be meaningless.');
+  else if (stillHeld.p !== held.p) fail(`desktop hover: hovering no longer pauses Mission Control (progress ${held.p} -> ${stillHeld.p}). Visitors can no longer stop it to read the report.`);
+  else pass(`hovering pauses on desktop (held at ${held.p})`);
+
+  await mouseTo(4, 4);
+  await sleep(2400);   // the resume is deliberately delayed ~900ms
+  const resumed = await state();
+  if (!(resumed.p > stillHeld.p)) fail(`desktop hover: moving the pointer away did not resume (progress stuck at ${resumed.p}).`);
+  else pass(`leaving resumes on desktop (${stillHeld.p} -> ${resumed.p})`);
+}
+
+// ---------------------------------------------------------------------------
+// 4. KEYBOARD focus must still pause — the other half of "inspection", and the
+//    reason the fix narrows to :focus-visible instead of dropping focus entirely.
+//
+//    A REAL Tab key is pressed first. Chrome only treats focus as ":focus-visible"
+//    when the last interaction was a keyboard one, and a bare programmatic .focus()
+//    on a fresh page does NOT qualify — asserting on that alone silently skipped this
+//    case, which is precisely the shape of coverage this repo exists to refuse. One
+//    genuine key event establishes keyboard modality; .focus() then lands the way a
+//    Tab into the panel would, without depending on the tab order of the whole page.
+// ---------------------------------------------------------------------------
+{
+  await load(390, 844, false);
+  await midGeneration('keyboard focus');
+  for (const type of ['rawKeyDown', 'keyUp']) {
+    await send('Input.dispatchKeyEvent', { type, key: 'Tab', code: 'Tab', windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9 });
+  }
+  await sleep(120);
+  const fv = await evaluate(`(function(){var b=document.getElementById('reportMoreToggle');
+    b.focus(); try{return b.matches(':focus-visible')}catch(e){return 'unsupported'}})()`);
+  await sleep(300);
+  const held = await state();
+  await sleep(1800);
+  const stillHeld = await state();
+  if (fv !== true) {
+    fail(`keyboard focus: :focus-visible did not match after a real Tab press (got ${fv}), so the keyboard pause could not be exercised at all. ` +
+         `Fix the harness rather than accepting the skip — an unexercised assertion reads as coverage.`);
+  } else if (stillHeld.p !== held.p) {
+    fail(`keyboard focus no longer pauses Mission Control (progress ${held.p} -> ${stillHeld.p}). A keyboard visitor cannot hold the report still to read it.`);
+  } else {
+    pass(`keyboard focus pauses (held at ${held.p})`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. SOURCE-LEVEL: a pause must have an exit that does not depend on the
+//    counterpart event arriving. This is what the runtime assertions cannot see
+//    (they cannot make a browser drop a mouseleave), so it is asserted directly.
+// ---------------------------------------------------------------------------
+{
+  const src = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
+  if (!src.includes('function checkPause()')) {
+    fail('app.js no longer has the pause watchdog (checkPause). A lost mouseleave would strand the simulation with no way back.');
+  } else if (!src.includes("mission.matches(':hover')") || !src.includes('mission.contains(document.activeElement)')) {
+    fail('the pause watchdog no longer re-reads the real hover/focus state, so it can no longer release a stranded pause.');
+  } else {
+    pass('the pause watchdog re-reads real hover/focus state');
+  }
+  if (!src.includes("addEventListener('touchstart'") || !src.includes("e.pointerType!=='mouse'")) {
+    fail('app.js no longer tracks touch as a distinct input modality, so a tap can pause the mission again.');
+  } else {
+    pass('touch is tracked as a distinct input modality');
+  }
+}
+
+if (failures) {
+  console.error(`\ncheck-mission-pause: ${failures} assertion(s) failed.`);
+  cleanup(1);
+} else {
+  console.log('\ncheck-mission-pause: OK — a tap never stops Mission Control, hover and keyboard still pause it, and a pause always has an exit.');
+  cleanup(0);
+}
