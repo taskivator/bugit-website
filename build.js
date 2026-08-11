@@ -145,15 +145,47 @@ for (const f of ['styles.css','app.js','consent.js']) {
   fs.renameSync(path.join(dist,f), path.join(dist,name));
   built[f] = name;
 }
+// The demo clips get the SAME treatment, and for the same reason.
+//
+// They were left unhashed while _headers caches /public/media/* for a week. On
+// 2026-08-12 the clips were re-rendered and redeployed under their existing names:
+// the HTML and CSS went live, and every video came back `cf-cache-status: HIT` at
+// its OLD byte size. The deploy succeeded and the delivery did not, which is the
+// failure this file already documents for app.js -- it simply had not been applied
+// to media. Purging is not an option here; the note above is explicit that the
+// available Cloudflare tokens carry no cache-purge permission.
+//
+// Hashing the filename makes a re-render a path that has never been requested, so
+// it cannot be served from a stale entry. Sources stay unversioned so
+// scripts/check-assets.mjs keeps verifying real files on disk.
+const mediaDir = path.join(dist,'public','media');
+const media = {};
+if (fs.existsSync(mediaDir)) {
+  for (const f of fs.readdirSync(mediaDir).filter((n) => n.endsWith('.mp4'))) {
+    const h = crypto.createHash('md5').update(fs.readFileSync(path.join(mediaDir,f))).digest('hex').slice(0,10);
+    const name = f.replace(/\.mp4$/, `.${h}.mp4`);
+    fs.renameSync(path.join(mediaDir,f), path.join(mediaDir,name));
+    media[f] = name;
+  }
+}
+
 for (const html of ['index.html','404.html']) {
   const p = path.join(dist,html);
   if (!fs.existsSync(p)) continue;
   let s = fs.readFileSync(p,'utf8');
   s = s.replace(/(href|src)="\/(styles\.css|app\.js|consent\.js)(?:\?v=[^"]*)?"/g,
     (_m,attr,file) => `${attr}="/${built[file]}"`);
+  // src= plus the data-landscape/data-portrait pair the player swaps between.
+  s = s.replace(/\/public\/media\/([A-Za-z0-9._-]+\.mp4)/g,
+    (m,file) => media[file] ? `/public/media/${media[file]}` : m);
   fs.writeFileSync(p,s);
   // A missed reference would 404 in production, so fail the build instead.
   const stale = s.match(/(?:href|src)="\/(?:styles\.css|app\.js|consent\.js)(?:\?[^"]*)?"/);
   if (stale) { console.error(`build: ${html} still references an unhashed asset: ${stale[0]}`); process.exit(1); }
+  for (const f of Object.keys(media)) {
+    if (s.includes(`/public/media/${f}"`) || s.includes(`/public/media/${f}'`)) {
+      console.error(`build: ${html} still references unhashed media: ${f}`); process.exit(1);
+    }
+  }
 }
 console.log(`Build complete: dist (${built['styles.css']}, ${built['app.js']}, ${built['consent.js']})`);
