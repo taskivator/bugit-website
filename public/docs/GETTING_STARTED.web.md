@@ -30,7 +30,6 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. Window
 ## Connection status
 
 - BugIt files to eleven trackers over each one's own REST API, using a credential you create in your own account: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana and Trello. Setup verifies the connection before you rely on it.
-- Confluence Cloud connects as a knowledge source through the guided Atlassian Rovo MCP path, which uses browser sign-in.
 - Confluence Cloud connects as a knowledge source through the guided Atlassian Rovo MCP path, which uses browser sign-in. Sentry and Notion are experimental until their service prerequisites and live checks pass.
 - Other named services require an organization-supplied compatible MCP server. BugIt provides setup guidance but does not ship or test those servers.
 

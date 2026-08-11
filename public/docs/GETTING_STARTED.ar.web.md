@@ -32,7 +32,6 @@
 ## حالة الاتصال
 
 - يسجّل <bdi dir="ltr">BugIt</bdi> في أحد عشر نظام تتبع عبر واجهة <bdi dir="ltr">REST API</bdi> الخاصة بكلٍّ منها، ببيانات اعتماد تنشئها في حسابك الخاص: <bdi dir="ltr">Jira Cloud</bdi> و<bdi dir="ltr">Azure DevOps</bdi> و<bdi dir="ltr">GitHub Issues</bdi> و<bdi dir="ltr">GitLab Issues</bdi> و<bdi dir="ltr">Bugzilla</bdi> و<bdi dir="ltr">YouTrack</bdi> و<bdi dir="ltr">Linear</bdi> و<bdi dir="ltr">Shortcut</bdi> و<bdi dir="ltr">ClickUp</bdi> و<bdi dir="ltr">Asana</bdi> و<bdi dir="ltr">Trello</bdi>. ويتحقق الإعداد من الاتصال قبل أن تعتمد عليه.
-- يتصل <bdi dir="ltr">Confluence Cloud</bdi> كمصدر معرفة عبر مسار <bdi dir="ltr">Atlassian Rovo MCP</bdi> الموجّه الذي يستخدم تسجيل الدخول عبر المتصفح.
 - يتصل <bdi dir="ltr">Confluence Cloud</bdi> كمصدر معرفة عبر مسار <bdi dir="ltr">Atlassian Rovo MCP</bdi> الموجّه، مع تسجيل الدخول في المتصفح. ويبقى <bdi dir="ltr">Sentry</bdi> و<bdi dir="ltr">Notion</bdi> تجريبيين إلى أن تُستوفى متطلباتهما وتنجح فحوصهما المباشرة.
 - تتطلب الخدمات الأخرى المذكورة خادم <bdi dir="ltr">MCP</bdi> متوافقًا توفره مؤسستك. ويقدّم <bdi dir="ltr">BugIt</bdi> إرشادات إعداد لكنه لا يوفر تلك الخوادم ولا يختبرها.
 

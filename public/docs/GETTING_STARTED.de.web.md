@@ -32,7 +32,6 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 ## Verbindungsstatus
 
 - BugIt reicht in elf Tracker ein, jeweils über deren eigene REST-API und mit einer Zugangsberechtigung, die Sie in Ihrem eigenen Konto anlegen: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana und Trello. Die Einrichtung prüft die Verbindung, bevor Sie sich darauf verlassen.
-- Confluence Cloud wird als Wissensquelle über den geführten Atlassian Rovo MCP-Pfad angebunden, der die Browser-Anmeldung nutzt.
 - Confluence Cloud wird als Wissensquelle über den geführten Atlassian-Rovo-MCP-Weg mit Browser-Anmeldung angebunden. Sentry und Notion bleiben experimentell, bis ihre Voraussetzungen und Live-Prüfungen bestehen.
 - Andere genannte Dienste benötigen einen von Ihrer Organisation bereitgestellten kompatiblen MCP-Server. BugIt gibt Einrichtungshinweise, liefert und testet diese Server aber nicht.
 

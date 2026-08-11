@@ -32,7 +32,6 @@ BugIt는 대략적인 테스트 메모를 VS Code 안에서 검토된 버그 리
 ## 연결 상태
 
 - BugIt은 열한 개 추적 시스템에 각각의 REST API로, 사용자가 자신의 계정에서 만든 자격 증명을 사용해 등록합니다: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana, Trello. 설정은 사용자가 의존하기 전에 연결을 검증합니다.
-- Confluence Cloud는 브라우저 로그인을 사용하는 가이드형 Atlassian Rovo MCP 경로를 통해 지식 소스로 연결됩니다.
 - Confluence Cloud는 안내형 Atlassian Rovo MCP 경로(브라우저 로그인)로 지식 소스로 연결됩니다. Sentry와 Notion은 서비스 전제 조건과 실시간 점검을 통과할 때까지 실험적입니다.
 - 그 밖에 언급된 서비스에는 조직이 제공하는 호환 MCP 서버가 필요합니다. BugIt은 설정 안내를 제공하지만 그 서버를 함께 제공하거나 검증하지는 않습니다.
 

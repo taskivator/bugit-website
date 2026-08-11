@@ -32,7 +32,6 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 ## Stato della connessione
 
 - BugIt registra in undici tracker tramite l'API REST di ciascuno, con una credenziale che crei nel tuo account: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana e Trello. La configurazione verifica la connessione prima che tu ci faccia affidamento.
-- Confluence Cloud si collega come fonte di conoscenza tramite il percorso guidato Atlassian Rovo MCP, che usa l'accesso dal browser.
 - Confluence Cloud si collega come fonte di conoscenza tramite il percorso guidato Atlassian Rovo MCP, con accesso dal browser. Sentry e Notion sono sperimentali finché non superano i prerequisiti e le verifiche dal vivo.
 - Gli altri servizi citati richiedono un server MCP compatibile fornito dall'organizzazione. BugIt offre indicazioni di configurazione ma non fornisce né collauda quei server.
 
