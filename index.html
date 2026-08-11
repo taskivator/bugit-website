@@ -84,6 +84,7 @@
       <a href="#faq" data-t="nav.faq">FAQ</a>
     </nav>
     <div class="nav-actions">
+      <a class="nav-social" href="https://www.linkedin.com/company/bugitdev" target="_blank" rel="noopener noreferrer" data-t-aria="a11y.linkedin" aria-label="BugIt on LinkedIn (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.44-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.36 4.26 5.44v6.3zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg></a>
       <div class="lang" id="langMenu"><button id="langButton" type="button" data-t-aria="a11y.language" aria-label="Language"><svg class="lang-globe" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9z"/></svg><span id="langLabel">English</span><svg class="lang-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div id="langList" class="lang-list"></div></div>
       <div class="auth-slot" id="authSlot" data-state="loading">
         <span class="auth-skel" aria-hidden="true"></span>
@@ -162,6 +163,9 @@
               <span class="mc-stream"><i class="mc-dot"></i><span class="mc-line"></span></span>
             </div>
           </div>
+          <!-- Phone-only connector. On desktop the two panels sit side by side and the
+               cause/effect is obvious; stacked on a phone it is not, so it is stated. -->
+          <p class="mc-flow" data-t="mission.produces">BugIt wrote the report below</p>
           <div class="report-panel">
             <div class="report-head">
               <small data-t="report.label">AI QA ANALYSIS</small>
@@ -175,11 +179,17 @@
               <div><small data-t="report.metaEnvL">Environment</small><b data-t="report.metaEnvV">Production</b></div>
               <div><small data-t="report.metaDupL">Duplicate</small><b data-t="report.metaDupV">1 related, none exact</b></div>
             </div>
-            <h3 data-t="report.summaryTitle">Summary</h3>
-            <p data-t="report.summary">Tapping Login several times during sign-in disables the button with no error shown, leaving the user stuck on the sign-in screen.</p>
-            <h3 data-t="report.analysisTitle">AI analysis</h3>
-            <p data-t="report.analysis">Reproduced from the attached log: repeated 401s on token refresh leave the button disabled with no error surfaced. Classified as Authentication and rated High on the project’s severity matrix, since sign-in is blocked for real users. One related ticket exists, but none is an exact duplicate.</p>
-            <pre data-t="report.pre">Steps to reproduce
+            <!-- The collapsible pieces are marked INDIVIDUALLY rather than wrapped in one
+                 container: initMission's staged reveal is driven by `.mc-armed
+                 .report-panel>*:not(.report-head)`, so a wrapper would have become the one
+                 direct child, frozen the whole body at opacity 0, and collapsed the staged
+                 reveal into a single pop. -->
+            <button type="button" class="report-more-toggle" id="reportMoreToggle" aria-expanded="false" data-t="report.showFull">Show full report</button>
+            <h3 class="report-more" data-t="report.summaryTitle">Summary</h3>
+            <p class="report-more" data-t="report.summary">Tapping Login several times during sign-in disables the button with no error shown, leaving the user stuck on the sign-in screen.</p>
+            <h3 class="report-more" data-t="report.analysisTitle">AI analysis</h3>
+            <p class="report-more" data-t="report.analysis">Reproduced from the attached log: repeated 401s on token refresh leave the button disabled with no error surfaced. Classified as Authentication and rated High on the project’s severity matrix, since sign-in is blocked for real users. One related ticket exists, but none is an exact duplicate.</p>
+            <pre class="report-more" data-t="report.pre">Steps to reproduce
 1. Open the sign-in page and enter valid credentials
 2. Tap Login several times quickly
 
@@ -187,7 +197,7 @@ Expected   Signed in once.
 Actual     Button locks; sign-in fails silently.
 
 From the log   Repeated 401 on /session/refresh after token expiry.</pre>
-            <div class="report-checked">
+            <div class="report-checked report-more">
               <span class="rc-label" data-t="report.checkedTitle">Automatically checked</span>
               <span data-t="report.chkSeverity">Severity</span>
               <span data-t="report.chkComponent">Component</span>
@@ -196,7 +206,7 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
               <span data-t="report.chkPii">PII scan</span>
               <span data-t="report.chkFormat">Tracker formatting</span>
             </div>
-            <div class="report-status">
+            <div class="report-status report-more">
               <div><small data-t="report.privacyLabel">Privacy</small><b class="ok" data-t="report.privacyVal">Passed</b></div>
               <div><small data-t="report.qualityLabel">Quality</small><b data-t="report.qualityVal">Grade A</b></div>
               <div><small data-t="report.submitLabel">Submission</small><b class="pink" data-t="report.submitVal">Manual approval</b></div>
@@ -209,14 +219,15 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
 
     <section id="demo" class="demo shell">
       <div class="section-head"><span data-t="demo.eyebrow">SEE IT WORK</span><h2 data-t="demo.title">One agent. Different QA worlds.</h2><p data-t="demo.subtitle">Use it for web, mobile, desktop, SaaS, enterprise workflows or games.</p></div>
-      <div class="demo-tabs" role="tablist" data-t-aria="a11y.demoTabs" aria-label="Choose a demo"><button class="active" role="tab" id="demotab-saas" aria-selected="true" aria-controls="demopanel-saas" tabindex="0" data-video="saas" data-t="demo.saas">SaaS / Web App</button><button role="tab" id="demotab-game" aria-selected="false" aria-controls="demopanel-game" tabindex="-1" data-video="game" data-t="demo.game">Game QA</button><button role="tab" id="demotab-general" aria-selected="false" aria-controls="demopanel-general" tabindex="-1" data-video="general" data-t="demo.general">General Workflow</button></div>
+      <div class="demo-tabs" role="tablist" data-t-aria="a11y.demoTabs" aria-label="Choose a demo"><button class="active" role="tab" id="demotab-core" aria-selected="true" aria-controls="demopanel-core" tabindex="0" data-video="core" data-t="demo.core">Core Workflow</button><button role="tab" id="demotab-saas" aria-selected="false" aria-controls="demopanel-saas" tabindex="-1" data-video="saas" data-t="demo.saas">SaaS / Web App</button><button role="tab" id="demotab-game" aria-selected="false" aria-controls="demopanel-game" tabindex="-1" data-video="game" data-t="demo.game">Game QA</button><button role="tab" id="demotab-mobile" aria-selected="false" aria-controls="demopanel-mobile" tabindex="-1" data-video="mobile" data-t="demo.mobile">Mobile App</button></div>
       <!-- The demo clips are silent, muted visual loops with no dialogue or
            informational audio, so captions/audio descriptions are not applicable;
            a localized aria-label giving each demo an accessible name is the fix. -->
       <div class="video-frame"><div class="demo-stack" id="demoStack">
-        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video is-active" role="tabpanel" id="demopanel-saas" aria-labelledby="demotab-saas" tabindex="0" data-video="saas" muted playsinline preload="metadata" src="/public/media/BugIt-Demo-SaaS.mp4" data-t-aria="a11y.demoSaas" aria-label="Demo video: BugIt in a SaaS web app QA workflow"></video>
-        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-game" aria-labelledby="demotab-game" tabindex="-1" aria-hidden="true" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4" data-t-aria="a11y.demoGame" aria-label="Demo video: BugIt in a game QA workflow"></video>
-        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-general" aria-labelledby="demotab-general" tabindex="-1" aria-hidden="true" data-video="general" muted playsinline preload="none" src="/public/media/BugIt-Demo.mp4" data-t-aria="a11y.demoGeneral" aria-label="Demo video: BugIt in a general QA workflow"></video>
+        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video demo-video-branded is-active" role="tabpanel" id="demopanel-core" aria-labelledby="demotab-core" tabindex="0" data-video="core" muted playsinline preload="metadata" src="/public/media/BugIt-Demo-Core-Workflow.mp4" data-landscape="/public/media/BugIt-Demo-Core-Workflow.mp4" data-portrait="/public/media/BugIt-Demo-Core-Workflow-portrait.mp4" data-t-aria="a11y.demoCore" aria-label="Demo video: the core BugIt workflow, from a rough note to a filed ticket"></video>
+        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-saas" aria-labelledby="demotab-saas" tabindex="-1" aria-hidden="true" data-video="saas" muted playsinline preload="none" src="/public/media/BugIt-Demo-SaaS.mp4" data-landscape="/public/media/BugIt-Demo-SaaS.mp4" data-portrait="/public/media/BugIt-Demo-SaaS-portrait.mp4" data-t-aria="a11y.demoSaas" aria-label="Demo video: BugIt in a SaaS web app QA workflow"></video>
+        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-game" aria-labelledby="demotab-game" tabindex="-1" aria-hidden="true" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4" data-landscape="/public/media/BugIt-Demo-Game.mp4" data-portrait="/public/media/BugIt-Demo-Game-portrait.mp4" data-t-aria="a11y.demoGame" aria-label="Demo video: BugIt in a game QA workflow"></video>
+        <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-mobile" aria-labelledby="demotab-mobile" tabindex="-1" aria-hidden="true" data-video="mobile" muted playsinline preload="none" src="/public/media/BugIt-Demo-Mobile.mp4" data-landscape="/public/media/BugIt-Demo-Mobile.mp4" data-portrait="/public/media/BugIt-Demo-Mobile-portrait.mp4" data-t-aria="a11y.demoMobile" aria-label="Demo video: BugIt in a mobile app QA workflow"></video>
       </div></div>
     </section>
 
