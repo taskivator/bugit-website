@@ -68,6 +68,11 @@ jobs:
         run: node scripts/check-brand-sync.mjs
       - name: Verify trust cards have no retired glyphs beside their SVG icons
         run: node scripts/check-trust-icons.mjs
+      # The 2026-08-12 audit (F-08) found five directly-filed trackers advertised as
+      # needing an MCP server, because the localized lede was corrected and the grouping
+      # beside it was not. This asserts the site matches tracker_routing.FILEABLE.
+      - name: Verify tracker capability claims match what BugIt files to
+        run: node scripts/check-tracker-claims.mjs
       - name: Verify Google Ads tag shape (single load, consent-first, CSP hosts)
         run: node scripts/check-ads-tag.mjs
       - name: Verify immutable caching is confined to content-hashed filenames

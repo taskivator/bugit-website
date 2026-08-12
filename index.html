@@ -247,10 +247,17 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
       <div class="integrations card">
         <span class="eyebrow" data-t="integrations.eyebrow">WORKS WITH YOUR TOOLS</span>
         <h2 data-t="integrations.title">Connect what you already use.</h2>
-        <p class="integrations-lede" data-t="integrations.lede">Jira, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla and YouTrack include built-in tested field mapping, and BugIt files to them with your own API token. Other trackers connect through your own MCP server so your assistant can read them; BugIt does not file to those.</p>
+        <!-- BugIt files DIRECTLY to all eleven trackers in tracker_routing.FILEABLE. This
+             paragraph and the grouping below said otherwise until 2026-08-12: five of them
+             (Linear, Shortcut, ClickUp, Asana, Trello) sat under a "VIA YOUR MCP SERVER"
+             heading and the fallback text read "BugIt does not file to those", which told
+             buyers to provision a server BugIt does not need and to believe half the
+             supported trackers were unsupported. The localized lede had already been
+             corrected to "all eleven"; the heading and this no-JS fallback had not, so the
+             section contradicted itself. Keep this text in step with integrations.lede. -->
+        <p class="integrations-lede" data-t="integrations.lede">All eleven trackers include built-in tested field mapping, and BugIt files to every one of them with a credential you create in your own account: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana and Trello. Each was certified against a live account. Crash tools, test management and other services connect through your own MCP server so your assistant can read them.</p>
         <div class="groups">
-          <div><h3 data-t="integrations.builtin">BUILT-IN TESTED MAPPING</h3><div class="icon-row" data-tools="jira,azuredevops,github,gitlab,bugzilla,youtrack"></div></div>
-          <div><h3 data-t="integrations.mcp">VIA YOUR MCP SERVER</h3><div class="icon-row" data-tools="linear,shortcut,clickup,asana,trello"></div></div>
+          <div><h3 data-t="integrations.builtin">BUILT-IN TESTED MAPPING</h3><div class="icon-row" data-tools="jira,azuredevops,github,gitlab,bugzilla,youtrack,linear,shortcut,clickup,asana,trello"></div></div>
           <div><h3 data-t="integrations.crash">CRASH & TEST</h3><div class="icon-row" data-tools="sentry,crashlytics,bugsnag,testrail,xray"></div></div>
           <div><h3 data-t="integrations.knowledge">KNOWLEDGE & COLLAB</h3><div class="icon-row" data-tools="confluence,notion,slack,teams"></div></div>
         </div>
