@@ -17,6 +17,7 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. Window
 - Choose the Solo or Team entitlement for this machine, then review and approve this device.
 - Return to VS Code. BugIt finishes authorizing automatically — there is no license key to copy, paste, or reveal.
 - Type `Begin setup` and choose only the integrations your team uses.
+- Connect your tracker once with `python tools/connect.py jira` (also `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). You create the token in your own account and paste it into a masked local prompt; it is saved in your operating system's credential store, never in a file.
 - Let BugIt verify the selected service and project before filing a ticket.
 
 ## Manage your access
@@ -38,7 +39,7 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. Window
 - Describe the problem in plain language, including where it happened and how often.
 - Answer any questions needed to make the reproduction steps complete.
 - Review the preview, especially private data, severity, project, and attachments.
-- Confirm only when the destination and final ticket are correct.
+- Nothing reaches your tracker until you reply with exactly `FILE IT`. "Yes" and "go ahead" are not confirmation.
 
 ## Get help
 

@@ -19,6 +19,7 @@ O BugIt transforma anotações informais de teste em relatórios de bug revisado
 - Escolha o direito Solo ou Team para esta máquina e, em seguida, revise e aprove este dispositivo.
 - Volte ao VS Code. O BugIt conclui a autorização automaticamente: não há nenhuma chave de licença para copiar, colar ou exibir.
 - Digite `Begin setup` e escolha somente as integrações que a sua equipe utiliza.
+- Conecte o seu rastreador uma única vez com `python tools/connect.py jira` (também `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). Você cria o token na sua própria conta e o cola em um prompt local mascarado; ele fica no cofre de credenciais do seu sistema operacional, nunca em um arquivo.
 - Deixe o BugIt verificar o serviço e o projeto selecionados antes de registrar um ticket.
 
 ## Gerencie seu acesso
@@ -40,7 +41,7 @@ O BugIt transforma anotações informais de teste em relatórios de bug revisado
 - Descreva o problema em linguagem simples, incluindo onde ele ocorreu e com que frequência.
 - Responda a quaisquer perguntas necessárias para completar os passos de reprodução.
 - Revise a pré-visualização, especialmente dados privados, severidade, projeto e anexos.
-- Confirme somente quando o destino e o ticket final estiverem corretos.
+- Nada chega ao seu rastreador até você responder exatamente `FILE IT`. "Sim" ou "pode ir" não são confirmação.
 
 ## Obtenha ajuda
 

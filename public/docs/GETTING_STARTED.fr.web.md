@@ -19,6 +19,7 @@ BugIt transforme des notes de test sommaires en rapports de bogues révisés au 
 - Choisissez le droit Solo ou Team pour cette machine, puis vérifiez et approuvez cet appareil.
 - Revenez à VS Code. BugIt termine l'autorisation automatiquement : il n'y a aucune clé de licence à copier, coller ou afficher.
 - Saisissez `Begin setup` et ne choisissez que les intégrations utilisées par votre équipe.
+- Reliez votre outil de suivi une seule fois avec `python tools/connect.py jira` (également `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). Vous créez le jeton dans votre propre compte et le saisissez dans une invite locale masquée ; il est conservé dans le gestionnaire d'identifiants de votre système d'exploitation, jamais dans un fichier.
 - Laissez BugIt vérifier le service et le projet sélectionnés avant de créer un ticket.
 
 ## Gérer votre accès
@@ -40,7 +41,7 @@ BugIt transforme des notes de test sommaires en rapports de bogues révisés au 
 - Décrivez le problème en langage clair, en précisant où il s'est produit et à quelle fréquence.
 - Répondez aux questions nécessaires pour compléter les étapes de reproduction.
 - Examinez l'aperçu, en particulier les données privées, la gravité, le projet et les pièces jointes.
-- Ne confirmez que lorsque la destination et le ticket final sont corrects.
+- Rien n'atteint votre outil de suivi tant que vous n'avez pas répondu exactement `FILE IT`. « Oui » ou « allez-y » ne valent pas confirmation.
 
 ## Obtenir de l'aide
 

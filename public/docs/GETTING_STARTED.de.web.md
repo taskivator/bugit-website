@@ -19,6 +19,7 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 - Wählen Sie die Solo- oder Team-Berechtigung für diesen Rechner und prüfen und bestätigen Sie dieses Gerät.
 - Kehren Sie zu VS Code zurück. BugIt schließt die Autorisierung automatisch ab – es gibt keinen Lizenzschlüssel zum Kopieren, Einfügen oder Anzeigen.
 - Geben Sie `Begin setup` ein und wählen Sie nur die Integrationen aus, die Ihr Team nutzt.
+- Verbinden Sie Ihren Tracker einmalig mit `python tools/connect.py jira` (auch `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). Das Token erstellen Sie in Ihrem eigenen Konto und geben es in eine maskierte lokale Eingabe ein; gespeichert wird es im Anmeldeinformationsspeicher Ihres Betriebssystems, nie in einer Datei.
 - Lassen Sie BugIt den ausgewählten Dienst und das Projekt überprüfen, bevor ein Ticket erstellt wird.
 
 ## Zugang verwalten
@@ -40,7 +41,7 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 - Beschreiben Sie das Problem in einfachen Worten, einschließlich wo es aufgetreten ist und wie oft.
 - Beantworten Sie alle Fragen, die nötig sind, um die Reproduktionsschritte vollständig zu machen.
 - Prüfen Sie die Vorschau, insbesondere private Daten, Schweregrad, Projekt und Anhänge.
-- Bestätigen Sie erst, wenn Ziel und endgültiges Ticket korrekt sind.
+- Nichts erreicht Ihren Tracker, bevor Sie mit genau `FILE IT` antworten. „Ja“ oder „los“ sind keine Bestätigung.
 
 ## Hilfe erhalten
 

@@ -19,6 +19,7 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 - Scegli il diritto Solo o Team per questa macchina, quindi controlla e approva questo dispositivo.
 - Torna a VS Code. BugIt completa l'autorizzazione automaticamente: non c'è alcuna chiave di licenza da copiare, incollare o mostrare.
 - Digita `Begin setup` e scegli solo le integrazioni utilizzate dal tuo team.
+- Collega il tuo tracker una sola volta con `python tools/connect.py jira` (anche `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). Il token lo crei nel tuo account e lo incolli in un prompt locale mascherato; viene salvato nell'archivio credenziali del sistema operativo, mai in un file.
 - Lascia che BugIt verifichi il servizio e il progetto selezionati prima di aprire un ticket.
 
 ## Gestisci il tuo accesso
@@ -40,7 +41,7 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 - Descrivi il problema in linguaggio semplice, indicando dove si è verificato e con quale frequenza.
 - Rispondi alle eventuali domande necessarie per rendere completi i passaggi di riproduzione.
 - Esamina l'anteprima, in particolare i dati privati, la gravità, il progetto e gli allegati.
-- Conferma solo quando la destinazione e il ticket finale sono corretti.
+- Nulla raggiunge il tuo tracker finché non rispondi esattamente `FILE IT`. «Sì» o «vai» non sono una conferma.
 
 ## Ottenere assistenza
 

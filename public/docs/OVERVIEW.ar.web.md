@@ -22,7 +22,7 @@
 
 ## مستويات التكامل
 
-- يسجّل ببيانات اعتماد تنشئها في حسابك الخاص، وجرى اعتماده مقابل حساب حقيقي: <bdi dir="ltr">Jira Cloud</bdi> و<bdi dir="ltr">Azure DevOps</bdi> و<bdi dir="ltr">GitHub Issues</bdi> و<bdi dir="ltr">GitLab Issues</bdi> و<bdi dir="ltr">Bugzilla</bdi> و<bdi dir="ltr">YouTrack</bdi> و<bdi dir="ltr">Linear</bdi> و<bdi dir="ltr">Shortcut</bdi> و<bdi dir="ltr">ClickUp</bdi> و<bdi dir="ltr">Asana</bdi> و<bdi dir="ltr">Trello</bdi>. الأحد عشر جميعًا، عبر واجهة <bdi dir="ltr">API</bdi> الخاصة بكل نظام تتبع.
+- يسجّل ببيانات اعتماد تنشئها في حسابك الخاص، ويتحقق BugIt من بيانات الاعتماد هذه مقابل وجهتك قبل حفظ الاتصال: <bdi dir="ltr">Jira Cloud</bdi> و<bdi dir="ltr">Azure DevOps</bdi> و<bdi dir="ltr">GitHub Issues</bdi> و<bdi dir="ltr">GitLab Issues</bdi> و<bdi dir="ltr">Bugzilla</bdi> و<bdi dir="ltr">YouTrack</bdi> و<bdi dir="ltr">Linear</bdi> و<bdi dir="ltr">Shortcut</bdi> و<bdi dir="ltr">ClickUp</bdi> و<bdi dir="ltr">Asana</bdi> و<bdi dir="ltr">Trello</bdi>. الأحد عشر جميعًا، عبر واجهة <bdi dir="ltr">API</bdi> الخاصة بكل نظام تتبع.
 - مصدر معرفة موجّه، للقراءة فقط: <bdi dir="ltr">Confluence Cloud</bdi> عبر <bdi dir="ltr">Atlassian Rovo MCP</bdi>، مع تسجيل الدخول في المتصفح. ويبقى <bdi dir="ltr">Sentry</bdi> و<bdi dir="ltr">Notion</bdi> تجريبيين إلى أن تنجح فحوصهما المباشرة.
 - إرشادات إعداد فقط: خوادم متوافقة توفرها مؤسستك لأدوات التعطل وإدارة الاختبارات والتواصل وخدمات المعرفة.
 - غير مدعومة بالإعداد التلقائي: موصلات <bdi dir="ltr">S3</bdi> و<bdi dir="ltr">Google Drive</bdi> و<bdi dir="ltr">Azure Blob</bdi>.
