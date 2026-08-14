@@ -30,7 +30,8 @@
     "test:doc-hygiene": "node scripts/check-doc-hygiene.mjs",
     "test:doc-duplicates": "node scripts/check-doc-duplicates.mjs",
     "test:spa-routing": "node scripts/check-spa-routing.mjs",
-    "test:chrome-a11y": "node scripts/check-chrome-a11y.mjs"
+    "test:chrome-a11y": "node scripts/check-chrome-a11y.mjs",
+    "test:crosstalk": "node scripts/check-locale-crosstalk.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

@@ -44,6 +44,11 @@ const SUITES = [
   "check-trust-icons.mjs", "check-tracker-claims.mjs", "check-ads-tag.mjs", "check-cache-headers.mjs", "check-csp-telemetry.mjs",
   "check-billing-copy.mjs", "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
   "check-legal-dataflow.mjs", "check-a11y.mjs", "check-languages.mjs", "check-doc-hygiene.mjs", "check-doc-duplicates.mjs", "check-spa-routing.mjs",
+  // check-languages proves each locale HAS its keys; this proves the values are not
+  // another locale's language. The Spanish integrations paragraph shipped in Brazilian
+  // Portuguese and every guard above passed, because a present key and a translated key
+  // look identical until something compares the strings.
+  "check-locale-crosstalk.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

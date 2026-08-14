@@ -116,6 +116,7 @@ jobs:
           node scripts/check-legal-copy.mjs
           node scripts/check-legal-dataflow.mjs
           node scripts/check-languages.mjs
+          node scripts/check-locale-crosstalk.mjs
           node scripts/check-doc-hygiene.mjs
           node scripts/check-doc-duplicates.mjs
       - name: Verify accessibility, routing and rendered a11y against the served site
