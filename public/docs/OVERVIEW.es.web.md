@@ -1,4 +1,4 @@
-# Agente de QA de BugIt — Visión general
+# Agente de QA de BugIt: Visión general
 
 > **Aviso sobre la traducción.** Este documento se ha traducido automáticamente y no ha sido revisado por hablantes nativos. La versión en inglés es la que prevalece: en caso de discrepancia, rige el texto en inglés. Para consultar la redacción más precisa y actualizada, acuda al documento en inglés.
 

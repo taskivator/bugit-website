@@ -15,9 +15,9 @@
 
 - افتح مجلد <bdi dir="ltr">BugIt</bdi> الذي فككت ضغطه كمساحة عمل موثوقة في <bdi dir="ltr">VS Code</bdi>.
 - في دردشة <bdi dir="ltr">Copilot Chat</bdi>، اختر وكيل <bdi dir="ltr">BugIt QA Agent</bdi> واكتب <bdi dir="ltr">`Activate`</bdi> (أضف <bdi dir="ltr">`--solo`</bdi> أو <bdi dir="ltr">`--team`</bdi> إذا كان حسابك يتضمن كلا النوعين).
-- يفتح <bdi dir="ltr">BugIt</bdi> بوابة <bdi dir="ltr">BugIt Portal</bdi> في متصفحك. سجّل الدخول بحساب <bdi dir="ltr">BugIt</bdi> الخاص بك — تبقى كلمة مرورك في المتصفح ولا تُدخل أبدًا في <bdi dir="ltr">VS Code</bdi>.
+- يفتح <bdi dir="ltr">BugIt</bdi> بوابة <bdi dir="ltr">BugIt Portal</bdi> في متصفحك. سجّل الدخول بحساب <bdi dir="ltr">BugIt</bdi> الخاص بك؛ تبقى كلمة مرورك في المتصفح ولا تُدخل أبدًا في <bdi dir="ltr">VS Code</bdi>.
 - اختر استحقاق ترخيص <bdi dir="ltr">Solo</bdi> أو <bdi dir="ltr">Team</bdi> لهذا الجهاز، ثم راجع هذا الجهاز ووافق عليه.
-- عُد إلى <bdi dir="ltr">VS Code</bdi>. يُنهي <bdi dir="ltr">BugIt</bdi> التفويض تلقائيًا — لا يوجد مفتاح ترخيص للنسخ أو اللصق أو الكشف عنه.
+- عُد إلى <bdi dir="ltr">VS Code</bdi>. يُنهي <bdi dir="ltr">BugIt</bdi> التفويض تلقائيًا؛ لا يوجد مفتاح ترخيص للنسخ أو اللصق أو الكشف عنه.
 - اكتب <bdi dir="ltr">`Begin setup`</bdi> واختر فقط التكاملات التي يستخدمها فريقك.
 - صِل نظام التتبع مرة واحدة: <bdi dir="ltr">`python tools/connect.py jira`</bdi> (وكذلك <bdi dir="ltr">`ado`</bdi> و<bdi dir="ltr">`github`</bdi> و<bdi dir="ltr">`gitlab`</bdi> و<bdi dir="ltr">`linear`</bdi> و<bdi dir="ltr">`clickup`</bdi> و<bdi dir="ltr">`asana`</bdi> و<bdi dir="ltr">`trello`</bdi> و<bdi dir="ltr">`shortcut`</bdi> و<bdi dir="ltr">`youtrack`</bdi> و<bdi dir="ltr">`bugzilla`</bdi>). تنشئ الرمز في حسابك أنت وتلصقه في مطالبة محلية مخفية؛ ويُحفظ في مخزن بيانات الاعتماد بنظام التشغيل، لا في ملف.
 - دع <bdi dir="ltr">BugIt</bdi> يتحقق من الخدمة والمشروع المحددَين قبل إنشاء أي تذكرة وإرسالها.

@@ -49,6 +49,10 @@ const SUITES = [
   // Portuguese and every guard above passed, because a present key and a translated key
   // look identical until something compares the strings.
   "check-locale-crosstalk.mjs",
+  // ...and this one asks what those strings turn into. Every guard above reads the doc
+  // SOURCE; the 2026-08-17 audit found 194 bidi tags printing as visible text and 45
+  // dashed lines on the live pages, none of which the source can show you.
+  "check-doc-rendering.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

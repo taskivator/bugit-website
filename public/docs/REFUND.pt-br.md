@@ -34,7 +34,7 @@ Quando aprovamos um reembolso **total**, a compra é revertida e a licença asso
 - Futuras atualizações dessa licença param
 - O suporte vinculado a essa licença termina
 
-Um reembolso **parcial** (por exemplo, um ajuste por cortesia) mantém sua licença ativa, a menos que os valores reembolsados somados atinjam o preço total da compra — caso em que é tratado como um reembolso total e a licença é revogada. A abertura de uma disputa de pagamento não encerra, por si só, o seu acesso; uma disputa perdida ou um estorno (chargeback) finalizado é tratado como um reembolso total.
+Um reembolso **parcial** (por exemplo, um ajuste por cortesia) mantém sua licença ativa, a menos que os valores reembolsados somados atinjam o preço total da compra; caso em que é tratado como um reembolso total e a licença é revogada. A abertura de uma disputa de pagamento não encerra, por si só, o seu acesso; uma disputa perdida ou um estorno (chargeback) finalizado é tratado como um reembolso total.
 
 ## Como solicitar um reembolso
 

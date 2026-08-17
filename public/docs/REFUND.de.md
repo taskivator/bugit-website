@@ -34,7 +34,7 @@ Wenn wir eine **vollständige** Rückerstattung genehmigen, wird der Kauf rückg
 - Weitere Updates für diese Lizenz entfallen
 - Der an diese Lizenz gebundene Support endet
 
-Eine **teilweise** Rückerstattung (zum Beispiel eine Kulanzanpassung) lässt Ihre Lizenz aktiv, es sei denn, die erstatteten Beträge ergeben zusammen den vollen Kaufpreis — in diesem Fall wird sie als vollständige Rückerstattung behandelt und die Lizenz wird widerrufen. Das Eröffnen eines Zahlungswiderspruchs (Dispute) beendet Ihren Zugang nicht von sich aus; ein verlorener Widerspruch oder eine abgeschlossene Rückbuchung (Chargeback) wird wie eine vollständige Rückerstattung behandelt.
+Eine **teilweise** Rückerstattung (zum Beispiel eine Kulanzanpassung) lässt Ihre Lizenz aktiv, es sei denn, die erstatteten Beträge ergeben zusammen den vollen Kaufpreis; in diesem Fall wird sie als vollständige Rückerstattung behandelt und die Lizenz wird widerrufen. Das Eröffnen eines Zahlungswiderspruchs (Dispute) beendet Ihren Zugang nicht von sich aus; ein verlorener Widerspruch oder eine abgeschlossene Rückbuchung (Chargeback) wird wie eine vollständige Rückerstattung behandelt.
 
 ## So fordern Sie eine Rückerstattung an
 

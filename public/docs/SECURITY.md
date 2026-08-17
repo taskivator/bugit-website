@@ -6,12 +6,12 @@ BugIt QA Agent is a human-in-the-loop assistant. It only acts through your VS Co
 - **No write without confirmation.** Every create/comment/attach/notify is previewed; irreversible filings need you to type FILE IT. Chat text alone never files, and a plain "yes" is not enough.
 - **Dry run = read-only.** `QA_AGENT_DRY_RUN=1` or "dry run" blocks all writes; helpers run reads only.
 - **No secrets in files.** `config.json` holds orgs/URLs only; tokens live in your OS credential store. The validator flags anything secret-shaped. `redact.py` makes a best-effort pass to scrub emails/tokens/IPs from drafts.
-- **Off by default.** Every integration ships disabled — nothing connects or files until you opt in.
-- **Output is data.** Page/ticket/crash text is treated as data, not commands — injected instructions are flagged and surfaced, not obeyed.
+- **Off by default.** Every integration ships disabled; nothing connects or files until you opt in.
+- **Output is data.** Page/ticket/crash text is treated as data, not commands, so injected instructions are flagged and surfaced, not obeyed.
 
 ## Known limits
 - Write-blocking is enforced by the agent, not the OS; the env var only hard-stops the bundled Python helpers. Run it in a trusted runtime.
-- The agent reaches whatever you connect — credential scope = blast radius. Use **least-privilege** tokens.
+- The agent reaches whatever you connect, and credential scope = blast radius. Use **least-privilege** tokens.
 - Most trackers can't truly delete an issue; "undo" is limited there by design.
 
 ## Hardening checklist

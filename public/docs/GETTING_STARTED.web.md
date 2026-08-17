@@ -13,9 +13,9 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. Window
 
 - Open the unzipped BugIt folder as a trusted VS Code workspace.
 - In Copilot Chat, select the BugIt QA Agent and type `Activate` (add `--solo` or `--team` if your account has both).
-- BugIt opens the BugIt Portal in your browser. Sign in with your own BugIt account — your password stays in the browser and is never entered in VS Code.
+- BugIt opens the BugIt Portal in your browser. Sign in with your own BugIt account; your password stays in the browser and is never entered in VS Code.
 - Choose the Solo or Team entitlement for this machine, then review and approve this device.
-- Return to VS Code. BugIt finishes authorizing automatically — there is no license key to copy, paste, or reveal.
+- Return to VS Code. BugIt finishes authorizing automatically; there is no license key to copy, paste, or reveal.
 - Type `Begin setup` and choose only the integrations your team uses.
 - Connect your tracker once with `python tools/connect.py jira` (also `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). You create the token in your own account and paste it into a masked local prompt; it is saved in your operating system's credential store, never in a file.
 - Let BugIt verify the selected service and project before filing a ticket.

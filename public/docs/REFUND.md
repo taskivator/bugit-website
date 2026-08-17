@@ -23,7 +23,7 @@ Refunds are generally **not** available for:
 - Failure to meet the documented system requirements
 - Requests submitted after the 7-day window has passed
 
-Before buying, please review the system requirements — Visual Studio Code, an AI
+Before buying, please review the system requirements: Visual Studio Code, an AI
 provider (GitHub Copilot or your own OpenAI or Anthropic key), and a supported
 version of Python. BugIt does not include an AI model or subscription.
 
@@ -38,7 +38,7 @@ license is retired. Specifically:
 - Support tied to that license ends
 
 A **partial** refund (for example a goodwill adjustment) leaves your license active,
-unless the amounts refunded together add up to the full purchase price — in which
+unless the amounts refunded together add up to the full purchase price; in that
 case it is treated as a full refund and the license is revoked. Opening a payment
 dispute does not by itself end your access; a lost dispute or a finalized chargeback
 is treated like a full refund.

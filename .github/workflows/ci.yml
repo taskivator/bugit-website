@@ -119,6 +119,7 @@ jobs:
           node scripts/check-locale-crosstalk.mjs
           node scripts/check-doc-hygiene.mjs
           node scripts/check-doc-duplicates.mjs
+          node scripts/check-doc-rendering.mjs
       - name: Verify accessibility, routing and rendered a11y against the served site
         run: |
           PORT=3124 node server.js &

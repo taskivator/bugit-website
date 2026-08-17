@@ -34,7 +34,7 @@ Lorsque nous approuvons un remboursement **intégral**, l’achat est annulé et
 - Les futures mises à jour de cette licence cessent
 - Le support lié à cette licence prend fin
 
-Un remboursement **partiel** (par exemple un geste commercial) laisse votre licence active, sauf si les montants remboursés atteignent ensemble le prix d’achat total — auquel cas il est traité comme un remboursement intégral et la licence est révoquée. L’ouverture d’un litige de paiement ne met pas fin, à elle seule, à votre accès ; un litige perdu ou une rétrofacturation finalisée est traité comme un remboursement intégral.
+Un remboursement **partiel** (par exemple un geste commercial) laisse votre licence active, sauf si les montants remboursés atteignent ensemble le prix d’achat total ; auquel cas il est traité comme un remboursement intégral et la licence est révoquée. L’ouverture d’un litige de paiement ne met pas fin, à elle seule, à votre accès ; un litige perdu ou une rétrofacturation finalisée est traité comme un remboursement intégral.
 
 ## Comment demander un remboursement
 

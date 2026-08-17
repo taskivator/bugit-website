@@ -1,4 +1,4 @@
-# BugIt QA-Agent — Überblick
+# BugIt QA-Agent: Überblick
 
 > **Hinweis zur Übersetzung.** Dieses Dokument wurde maschinell übersetzt und nicht von Muttersprachlern geprüft. Maßgeblich ist die englische Fassung: Bei Abweichungen gilt der englische Text. Für den genauesten und aktuellsten Wortlaut ziehen Sie bitte das englische Dokument heran.
 
@@ -31,7 +31,7 @@ BugIt ist ein kommerzieller VS Code Copilot-Agent, der aus rohen Testnotizen ein
 
 - BugIt ist die aktuell veröffentlichte kommerzielle Version und wird aktiv gepflegt.
 - Windows 11, VS Code, GitHub Copilot und Python 3.10 bis 3.13 bilden die für die Veröffentlichung qualifizierte Umgebung.
-- Das vollständige Benutzerhandbuch und der Überblick sind als PDFs auf Englisch und in jeder unterstützten Sprache verfügbar — Vorschau oder Download unten.
+- Das vollständige Benutzerhandbuch und der Überblick sind als PDFs auf Englisch und in jeder unterstützten Sprache verfügbar; Vorschau oder Download unten.
 
 ## Richtlinien
 

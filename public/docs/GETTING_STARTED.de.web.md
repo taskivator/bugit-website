@@ -15,9 +15,9 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 
 - Öffnen Sie den entpackten BugIt-Ordner als vertrauenswürdigen VS Code-Arbeitsbereich.
 - Wählen Sie im Copilot Chat den BugIt QA-Agent aus und geben Sie `Activate` ein (mit `--solo` oder `--team`, falls Ihr Konto beides hat).
-- BugIt öffnet das BugIt-Portal in Ihrem Browser. Melden Sie sich mit Ihrem eigenen BugIt-Konto an – Ihr Passwort bleibt im Browser und wird nie in VS Code eingegeben.
+- BugIt öffnet das BugIt-Portal in Ihrem Browser. Melden Sie sich mit Ihrem eigenen BugIt-Konto an. Ihr Passwort bleibt im Browser und wird nie in VS Code eingegeben.
 - Wählen Sie die Solo- oder Team-Berechtigung für diesen Rechner und prüfen und bestätigen Sie dieses Gerät.
-- Kehren Sie zu VS Code zurück. BugIt schließt die Autorisierung automatisch ab – es gibt keinen Lizenzschlüssel zum Kopieren, Einfügen oder Anzeigen.
+- Kehren Sie zu VS Code zurück. BugIt schließt die Autorisierung automatisch ab. Es gibt keinen Lizenzschlüssel zum Kopieren, Einfügen oder Anzeigen.
 - Geben Sie `Begin setup` ein und wählen Sie nur die Integrationen aus, die Ihr Team nutzt.
 - Verbinden Sie Ihren Tracker einmalig mit `python tools/connect.py jira` (auch `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). Das Token erstellen Sie in Ihrem eigenen Konto und geben es in eine maskierte lokale Eingabe ein; gespeichert wird es im Anmeldeinformationsspeicher Ihres Betriebssystems, nie in einer Datei.
 - Lassen Sie BugIt den ausgewählten Dienst und das Projekt überprüfen, bevor ein Ticket erstellt wird.
@@ -27,7 +27,7 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 - Eine Installation nutzt jeweils eine aktive Berechtigung. Um diesen Rechner auf eine andere Solo- oder Team-Berechtigung umzustellen, geben Sie `Switch license` ein und bestätigen Sie erneut im Browser; bei Abbruch bleibt Ihre aktuelle Berechtigung bestehen.
 - `Deactivate` entfernt die Berechtigung nur von diesem Rechner. Sitzplätze, Geräte, Mitgliedschaften, Rollen und Abrechnung verwalten Sie im Portal, nicht in VS Code.
 - Team-Zugang gilt pro Person: Jedes Mitglied meldet sich mit dem eigenen BugIt-Konto und einer aktiven Mitgliedschaft an. Es gibt keinen gemeinsamen Schlüssel und keine gemeinsame Anmeldung.
-- Nach einer erfolgreichen Online-Prüfung arbeitet BugIt bis zu 72 Stunden offline weiter – bei Solo und Team – und übernimmt den aktuellen Portal-Status, sobald wieder eine Verbindung besteht.
+- Nach einer erfolgreichen Online-Prüfung arbeitet BugIt bis zu 72 Stunden offline weiter (bei Solo und Team) und übernimmt den aktuellen Portal-Status, sobald wieder eine Verbindung besteht.
 - Updates werden durch Ihre signierte Berechtigung autorisiert, sodass beim Herunterladen einer neuen Version nie nach einem Schlüssel gefragt wird.
 
 ## Verbindungsstatus
