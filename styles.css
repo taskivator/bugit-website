@@ -14,7 +14,7 @@
    painting to its box. Since the box is fixed inset:0 (exactly the viewport) and
    particles are positioned in vw/vh units, every particle keeps its exact
    coordinates — desktop is pixel-identical — but nothing can paint outside any more. */
-#ambient{position:fixed;inset:0;z-index:-5;overflow:hidden;contain:paint;background:radial-gradient(circle at 9% 18%,rgba(144,35,128,.58),transparent 28%),radial-gradient(circle at 80% 18%,rgba(74,37,176,.56),transparent 34%),linear-gradient(135deg,#070612 0%,#090412 48%,#1c0619 100%)}#ambient .aurora{position:absolute;width:70vw;height:70vw;border-radius:50%;filter:blur(95px);opacity:.25;mix-blend-mode:screen}.aurora.a{left:-22vw;top:14vh;background:#ff38c8;animation:auroraA 24s ease-in-out infinite alternate}.aurora.b{right:-28vw;bottom:-25vw;background:#8b45ff;animation:auroraB 31s ease-in-out infinite alternate}}@keyframes auroraA{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(9vw,7vh,0) scale(1.15)}}@keyframes auroraB{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-10vw,-8vh,0) scale(1.1)}}.particle{position:fixed;width:3px;height:3px;border-radius:50%;background:var(--c,#fff);opacity:.55;box-shadow:0 0 10px var(--c,#fff);z-index:-4;animation:floatParticle var(--d,16s) ease-in-out infinite alternate;will-change:transform,opacity;pointer-events:none}.particle.small{width:2px;height:2px;opacity:.4}.particle.big{width:4px;height:4px;opacity:.76}
+#ambient{position:fixed;inset:0;z-index:-5;overflow:hidden;contain:paint;background:radial-gradient(circle at 9% 18%,rgba(144,35,128,.5104),transparent 28%),radial-gradient(circle at 80% 18%,rgba(74,37,176,.4928),transparent 34%),linear-gradient(135deg,#060510 0%,#080410 48%,#190516 100%)}#ambient .aurora{position:absolute;width:70vw;height:70vw;border-radius:50%;filter:blur(95px);opacity:.22;mix-blend-mode:screen}.aurora.a{left:-22vw;top:14vh;background:#ff38c8;animation:auroraA 24s ease-in-out infinite alternate}.aurora.b{right:-28vw;bottom:-25vw;background:#8b45ff;animation:auroraB 31s ease-in-out infinite alternate}}@keyframes auroraA{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(9vw,7vh,0) scale(1.15)}}@keyframes auroraB{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-10vw,-8vh,0) scale(1.1)}}.particle{position:fixed;width:3px;height:3px;border-radius:50%;background:var(--c,#fff);opacity:.484;box-shadow:0 0 10px var(--c,#fff);z-index:-4;animation:floatParticle var(--d,16s) ease-in-out infinite alternate;will-change:transform,opacity;pointer-events:none}.particle.small{width:2px;height:2px;opacity:.352}.particle.big{width:4px;height:4px;opacity:.6688}
 /* Phones only (same 760px breakpoint as the mobile nav and the JS particle count).
    will-change promotes every particle to its own compositor layer — fine for 160
    of them on a desktop GPU, expensive on a phone, and it is the kind of pressure
@@ -167,6 +167,29 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
   /* Sign in / account is available in the hamburger overlay on phones, so the
      in-header control is redundant here and only crowds the row. */
   .auth-slot{display:none}
+  /* ===== The header must fit at ANY font metrics ==========================
+     On 2026-08-18 CI reported .nav-actions 5px past a 320px viewport, on every
+     language and every auth state, and it did NOT reproduce in Chrome on
+     Windows. Same browser, same CSS: the row fits or does not fit depending on
+     how wide the platform draws "by Taskivator", and the two platforms disagree
+     by a few pixels. A fix that only bought headroom would move that line
+     rather than remove it, and the next font substitution would put it back.
+
+     A flex item will not shrink below its content's min-content width unless it
+     is told it may, so the brand held the row open. It may now shrink, and the
+     tagline clips instead of pushing. The controls do not shrink: they are
+     icons and a 46px tap target, and a squashed hamburger is a worse outcome
+     than a clipped word. */
+  .brand{min-width:0}
+  .brand img{flex:0 0 auto}
+  .brand span{min-width:0}
+  .brand em{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nav-actions{flex:0 0 auto}
+  /* With the row shrinkable the page can no longer overflow, but the tagline
+     would be the thing that pays for it. At the narrowest phone widths it gets
+     its own size back instead, so the ellipsis stays a backstop and not the
+     normal rendering. The wordmark is untouched. */
+  .brand em{font-size:12px;letter-spacing:.4px;margin-top:6px}
   /* Demo section tabs: 3 across can't fit a phone once labels are localized
      (de/it/ru run long). Let them wrap instead of overflowing the centered row. */
   .demo-tabs{flex-wrap:wrap}
