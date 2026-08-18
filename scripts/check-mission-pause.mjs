@@ -132,10 +132,17 @@ async function load(w, h, touch) {
   // maxTouchPoints must be >= 1 even when disabling, or CDP rejects the call.
   await send('Emulation.setTouchEmulationEnabled', { enabled: touch, maxTouchPoints: touch ? 5 : 1 });
   await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/?mission-pause-check` });
-  for (let i = 0; i < 80; i++) {
-    try { if (await evaluate(`!!(document.querySelector('.mission')&&document.querySelector('.mission').classList.contains('mc-armed'))`)) break; } catch {}
+  // Arming is the precondition for everything below. It used to be waited for and then
+  // ignored: on a loaded machine the 12s ran out, this returned anyway, and the failure
+  // surfaced 40s later as "the simulation is not running at all" pointing at the report
+  // rather than at the page that never finished starting. Same defect the file is about,
+  // in the harness: an edge that was watched for and then not acted on.
+  let armed = false;
+  for (let i = 0; i < 200; i++) {
+    try { if (await evaluate(`!!(document.querySelector('.mission')&&document.querySelector('.mission').classList.contains('mc-armed'))`)) { armed = true; break; } } catch {}
     await sleep(150);
   }
+  if (!armed) fail(`Mission Control never armed within 30s at ${w}x${h}; nothing below this point was measured.`);
   // The IntersectionObserver only runs the loop while the panel is on screen.
   await evaluate(`document.querySelector('.mission').scrollIntoView({block:'center',behavior:'instant'}); 1`);
   await sleep(600);
@@ -150,7 +157,9 @@ async function midGeneration(label) {
     if (s.p > 0.05 && s.p < 0.6) return s;
     await sleep(200);
   }
-  fail(`${label}: the report never reached mid-generation — the simulation is not running at all.`);
+  const last = await state();
+  fail(`${label}: the report never reached mid-generation in 40s (last progress ${last.p}). ` +
+       `If that is 0 the loop never started; if it is ~1 it is stuck in the end-of-cycle hold.`);
   return state();
 }
 

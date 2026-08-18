@@ -130,7 +130,7 @@ const requiredTitles = [...new Set(
     .filter(Boolean)
     // getting-started / user-guide render their heading from docDownloadLabels,
     // not docPages, so they are covered by the guide checks above instead.
-    .filter((r) => !["docs/getting-started", "docs/user-guide"].includes(r))
+    .filter((r) => !["docs/getting-started", "docs/user-guide", "docs/overview"].includes(r))
     .map(titleKeyFor),
 )];
 

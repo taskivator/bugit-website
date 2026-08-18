@@ -19,7 +19,7 @@ BugItは、大まかなテストメモをVS Code内でレビュー済みのバ�
 - このマシンで使うSoloまたはTeamの権利を選び、このデバイスを確認して承認します。
 - VS Codeに戻ります。BugItが自動的に認証を完了します。コピー・貼り付け・表示するライセンスキーはありません。
 - `Begin setup`と入力し、チームが利用する連携のみを選択します。
-- トラッカーを一度だけ接続します: `python tools/connect.py jira`（`ado`、`github`、`gitlab`、`linear`、`clickup`、`asana`、`trello`、`shortcut`、`youtrack`、`bugzilla` も同様）。トークンはお客様自身のアカウントで作成し、マスクされたローカル入力欄に貼り付けます。保存先は OS の資格情報ストアで、ファイルには残りません。
+- トラッカーを一度だけ接続します： `python tools/connect.py jira`（`ado`、`github`、`gitlab`、`linear`、`clickup`、`asana`、`trello`、`shortcut`、`youtrack`、`bugzilla` も同様）。トークンはお客様自身のアカウントで作成し、マスクされたローカル入力欄に貼り付けます。保存先は OS の資格情報ストアで、ファイルには残りません。
 - チケットを起票する前に、選択したサービスとプロジェクトをBugItに検証させます。
 
 ## アクセスの管理
@@ -32,7 +32,7 @@ BugItは、大まかなテストメモをVS Code内でレビュー済みのバ�
 
 ## 接続状態
 
-- BugIt は 11 のトラッカーに、それぞれの REST API 経由で、お客様がご自身のアカウントで作成した資格情報を使って起票します: Jira Cloud、Azure DevOps、GitHub Issues、GitLab Issues、Bugzilla、YouTrack、Linear、Shortcut、ClickUp、Asana、Trello。セットアップは、頼りにする前に接続を検証します。
+- BugIt は 11 のトラッカーに、それぞれの REST API 経由で、お客様がご自身のアカウントで作成した資格情報を使って起票します： Jira Cloud、Azure DevOps、GitHub Issues、GitLab Issues、Bugzilla、YouTrack、Linear、Shortcut、ClickUp、Asana、Trello。セットアップは、頼りにする前に接続を検証します。
 - Confluence Cloud はナレッジソースとして、ガイド付きの Atlassian Rovo MCP 経路（ブラウザーでサインイン）で接続します。Sentry と Notion は、前提条件とライブチェックに通るまで実験的機能です。
 - 他の記載サービスには、組織が提供する互換 MCP サーバーが必要です。BugIt はセットアップの手引きを示しますが、それらのサーバーの提供や検証は行いません。
 

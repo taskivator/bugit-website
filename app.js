@@ -206,7 +206,7 @@ const accountLabels={
    English account labels back. That is exactly what shipped -- ja rendered
    "Dashboard / Licenses / Downloads / Account settings / Sign out". */
 
-const docRoutes=['docs','docs/getting-started','docs/user-guide','docs/license','docs/privacy','docs/refund','docs/commerce','docs/faq','support'];
+const docRoutes=['docs','docs/getting-started','docs/user-guide','docs/overview','docs/license','docs/privacy','docs/refund','docs/commerce','docs/faq','support'];
 // Old getting-started / user-guide routes now resolve to the unified docs page.
 function route(){return location.hash.replace(/^#\/?/,'').replace(/^\//,'');}
 
@@ -397,7 +397,7 @@ function renderDocRoute(){
   const _activeLabel=(nav.find(([h])=>h.slice(2)===r)||nav[0])[1];
   const _links=nav.map(([href,label])=>`<a class="${href.slice(2)===r?'active':''}"${href.slice(2)===r?' aria-current="page"':''} href="${href}">${label}</a>`).join('');
   _dn.innerHTML=`<button type="button" class="docs-nav-toggle" aria-expanded="false" aria-controls="docNavList"><span class="docs-nav-current">${_activeLabel}</span><span class="docs-nav-caret" aria-hidden="true">▾</span></button><div class="docs-nav-list" id="docNavList">${_links}</div>`;
-  const titles={docs:d.homeTitle,'docs/getting-started':dl.userGuide,'docs/user-guide':dl.overview,'docs/license':d.licenseTitle,'docs/privacy':d.privacyTitle,'docs/refund':d.refundTitle,'docs/commerce':d.commerceTitle,'docs/faq':d.faqTitle,support:d.supportTitle};
+  const titles={docs:d.homeTitle,'docs/getting-started':dl.userGuide,'docs/user-guide':dl.userGuide,'docs/overview':dl.overview,'docs/license':d.licenseTitle,'docs/privacy':d.privacyTitle,'docs/refund':d.refundTitle,'docs/commerce':d.commerceTitle,'docs/faq':d.faqTitle,support:d.supportTitle};
   let body='';
   if(r==='docs'){
     const dl=docDownloadLabels[lang]||docDownloadLabels.en;
@@ -410,15 +410,20 @@ function renderDocRoute(){
         +`<a class="doc-btn doc-btn-download" href="/public/docs/guides/${pdfLang}/${pdf}" download="${dlName}">${dl.download} PDF</a>`
       +`</div></div>`;
     body=`<p>${d.homeIntro}</p><p class="note">${d.englishOnly}</p><div class="doc-download-cards">`
-      +card('#/docs/getting-started','user-guide.pdf','BugIt-User-Guide.pdf',dl.userGuide,dl.ugDesc)
-      +card('#/docs/user-guide','overview.pdf','BugIt-QA-Agent-Overview.pdf',dl.overview,dl.ovDesc)
+      +card('#/docs/user-guide','user-guide.pdf','BugIt-User-Guide.pdf',dl.userGuide,dl.ugDesc)
+      +card('#/docs/overview','overview.pdf','BugIt-QA-Agent-Overview.pdf',dl.overview,dl.ovDesc)
       +`</div>`;
-  }else if(r==='docs/getting-started'||r==='docs/user-guide'){
+  }else if(r==='docs/getting-started'||r==='docs/user-guide'||r==='docs/overview'){
     const dl=docDownloadLabels[lang]||docDownloadLabels.en;
-    const isGetting=r==='docs/getting-started';
+    // Keyed on the DOCUMENT, not on which of two route names was used. Until 2026-08-18 the
+    // route table and the PDF selector both said docs/user-guide meant the Overview and
+    // docs/getting-started meant the User Guide. They agreed with each other, so clicking
+    // through the cards always worked and only a shared or indexed URL exposed it: a link
+    // reading /#/docs/user-guide opened the Overview (external audit, F-15).
+    const isOverview=r==='docs/overview';
     const pdfLang=docGuideLangs.includes(lang)?lang:'en';
-    const pdf=isGetting?'user-guide.pdf':'overview.pdf';
-    const dlName=isGetting?'BugIt-User-Guide.pdf':'BugIt-QA-Agent-Overview.pdf';
+    const pdf=isOverview?'overview.pdf':'user-guide.pdf';
+    const dlName=isOverview?'BugIt-QA-Agent-Overview.pdf':'BugIt-User-Guide.pdf';
     const pdfUrl=`/public/docs/guides/${pdfLang}/${pdf}`;
     // Quick highlights render below; the full guide opens inline (preview) or downloads as PDF.
     body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
@@ -453,9 +458,9 @@ function renderDocRoute(){
   }
   document.getElementById('docContent').innerHTML=`<span class="eyebrow">${titles[r]}</span><h1>${titles[r]}</h1>${body}`;
   document.title=`${titles[r]} · BugIt`;
-  if(r==='docs/getting-started'||r==='docs/user-guide'){
+  if(r==='docs/getting-started'||r==='docs/user-guide'||r==='docs/overview'){
     const box=document.getElementById('guideText');
-    const stem=r==='docs/getting-started'?'GETTING_STARTED':'OVERVIEW';
+    const stem=r==='docs/overview'?'OVERVIEW':'GETTING_STARTED';
     // Localized highlights first, English original as fallback — so a language whose
     // highlights are not yet translated still shows the guide instead of an error.
     const urls=lang==='en'?[`/public/docs/${stem}.web.md`]:[`/public/docs/${stem}.${lang}.web.md`,`/public/docs/${stem}.web.md`];
