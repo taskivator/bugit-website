@@ -16,9 +16,24 @@ if (!step("build", "node", ["build.js"])) { console.error("build failed"); proce
 // 2. Start the server on a disposable port.
 const port = 3200 + Math.floor(Math.random() * 700);
 const base = `http://localhost:${port}`;
-const srv = spawn("node", ["server.js"], { stdio: "inherit", env: { ...process.env, PORT: String(port) },
-                                           shell: process.platform === "win32" });
-const shutdown = () => { try { srv.kill(); } catch {} try { process.kill(srv.pid); } catch {} };
+// NO `shell` HERE, and that is the whole point. With shell:true on Windows this spawns
+// cmd.exe, which spawns node; `srv.kill()` then kills the SHELL and leaves the server
+// running forever. Every `npm test` on Windows leaked one: 16 were found alive on the dev
+// machine, the oldest four days old, each still holding its port.
+//
+// The leak is worse than a stray process, because the orphan INHERITS this process's stdout.
+// `npm test | tail` therefore never sees EOF and hangs after the suite has already finished,
+// so the run looks like it is still going and its output is lost. That is how it was found.
+//
+// `node` is directly executable on all three platforms, so no shell is needed to launch it.
+const srv = spawn("node", ["server.js"], { stdio: "inherit", env: { ...process.env, PORT: String(port) } });
+const shutdown = () => {
+  try { srv.kill(); } catch {}
+  // Belt: if the child ever gains children of its own, kill the tree rather than the parent.
+  if (process.platform === "win32" && srv.pid) {
+    try { spawnSync("taskkill", ["/pid", String(srv.pid), "/T", "/F"], { stdio: "ignore" }); } catch {}
+  }
+};
 process.on("exit", shutdown);
 process.on("SIGINT", () => { shutdown(); process.exit(130); });
 

@@ -134,6 +134,27 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
 .mm-acct a,.mm-acct .acct-signout{color:var(--muted);text-align:left;background:transparent;border:0;font:inherit;font-weight:800;padding:8px 0;cursor:pointer}
 .mm-acct a:hover,.mm-acct .acct-signout:hover{color:#ff86dc}
 .mm-acct form{margin:0}
+/* Social links inside the hamburger overlay, where they land once the header
+   drops them (see the 1320px block below). Last in the menu, because they are the
+   least urgent thing in it.
+
+   Two labelled pills rather than the header's 38px icon squares: the overlay has
+   room for a name, and a name is what makes an icon unambiguous. The visible text
+   is a brand name and is identical in all eleven languages, so it needs no locale
+   key, while the anchor keeps its TRANSLATED aria-label. Every one of those
+   translations contains the brand name verbatim, so the accessible name still
+   contains the visible label and WCAG 2.5.3 (Label in Name) holds in each locale.
+
+   border-bottom is cleared explicitly: `.mm-links a` gives every anchor in this
+   menu a divider rule, which is right for a stacked list and wrong for a row. */
+.mm-social{display:flex;gap:10px;margin-top:18px}
+.mm-social a{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  flex:1 1 0;min-width:0;padding:13px 14px;font-size:15px;font-weight:800;
+  border:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:12px;
+  background:rgba(255,255,255,.05);color:var(--muted)}
+.mm-social a:hover{color:#fff;border-color:rgba(255,79,201,.5);background:rgba(255,79,201,.12)}
+.mm-social svg{width:18px;height:18px;fill:currentColor;stroke:none;flex:0 0 auto}
+.mm-social span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:760px){.acct-btn{padding:9px 12px;max-width:150px}}
 
 /* ===== Mobile header overflow fix =====================================
@@ -161,6 +182,21 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
   .lang button{min-width:0;padding:11px 12px;gap:7px}
   .lang button #langLabel{display:none}
   .lang-list{width:min(72vw,235px)}
+  /* ===== The social icons move into the overlay across this range ==========
+     Adding YouTube beside LinkedIn put the header 23px past a 768px viewport in
+     German while signed in, on every route. It did NOT reproduce in Chrome on
+     Windows: the row fits or does not fit depending on how wide the platform
+     draws the account label, and the two platforms disagree by more than the
+     slack that was left. That is the same disagreement recorded at 320px above,
+     and the lesson recorded with it applies here too: buying a few pixels moves
+     the line instead of removing it, and the next font substitution puts it back.
+
+     So the icons leave the row entirely rather than being squeezed. They are the
+     one control here that is neither navigation nor account state, and this is
+     already what the whole range does with .main-nav, .nav-cta and the language
+     label. They reappear in the overlay with their names spelled out, which is
+     more legible than the 38px header square they replace, not less. */
+  .nav-social{display:none}
 }
 @media(max-width:760px){
   .nav{gap:12px}
