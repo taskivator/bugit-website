@@ -21,7 +21,13 @@
    that makes vertical scrolling feel unsmooth. Transform/opacity animations are
    composited anyway, so dropping the hint costs nothing visually and removes ~128
    layers. Desktop and tablet keep will-change untouched. */
-@media(max-width:760px){.particle{will-change:auto}}@keyframes floatParticle{from{transform:translate3d(0,0,0) scale(1);opacity:.2125}50%{opacity:.8075}to{transform:translate3d(var(--x,40px),var(--y,-55px),0) scale(1.16);opacity:.425}}
+/* Phones only: a further 15% off every particle opacity (owner, 2026-08-20) — on a small
+   screen the text sits far closer to the starfield and the same field that reads as depth
+   on a monitor reads as noise behind a paragraph. Desktop is untouched. Every value is
+   exactly 0.85x its desktop counterpart. The animation drives opacity, and @keyframes
+   cannot be redefined per media query under one name, so mobile gets its own name with
+   literal values. .small/.big are restated because they outrank .particle. */
+@media(max-width:760px){.particle{will-change:auto;opacity:.3497;animation-name:floatParticleMobile}.particle.small{opacity:.2543}.particle.big{opacity:.4832}}@keyframes floatParticle{from{transform:translate3d(0,0,0) scale(1);opacity:.2125}50%{opacity:.8075}to{transform:translate3d(var(--x,40px),var(--y,-55px),0) scale(1.16);opacity:.425}}@keyframes floatParticleMobile{from{transform:translate3d(0,0,0) scale(1);opacity:.1806}50%{opacity:.6864}to{transform:translate3d(var(--x,40px),var(--y,-55px),0) scale(1.16);opacity:.3613}}
 .nav{height:92px;display:flex;align-items:center;justify-content:space-between;gap:26px}.brand{display:flex;align-items:center;gap:12px;font-weight:950}.brand strong{font-size:28px;display:block;line-height:1}/* margin-top has to clear the descender of the "g" in BugIt: the wordmark is set
    solid (line-height:1), so that tail hangs into the space below it and at 4px the
    byline was sitting inside it. Kept in step with the portal's Logo component,
