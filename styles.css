@@ -182,21 +182,8 @@ body.menu-open{overflow:hidden;position:fixed;width:100%;left:0;right:0}.lang{po
   .lang button{min-width:0;padding:11px 12px;gap:7px}
   .lang button #langLabel{display:none}
   .lang-list{width:min(72vw,235px)}
-  /* ===== The social icons move into the overlay across this range ==========
-     Adding YouTube beside LinkedIn put the header 23px past a 768px viewport in
-     German while signed in, on every route. It did NOT reproduce in Chrome on
-     Windows: the row fits or does not fit depending on how wide the platform
-     draws the account label, and the two platforms disagree by more than the
-     slack that was left. That is the same disagreement recorded at 320px above,
-     and the lesson recorded with it applies here too: buying a few pixels moves
-     the line instead of removing it, and the next font substitution puts it back.
-
-     So the icons leave the row entirely rather than being squeezed. They are the
-     one control here that is neither navigation nor account state, and this is
-     already what the whole range does with .main-nav, .nav-cta and the language
-     label. They reappear in the overlay with their names spelled out, which is
-     more legible than the 38px header square they replace, not less. */
-  .nav-social{display:none}
+  /* The social icons also leave the row across this range. That rule CANNOT live
+     here: see the block beside .nav-social itself, further down. */
 }
 @media(max-width:760px){
   .nav{gap:12px}
@@ -442,6 +429,30 @@ html{overflow-x:clip}
     transition:opacity .15s ease,transform .15s ease}
   .nav-social:hover::after,.nav-social:focus-visible::after{opacity:1;transform:translate(-50%,0)}
   @media (prefers-reduced-motion:reduce){.nav-social::after{transition:none}}
+}
+
+/* ===== The social icons leave the header across the hamburger range =========
+   Adding YouTube beside LinkedIn put the header 23px past a 768px viewport in
+   German while signed in, on every route. It did NOT reproduce in Chrome on
+   Windows: the row fits or does not fit depending on how wide the platform draws
+   the account label, and the two disagree by more than the slack that was left.
+   That is the same disagreement recorded at 320px further up, and the lesson
+   recorded with it applies here too. Buying a few pixels moves the line instead
+   of removing it, and the next font substitution puts it back. So the icons leave
+   the row rather than being squeezed into it: they are the one control up here
+   that is neither navigation nor account state, and dropping them is already what
+   this range does with .main-nav, .nav-cta and the language label. They reappear
+   at the end of the overlay as .mm-social, with their names spelled out.
+
+   THIS RULE MUST STAY BELOW `.nav-social{display:inline-flex}` ABOVE, AND THAT IS
+   THE WHOLE REASON IT IS DOWN HERE. The first attempt put it in the max-width:1320px
+   block near the top of the file, which reads correctly and does nothing: a media
+   query adds NO specificity, both selectors are (0,1,0), and the base rule sits
+   ~11KB later in the sheet, so the base rule won and the icons never hid. CI
+   reported byte-identical numbers before and after that "fix". Order decides here,
+   not the media query. */
+@media(max-width:1320px){
+  .nav-social{display:none}
 }
 
 /* Homepage FAQ: two columns so six questions read as a compact block rather than a stack.
