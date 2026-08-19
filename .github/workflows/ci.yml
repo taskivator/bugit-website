@@ -77,6 +77,11 @@ jobs:
         run: node scripts/check-ads-tag.mjs
       - name: Verify immutable caching is confined to content-hashed filenames
         run: node scripts/check-cache-headers.mjs
+      # Its complement: cache-headers asks what may be cached, this asks what protects the
+      # response. The site shipped without any Cross-Origin-Opener-Policy because no list said
+      # which security headers it sends, so nothing could notice one missing.
+      - name: Verify every required security header is sent on /*
+        run: node scripts/check-security-headers.mjs
       - name: Verify the CSP grants no unused or undisclosed telemetry destination
         run: node scripts/check-csp-telemetry.mjs
       - name: Verify billing copy states a one-time payment in every locale

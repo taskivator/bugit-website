@@ -34,6 +34,13 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  # STRICTER THAN THE PORTAL'S same-origin-allow-popups, deliberately. The portal allows popups
+  # because it has flows that open one and keep the handle; this site calls window.open nowhere
+  # at all, and its four target="_blank" links are ordinary outbound navigations that never touch
+  # window.opener. So the site can take the strongest value, which puts any document it opens in
+  # a separate browsing context group and severs the opener reference both ways.
+  # Verify before loosening this: `grep -rn "window.open" *.js *.html`.
+  Cross-Origin-Opener-Policy: same-origin
   Access-Control-Allow-Origin: https://bugit.dev
   Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ad.doubleclick.net https://pagead2.googlesyndication.com https://google.com https://www.google.co.jp https://www.google-analytics.com https://region1.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://portal.bugit.dev https://cloudflareinsights.com https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ad.doubleclick.net https://pagead2.googlesyndication.com https://google.com https://www.google.co.jp https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://portal.bugit.dev; upgrade-insecure-requests
 

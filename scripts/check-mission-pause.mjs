@@ -148,18 +148,78 @@ async function load(w, h, touch) {
   await sleep(600);
 }
 
-// Wait until the report is genuinely MID-generation. The cycle ends with a ~20s hold at
-// 100% where "progress did not change" is correct behavior, so sampling blind would be
-// flaky; every cycle passes through this window.
-async function midGeneration(label) {
-  for (let i = 0; i < 200; i++) {
-    const s = await state();
-    if (s.p > 0.05 && s.p < 0.6) return s;
+// Is this renderer producing animation frames at all?
+//
+// initMission drives the whole simulation from requestAnimationFrame. A headless Chrome that
+// has not begun compositing does not run rAF callbacks, so `tc` never advances, the bar stays
+// at scaleX(0), and every reading below is 0 — which is indistinguishable from the outside from
+// the product having frozen. That is the precondition, and it has to be established before any
+// window is opened on the thing it gates.
+const RAF_FRAMES = (n, ms) => `new Promise(function(r){
+  var seen = 0, done = false;
+  function finish(){ if(!done){ done = true; r(seen); } }
+  function tick(){ seen++; if(seen >= ${n}) return finish(); requestAnimationFrame(tick); }
+  requestAnimationFrame(tick);
+  setTimeout(finish, ${ms});
+})`;
+
+/**
+ * Wait until the browser is observably rendering. Returns the number of seconds it took, so a
+ * slow cold start is visible in the log instead of being absorbed silently.
+ */
+async function awaitRendering(label) {
+  const NEEDED = 5;
+  for (let i = 0; i < 45; i++) {
+    if ((await evaluate(RAF_FRAMES(NEEDED, 1000))) >= NEEDED) return i;
     await sleep(200);
   }
+  fail(`${label}: this browser produced no animation frames in ~55s, so Mission Control could ` +
+       `not have run. That is a cold/headless renderer, NOT a product defect — do not read it ` +
+       `as Mission Control being frozen.`);
+  return -1;
+}
+
+// Wait until the report is genuinely MID-generation.
+//
+// TWO THINGS WERE WRONG HERE, and the fix for both is to strengthen rather than to loosen.
+//
+// 1. It opened its window with no precondition. On a cold runner the loop had not started, so
+//    this reported "the report never reached mid-generation", which reads as Mission Control
+//    being broken — over the guard that stands on a defect that once genuinely froze it on every
+//    phone. The assertion immediately below it would then pass in the same run, on the same
+//    button. A flaky guard over a real defect is worse than no guard: it turns a red build into
+//    a shrug. awaitRendering() now establishes that frames exist before anything is measured.
+//
+// 2. The 40s budget was never a full cycle. A cycle is COMP (~8s of acts) plus a hold of
+//    rnd(20.5, 27.5)s at 100%, plus TRANS 0.8s, all scaled by up to 1.08 — about 39s at worst.
+//    Arriving just after the mid-generation window meant waiting nearly a whole cycle for the
+//    next one, with roughly a second to spare. The budget below is two worst-case cycles, which
+//    is the number the code actually implies rather than a round one.
+const CYCLE_WORST_MS = 40_000;
+async function midGeneration(label) {
+  const coldSeconds = await awaitRendering(label);
+
+  const deadline = Date.now() + 2 * CYCLE_WORST_MS;
+  let sawMovement = false;
+  let prev = (await state()).p;
+  while (Date.now() < deadline) {
+    const s = await state();
+    if (s.p !== prev) sawMovement = true;
+    if (s.p > 0.05 && s.p < 0.6) return s;
+    prev = s.p;
+    await sleep(200);
+  }
+
   const last = await state();
-  fail(`${label}: the report never reached mid-generation in 40s (last progress ${last.p}). ` +
-       `If that is 0 the loop never started; if it is ~1 it is stuck in the end-of-cycle hold.`);
+  // Say which of the two failures this is, rather than making the reader guess. "Progress never
+  // moved" and "progress moved but never through the window" are different defects.
+  fail(`${label}: the report never reached mid-generation in ${(2 * CYCLE_WORST_MS) / 1000}s ` +
+       `(last progress ${last.p}; rendering started after ~${coldSeconds}s; ` +
+       `progress ${sawMovement ? "DID" : "never"} change during the wait). ` +
+       (sawMovement
+         ? `The loop is running but never passed through 0.05-0.6, which a full cycle must do.`
+         : `The loop is not advancing at all even though the browser is producing frames — ` +
+           `that is Mission Control genuinely stopped.`));
   return state();
 }
 

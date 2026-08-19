@@ -57,6 +57,10 @@ const SUITES = [
   // hand-edited afterwards. The two are complements, not duplicates.
   "check-brand-sync.mjs",
   "check-trust-icons.mjs", "check-tracker-claims.mjs", "check-ads-tag.mjs", "check-cache-headers.mjs", "check-csp-telemetry.mjs",
+  // check-cache-headers asks what may be cached; this asks what protects the response. Split
+  // because the site shipped with no Cross-Origin-Opener-Policy at all, and an absence is
+  // invisible to a guard that only inspects what is written.
+  "check-security-headers.mjs",
   "check-billing-copy.mjs", "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
   "check-legal-dataflow.mjs", "check-a11y.mjs", "check-languages.mjs", "check-doc-hygiene.mjs", "check-doc-duplicates.mjs", "check-spa-routing.mjs",
   // check-languages proves each locale HAS its keys; this proves the values are not
