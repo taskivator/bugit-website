@@ -143,9 +143,61 @@ async function load(w, h, touch) {
     await sleep(150);
   }
   if (!armed) fail(`Mission Control never armed within 30s at ${w}x${h}; nothing below this point was measured.`);
-  // The IntersectionObserver only runs the loop while the panel is on screen.
-  await evaluate(`document.querySelector('.mission').scrollIntoView({block:'center',behavior:'instant'}); 1`);
-  await sleep(600);
+  await settleOnScreen(`${w}x${h}`);
+}
+
+/**
+ * Get the panel on screen AND KEEP IT THERE until the loop is observably running.
+ *
+ * ONE SCROLL IS NOT ENOUGH, and this is the actual cause of the flake the 2026-08-19 audit
+ * recorded as "fails on a cold runner". It is not coldness. The loop runs only while an
+ * IntersectionObserver reports the panel on screen, and that observer is registered by
+ * initMission() on DOMContentLoaded — whereas `mc-armed`, which load() waits for, is set by an
+ * inline script that runs much earlier. So on a slow machine the sequence is:
+ *
+ *   1. the inline script sets mc-armed;
+ *   2. load() sees it and scrolls the panel into view;
+ *   3. the page is STILL laying out — fonts, images, the consent banner — and the panel drifts
+ *      back off screen;
+ *   4. initMission finally runs and registers the observer, whose first callback reports NOT
+ *      intersecting, so `visible` stays false;
+ *   5. nothing ever scrolls again, so the loop never starts.
+ *
+ * The evidence is in the failing CI run itself: the assertion right after the failure reads
+ * `(0 -> 0 -> 0.4152)` — the loop began the moment the TAP ran, and the only thing a tap does
+ * before its touch events is scroll the target into view a second time. Raising the timeout,
+ * which is what I tried first, cannot help: 80 seconds of a loop that is switched off is still
+ * a loop that is switched off.
+ *
+ * So: scroll, watch, and scroll AGAIN if it has not started. Each retry is a fresh chance for
+ * the observer to see the panel, which is precisely what the tap was doing by accident.
+ */
+async function settleOnScreen(where) {
+  const scroll = () =>
+    evaluate(`document.querySelector('.mission').scrollIntoView({block:'center',behavior:'instant'}); 1`);
+
+  for (let attempt = 1; attempt <= 8; attempt++) {
+    await scroll();
+    await sleep(500);
+    let prev = (await state()).p;
+    // ~3s of watching per attempt. A running loop moves the bar every frame, so movement shows
+    // up almost immediately; the only quiet period is the end-of-cycle hold at 100%, which is
+    // itself proof the loop is running.
+    for (let i = 0; i < 10; i++) {
+      await sleep(300);
+      const s = await state();
+      if (s.p !== prev || s.p >= 0.99) {
+        if (attempt > 1) console.log(`note  ${where}: the loop needed ${attempt} scrolls to start`);
+        return;
+      }
+      prev = s.p;
+    }
+  }
+  fail(
+    `${where}: Mission Control never started after 8 scrolls into view. The panel is armed and ` +
+      `the browser is rendering, so the IntersectionObserver is not reporting it on screen — ` +
+      `check that the panel is not taller than the viewport at this size (threshold 0.2).`,
+  );
 }
 
 // Is this renderer producing animation frames at all?
