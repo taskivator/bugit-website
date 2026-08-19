@@ -388,6 +388,26 @@ html{overflow-x:clip}
 .nav-social svg{width:17px;height:17px;fill:currentColor;stroke:none}
 .nav-social:hover{color:#fff;border-color:rgba(255,79,201,.5);background:rgba(255,79,201,.12)}
 
+/* Hover/focus label for the social icons.
+   The visible text is a brand name and is identical in all eleven languages, which is why it
+   sits in a data attribute rather than the locale table: LinkedIn and YouTube stay Latin even
+   in the ar, ja, ko, zh and ru aria-labels. The anchor keeps its TRANSLATED aria-label, and an
+   aria-label overrides descendant and pseudo-element content when the accessible name is
+   computed, so nothing is announced twice.
+   It shows on :focus-visible as well as :hover, because a label only a mouse can reach is not
+   a label. Only on pointer devices: on touch there is no hover state to enter, and a label that
+   appears on tap would fight the navigation the tap is for. */
+@media (hover:hover){
+  .nav-social{position:relative}
+  .nav-social::after{content:attr(data-label);position:absolute;top:calc(100% + 8px);left:50%;
+    transform:translate(-50%,-4px);padding:5px 9px;border-radius:8px;background:var(--bg,#0b0614);
+    border:1px solid var(--line);color:#fff;font-size:11px;font-weight:800;letter-spacing:.3px;
+    line-height:1;white-space:nowrap;opacity:0;pointer-events:none;z-index:60;
+    transition:opacity .15s ease,transform .15s ease}
+  .nav-social:hover::after,.nav-social:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+  @media (prefers-reduced-motion:reduce){.nav-social::after{transition:none}}
+}
+
 /* Homepage FAQ: two columns so six questions read as a compact block rather than a stack.
    `align-items:start` matters -- without it an opened <details> stretches its neighbour to the
    same height and the grid jumps. Collapses to one column at the site's existing 760px
@@ -469,3 +489,117 @@ html{overflow-x:clip}
 /* Same problem one size down: long unbreakable Arabic words in narrow cards. */
 [dir="rtl"] .docs-content h1{font-size:clamp(30px,3.4vw,42px);line-height:1.3}
 [dir="rtl"] .section-head h2{line-height:1.3}
+
+/* ===== Interactive states for every call to action =====================
+   Covers the hero Get BugIt, both pricing buttons, Watch Demo, the four demo tabs
+   (Core Workflow / SaaS / Game QA / Mobile App) and the LIMITED offer box in the header.
+   They were previously inert: not one of them had a :hover rule.
+
+   THREE STATES, NOT ONE, because a phone has no hover.
+     :hover           inside @media (hover:hover) only. On a touchscreen a :hover rule applied
+                      by a tap STICKS until you tap elsewhere, so the button stays lit after you
+                      have left it. Gating it means that cannot happen.
+     :active          outside the query, so a tap gives immediate press feedback on mobile and
+                      a mouse press feels connected on desktop.
+     :focus-visible   outside the query, so keyboard users get the same signal a mouse gets.
+                      An affordance only a mouse can reach is not an affordance.
+
+   Two visual families, because the buttons are two families. The gradient ones slide their
+   colour: the gradient is painted at twice the button width and moved with background-position,
+   which is a cheap compositor-friendly transition rather than a repaint of the gradient. The
+   bordered ones (Watch Demo, the unselected demo tabs) warm their border and fill instead, and
+   deliberately do NOT take the gradient, because an unselected tab that looks like the selected
+   one on hover is a worse tab strip than a plain one.
+
+   The lift matches what the site already does at .tool:hover, so this reads as the same site. */
+
+.primary:not(.consent-btn),
+.secondary,
+.nav-cta,
+.demo-tabs button{
+  transition:background-position .5s ease,transform .18s ease,box-shadow .18s ease,
+             border-color .18s ease,background-color .18s ease;
+}
+.primary:not(.consent-btn),
+.nav-cta,
+.demo-tabs button.active{background-size:200% 100%;background-position:0 50%}
+
+@media (hover:hover){
+  .primary:not(.consent-btn):hover,
+  .nav-cta:hover,
+  .demo-tabs button.active:hover{
+    background-position:100% 50%;
+    transform:translateY(-3px);
+    box-shadow:0 22px 54px rgba(255,79,201,.42);
+  }
+  .secondary:hover,
+  .demo-tabs button:not(.active):hover{
+    transform:translateY(-3px);
+    border-color:rgba(255,79,201,.55);
+    background-color:rgba(255,79,201,.12);
+    box-shadow:0 14px 34px rgba(255,79,201,.18);
+  }
+}
+
+.primary:not(.consent-btn):focus-visible,
+.nav-cta:focus-visible,
+.demo-tabs button.active:focus-visible{
+  background-position:100% 50%;
+  transform:translateY(-3px);
+  box-shadow:0 22px 54px rgba(255,79,201,.42);
+}
+.secondary:focus-visible,
+.demo-tabs button:not(.active):focus-visible{
+  transform:translateY(-3px);
+  border-color:rgba(255,79,201,.55);
+  background-color:rgba(255,79,201,.12);
+}
+
+.primary:not(.consent-btn):active,
+.secondary:active,
+.nav-cta:active,
+.demo-tabs button:active{
+  transform:translateY(-1px) scale(.985);
+  transition:transform .09s ease,box-shadow .09s ease;
+}
+
+/* Motion is removed, not shortened. Colour, border and glow still respond, so every button
+   keeps a clear state change without anything moving. */
+@media (prefers-reduced-motion:reduce){
+  .primary:not(.consent-btn):hover,.primary:not(.consent-btn):focus-visible,
+  .primary:not(.consent-btn):active,
+  .secondary:hover,.secondary:focus-visible,.secondary:active,
+  .nav-cta:hover,.nav-cta:focus-visible,.nav-cta:active,
+  .demo-tabs button:hover,.demo-tabs button:focus-visible,.demo-tabs button:active{transform:none}
+}
+
+/* ===== Brand link hover =================================================
+   Scoped to a.brand, which is the ONLY branding on the site that is a link. The footer
+   .foot-brand is a <div>, the mobile menu's .mm-title is a <span>, and the .mc-face logo inside
+   the Mission Control mock is decoration. Animating those would promise a click that does not
+   exist, which is worse than leaving them still.
+
+   The transform is on the IMAGE, never on .brand itself. At 760px and below .brand is the flex
+   item that was deliberately made shrinkable so the header cannot overflow a 320px viewport,
+   with the tagline clipping as the safety valve; scaling that box would hand the width back and
+   put the side-scroll straight back. The logo has flex:0 0 auto and a fixed size, so it can move
+   without touching the row's width. The wordmark shifts colour instead, using the same pink the
+   main nav already uses on hover. */
+.brand img.blip-logo{transition:transform .24s cubic-bezier(.34,1.32,.64,1),filter .24s ease}
+.brand strong{transition:color .18s ease}
+
+@media (hover:hover){
+  .brand:hover img.blip-logo{transform:scale(1.09) rotate(-5deg);
+    filter:drop-shadow(0 0 12px rgba(255,79,201,.55))}
+  .brand:hover strong{color:#ff86dc}
+}
+.brand:focus-visible img.blip-logo{transform:scale(1.09) rotate(-5deg);
+  filter:drop-shadow(0 0 12px rgba(255,79,201,.55))}
+.brand:focus-visible strong{color:#ff86dc}
+.brand:active img.blip-logo{transform:scale(1.02) rotate(-2deg);transition:transform .09s ease}
+
+@media (prefers-reduced-motion:reduce){
+  .brand:hover img.blip-logo,
+  .brand:focus-visible img.blip-logo,
+  .brand:active img.blip-logo{transform:none}
+}
