@@ -37,7 +37,13 @@ const state = (page) => page.evaluate(() => ({
   homeHidden: document.getElementById("homeView")?.hidden ?? null,
   docHidden: document.getElementById("docView")?.hidden ?? null,
   h1: document.querySelector("#docView h1")?.textContent?.trim() || "",
-  navLinks: document.querySelectorAll("#docNav a").length,
+  // The DOCUMENT LIST, not every link in the sidebar. The sidebar carries a second list
+  // now -- the contents of the document being read -- whose length is a property of that
+  // document (fifteen clauses in the licence, twelve sections in the privacy statement, none
+  // on the index). Counting both together compares two different things and calls the
+  // difference a regression.
+  navLinks: document.querySelectorAll("#docNav .docs-nav-list a").length,
+  tocLinks: document.querySelectorAll("#docNav .doc-toc a").length,
 }));
 
 const go = async (page, hash) => {

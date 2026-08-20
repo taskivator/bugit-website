@@ -306,17 +306,25 @@ function pass(msg) { console.log(`ok  ${msg}`); }
 // ---------------------------------------------------------------------------
 // 1 + 2. PHONE: a tap must never stop the simulation.
 // ---------------------------------------------------------------------------
+// "Show full report" is DECLINED while the report is still being written -- there is no full
+// report yet -- and works the moment the run completes. Both halves are asserted: a control
+// that is unavailable for ever and a control that is available too early look identical to a
+// check that only tests one of them.
 for (const [label, sel, expectExpand] of [
-  ['tapping "Show full report"', '#reportMoreToggle', true],
+  ['tapping "Show full report"', '#reportMoreToggle', 'after-complete'],
   ['tapping the report title', '.report-panel h2', false],
 ]) {
   await load(390, 844, true);
   const before = await midGeneration(label);
   const b = await tap(sel);
   const after = await state();
-  if (expectExpand) {
-    if (after.collapsed) fail(`${label}: the report did not expand (still .is-collapsed).`);
-    else pass(`${label} expands the report`);
+  if (expectExpand === 'after-complete') {
+    if (!after.collapsed) {
+      fail(`${label}: the report opened while it was still being generated. There is nothing ` +
+           `to show yet, which is why the control is aria-disabled until the run completes.`);
+    } else {
+      pass(`${label} is declined while the report is still being written`);
+    }
   }
   await sleep(2200);
   const later = await state();
@@ -326,6 +334,28 @@ for (const [label, sel, expectExpand] of [
          `A tap has no mouseleave and no focusout, so an edge-triggered pause can never be released.`);
   } else {
     pass(`${label} at 390x844 keeps generating (${before.p} -> ${after.p} -> ${later.p})`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 2b. ...and the same press, once the run has finished, opens the report. Without this the
+//     check above would pass just as happily against a button that never worked at all.
+// ---------------------------------------------------------------------------
+{
+  await load(390, 844, true);
+  let ready = false;
+  for (let i = 0; i < 60 && !ready; i++) {
+    ready = await evaluate(`(function(){var b=document.getElementById('reportMoreToggle');
+      return !!b && b.getAttribute('aria-disabled')!=='true';})()`) === true;
+    if (!ready) await sleep(500);
+  }
+  if (!ready) {
+    fail('the report never finished generating, so "Show full report" never became available.');
+  } else {
+    await tap('#reportMoreToggle');
+    const opened = await state();
+    if (opened.collapsed) fail('once the report was complete, "Show full report" still did not open it.');
+    else pass('once the report is complete, "Show full report" opens it');
   }
 }
 

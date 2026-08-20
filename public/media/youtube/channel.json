@@ -1,0 +1,115 @@
+{
+  "channel": "UCaDA7V6k86eqBPHP-QSugRQ",
+  "url": "https://www.youtube.com/@BugItByTaskivator",
+  "note": "Two cuts per subject. `wide` is the 1920x1080 upload on the videos tab and is what a desktop plays; `tall` is the 1080x1920 upload published as a Short and is what a phone plays. Orientation was read from each video's own watch page by scratchpad/yt_orient.py, never inferred from a file name.",
+  "videos": [
+    {
+      "slug": "trailer",
+      "wide": "9aiGVJy57ug",
+      "tall": "DWsYuIoBDUE",
+      "seconds": 121,
+      "duration": "2:01",
+      "title": "BugIt: a QA agent that writes the bug report for you",
+      "label": "The introduction"
+    },
+    {
+      "slug": "gate",
+      "wide": "tWXvzy8pgug",
+      "tall": "ufXm_Hf2FR0",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "Nothing is filed until you type FILE IT",
+      "label": "The FILE IT gate"
+    },
+    {
+      "slug": "duplicates",
+      "wide": "Lt3qGzbP-W0",
+      "tall": "UxRtjaH05OU",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "Is it a duplicate? BugIt gives you a number",
+      "label": "Duplicate rating"
+    },
+    {
+      "slug": "trackers",
+      "wide": "5aHdaDxXHyU",
+      "tall": "7rklIFyhbso",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "Eleven trackers, one workflow: file where your team already works",
+      "label": "Eleven trackers"
+    },
+    {
+      "slug": "pricing",
+      "wide": "uGEd6cU_Z4k",
+      "tall": "YRWZMlIxD3Q",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "A full QA workflow, one price, and it does not renew itself",
+      "label": "One price"
+    },
+    {
+      "slug": "quality",
+      "wide": "encQaln5Rq8",
+      "tall": "KCucL4IT-_8",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "BugIt tells you when your bug report is thin",
+      "label": "Report quality"
+    },
+    {
+      "slug": "housestyle",
+      "wide": "OOrZnE-Xvac",
+      "tall": "V1ZbbajKbu8",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "Show it one good ticket and it learns your house style",
+      "label": "Your house style"
+    },
+    {
+      "slug": "privacy",
+      "wide": "pnvRPjuu_Xw",
+      "tall": "J3ft7whn-dM",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "Personal data is stripped before you read the draft",
+      "label": "Privacy redaction"
+    },
+    {
+      "slug": "attachments",
+      "wide": "KpDniN2rEqs",
+      "tall": "JK2v9ZVbn0c",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "Screenshots, recordings and logs end up on the ticket",
+      "label": "Attachments"
+    },
+    {
+      "slug": "languages",
+      "wide": "DnGBHszNleU",
+      "tall": "Dbs6yNm4uMs",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "Report in your language, file in the team's",
+      "label": "Your language"
+    },
+    {
+      "slug": "spec",
+      "wide": "r8DiajqEzF8",
+      "tall": "8amJs1ZJNlI",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "It checks the spec before calling something a bug",
+      "label": "Reads the spec"
+    },
+    {
+      "slug": "logs",
+      "wide": "liHzTbNbSfc",
+      "tall": "GhVyv4QU_Xg",
+      "seconds": 30,
+      "duration": "0:30",
+      "title": "Paste the crash log, keep the line that matters",
+      "label": "Crash logs"
+    }
+  ]
+}

@@ -144,6 +144,8 @@ Website-Performance nutzen wir Cloudflare Web Analytics; dies kommt ohne Cookies
 und verfolgt Sie nicht websiteübergreifend. Sie können Ihre Entscheidung jederzeit
 ändern oder widerrufen.
 
+Videos auf der Website sind von YouTube eingebettet. Bis Sie auf Wiedergabe drücken, wird nichts von YouTube angefordert: bis dahin zeigt die Seite nur ein von uns ausgeliefertes Bild. Wenn Sie die Wiedergabe starten, wird der Player von youtube-nocookie.com geladen, dem datenschutzfreundlichen Host von YouTube, und Google erhält Ihre IP-Adresse und das gewählte Video, um es abspielen zu können. Wenn Sie nie auf Wiedergabe drücken, sendet der Videobereich nichts an Google.
+
 ## Ihre Rechte
 
 Je nach Wohnsitz, etwa nach der DSGVO in der EU und im Vereinigten Königreich oder

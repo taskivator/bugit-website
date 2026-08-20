@@ -136,6 +136,8 @@ preferences**. We use Cloudflare Web Analytics for general site performance, whi
 is cookieless and does not track you across sites. You can change or withdraw your
 choice at any time.
 
+Videos on the website are embedded from YouTube. Nothing is requested from YouTube until you press play on a video: until then the page shows an image served by us. When you do press play, the player is loaded from youtube-nocookie.com, YouTube's privacy enhanced host, and Google receives your IP address and the video you chose so that it can play it. If you never press play, the video section sends nothing to Google.
+
 ## Your rights
 
 Depending on where you live, for example under the EU or UK GDPR or Japan's APPI,

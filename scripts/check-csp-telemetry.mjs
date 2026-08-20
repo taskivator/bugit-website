@@ -110,12 +110,62 @@ const APPROVED = [
   'www.google-analytics.com',
   'region1.google-analytics.com',
   'portal.bugit.dev',
+  // The channel section's player. Approved deliberately, and only in this form: see the
+  // three checks below, which assert that the tracking host is NOT granted and that the
+  // embed is click-gated rather than loaded with the page.
+  'www.youtube-nocookie.com',
 ];
 for (const h of new Set([...csp.matchAll(/https:\/\/([a-z0-9.-]+)/g)].map((m) => m[1]))) {
   check(
     APPROVED.includes(h),
     `${h} is granted by the CSP but is not an approved destination`,
     'Add it here deliberately, with a privacy disclosure, or remove it from _headers.',
+  );
+}
+
+// --- the embedded player: the right host, and only after a click ----------
+// An allowlist entry says a host MAY be reached. These three say how, because the
+// privacy claim (the page no longer narrates it, but the privacy policy states it and
+// scripts/check-consent-network.mjs proves it: zero Google requests before consent)
+// is a claim about the mechanism, and an allowlist cannot see a mechanism.
+const frameSrc = directive('frame-src');
+check(
+  frameSrc.includes('https://www.youtube-nocookie.com'),
+  'frame-src must grant the privacy enhanced player',
+  'The channel section embeds video. Without this the player is CSP-blocked and the ' +
+    'section silently does nothing when someone presses play.',
+);
+check(
+  !/https:\/\/(www\.)?youtube\.com|https:\/\/youtu\.be/.test(csp),
+  'the tracking player host must NOT be granted',
+  'youtube-nocookie.com is the privacy enhanced host and the only one this site needs. ' +
+    'Granting youtube.com would let the page load the tracking player by accident.',
+);
+{
+  // The facade. index.html must ship NO youtube iframe: the element is created by app.js in
+  // response to a press. A live embed would reach Google on every page load, for every
+  // visitor, before the consent banner was answered, which is exactly what
+  // scripts/check-consent-network.mjs forbids and what the privacy policy promises against.
+  const home = read('index.html');
+  const frames = [...home.matchAll(/<iframe[^>]*>/gi)].map((m) => m[0]);
+  check(
+    !frames.some((f) => /youtu/i.test(f)),
+    'index.html must not ship a YouTube iframe',
+    frames.length
+      ? `found: ${frames.join(' | ').slice(0, 200)}`
+      : 'the embed must stay click-gated in app.js.',
+  );
+  check(
+    /youtube-nocookie\.com\/embed\//.test(read('app.js')),
+    'app.js must build the embed from the privacy enhanced host',
+    'If this ever stops matching, either the player moved hosts or the section lost its ' +
+      'facade; both change what a visitor sends to Google.',
+  );
+  check(
+    /youtube/i.test(privacy),
+    'the privacy policy must disclose the embedded player while the section ships',
+    'A third party that receives a request from our page, even after a click, is a ' +
+      'processor the visitor has to be told about.',
   );
 }
 

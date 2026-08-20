@@ -142,6 +142,8 @@ banner dei cookie o in **Preferenze cookie**. Utilizziamo Cloudflare Web Analyti
 misurare le prestazioni generali del sito: funziona senza cookie e non La traccia da
 un sito all'altro. Può modificare o revocare la Sua scelta in qualsiasi momento.
 
+I video del sito sono incorporati da YouTube. Nulla viene richiesto a YouTube finché non preme play su un video: fino a quel momento la pagina mostra solo un'immagine servita da noi. Quando preme play, il player viene caricato da youtube-nocookie.com, l'host a privacy rafforzata di YouTube, e Google riceve il Suo indirizzo IP e il video scelto per poterlo riprodurre. Se non preme mai play, la sezione video non invia nulla a Google.
+
 ## I Suoi diritti
 
 A seconda del Paese di residenza, ad esempio ai sensi del GDPR dell'UE o del Regno

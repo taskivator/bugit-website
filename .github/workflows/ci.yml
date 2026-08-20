@@ -132,5 +132,66 @@ jobs:
           BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-a11y.mjs
           BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-spa-routing.mjs
           BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-chrome-a11y.mjs
+      # The product's own name rendered as "BUGIT" in two places on the home page, in all
+      # eleven languages, because a shared CSS rule uppercased the strings. No source grep
+      # could see it: the text is correct until the stylesheet is applied. This reads the
+      # rendered page instead, and proves it can see the defect before it reports a pass.
+      - name: Verify the product name is never rendered in the wrong casing
+        run: node scripts/check-brand-casing.mjs
+      # styles.css is three cascade layers and UNLAYERED rules outrank all of them, so one
+      # stray brace silently promotes the old sheet above the redesign with no parse error
+      # from anything. This asserts the layering and then measures the outcome it exists
+      # for: every section on the page beginning on the same edge, in both directions.
+      - name: Verify the stylesheet is fully layered and the page has one content edge
+        run: node scripts/check-alignment.mjs
+      # A reveal-on-scroll page fails by leaving text invisible, with no error anywhere.
+      # This drives the whole page, section by section, and asserts that what a visitor is
+      # looking at is readable, including under prefers-reduced-motion.
+      - name: Verify no animation leaves content unreadable
+        run: node scripts/check-motion.mjs
+      # Every film on the channel exists as a 1920x1080 upload and as a 1080x1920 Short.
+      # The page shipped pointing ten of twelve tiles at the Short, so a desktop played a
+      # vertical video with black pillars over half the frame. Nothing could see it from the
+      # source: the ids were real and the posters loaded. This presses play at both widths.
+      - name: Verify the channel plays the cut that matches the screen
+        run: node scripts/check-channel.mjs
+      # sRGB has 256 levels and the ground crosses about 25 of them down a 4K screen, so
+      # without a dither each level holds for ~90px and its edge reads as a band. This
+      # measures the width of the plateaus at 3840x2160, and proves itself by putting the
+      # old ground back and requiring a failure.
+      - name: Verify the background has no contours at 4K
+        run: node scripts/check-ground.mjs
+      # Every heading on every documentation route once rendered at 18px, because a clamp()
+      # written `1.35rem+ 2.1vw` is invalid and every font-size using it silently inherited.
+      # This resolves every calculated token, then checks hierarchy, reading measure, the
+      # contents list and the loading state on all nine routes.
+      - name: Verify the documentation reads like a document
+        run: node scripts/check-reading.mjs
+      # THE 2026-08-21 AUDIT, KEPT AS THREE GUARDS.
+      # Every check above reads one property of the page. These read the page the way a reader
+      # meets it: eleven languages, five viewports, every route, at every scroll position.
+      # What they found the first time they ran: an Arabic page that cut 104px off itself at
+      # 320px because a `visibility:hidden` menu is still laid out, a Mission Control stream
+      # line that truncated in ALL ELEVEN languages including English, six clamps sized for the
+      # shortest language the product ships, and an instrument that grew 13.5px every time the
+      # report was opened. None of them was visible to a string check or a source scan.
+      - name: Verify every language has room, on every screen, on every route
+        run: node scripts/check-space.mjs
+      - name: Verify every route in every language, entered cold, by click, by reload, by history
+        run: node scripts/check-routing.mjs
+      # Owner rule: the instrument may not change size when the report opens, or on its own.
+      - name: Verify Mission Control keeps its size
+        run: node scripts/check-instrument-size.mjs
+      # Reads the rendered page and asks the reader's question rather than the maintainer's:
+      # on the Japanese page, is this sentence in Japanese? The film wall shipped twenty-four
+      # English strings on ten translated pages and every existing language guard passed, because
+      # all of them read the i18n object and the wall's copy was never in it.
+      - name: Verify nothing renders in English on a translated page
+        run: node scripts/check-untranslated.mjs
+      # The header lockup, the language menu, the social labels and the footer links: present on
+      # every route, and each of their defects is a property of an interaction or of one narrow
+      # width, which is exactly what a page-level sweep steps over.
+      - name: Verify the page chrome in every language
+        run: node scripts/check-chrome.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
         run: node scripts/check-ci-coverage.mjs

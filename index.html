@@ -72,7 +72,7 @@
          a voice-control user saying "BugIt by Taskivator" could not activate it.
          With the override removed the accessible name IS the visible text. The
          logo is aria-hidden, so the name comes from the wordmark alone. -->
-    <a href="#/" class="brand">
+    <a href="/" class="brand">
       <img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" />
       <span><strong>BugIt</strong><em>by Taskivator</em></span>
     </a>
@@ -99,7 +99,6 @@
           <div id="acctList" class="acct-list" role="menu"></div>
         </div>
       </div>
-      <a class="nav-cta" href="https://portal.bugit.dev/pricing"><span data-t="cta.early">Get BugIt</span> <b data-t="pricing.limitedTag">LIMITED</b><small>$39.99<span data-t="pricing.perYear"> one-time</span> · <span data-t="pricing.limited">Introductory price</span></small></a>
       <button class="nav-toggle" id="navToggle" type="button" data-t-aria="a11y.openMenu" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
@@ -141,7 +140,7 @@
           <div><strong><svg class="mi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="9" width="11.5" height="11.5" rx="2.5"/><path d="M5 15H4.5A2.5 2.5 0 0 1 2 12.5v-8A2.5 2.5 0 0 1 4.5 2h8A2.5 2.5 0 0 1 15 4.5V5"/></svg><span data-t="metrics.setupNum">Finds duplicates</span></strong><small data-t="metrics.setup">Flags related issues before you file</small></div>
           <div><strong><svg class="mi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5 4 5.5v5.5c0 4.6 3.4 7.8 8 9.2 4.6-1.4 8-4.6 8-9.2V5.5z"/><path d="m8.7 11.7 2.3 2.3 4.3-4.3"/></svg><span data-t="metrics.privateNum">Private by design</span></strong><small data-t="metrics.private">No telemetry. Your data stays yours.</small></div>
         </div>
-        <div class="actions"><a class="primary" href="https://portal.bugit.dev/pricing"><span data-t="cta.early">Get BugIt</span></a><a class="secondary" href="#demo"><span data-t="cta.demo">Watch Demo</span> <span>▷</span></a></div>
+        <div class="actions"><a class="primary" href="https://portal.bugit.dev/pricing"><span data-t="cta.early">Get BugIt</span></a><a class="secondary" href="#demo"><span data-t="cta.demo">Watch Demo</span> <span>▷</span></a><a class="secondary" href="#watch"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" class="cta-yt"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.13-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg><span data-t="cta.films">Watch the series</span></a></div>
         <div class="under"><span data-t="under.features">✓ No monthly subscription</span><span data-t="under.approval">✓ Human approval before filing</span><span data-t="under.updates">✓ Free software updates</span><span data-t="under.private">✓ 7-day refund policy</span></div>
       </div>
       <div class="mission-wrap">
@@ -159,11 +158,6 @@
               <li><span class="ml-name" data-t="mission.format">Tracker formatting ready</span></li>
               <li class="awaiting"><span class="ml-name" data-t="mission.ready">Awaiting your approval</span></li>
             </ul>
-            <div class="mc-mascot" aria-hidden="true">
-              <span class="mc-orb">
-                <img class="blip-logo mc-face" src="/public/brand/blip-logo.svg" alt="" />
-              </span>
-            </div>
             <div class="mc-foot" aria-hidden="true">
               <span class="mc-stream"><i class="mc-dot"></i><span class="mc-line"></span></span>
             </div>
@@ -192,12 +186,11 @@
                  .report-panel>*:not(.report-head)`, so a wrapper would have become the one
                  direct child, frozen the whole body at opacity 0, and collapsed the staged
                  reveal into a single pop. -->
-            <button type="button" class="report-more-toggle" id="reportMoreToggle" aria-expanded="false" data-t="report.showFull">Show full report</button>
             <h3 class="report-more" data-t="report.summaryTitle">Summary</h3>
             <p class="report-more" data-t="report.summary">Tapping Login several times during sign-in disables the button with no error shown, leaving the user stuck on the sign-in screen.</p>
-            <h3 class="report-more" data-t="report.analysisTitle">AI analysis</h3>
-            <p class="report-more" data-t="report.analysis">Reproduced from the attached log: repeated 401s on token refresh leave the button disabled with no error surfaced. Classified as Authentication and rated High on the project’s severity matrix, since sign-in is blocked for real users. One related ticket exists, but none is an exact duplicate.</p>
-            <pre class="report-more" data-t="report.pre">Steps to reproduce
+            <h3 class="report-more report-more-deep" data-t="report.analysisTitle">AI analysis</h3>
+            <p class="report-more report-more-deep" data-t="report.analysis">Reproduced from the attached log: repeated 401s on token refresh leave the button disabled with no error surfaced. Classified as Authentication and rated High on the project’s severity matrix, since sign-in is blocked for real users. One related ticket exists, but none is an exact duplicate.</p>
+            <pre class="report-more report-more-deep" data-t="report.pre">Steps to reproduce
 1. Open the sign-in page and enter valid credentials
 2. Tap Login several times quickly
 
@@ -205,7 +198,7 @@ Expected   Signed in once.
 Actual     Button locks; sign-in fails silently.
 
 From the log   Repeated 401 on /session/refresh after token expiry.</pre>
-            <div class="report-checked report-more">
+            <div class="report-checked report-more report-more-deep">
               <span class="rc-label" data-t="report.checkedTitle">Automatically checked</span>
               <span data-t="report.chkSeverity">Severity</span>
               <span data-t="report.chkComponent">Component</span>
@@ -214,12 +207,13 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
               <span data-t="report.chkPii">PII scan</span>
               <span data-t="report.chkFormat">Tracker formatting</span>
             </div>
-            <div class="report-status report-more">
+            <div class="report-status">
               <div><small data-t="report.privacyLabel">Privacy</small><b class="ok" data-t="report.privacyVal">Passed</b></div>
               <div><small data-t="report.qualityLabel">Quality</small><b data-t="report.qualityVal">Grade A</b></div>
               <div><small data-t="report.submitLabel">Submission</small><b class="pink" data-t="report.submitVal">Manual approval</b></div>
               <div><small data-t="report.exportLabel">Export</small><b data-t="report.exportVal">Jira · ADO · GitHub</b></div>
             </div>
+            <button type="button" class="report-more-toggle" id="reportMoreToggle" aria-expanded="false" data-t="report.showFull">Show full report</button>
           </div>
         </div>
       </div>
@@ -237,6 +231,55 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
         <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-game" aria-labelledby="demotab-game" tabindex="-1" aria-hidden="true" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4" data-landscape="/public/media/BugIt-Demo-Game.mp4" data-portrait="/public/media/BugIt-Demo-Game-portrait.mp4" data-t-aria="a11y.demoGame" aria-label="Demo video: BugIt in a game QA workflow"></video>
         <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-mobile" aria-labelledby="demotab-mobile" tabindex="-1" aria-hidden="true" data-video="mobile" muted playsinline preload="none" src="/public/media/BugIt-Demo-Mobile.mp4" data-landscape="/public/media/BugIt-Demo-Mobile.mp4" data-portrait="/public/media/BugIt-Demo-Mobile-portrait.mp4" data-t-aria="a11y.demoMobile" aria-label="Demo video: BugIt in a mobile app QA workflow"></video>
       </div></div>
+    </section>
+
+
+    <!-- The BugIt channel, on the page. Poster images are served from this origin and the
+         YouTube player is created by app.js only when someone presses play: an ordinary
+         iframe would call Google on every page load, for every visitor, before the consent
+         banner had been answered, which scripts/check-consent-network.mjs exists to forbid.
+         The embed host is youtube-nocookie.com and it is the ONLY frame-src the CSP grants. -->
+    <section id="watch" class="watch shell">
+      <div class="section-head">
+        <span data-t="watch.eyebrow">FROM THE CHANNEL</span>
+        <h2 data-t="watch.title">Every part of it, shown rather than claimed.</h2>
+        <p data-t="watch.subtitle">Short films on each thing BugIt does, from the duplicate check to the confirmation you type. Press play to watch here, or open the channel.</p>
+      </div>
+      <div class="yt-cinema">
+        <div class="yt-stage" id="ytStage" data-wide="9aiGVJy57ug" data-tall="DWsYuIoBDUE" data-id="9aiGVJy57ug">
+          <picture class="yt-poster">
+            <source id="ytPosterTall" media="(max-width:760px)" srcset="/public/media/youtube/tall/trailer.jpg" width="720" height="1280" />
+            <img id="ytPoster" src="/public/media/youtube/wide/trailer.jpg" alt="" width="1280" height="720" decoding="async" />
+          </picture>
+          <i class="yt-ring" aria-hidden="true"></i><button class="yt-play" id="ytPlay" type="button" data-t-aria="a11y.playVideo" aria-label="Play this video">
+            <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M8 5v14l11-7z"/></svg></i>
+          </button>
+          <div class="yt-stage-meta">
+            <span class="yt-stage-copy">
+              <span class="yt-stage-label" id="ytLabel" data-t="watchTiles.trailer.t">The introduction</span>
+              <span class="yt-stage-title" id="ytTitle" data-t="watchTiles.trailer.sub">BugIt: a QA agent that writes the bug report for you</span>
+            </span>
+            <span class="yt-dur" id="ytDur">2:01</span>
+          </div>
+        </div>
+      </div>
+      <div class="yt-bar">
+        <a class="yt-link" href="https://www.youtube.com/@BugItByTaskivator" target="_blank" rel="noopener noreferrer" data-t-aria="a11y.youtube" aria-label="BugIt on YouTube (opens in a new tab)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.13-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg><span data-t="watch.channel">Open the channel</span></a>
+      </div>
+      <div class="yt-list" id="ytList" role="group" data-t-aria="a11y.watchList" aria-label="Videos from the BugIt channel">
+        <button class="yt-item" type="button" data-wide="9aiGVJy57ug" data-tall="DWsYuIoBDUE" data-poster-wide="/public/media/youtube/wide/trailer.jpg" data-poster-tall="/public/media/youtube/tall/trailer.jpg" data-dur="2:01" data-title="BugIt: a QA agent that writes the bug report for you" aria-current="true"><span class="yt-thumb"><img src="/public/media/youtube/thumb/trailer.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">2:01</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.trailer.t">The introduction</span><span class="yt-sub" data-t="watchTiles.trailer.sub">BugIt: a QA agent that writes the bug report for you</span></span></button>
+        <button class="yt-item" type="button" data-wide="tWXvzy8pgug" data-tall="ufXm_Hf2FR0" data-poster-wide="/public/media/youtube/wide/gate.jpg" data-poster-tall="/public/media/youtube/tall/gate.jpg" data-dur="0:30" data-title="Nothing is filed until you type FILE IT"><span class="yt-thumb"><img src="/public/media/youtube/thumb/gate.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.gate.t">The FILE IT gate</span><span class="yt-sub" data-t="watchTiles.gate.sub">Nothing is filed until you type FILE IT</span></span></button>
+        <button class="yt-item" type="button" data-wide="Lt3qGzbP-W0" data-tall="UxRtjaH05OU" data-poster-wide="/public/media/youtube/wide/duplicates.jpg" data-poster-tall="/public/media/youtube/tall/duplicates.jpg" data-dur="0:30" data-title="Is it a duplicate? BugIt gives you a number"><span class="yt-thumb"><img src="/public/media/youtube/thumb/duplicates.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.duplicates.t">Duplicate rating</span><span class="yt-sub" data-t="watchTiles.duplicates.sub">Is it a duplicate? BugIt gives you a number</span></span></button>
+        <button class="yt-item" type="button" data-wide="5aHdaDxXHyU" data-tall="7rklIFyhbso" data-poster-wide="/public/media/youtube/wide/trackers.jpg" data-poster-tall="/public/media/youtube/tall/trackers.jpg" data-dur="0:30" data-title="Eleven trackers, one workflow: file where your team already works"><span class="yt-thumb"><img src="/public/media/youtube/thumb/trackers.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.trackers.t">Eleven trackers</span><span class="yt-sub" data-t="watchTiles.trackers.sub">Eleven trackers, one workflow: file where your team already works</span></span></button>
+        <button class="yt-item" type="button" data-wide="uGEd6cU_Z4k" data-tall="YRWZMlIxD3Q" data-poster-wide="/public/media/youtube/wide/pricing.jpg" data-poster-tall="/public/media/youtube/tall/pricing.jpg" data-dur="0:30" data-title="A full QA workflow, one price, and it does not renew itself"><span class="yt-thumb"><img src="/public/media/youtube/thumb/pricing.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.pricing.t">One price</span><span class="yt-sub" data-t="watchTiles.pricing.sub">A full QA workflow, one price, and it does not renew itself</span></span></button>
+        <button class="yt-item" type="button" data-wide="encQaln5Rq8" data-tall="KCucL4IT-_8" data-poster-wide="/public/media/youtube/wide/quality.jpg" data-poster-tall="/public/media/youtube/tall/quality.jpg" data-dur="0:30" data-title="BugIt tells you when your bug report is thin"><span class="yt-thumb"><img src="/public/media/youtube/thumb/quality.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.quality.t">Report quality</span><span class="yt-sub" data-t="watchTiles.quality.sub">BugIt tells you when your bug report is thin</span></span></button>
+        <button class="yt-item" type="button" data-wide="OOrZnE-Xvac" data-tall="V1ZbbajKbu8" data-poster-wide="/public/media/youtube/wide/housestyle.jpg" data-poster-tall="/public/media/youtube/tall/housestyle.jpg" data-dur="0:30" data-title="Show it one good ticket and it learns your house style"><span class="yt-thumb"><img src="/public/media/youtube/thumb/housestyle.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.housestyle.t">Your house style</span><span class="yt-sub" data-t="watchTiles.housestyle.sub">Show it one good ticket and it learns your house style</span></span></button>
+        <button class="yt-item" type="button" data-wide="pnvRPjuu_Xw" data-tall="J3ft7whn-dM" data-poster-wide="/public/media/youtube/wide/privacy.jpg" data-poster-tall="/public/media/youtube/tall/privacy.jpg" data-dur="0:30" data-title="Personal data is stripped before you read the draft"><span class="yt-thumb"><img src="/public/media/youtube/thumb/privacy.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.privacy.t">Privacy redaction</span><span class="yt-sub" data-t="watchTiles.privacy.sub">Personal data is stripped before you read the draft</span></span></button>
+        <button class="yt-item" type="button" data-wide="KpDniN2rEqs" data-tall="JK2v9ZVbn0c" data-poster-wide="/public/media/youtube/wide/attachments.jpg" data-poster-tall="/public/media/youtube/tall/attachments.jpg" data-dur="0:30" data-title="Screenshots, recordings and logs end up on the ticket"><span class="yt-thumb"><img src="/public/media/youtube/thumb/attachments.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.attachments.t">Attachments</span><span class="yt-sub" data-t="watchTiles.attachments.sub">Screenshots, recordings and logs end up on the ticket</span></span></button>
+        <button class="yt-item" type="button" data-wide="DnGBHszNleU" data-tall="Dbs6yNm4uMs" data-poster-wide="/public/media/youtube/wide/languages.jpg" data-poster-tall="/public/media/youtube/tall/languages.jpg" data-dur="0:30" data-title="Report in your language, file in the team's"><span class="yt-thumb"><img src="/public/media/youtube/thumb/languages.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.languages.t">Your language</span><span class="yt-sub" data-t="watchTiles.languages.sub">Report in your language, file in the team's</span></span></button>
+        <button class="yt-item" type="button" data-wide="r8DiajqEzF8" data-tall="8amJs1ZJNlI" data-poster-wide="/public/media/youtube/wide/spec.jpg" data-poster-tall="/public/media/youtube/tall/spec.jpg" data-dur="0:30" data-title="It checks the spec before calling something a bug"><span class="yt-thumb"><img src="/public/media/youtube/thumb/spec.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.spec.t">Reads the spec</span><span class="yt-sub" data-t="watchTiles.spec.sub">It checks the spec before calling something a bug</span></span></button>
+        <button class="yt-item" type="button" data-wide="liHzTbNbSfc" data-tall="GhVyv4QU_Xg" data-poster-wide="/public/media/youtube/wide/logs.jpg" data-poster-tall="/public/media/youtube/tall/logs.jpg" data-dur="0:30" data-title="Paste the crash log, keep the line that matters"><span class="yt-thumb"><img src="/public/media/youtube/thumb/logs.jpg" alt="" width="400" height="225" loading="lazy" decoding="async" /><i class="yt-thumb-play" aria-hidden="true"></i><span class="yt-dur">0:30</span></span><span class="yt-meta"><span class="yt-t" data-t="watchTiles.logs.t">Crash logs</span><span class="yt-sub" data-t="watchTiles.logs.sub">Paste the crash log, keep the line that matters</span></span></button>
+      </div>
     </section>
 
     <section id="features" class="trust shell">
@@ -293,7 +336,7 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
     <div class="docs-layout"><aside id="docNav" class="docs-sidebar"></aside><article id="docContent" class="docs-content"></article></div>
   </main>
 
-  <footer class="footer shell"><div class="foot-brand"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /><p>© 2026 Taskivator. <span data-t="footer.rights">All Rights Reserved.</span></p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/docs/commerce" data-t="docs.commerce">Commercial Transactions</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
+  <footer class="footer shell"><div class="foot-brand"><a class="foot-mark" href="/" data-t-aria="a11y.home" aria-label="BugIt home"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /></a><p>© 2026 Taskivator. <span data-t="footer.rights">All Rights Reserved.</span></p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/docs/commerce" data-t="docs.commerce">Commercial Transactions</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
 
   <!-- Consent banner (Consent Mode v2). Hidden until app.js shows it, which only
        happens when the bugit_consent cookie is absent. All copy is localized via

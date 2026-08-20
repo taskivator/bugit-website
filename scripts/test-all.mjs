@@ -72,6 +72,49 @@ const SUITES = [
   // SOURCE; the 2026-08-17 audit found 194 bidi tags printing as visible text and 45
   // dashed lines on the live pages, none of which the source can show you.
   "check-doc-rendering.mjs",
+  // ...and this one asks what CSS then does to them. "BugIt QA Agent" and "BugIt Mission
+  // Control" both rendered the name as "BUGIT" in every locale, from text-transform on a
+  // shared rule. Every guard above reads strings; this one reads the rendered page.
+  "check-brand-casing.mjs",
+  // ...and this one asks whether the sheet that produces it is still structurally sound.
+  // A stray brace unlayers the redesign silently; the visible symptom is the page losing
+  // its single content edge, so the structure and the geometry are checked together.
+  "check-alignment.mjs",
+  // The page animates now, and the way that breaks is silent: content held at the `from`
+  // state of a reveal is invisible while the markup, the a11y tree and every other guard
+  // here stay perfectly correct.
+  "check-motion.mjs",
+  // The channel holds two cuts of every film and the page shipped pointing ten of its twelve
+  // tiles at the vertical one, inside a 16:9 stage. Valid markup, real ids, posters that
+  // loaded: the only way to see it was to press play. This presses play.
+  "check-channel.mjs",
+  "check-ground.mjs",
+  "check-reading.mjs",
+  // ...and these three are the 2026-08-21 audit, kept. Every guard above reads one thing about
+  // the page; these three read the page the way a reader meets it.
+  //
+  // check-space     eleven languages x five viewports x every route, measuring panning,
+  //                 escaping boxes, clipped text, collisions and invisible ink at every scroll
+  //                 position. It found an Arabic page that cut 104px off itself at 320px, a
+  //                 Mission Control stream line that truncated in ALL ELEVEN languages, and six
+  //                 clamps sized for English. `--full` widens it to twelve viewports.
+  // check-routing   every route entered cold, by click, by reload and by history, in every
+  //                 language, plus the dead-link sweep.
+  // check-instrument-size  the owner's rule that the instrument may not change size when the
+  //                 report opens, or on its own while it runs.
+  "check-space.mjs",
+  "check-routing.mjs",
+  "check-instrument-size.mjs",
+  // check-untranslated  reads the RENDERED page and asks the reader's question: on the Japanese
+  //                 page, is this sentence in Japanese? Every other language guard here reads
+  //                 the i18n object, and the film wall's twenty-four English strings were never
+  //                 in it -- they were written straight into index.html, where a parity check
+  //                 cannot see them.
+  // check-chrome    the header lockup, the language menu, the social labels and the footer
+  //                 links: the parts present on every route, whose defects are properties of an
+  //                 INTERACTION or of one narrow width and so survive a page-level sweep.
+  "check-untranslated.mjs",
+  "check-chrome.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

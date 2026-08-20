@@ -17,8 +17,13 @@
 #     purchase conversion has fired in production yet, so the conversion path was
 #     never exercised, and a blocked conversion would waste a real charge.
 #
-# NOT added: frame-src (Google lists googletagmanager there, but no frame request
-# was ever observed and frame-src stays at the default-src 'self' fallback).
+# frame-src, 2026-08-20: the home page now embeds the BugIt channel's videos. It grants
+# EXACTLY ONE host, https://www.youtube-nocookie.com, which is YouTube's privacy enhanced
+# player. Plain youtube.com is deliberately NOT granted: the page must not be able to load
+# the tracking player even by mistake. The embed is also click-gated in app.js, so no frame
+# is created until a visitor presses play; the CSP is the second lock, not the first.
+# googletagmanager is still NOT granted here. Google lists it under frame-src in their own
+# guide, but no frame request to it has ever been observed from this site.
 # Do not prune this list by inspection -- verify against a live page.
 
 # Cloudflare Pages response headers for the marketing site. Adds the security
@@ -42,7 +47,7 @@
   # Verify before loosening this: `grep -rn "window.open" *.js *.html`.
   Cross-Origin-Opener-Policy: same-origin
   Access-Control-Allow-Origin: https://bugit.dev
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ad.doubleclick.net https://pagead2.googlesyndication.com https://google.com https://www.google.co.jp https://www.google-analytics.com https://region1.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://portal.bugit.dev https://cloudflareinsights.com https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ad.doubleclick.net https://pagead2.googlesyndication.com https://google.com https://www.google.co.jp https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://portal.bugit.dev; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ad.doubleclick.net https://pagead2.googlesyndication.com https://google.com https://www.google.co.jp https://www.google-analytics.com https://region1.google-analytics.com; font-src 'self'; media-src 'self'; connect-src 'self' https://portal.bugit.dev https://cloudflareinsights.com https://www.googletagmanager.com https://www.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://td.doubleclick.net https://ad.doubleclick.net https://pagead2.googlesyndication.com https://google.com https://www.google.co.jp https://www.google-analytics.com https://region1.google-analytics.com; frame-src https://www.youtube-nocookie.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://portal.bugit.dev; upgrade-insecure-requests
 
 # Content-hashed assets: the HASH IS IN THE FILENAME (/app.<hash>.js), so a
 # changed file is a genuinely new path while the HTML itself is always
@@ -66,6 +71,13 @@
 /public/media/*
   Cache-Control: public, max-age=604800
 /public/brand/*
+  Cache-Control: public, max-age=604800
+
+# The two self-hosted typefaces. A week, not a year, and deliberately NOT immutable: these
+# filenames carry no content hash, so a year of immutable caching on a fixed path is the exact
+# shape that pinned a stale app.js at the edge in July. A week is long enough that a returning
+# visitor never refetches them and short enough that a resubset can actually reach people.
+/public/fonts/*
   Cache-Control: public, max-age=604800
 
 # Current web guides must revalidate after every release so version switches are

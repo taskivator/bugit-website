@@ -32,7 +32,13 @@
     "test:doc-duplicates": "node scripts/check-doc-duplicates.mjs",
     "test:spa-routing": "node scripts/check-spa-routing.mjs",
     "test:chrome-a11y": "node scripts/check-chrome-a11y.mjs",
-    "test:crosstalk": "node scripts/check-locale-crosstalk.mjs"
+    "test:crosstalk": "node scripts/check-locale-crosstalk.mjs",
+    "test:brand-casing": "node scripts/check-brand-casing.mjs",
+    "test:alignment": "node scripts/check-alignment.mjs",
+    "test:motion": "node scripts/check-motion.mjs",
+    "test:channel": "node scripts/check-channel.mjs",
+    "test:ground": "node scripts/check-ground.mjs",
+    "test:reading": "node scripts/check-reading.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

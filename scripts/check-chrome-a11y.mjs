@@ -124,11 +124,15 @@ try {
     if (lang !== "en" && rights.includes("All Rights Reserved"))
       fail.push(`${lang}: footer rights line is still English`);
 
-    // 5. Nav CTA "one-time" is localized.
-    const cta = (await page.locator(".nav-cta small").textContent()).trim();
-    note(`nav CTA: "${cta}"`);
+    // 5. The price term ("one-time") is localized.
+    //    This used to read `.nav-cta small` in the header. The header price box was removed,
+    //    but the string is pricing.perYear and it is still on the page beside both prices, so
+    //    the check follows the string. What is being asserted is that the term is translated,
+    //    not the element it was being shown in.
+    const cta = (await page.locator(".price-card .price span").first().textContent()).trim();
+    note(`price term: "${cta}"`);
     if (lang !== "en" && /one-time/i.test(cta))
-      fail.push(`${lang}: nav CTA still says "one-time" in English`);
+      fail.push(`${lang}: the price term still says "one-time" in English`);
 
     // 6. Language menu semantics.
     const menu = await page.evaluate(() => {

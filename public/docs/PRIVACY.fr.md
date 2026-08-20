@@ -150,6 +150,8 @@ Web Analytics pour connaître les performances générales du site ; cet outil
 fonctionne sans cookie et ne vous suit pas d'un site à l'autre. Vous pouvez modifier
 ou retirer votre choix à tout moment.
 
+Les vidéos du site sont intégrées depuis YouTube. Rien n'est demandé à YouTube tant que vous n'appuyez pas sur lecture : jusque là, la page n'affiche qu'une image servie par nous. Lorsque vous lancez la lecture, le lecteur est chargé depuis youtube-nocookie.com, l'hôte de confidentialité renforcée de YouTube, et Google reçoit votre adresse IP ainsi que la vidéo choisie afin de pouvoir la lire. Si vous n'appuyez jamais sur lecture, la section vidéo n'envoie rien à Google.
+
 ## Vos droits
 
 Selon votre lieu de résidence, par exemple au titre du RGPD de l'UE ou du

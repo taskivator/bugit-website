@@ -139,6 +139,8 @@ em **Preferências de cookies**. Usamos o Cloudflare Web Analytics para acompanh
 desempenho geral do site; ele funciona sem cookies e não rastreia você entre sites.
 Você pode alterar ou retirar sua escolha a qualquer momento.
 
+Os vídeos do site são incorporados do YouTube. Nada é solicitado ao YouTube até você tocar em reproduzir: até lá a página mostra apenas uma imagem servida por nós. Quando você toca em reproduzir, o player é carregado de youtube-nocookie.com, o host de privacidade reforçada do YouTube, e o Google recebe seu endereço IP e o vídeo escolhido para poder reproduzi-lo. Se você nunca tocar em reproduzir, a seção de vídeos não envia nada ao Google.
+
 ## Seus direitos
 
 Dependendo de onde você mora, por exemplo sob o GDPR da UE ou do Reino Unido, a LGPD

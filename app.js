@@ -139,7 +139,7 @@ function renderParticles(){const root=document.getElementById('ambient');if(!roo
 function renderTools(){document.querySelectorAll('[data-tools]').forEach(row=>{row.innerHTML=row.dataset.tools.split(',').filter(Boolean).map(k=>{const t=officialLogos[k]||[toolData[k]?.[0]||k,k];return `<div class="tool" title="${t[0]}">${officialLogo(t[0],t[1])}<span>${t[0]}</span></div>`}).join('')})}
 function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}let currentLang=(function(){var m=document.cookie.match(/(?:^|; )bugitLang=([^;]+)/);return (m&&decodeURIComponent(m[1]))||localStorage.getItem('bugitLang')||'en';})();
 function applyLang(lang){if(!i18n[lang])lang='en';currentLang=lang;localStorage.setItem('bugitLang',lang);(function(){var h=location.hostname,shared=(h==='bugit.dev'||/\.bugit\.dev$/.test(h));if(shared){document.cookie='bugitLang=;path=/;max-age=0;samesite=lax';document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax;domain=.bugit.dev';}else{document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax';}})();document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
-function initLang(){const list=document.getElementById('langList');const langTag=c=>i18n[c].name;list.innerHTML=languages.map(([c])=>`<button type="button" role="menuitemradio" aria-checked="false" data-lang="${c}" lang="${c}">${langTag(c)}</button>`).join('');const menu=document.getElementById('langMenu'),btn=document.getElementById('langButton');btn.setAttribute('aria-haspopup','true');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','langList');list.setAttribute('role','menu');const sync=()=>btn.setAttribute('aria-expanded',menu.classList.contains('open')?'true':'false');btn.onclick=()=>{menu.classList.toggle('open');sync()};list.onclick=e=>{const b=e.target.closest('button');if(!b)return;menu.classList.remove('open');sync();applyLang(b.dataset.lang)};document.addEventListener('click',e=>{if(!menu.contains(e.target)){menu.classList.remove('open');sync()}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.classList.contains('open')){menu.classList.remove('open');sync();btn.focus()}})}
+function initLang(){const list=document.getElementById('langList');const langTag=c=>i18n[c].name;list.innerHTML=languages.map(([c],i)=>`<button type="button" role="menuitemradio" aria-checked="false" data-lang="${c}" lang="${c}" style="--i:${i}"><span class="lang-n">${langTag(c)}</span><span class="lang-c" aria-hidden="true">${c.toUpperCase()}</span></button>`).join('');const menu=document.getElementById('langMenu'),btn=document.getElementById('langButton');btn.setAttribute('aria-haspopup','true');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','langList');list.setAttribute('role','menu');const sync=()=>btn.setAttribute('aria-expanded',menu.classList.contains('open')?'true':'false');btn.onclick=()=>{menu.classList.toggle('open');sync()};list.onclick=e=>{const b=e.target.closest('button');if(!b)return;menu.classList.remove('open');sync();applyLang(b.dataset.lang)};document.addEventListener('click',e=>{if(!menu.contains(e.target)){menu.classList.remove('open');sync()}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.classList.contains('open')){menu.classList.remove('open');sync();btn.focus()}})}
 // Requirements + platform-support FAQ. Kept as a standalone localized map (not
 // inside the per-locale i18n objects) so the compatibility statement stays
 // identical across languages and easy to audit. Prepended to the FAQ at render.
@@ -230,17 +230,17 @@ function route(){return location.hash.replace(/^#\/?/,'').replace(/^\//,'');}
 const docUiText={
   ar: {
   openTicket: "افتح تذكرة دعم"
-},
-  en:{openTicket:'Open a support ticket'},
-  ja:{openTicket:'サポートチケットを送信'},
-  fr:{openTicket:'Ouvrir un ticket de support'},
-  de:{openTicket:'Support-Ticket öffnen'},
-  es:{openTicket:'Abrir un ticket de soporte'},
-  'pt-br':{openTicket:'Abrir um chamado de suporte'},
-  it:{openTicket:'Apri un ticket di supporto'},
-  ko:{openTicket:'지원 티켓 등록'},
-  zh:{openTicket:'提交支持工单'},
-  ru:{openTicket:'Создать обращение в поддержку'}
+,onThisPage:'في هذه الصفحة',breadcrumb:'مسار التنقل',toTop:'العودة إلى الأعلى'},
+  en:{openTicket:'Open a support ticket',onThisPage:'On this page',breadcrumb:'Breadcrumb',toTop:'Back to top'},
+  ja:{openTicket:'サポートチケットを送信',onThisPage:'このページの内容',breadcrumb:'パンくずリスト',toTop:'ページ上部へ戻る'},
+  fr:{openTicket:'Ouvrir un ticket de support',onThisPage:'Sur cette page',breadcrumb:'Fil d\'Ariane',toTop:'Retour en haut'},
+  de:{openTicket:'Support-Ticket öffnen',onThisPage:'Auf dieser Seite',breadcrumb:'Brotkrümelnavigation',toTop:'Nach oben'},
+  es:{openTicket:'Abrir un ticket de soporte',onThisPage:'En esta página',breadcrumb:'Ruta de navegación',toTop:'Volver arriba'},
+  'pt-br':{openTicket:'Abrir um chamado de suporte',onThisPage:'Nesta página',breadcrumb:'Trilha de navegação',toTop:'Voltar ao topo'},
+  it:{openTicket:'Apri un ticket di supporto',onThisPage:'In questa pagina',breadcrumb:'Percorso di navigazione',toTop:'Torna su'},
+  ko:{openTicket:'지원 티켓 등록',onThisPage:'이 페이지의 내용',breadcrumb:'경로 탐색',toTop:'맨 위로'},
+  zh:{openTicket:'提交支持工单',onThisPage:'本页内容',breadcrumb:'面包屑导航',toTop:'回到顶部'},
+  ru:{openTicket:'Создать обращение в поддержку',onThisPage:'На этой странице',breadcrumb:'Навигационная цепочка',toTop:'Наверх'}
 };
 // Document card labels. `userGuide`/`overview` are the plain document NAMES (the
 // card now offers separate Preview + Download actions, so the name no longer
@@ -415,7 +415,7 @@ function renderDocRoute(){
   const _links=nav.map(([href,label])=>`<a class="${href.slice(2)===r?'active':''}"${href.slice(2)===r?' aria-current="page"':''} href="${href}">${label}</a>`).join('');
   _dn.innerHTML=`<button type="button" class="docs-nav-toggle" aria-expanded="false" aria-controls="docNavList"><span class="docs-nav-current">${_activeLabel}</span><span class="docs-nav-caret" aria-hidden="true">▾</span></button><div class="docs-nav-list" id="docNavList">${_links}</div>`;
   const titles={docs:d.homeTitle,'docs/getting-started':dl.userGuide,'docs/user-guide':dl.userGuide,'docs/overview':dl.overview,'docs/license':d.licenseTitle,'docs/privacy':d.privacyTitle,'docs/refund':d.refundTitle,'docs/commerce':d.commerceTitle,'docs/faq':d.faqTitle,support:d.supportTitle};
-  let body='';
+  let body='',lede='';
   if(r==='docs'){
     const dl=docDownloadLabels[lang]||docDownloadLabels.en;
     const pdfLang=docGuideLangs.includes(lang)?lang:'en';
@@ -426,10 +426,25 @@ function renderDocRoute(){
         +`<a class="doc-btn doc-btn-preview" href="${route}">${dl.preview}</a>`
         +`<a class="doc-btn doc-btn-download" href="/public/docs/guides/${pdfLang}/${pdf}" download="${dlName}">${dl.download} PDF</a>`
       +`</div></div>`;
-    body=`<p>${d.homeIntro}</p><p class="note">${d.englishOnly}</p><div class="doc-download-cards">`
+    lede=d.homeIntro;
+    // The two guides are the things a reader came for, so they keep the whole width and both
+    // actions. The rest of the documentation was reachable only from the sidebar or the
+    // footer; it is a shelf now, with the same descriptions the homepage already uses.
+    const shelf=[['#/docs/license',labels.license,labels.licenseDesc],
+                 ['#/docs/privacy',labels.privacy,labels.privacyDesc],
+                 ['#/docs/refund',labels.refund,labels.refundDesc],
+                 ['#/docs/commerce',labels.commerce,labels.commerceDesc],
+                 ['#/docs/faq','FAQ',labels.faqDesc],
+                 ['#/support',labels.support,labels.supportDesc]];
+    body=`<div class="doc-download-cards">`
       +card('#/docs/user-guide','user-guide.pdf','BugIt-User-Guide.pdf',dl.userGuide,dl.ugDesc)
       +card('#/docs/overview','overview.pdf','BugIt-QA-Agent-Overview.pdf',dl.overview,dl.ovDesc)
-      +`</div>`;
+      +`</div><div class="doc-shelf">`
+      +shelf.map(([href,name,desc])=>`<a class="doc-shelf-card" href="${href}">`
+        +`<span class="doc-shelf-name">${name}</span>`
+        +`<span class="doc-shelf-desc">${desc||''}</span>`
+        +`<span class="doc-shelf-go" aria-hidden="true"></span></a>`).join('')
+      +`</div><p class="note">${d.englishOnly}</p>`;
   }else if(r==='docs/getting-started'||r==='docs/user-guide'||r==='docs/overview'){
     const dl=docDownloadLabels[lang]||docDownloadLabels.en;
     // Keyed on the DOCUMENT, not on which of two route names was used. Until 2026-08-18 the
@@ -443,38 +458,51 @@ function renderDocRoute(){
     const dlName=isOverview?'BugIt-QA-Agent-Overview.pdf':'BugIt-User-Guide.pdf';
     const pdfUrl=`/public/docs/guides/${pdfLang}/${pdf}`;
     // Quick highlights render below; the full guide opens inline (preview) or downloads as PDF.
-    body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
-      +`<div class="doc-pdf-actions">`
+    body=`<div class="doc-pdf-actions">`
         +`<a class="doc-btn doc-btn-preview" href="${pdfUrl}" target="_blank" rel="noopener">${dl.preview} PDF</a>`
         +`<a class="doc-btn doc-btn-download" href="${pdfUrl}" download="${dlName}">${dl.download} PDF</a>`
       +`</div>`
-      +`<div id="guideText" class="license-doc"><p class="license-loading">…</p></div>`;
+      +`<div id="guideText" class="license-doc" aria-busy="true">${docSkeleton()}</div>`;
   }else if(r==='docs/faq'){
-    body=`<div class="faq-doc">${[reqFaqItem(lang)].concat(i18n[lang].faq.items).map(([q,a])=>`<h2>${q}</h2><p>${a}</p>`).join('')}</div>`;
+    body=`<div class="faq-doc license-doc">${[reqFaqItem(lang)].concat(i18n[lang].faq.items).map(([q,a])=>`<h2 class="license-title">${q}</h2><p>${a}</p>`).join('')}</div>`;
   }else if(r==='support'){
-    body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
-      +`<div class="support-box"><div><h2>${labels.support}</h2><p>${d.supportIntro}</p><p class="note">${d.englishOnly}</p>`
-      +`<div class="doc-actions"><a class="doc-button" href="https://portal.bugit.dev/dashboard/support">${ui.openTicket}</a></div></div>`
-      +`<div><h2>${d.before}</h2><p>${d.beforeText}</p></div></div>`;
+    // The old support page said "Support" three times over: an eyebrow, the H1, and again as
+    // the first card's H2. The H1 is the page's name; the first card is simply the action.
+    lede=d.supportIntro;
+    body=`<div class="support-box">`
+      +`<div class="support-card support-primary">`
+        +`<span class="support-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.9" y="4.4" width="18.2" height="12.4" rx="2.6"/><path d="M8.6 16.8v3.5l4.1-3.5"/><path d="M7.5 9.3h9"/><path d="M7.5 12.3h5.6"/></svg></span>`
+        +`<a class="doc-button" href="https://portal.bugit.dev/dashboard/support"><span>${ui.openTicket}</span><i aria-hidden="true"></i></a>`
+        +`<p class="note support-fine">${d.englishOnly}</p>`
+      +`</div>`
+      +`<div class="support-card">`
+        +`<span class="support-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 4.6 6v5.4c0 4.5 3.1 8.1 7.4 9.4 4.3-1.3 7.4-4.9 7.4-9.4V6z"/><path d="M9.4 12.1l1.9 1.9 3.6-3.8"/></svg></span>`
+        +`<h2>${d.before}</h2><p>${d.beforeText}</p>`
+      +`</div></div>`;
   }else if(r==='docs/license'){
-    body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
-      +`<p>${d.sections[2]}</p>`
-      +`<div id="licenseText" class="license-doc"><p class="license-loading">…</p></div>`;
+    lede=d.sections[2];
+    body=`<div id="licenseText" class="license-doc" aria-busy="true">${docSkeleton()}</div>`;
   }else if(r==='docs/privacy'){
-    body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
-      +`<p>${d.sections[3]}</p>`
-      +`<div id="privacyText" class="license-doc"><p class="license-loading">…</p></div>`;
+    lede=d.sections[3];
+    body=`<div id="privacyText" class="license-doc" aria-busy="true">${docSkeleton()}</div>`;
   }else if(r==='docs/refund'){
-    body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
-      +`<p>${d.refundIntro}</p>`
-      +`<div id="refundText" class="license-doc"><p class="license-loading">…</p></div>`;
+    lede=d.refundIntro;
+    body=`<div id="refundText" class="license-doc" aria-busy="true">${docSkeleton()}</div>`;
   }else if(r==='docs/commerce'){
-    body=`<a class="doc-back" href="#/docs">← ${i18n[lang].nav.docs}</a>`
-      +`<p>${d.commerceIntro}</p>`
-      +`<div id="commerceText" class="license-doc"><p class="license-loading">…</p></div>`;
+    lede=d.commerceIntro;
+    body=`<div id="commerceText" class="license-doc" aria-busy="true">${docSkeleton()}</div>`;
   }
-  document.getElementById('docContent').innerHTML=`<span class="eyebrow">${titles[r]}</span><h1>${titles[r]}</h1>${body}`;
+  const crumb=r==='docs'?'':`<nav class="doc-crumb" aria-label="${escapeHtml(ui.breadcrumb)}">`
+      +`<a href="#/docs">${i18n[lang].nav.docs}</a>`
+      +`<span aria-hidden="true">/</span><b>${titles[r]}</b></nav>`;
+  document.getElementById('docContent').innerHTML=
+    `<div class="doc-rail" aria-hidden="true"><i></i></div>`
+    +`<header class="doc-head">${crumb}<h1>${titles[r]}</h1>`
+    +(lede?`<p class="doc-lede${lede.length>180?' doc-lede-long':''}">${lede}</p>`:'')
+    +`</header>`+body;
+  docReadingUi(r,ui);
   document.title=`${titles[r]} · BugIt`;
+  const token=docRenderToken;
   if(r==='docs/getting-started'||r==='docs/user-guide'||r==='docs/overview'){
     const box=document.getElementById('guideText');
     const stem=r==='docs/overview'?'OVERVIEW':'GETTING_STARTED';
@@ -482,25 +510,25 @@ function renderDocRoute(){
     // highlights are not yet translated still shows the guide instead of an error.
     const urls=lang==='en'?[`/public/docs/${stem}.web.md`]:[`/public/docs/${stem}.${lang}.web.md`,`/public/docs/${stem}.web.md`];
     fetchFirstText(urls)
-      .then(txt=>{if(box)box.innerHTML=formatMarkdownDoc(txt);})
+      .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
       .catch(()=>{if(box)box.innerHTML='<p class="license-copy">This guide is temporarily unavailable. Please refresh the page or open a support ticket.</p>';});
   }else if(r==='docs/license'){
     const box=document.getElementById('licenseText');
     const urls=lang==='en'?['/public/docs/LICENSE.txt']:['/public/docs/LICENSE.'+lang+'.txt','/public/docs/LICENSE.txt'];
     fetchFirstText(urls)
-      .then(txt=>{if(box)box.innerHTML=formatLicense(txt);})
+      .then(txt=>{if(box){box.innerHTML=formatLicense(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
       .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The license text is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
   }else if(r==='docs/privacy'){
     const box=document.getElementById('privacyText');
     const urls=lang==='en'?['/public/docs/PRIVACY.md']:['/public/docs/PRIVACY.'+lang+'.md','/public/docs/PRIVACY.md'];
     fetchFirstText(urls)
-      .then(txt=>{if(box)box.innerHTML=formatMarkdownDoc(txt);})
+      .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
       .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The privacy statement is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
   }else if(r==='docs/refund'){
     const box=document.getElementById('refundText');
     const urls=lang==='en'?['/public/docs/REFUND.md']:['/public/docs/REFUND.'+lang+'.md','/public/docs/REFUND.md'];
     fetchFirstText(urls)
-      .then(txt=>{if(box)box.innerHTML=formatMarkdownDoc(txt);})
+      .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
       .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The refund policy is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
   }else if(r==='docs/commerce'){
     const box=document.getElementById('commerceText');
@@ -513,11 +541,130 @@ function renderDocRoute(){
     // readable page rather than an error.
     const urls=lang==='en'?['/public/docs/TOKUSHOHO.md']:['/public/docs/TOKUSHOHO.'+lang+'.md','/public/docs/TOKUSHOHO.md'];
     fetchFirstText(urls)
-      .then(txt=>{if(box)box.innerHTML=formatMarkdownDoc(txt);})
+      .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
       .catch(()=>{if(box)box.innerHTML='<p class="license-copy">This disclosure is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
   }
   updateSkipTarget();
   window.scrollTo({top:0,behavior:'smooth'});
+}
+/* A fetch that lands after the reader has moved on must not rewrite the sidebar of the page
+   they are now on. */
+function docReadingReady(token){
+  if(token!==docRenderToken)return;
+  const lang=i18n[currentLang]?currentLang:'en';
+  docBuildToc({...docUiText.en,...(docUiText[lang]||{})});
+}
+/* The skeleton that stands in for a document while it is being fetched.
+   It is sized like the text it replaces, which is the point: an EMPTY box is short, and a
+   short box pulls the footer up into the middle of the window for as long as the request
+   takes -- then the text arrives and shoves it back down. Anyone clicking through the
+   documentation saw that flash on every page. */
+function docSkeleton(){
+  const w=[92,86,96,74,90,82,94,68,88,90,78];
+  return '<div class="doc-skel">'
+    +'<span class="doc-skel-h"></span>'
+    +w.map(n=>`<span style="width:${n}%"></span>`).join('')
+    +'<span class="doc-skel-h"></span>'
+    +w.slice(0,6).map(n=>`<span style="width:${n}%"></span>`).join('')
+    +'</div>';
+}
+/* Everything the reading experience needs that cannot be written into the markup: the
+   contents list is built from the document's own headings, and a document that is still
+   being fetched has none yet. Rendered once now (for the pages whose text is already in the
+   page: the FAQ, the support page, the index) and again by docReadingReady() when a fetch
+   lands. A token guards it: click through three documents quickly and three fetches are in
+   flight, and only the newest one is allowed to touch the sidebar. */
+let docRenderToken=0;
+function docReadingUi(route,ui){
+  docRenderToken++;
+  const nav=document.getElementById('docNav');
+  if(nav){const old=nav.querySelector('.doc-toc');if(old){if(old.__detach)old.__detach();old.remove();}}
+  docBuildToc(ui);
+  return docRenderToken;
+}
+function docBuildToc(ui){
+  const nav=document.getElementById('docNav'),content=document.getElementById('docContent');
+  if(!nav||!content)return;
+  const old=nav.querySelector('.doc-toc');if(old){if(old.__detach)old.__detach();old.remove();}
+  // What divides THIS document: its headings, or -- for the licence, which has one heading
+  // and fifteen numbered clauses -- its clauses.
+  let heads=[...content.querySelectorAll('h2')];
+  let labels=heads.map(h=>h.textContent.trim());
+  if(heads.length<3){
+    const clauses=[...content.querySelectorAll('.license-clause')];
+    if(clauses.length>=3){
+      heads=clauses;
+      labels=clauses.map(c=>{
+        const n=(c.querySelector('b')||{}).textContent||'';
+        // The clause title is the text up to the first full stop, after the number.
+        const rest=c.textContent.slice(n.length).trim();
+        const stop=rest.search(/[.。．]/);
+        let title=stop>0?rest.slice(0,stop):rest;
+        if(title.length>44)title=title.slice(0,42).trim()+'\u2026';
+        return (n?n+' ':'')+title;
+      });
+    }
+  }
+  // Two sections are a document you can see the whole of; a contents list would be noise.
+  if(heads.length<3)return;
+  heads.forEach((h,i)=>{if(!h.id)h.id='doc-sec-'+(i+1);});
+  const toc=document.createElement('nav');
+  toc.className='doc-toc';
+  toc.setAttribute('aria-label',ui.onThisPage);
+  toc.innerHTML='<span class="doc-toc-h">'+escapeHtml(ui.onThisPage)+'</span><ol>'
+    +heads.map((h,i)=>`<li><a href="#${h.id}">${escapeHtml(labels[i])}</a></li>`).join('')
+    +'</ol>';
+  nav.appendChild(toc);
+  // Clicking a contents entry must not change the ROUTE. These are ids inside the document,
+  // and the hash is the router: writing #doc-sec-4 into it would be read as an unknown SPA
+  // route and answer with the not-found page.
+  toc.addEventListener('click',e=>{
+    const a=e.target.closest('a');if(!a)return;
+    e.preventDefault();
+    const el=document.getElementById(a.getAttribute('href').slice(1));
+    if(el)el.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  });
+  docSpy(toc,heads);
+}
+/* Which section is being read. Driven by the scroll position rather than by intersection
+   events: the last section of a document is often shorter than the window, so its heading
+   never crosses a line partway down the viewport and no event ever arrives for it -- the
+   entry simply could not be reached. Reaching the bottom of the page IS reading the last
+   section, and that case is now stated outright. Throttled to one read per frame. */
+function docSpy(toc,heads){
+  const links=[...toc.querySelectorAll('a')];
+  let raf=0,cur=-1;
+  const mark=i=>{
+    if(i===cur)return;
+    cur=i;
+    links.forEach((a,j)=>{
+      a.classList.toggle('is-current',j===i);
+      if(j===i)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');
+    });
+  };
+  const read=()=>{
+    raf=0;
+    /* The reading line is 170px down the window for most of a document, and slides to the
+       bottom of the window across the final screenful. Clamping to the last entry at the
+       bottom instead -- which is what this did first -- makes the list JUMP: on the licence
+       the last three clauses share the closing screen, so it went 12, then straight to 15.
+       Sliding the line means each of them is current while it is the one being read, and the
+       last entry is still reachable, which a fixed line can never manage. */
+    const doc=document.documentElement;
+    const rest=Math.max(0,(doc.scrollHeight-window.innerHeight)-window.scrollY);
+    const tail=window.innerHeight;
+    const line=rest<tail?170+(tail-170)*(1-rest/tail):170;
+    let i=0;
+    heads.forEach((h,n)=>{if(h.getBoundingClientRect().top<=line)i=n});
+    mark(i);
+  };
+  const onScroll=()=>{if(!raf)raf=requestAnimationFrame(read)};
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('resize',onScroll,{passive:true});
+  /* Every route change builds a new list; without this the old one's listener would live on
+     for the rest of the session, reading a document that is no longer on the page. */
+  toc.__detach=()=>{removeEventListener('scroll',onScroll);removeEventListener('resize',onScroll)};
+  read();
 }
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 /* THE ONE TAG THE DOC SOURCES ARE ALLOWED TO CARRY, and it is not a convenience.
@@ -682,22 +829,115 @@ function initDemo(){
 
    The label is swapped by rewriting data-t, not textContent, so a language change
    re-renders the correct word for the state it is actually in. */
+/* Set once, by the instrument, the first time a run completes. On the window rather than in
+   a closure because the run and the disclosure are initialised separately and neither owns
+   the other; a one-way latch is safe to share. */
+window.__reportReady=function(){
+  if(window.__reportIsReady)return;
+  window.__reportIsReady=true;
+  var b=document.getElementById('reportMoreToggle');
+  if(b){b.removeAttribute('aria-disabled');b.classList.add('is-ready');}
+  var p=document.querySelector('.report-panel');
+  if(p)p.classList.add('is-ready');
+};
+/* A NEW REPORT IS A NEW DECISION. The instrument writes a different bug on every cycle, so an
+   open panel would be showing one bug's summary above another bug's analysis while the text
+   was replaced under the reader. The panel closes, the control goes back to unavailable, and
+   it offers itself again when the new report is finished. */
+window.__reportRestart=function(){
+  window.__reportIsReady=false;
+  var b=document.getElementById('reportMoreToggle');
+  if(b){b.setAttribute('aria-disabled','true');b.classList.remove('is-ready');}
+  var p=document.querySelector('.report-panel');
+  if(p)p.classList.remove('is-ready');
+  if(window.__reportClose)window.__reportClose();
+};
 function initReportDisclosure(){
   const panel=document.querySelector('.report-panel');
   const btn=document.getElementById('reportMoreToggle');
   if(!panel||!btn)return;
   let open=false;
   const applies=()=>getComputedStyle(btn).display!=='none';
+  /* Armed means the instrument is going to run; unarmed (reduced motion, or no script on the
+     mission at all) means the report is already whole, so there is nothing to wait for. */
+  if(panel.closest('.mission')&&panel.closest('.mission').classList.contains('mc-armed')&&!window.__reportIsReady){
+    /* aria-disabled rather than disabled: the control stays in the tab order and stays
+       announced, and the handler below declines the press. A disabled button is invisible to
+       the keyboard, which is the wrong answer for a state that lasts seven seconds. */
+    btn.setAttribute('aria-disabled','true');
+  }else{
+    btn.classList.add('is-ready');
+    panel.classList.add('is-ready');
+    window.__reportIsReady=true;
+  }
+  /* The open panel scrolls inside the height it already has, so opening it moves nothing on
+     the page. That height is the one the layout chose for the collapsed panel -- measured,
+     never guessed, because it is whatever the headline column beside it works out to. Only
+     measured while closed, for the obvious reason. */
+  function measure(){
+    if(open)return;
+    /* The class, not just the flag. `open` is flipped by the click handler BEFORE render()
+       runs, so on the press that CLOSES the panel the flag says closed while the element is
+       still `is-open` -- and the height read there is the open one, which is what this panel
+       was being pinned to. The DOM cannot disagree with itself. */
+    if(panel.classList.contains('is-open'))return;
+    const h=panel.getBoundingClientRect().height;
+    /* FLOOR, not round: round can return half a pixel MORE than the panel has, and this
+       number becomes a max-height, so half a pixel too much is half a pixel of growth. */
+    if(h>320)panel.style.setProperty('--report-h',Math.floor(h)+'px');
+  }
   function render(){
     panel.classList.toggle('is-collapsed',applies()&&!open);
+    panel.classList.toggle('is-open',applies()&&open);
+    if(open)panel.scrollTop=0;
     btn.setAttribute('aria-expanded',open?'true':'false');
     btn.dataset.t=open?'report.hideFull':'report.showFull';
     const v=get(i18n[currentLang]||i18n.en,btn.dataset.t);
     if(v!==undefined)btn.textContent=v;
+    /* LAST, not first. Measuring before the classes are applied reads whichever state the
+       panel is leaving rather than the one it is entering. */
+    measure();
   }
-  btn.addEventListener('click',()=>{open=!open;render();});
+  btn.addEventListener('click',()=>{
+    if(btn.getAttribute('aria-disabled')==='true')return;   // still being written
+    /* PIN IT HERE, one statement before it is used. The owner's rule is that the box stays the
+       size it is, and "the size it is" is a fact about this instant: the instrument rewrites
+       the report on a loop, a web font swap moved it 13.8px half a second after load, and
+       arming the mission changes it again. Every version of this that measured EARLIER --
+       at init, on a double rAF, after fonts.ready, from a ResizeObserver -- was measuring a
+       height the panel no longer had by the time the reader pressed the button, and the panel
+       grew into the difference. Reading it on the press cannot be out of date.
+       Only when OPENING: on the way back the panel returns to its natural height and there is
+       nothing to freeze. */
+    if(!open)measure();
+    open=!open;render();
+  });
+  /* Closed from outside, by the instrument, when it starts writing the next report. */
+  window.__reportClose=function(){ if(open){open=false;render();} };
   window.addEventListener('resize',render,{passive:true});
+  /* The height this panel is pinned to is only correct until something moves. The instrument
+     rewrites the report on a twenty-five second loop, a late web font shifts every block in it,
+     and a stylesheet change can alter how many lines a heading reserves -- measured at 1024px
+     the cap was 13.2px larger than the panel, and the box grew by exactly that on every press.
+     Watching the panel is the only version of this that cannot go stale.
+     No feedback loop: --report-h does nothing while the panel is closed, so writing it here
+     cannot resize the element being observed. */
+  /* THE REFERENCE IS LOAD-BEARING. A ResizeObserver with no strong reference is collectable,
+     and a collected observer simply stops calling back -- silently, and only sometimes, which
+     is the worst way for this to fail. The first version of this line was
+     `new ResizeObserver(...).observe(panel)` and it never fired: measured at 1024px the panel
+     settled from 689.3px to 675.5px half a second after load, when the web font replaced the
+     fallback, and the cap stayed on 689. Every press then grew the box by the 13.5px
+     difference. */
+  if(window.ResizeObserver){
+    panel.__reportRO=new ResizeObserver(function(){ if(!open) measure(); });
+    panel.__reportRO.observe(panel);
+  }
   render();
+  /* One more read after the fonts have settled: a fallback face is a different height, and
+     the number this panel is pinned to has to be the one the finished page is using. */
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(measure);
+  requestAnimationFrame(()=>requestAnimationFrame(measure));
 }
 function initDocNav(){
   const dn=document.getElementById('docNav');if(!dn)return;
@@ -853,6 +1093,8 @@ function initMission(){
     // pick the next scenario (first cycle keeps the default; then avoid immediate repeat)
     if(sci<0) sci=0; else { var n; do{ n=Math.floor(Math.random()*SCOUNT); }while(n===sci); sci=n; }
     applyReport(sci);
+    /* The report on screen is about to be a different bug. */
+    if(sci>=0 && window.__reportRestart) window.__reportRestart();
     mission.classList.remove('mc-resetting');
 
     // build a slightly-varied schedule: a small global speed change, plus real
@@ -924,7 +1166,8 @@ function initMission(){
     for(var k=0;k<7;k++){ if(tc>=ST[k].s){ curShort=m.phases[k];
         if(tc<ST[k].d){ curStream='› '+m.acts[k]; thinking=true; }
         else { curStream='✓ '+resultFor(k,m,s,cy.glossN); thinking=false; } } }
-    if(tc>=COMP){ curShort=m.complete; curStream='✓ '+m.readyStream; thinking=false; }
+    if(tc>=COMP){ curShort=m.complete; curStream='✓ '+m.readyStream; thinking=false;
+      if(window.__reportReady)window.__reportReady(); }
     var pctText=(tc>=COMP)?(m.complete+' · 100%'):(curShort+' · '+pr+'%');
     if(pctText!==lastPct){ setText(pct,pctText); lastPct=pctText; }
     if(curStream!==lastStream){ setText(streamLine,curStream); lastStream=curStream; }
@@ -1091,7 +1334,18 @@ function initConsent(){
   if(!C.hasDecision()) open(false);
 }
 
-window.addEventListener('hashchange',renderDocRoute);document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();initMobileNav();applyLang(currentLang);renderDocRoute();initAuth();initMission();initReportDisclosure();initConsent();requestAnimationFrame(initInitialScroll)});
+/* See the note above initInitialScroll: a bare #anchor is resolved by the browser before
+   this fires, against a homepage that is still hidden. Re-run it once the view is back. */
+var _hashBefore=location.hash;
+window.addEventListener('hashchange',function(){
+  var from=_hashBefore,to=location.hash;_hashBefore=to;
+  renderDocRoute();
+  var isSpa=function(h){return /^#\/.+/.test(h)};
+  if(isSpa(from)&&to&&!isSpa(to)){
+    var el=document.getElementById(to.slice(1));
+    if(el)el.scrollIntoView({behavior:'instant',block:'start'});
+  }
+});document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();initMobileNav();applyLang(currentLang);renderDocRoute();initAuth();initMission();initReportDisclosure();initConsent();requestAnimationFrame(initInitialScroll)});
 
 /* v16 docs sync: official BugIt QA Agent documentation updates */
 const bugitV16Faq = {
@@ -1390,3 +1644,321 @@ for(const _c in i18n){ i18n[_c].consent = Object.assign({}, consentI18n.en, cons
    would overwrite it. Fall back to English per KEY rather than per LOCALE so a
    locale that only translates some labels keeps the ones it has. */
 for(const _c in i18n){ i18n[_c].account = Object.assign({}, accountLabels.en, accountLabels[_c]||{}); }
+
+/* ===== The channel section ==============================================
+   Localized copy first, then the player.
+
+   These strings are merged in at the END of this file on purpose. Every locale
+   is built with merge(i18n.en, obj), so anything added before the generated
+   add() overrides would be rebuilt from the English base and lost. The consent
+   banner and the account menu are applied here for the same reason and say so.
+
+   Per KEY fallback rather than per LOCALE: a locale that has only some of these
+   keeps the ones it has instead of dropping the whole section to English. */
+var watchI18n = {
+  en:{eyebrow:'FROM THE CHANNEL',title:'Every part of it, shown rather than claimed.',subtitle:'Short films on each thing BugIt does, from the duplicate check to the confirmation you type. Press play to watch here, or open the channel.',channel:'Open the channel'},
+  ja:{eyebrow:'チャンネルから',title:'主張ではなく、動作をご覧ください。',subtitle:'重複チェックから、入力して行う承認まで、BugIt の各機能を短い動画で紹介します。ここで再生するか、チャンネルを開いてください。',channel:'チャンネルを開く'},
+  es:{eyebrow:'DEL CANAL',title:'Cada parte, mostrada en lugar de prometida.',subtitle:'Vídeos breves sobre cada cosa que hace BugIt, desde la búsqueda de duplicados hasta la confirmación que escribes. Pulsa reproducir aquí o abre el canal.',channel:'Abrir el canal'},
+  fr:{eyebrow:'DE LA CHAÎNE',title:'Chaque partie, montrée plutôt que promise.',subtitle:'Des vidéos courtes sur chaque fonction de BugIt, de la recherche de doublons à la confirmation que vous tapez. Lancez la lecture ici ou ouvrez la chaîne.',channel:'Ouvrir la chaîne'},
+  de:{eyebrow:'AUS DEM KANAL',title:'Jeder Teil davon, gezeigt statt behauptet.',subtitle:'Kurze Filme zu allem, was BugIt tut, von der Dublettenprüfung bis zu der Bestätigung, die Sie eintippen. Hier abspielen oder den Kanal öffnen.',channel:'Kanal öffnen'},
+  'pt-br':{eyebrow:'DO CANAL',title:'Cada parte, mostrada em vez de prometida.',subtitle:'Vídeos curtos sobre cada coisa que o BugIt faz, da checagem de duplicados à confirmação que você digita. Toque para assistir aqui ou abra o canal.',channel:'Abrir o canal'},
+  it:{eyebrow:'DAL CANALE',title:'Ogni parte, mostrata invece che promessa.',subtitle:'Video brevi su tutto ciò che fa BugIt, dal controllo dei duplicati alla conferma che digiti. Premi play per guardarli qui oppure apri il canale.',channel:'Apri il canale'},
+  ko:{eyebrow:'채널에서',title:'주장 대신, 실제 동작을 보여 드립니다.',subtitle:'중복 검사부터 직접 입력하는 확인까지, BugIt의 각 기능을 짧은 영상으로 보여 줍니다. 여기서 재생하거나 채널을 열어 보세요.',channel:'채널 열기'},
+  zh:{eyebrow:'来自频道',title:'每一项功能，都是演示而非声称。',subtitle:'从重复检查到你亲手输入的确认，用短片展示 BugIt 的每一项功能。在此播放，或打开频道。',channel:'打开频道'},
+  ru:{eyebrow:'С КАНАЛА',title:'Каждая часть показана, а не обещана.',subtitle:'Короткие ролики о каждой функции BugIt: от поиска дубликатов до подтверждения, которое вы вводите. Нажмите воспроизведение здесь или откройте канал.',channel:'Открыть канал'},
+  ar:{eyebrow:'من القناة',title:'كل جزء منه معروض، لا مجرد وعد.',subtitle:'مقاطع قصيرة عن كل ما يفعله BugIt، من فحص التكرارات إلى التأكيد الذي تكتبه. شغّل المقطع هنا أو افتح القناة.',channel:'افتح القناة'}
+};
+var watchA11y = {
+  en:{playVideo:'Play this video',watchList:'Videos from the BugIt channel',home:'BugIt home'},
+  ja:{playVideo:'この動画を再生',watchList:'BugIt チャンネルの動画',home:'BugIt ホーム'},
+  es:{playVideo:'Reproducir este vídeo',watchList:'Vídeos del canal de BugIt',home:'Inicio de BugIt'},
+  fr:{playVideo:'Lire cette vidéo',watchList:'Vidéos de la chaîne BugIt',home:'Accueil BugIt'},
+  de:{playVideo:'Dieses Video abspielen',watchList:'Videos vom BugIt Kanal',home:'BugIt Startseite'},
+  'pt-br':{playVideo:'Reproduzir este vídeo',watchList:'Vídeos do canal BugIt',home:'Início do BugIt'},
+  it:{playVideo:'Riproduci questo video',watchList:'Video dal canale BugIt',home:'Home di BugIt'},
+  ko:{playVideo:'이 영상 재생',watchList:'BugIt 채널의 영상',home:'BugIt 홈'},
+  zh:{playVideo:'播放此视频',watchList:'BugIt 频道的视频',home:'BugIt 首页'},
+  ru:{playVideo:'Воспроизвести это видео',watchList:'Видео с канала BugIt',home:'Главная BugIt'},
+  ar:{playVideo:'تشغيل هذا المقطع',watchList:'مقاطع من قناة BugIt',home:'الصفحة الرئيسية لـ BugIt'}
+};
+for(var _wc in i18n){
+  i18n[_wc].watch = Object.assign({}, watchI18n.en, watchI18n[_wc] || {});
+  i18n[_wc].a11y  = Object.assign({}, i18n[_wc].a11y || {}, watchA11y.en, watchA11y[_wc] || {});
+}
+
+/* The hero's third action. Merged per KEY into the existing cta namespace at the END of this
+   file, for the same reason the channel copy is: every locale is built with merge(i18n.en,
+   obj), so a key added before the generated add() overrides is rebuilt from the English base
+   and lost. A locale that does not have this one keeps English for this one string only. */
+var watchCta = {
+  en:{films:'Watch the series'},
+  ja:{films:'\u30b7\u30ea\u30fc\u30ba\u3092\u898b\u308b'},
+  es:{films:'Ver la serie'},
+  fr:{films:'Voir la s\u00e9rie'},
+  de:{films:'Die Reihe ansehen'},
+  'pt-br':{films:'Ver a s\u00e9rie'},
+  it:{films:'Guarda la serie'},
+  ko:{films:'\uc2dc\ub9ac\uc988 \ubcf4\uae30'},
+  zh:{films:'\u89c2\u770b\u7cfb\u5217\u89c6\u9891'},
+  ru:{films:'\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u0441\u0435\u0440\u0438\u044e'},
+  ar:{films:'\u0634\u0627\u0647\u062f \u0627\u0644\u0633\u0644\u0633\u0644\u0629'}
+};
+for(var _cc in i18n){
+  i18n[_cc].cta = Object.assign({}, i18n[_cc].cta || {}, watchCta.en, watchCta[_cc] || {});
+}
+
+/* The film wall's own copy. Twelve tiles, a name and a line each, and until 2026-08-21
+   they were written into index.html in English and rendered in English on all ten
+   translated pages. Merged HERE, at the end of the file, for the same reason watchCta
+   is: the generated add() overrides above rebuild every locale from the English base,
+   so a key added before them is silently replaced by English. BugIt and FILE IT stay
+   literal in every language -- the first is the product's name and the second is the
+   word the agent matches on, not a word to translate. */
+var watchTiles = {
+  en:{trailer:{t:'The introduction',sub:'BugIt: a QA agent that writes the bug report for you'},gate:{t:'The FILE IT gate',sub:'Nothing is filed until you type FILE IT'},duplicates:{t:'Duplicate rating',sub:'Is it a duplicate? BugIt gives you a number'},trackers:{t:'Eleven trackers',sub:'Eleven trackers, one workflow: file where your team already works'},pricing:{t:'One price',sub:'A full QA workflow, one price, and it does not renew itself'},quality:{t:'Report quality',sub:'BugIt tells you when your bug report is thin'},housestyle:{t:'Your house style',sub:'Show it one good ticket and it learns your house style'},privacy:{t:'Privacy redaction',sub:'Personal data is stripped before you read the draft'},attachments:{t:'Attachments',sub:'Screenshots, recordings and logs end up on the ticket'},languages:{t:'Your language',sub:'Report in your language, file in the team\'s'},spec:{t:'Reads the spec',sub:'It checks the spec before calling something a bug'},logs:{t:'Crash logs',sub:'Paste the crash log, keep the line that matters'}},
+  ja:{trailer:{t:'\u7d39\u4ecb',sub:'BugIt: \u30d0\u30b0\u30ec\u30dd\u30fc\u30c8\u3092\u66f8\u304f QA \u30a8\u30fc\u30b8\u30a7\u30f3\u30c8'},gate:{t:'FILE IT \u30b2\u30fc\u30c8',sub:'FILE IT \u3068\u5165\u529b\u3059\u308b\u307e\u3067\u4f55\u3082\u8d77\u7968\u3055\u308c\u307e\u305b\u3093'},duplicates:{t:'\u91cd\u8907\u30b9\u30b3\u30a2',sub:'\u3053\u308c\u306f\u91cd\u8907\u304b\u3002BugIt \u304c\u6570\u5024\u3067\u793a\u3057\u307e\u3059'},trackers:{t:'11 \u306e\u30c8\u30e9\u30c3\u30ab\u30fc',sub:'11 \u306e\u30c8\u30e9\u30c3\u30ab\u30fc\u30011 \u3064\u306e\u624b\u9806\u3002\u30c1\u30fc\u30e0\u304c\u4eca\u4f7f\u3046\u5834\u6240\u306b\u8d77\u7968\u3057\u307e\u3059'},pricing:{t:'\u4e00\u3064\u306e\u4fa1\u683c',sub:'QA \u306e\u5168\u5de5\u7a0b\u304c\u4e00\u3064\u306e\u4fa1\u683c\u3002\u81ea\u52d5\u66f4\u65b0\u306f\u3042\u308a\u307e\u305b\u3093'},quality:{t:'\u30ec\u30dd\u30fc\u30c8\u54c1\u8cea',sub:'\u5185\u5bb9\u304c\u8584\u3044\u3068\u304d BugIt \u304c\u6307\u6458\u3057\u307e\u3059'},housestyle:{t:'\u30c1\u30fc\u30e0\u306e\u66f8\u5f0f',sub:'\u826f\u3044\u30c1\u30b1\u30c3\u30c8\u3092\u4e00\u4ef6\u898b\u305b\u308c\u3070\u66f8\u5f0f\u3092\u5b66\u3073\u307e\u3059'},privacy:{t:'\u500b\u4eba\u60c5\u5831\u306e\u9664\u53bb',sub:'\u4e0b\u66f8\u304d\u3092\u8aad\u3080\u524d\u306b\u500b\u4eba\u30c7\u30fc\u30bf\u306f\u53d6\u308a\u9664\u304b\u308c\u307e\u3059'},attachments:{t:'\u6dfb\u4ed8\u30d5\u30a1\u30a4\u30eb',sub:'\u30b9\u30af\u30ea\u30fc\u30f3\u30b7\u30e7\u30c3\u30c8\u3001\u9332\u753b\u3001\u30ed\u30b0\u304c\u30c1\u30b1\u30c3\u30c8\u306b\u4ed8\u304d\u307e\u3059'},languages:{t:'\u3042\u306a\u305f\u306e\u8a00\u8a9e',sub:'\u81ea\u5206\u306e\u8a00\u8a9e\u3067\u66f8\u304d\u3001\u30c1\u30fc\u30e0\u306e\u8a00\u8a9e\u3067\u8d77\u7968\u3057\u307e\u3059'},spec:{t:'\u4ed5\u69d8\u3092\u8aad\u3080',sub:'\u4f55\u304b\u3092\u30d0\u30b0\u3068\u547c\u3076\u524d\u306b\u4ed5\u69d8\u3092\u78ba\u8a8d\u3057\u307e\u3059'},logs:{t:'\u30af\u30e9\u30c3\u30b7\u30e5\u30ed\u30b0',sub:'\u30af\u30e9\u30c3\u30b7\u30e5\u30ed\u30b0\u3092\u8cbc\u308c\u3070\u3001\u91cd\u8981\u306a\u884c\u3060\u3051\u304c\u6b8b\u308a\u307e\u3059'}},
+  fr:{trailer:{t:'L\'introduction',sub:'BugIt : un agent QA qui r\u00e9dige le rapport de bug \u00e0 votre place'},gate:{t:'La barri\u00e8re FILE IT',sub:'Rien n\'est cr\u00e9\u00e9 tant que vous n\'avez pas tap\u00e9 FILE IT'},duplicates:{t:'Score de doublon',sub:'Est-ce un doublon ? BugIt vous donne un chiffre'},trackers:{t:'Onze outils de suivi',sub:'Onze outils, un seul flux : cr\u00e9ez l\u00e0 o\u00f9 votre \u00e9quipe travaille d\u00e9j\u00e0'},pricing:{t:'Un seul prix',sub:'Un flux QA complet, un seul prix, et sans reconduction automatique'},quality:{t:'Qualit\u00e9 du rapport',sub:'BugIt vous dit quand votre rapport de bug est trop l\u00e9ger'},housestyle:{t:'Votre style maison',sub:'Montrez-lui un bon ticket et il apprend votre style maison'},privacy:{t:'Expurgation des donn\u00e9es',sub:'Les donn\u00e9es personnelles sont retir\u00e9es avant que vous lisiez le brouillon'},attachments:{t:'Pi\u00e8ces jointes',sub:'Captures, enregistrements et journaux finissent sur le ticket'},languages:{t:'Votre langue',sub:'R\u00e9digez dans votre langue, cr\u00e9ez dans celle de l\'\u00e9quipe'},spec:{t:'Il lit la sp\u00e9cification',sub:'Il v\u00e9rifie la sp\u00e9cification avant d\'appeler quelque chose un bug'},logs:{t:'Journaux de plantage',sub:'Collez le journal de plantage, gardez la ligne qui compte'}},
+  de:{trailer:{t:'Die Einf\u00fchrung',sub:'BugIt: ein QA-Agent, der den Fehlerbericht f\u00fcr Sie schreibt'},gate:{t:'Das FILE IT-Tor',sub:'Nichts wird angelegt, bis Sie FILE IT eintippen'},duplicates:{t:'Dubletten-Bewertung',sub:'Ist es eine Dublette? BugIt nennt Ihnen eine Zahl'},trackers:{t:'Elf Tracker',sub:'Elf Tracker, ein Ablauf: anlegen, wo Ihr Team schon arbeitet'},pricing:{t:'Ein Preis',sub:'Ein vollst\u00e4ndiger QA-Ablauf, ein Preis, und ohne automatische Verl\u00e4ngerung'},quality:{t:'Berichtsqualit\u00e4t',sub:'BugIt sagt Ihnen, wenn Ihr Fehlerbericht zu d\u00fcnn ist'},housestyle:{t:'Ihr Hausstil',sub:'Zeigen Sie ihm ein gutes Ticket und er lernt Ihren Hausstil'},privacy:{t:'Schw\u00e4rzung',sub:'Personenbezogene Daten werden entfernt, bevor Sie den Entwurf lesen'},attachments:{t:'Anh\u00e4nge',sub:'Screenshots, Aufnahmen und Logs landen am Ticket'},languages:{t:'Ihre Sprache',sub:'Schreiben Sie in Ihrer Sprache, anlegen in der des Teams'},spec:{t:'Liest die Spezifikation',sub:'Es pr\u00fcft die Spezifikation, bevor es etwas einen Fehler nennt'},logs:{t:'Absturzprotokolle',sub:'F\u00fcgen Sie das Absturzprotokoll ein, behalten Sie die Zeile, auf die es ankommt'}},
+  es:{trailer:{t:'La introducci\u00f3n',sub:'BugIt: un agente de QA que escribe el informe de error por ti'},gate:{t:'La barrera FILE IT',sub:'No se crea nada hasta que escribes FILE IT'},duplicates:{t:'Puntuaci\u00f3n de duplicados',sub:'\u00bfEs un duplicado? BugIt te da un n\u00famero'},trackers:{t:'Once gestores',sub:'Once gestores, un solo flujo: crea donde tu equipo ya trabaja'},pricing:{t:'Un solo precio',sub:'Un flujo de QA completo, un precio, y no se renueva solo'},quality:{t:'Calidad del informe',sub:'BugIt te avisa cuando tu informe de error es flojo'},housestyle:{t:'Tu estilo de casa',sub:'Mu\u00e9strale un buen ticket y aprende tu estilo de casa'},privacy:{t:'Depuraci\u00f3n de datos',sub:'Los datos personales se eliminan antes de que leas el borrador'},attachments:{t:'Adjuntos',sub:'Capturas, grabaciones y registros acaban en el ticket'},languages:{t:'Tu idioma',sub:'Redacta en tu idioma y crea en el del equipo'},spec:{t:'Lee la especificaci\u00f3n',sub:'Comprueba la especificaci\u00f3n antes de llamar bug a algo'},logs:{t:'Registros de fallos',sub:'Pega el registro del fallo y qu\u00e9date con la l\u00ednea que importa'}},
+  'pt-br':{trailer:{t:'A introdu\u00e7\u00e3o',sub:'BugIt: um agente de QA que escreve o relat\u00f3rio de bug para voc\u00ea'},gate:{t:'O port\u00e3o FILE IT',sub:'Nada \u00e9 registrado at\u00e9 voc\u00ea digitar FILE IT'},duplicates:{t:'Nota de duplicidade',sub:'\u00c9 um duplicado? O BugIt te d\u00e1 um n\u00famero'},trackers:{t:'Onze rastreadores',sub:'Onze rastreadores, um s\u00f3 fluxo: registre onde seu time j\u00e1 trabalha'},pricing:{t:'Um pre\u00e7o',sub:'Um fluxo de QA completo, um pre\u00e7o, e sem renova\u00e7\u00e3o autom\u00e1tica'},quality:{t:'Qualidade do relat\u00f3rio',sub:'O BugIt avisa quando seu relat\u00f3rio de bug est\u00e1 fraco'},housestyle:{t:'O estilo da sua casa',sub:'Mostre um bom chamado e ele aprende o estilo da sua casa'},privacy:{t:'Remo\u00e7\u00e3o de dados pessoais',sub:'Os dados pessoais saem antes de voc\u00ea ler o rascunho'},attachments:{t:'Anexos',sub:'Capturas, grava\u00e7\u00f5es e logs v\u00e3o parar no chamado'},languages:{t:'Seu idioma',sub:'Escreva no seu idioma e registre no do time'},spec:{t:'L\u00ea a especifica\u00e7\u00e3o',sub:'Ele confere a especifica\u00e7\u00e3o antes de chamar algo de bug'},logs:{t:'Logs de falha',sub:'Cole o log da falha e fique com a linha que importa'}},
+  it:{trailer:{t:'L\'introduzione',sub:'BugIt: un agente QA che scrive il report del bug al posto tuo'},gate:{t:'Il varco FILE IT',sub:'Non viene creato nulla finch\u00e9 non digiti FILE IT'},duplicates:{t:'Punteggio duplicati',sub:'\u00c8 un duplicato? BugIt ti d\u00e0 un numero'},trackers:{t:'Undici tracker',sub:'Undici tracker, un solo flusso: apri dove il tuo team gi\u00e0 lavora'},pricing:{t:'Un solo prezzo',sub:'Un flusso QA completo, un prezzo, e senza rinnovo automatico'},quality:{t:'Qualit\u00e0 del report',sub:'BugIt ti avvisa quando il report del bug \u00e8 povero'},housestyle:{t:'Il tuo stile interno',sub:'Mostragli un buon ticket e impara il tuo stile interno'},privacy:{t:'Rimozione dei dati personali',sub:'I dati personali vengono rimossi prima che tu legga la bozza'},attachments:{t:'Allegati',sub:'Screenshot, registrazioni e log finiscono sul ticket'},languages:{t:'La tua lingua',sub:'Scrivi nella tua lingua, apri in quella del team'},spec:{t:'Legge le specifiche',sub:'Controlla le specifiche prima di chiamare bug qualcosa'},logs:{t:'Log dei crash',sub:'Incolla il log del crash, tieni la riga che conta'}},
+  ko:{trailer:{t:'\uc18c\uac1c',sub:'BugIt: \ubc84\uadf8 \ub9ac\ud3ec\ud2b8\ub97c \ub300\uc2e0 \uc791\uc131\ud558\ub294 QA \uc5d0\uc774\uc804\ud2b8'},gate:{t:'FILE IT \uad00\ubb38',sub:'FILE IT \uc744 \uc785\ub825\ud558\uae30 \uc804\uc5d0\ub294 \uc544\ubb34\uac83\ub3c4 \ub4f1\ub85d\ub418\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4'},duplicates:{t:'\uc911\ubcf5 \uc810\uc218',sub:'\uc911\ubcf5\uc77c\uae4c\uc694? BugIt\uc774 \uc22b\uc790\ub85c \uc54c\ub824 \uc90d\ub2c8\ub2e4'},trackers:{t:'11\uac1c \ud2b8\ub798\ucee4',sub:'\ud2b8\ub798\ucee4 11\uac1c, \ud558\ub098\uc758 \ud750\ub984. \ud300\uc774 \uc774\ubbf8 \uc4f0\ub294 \uacf3\uc5d0 \ub4f1\ub85d\ud569\ub2c8\ub2e4'},pricing:{t:'\ud558\ub098\uc758 \uac00\uaca9',sub:'QA \uc804 \uacfc\uc815\uc774 \ud558\ub098\uc758 \uac00\uaca9. \uc790\ub3d9 \uac31\uc2e0\uc740 \uc5c6\uc2b5\ub2c8\ub2e4'},quality:{t:'\ub9ac\ud3ec\ud2b8 \ud488\uc9c8',sub:'\ub0b4\uc6a9\uc774 \ubd80\uc2e4\ud558\uba74 BugIt\uc774 \uc54c\ub824 \uc90d\ub2c8\ub2e4'},housestyle:{t:'\ud300\uc758 \uc791\uc131 \ubc29\uc2dd',sub:'\uc88b\uc740 \ud2f0\ucf13 \ud558\ub098\ub97c \ubcf4\uc5ec \uc8fc\uba74 \ud300\uc758 \ubc29\uc2dd\uc744 \ubc30\uc6c1\ub2c8\ub2e4'},privacy:{t:'\uac1c\uc778\uc815\ubcf4 \uc81c\uac70',sub:'\ucd08\uc548\uc744 \uc77d\uae30 \uc804\uc5d0 \uac1c\uc778 \ub370\uc774\ud130\uac00 \uc81c\uac70\ub429\ub2c8\ub2e4'},attachments:{t:'\ucca8\ubd80 \ud30c\uc77c',sub:'\uc2a4\ud06c\ub9b0\uc0f7, \ub179\ud654, \ub85c\uadf8\uac00 \ud2f0\ucf13\uc5d0 \ud568\uaed8 \uc62c\ub77c\uac11\ub2c8\ub2e4'},languages:{t:'\ub0b4 \uc5b8\uc5b4',sub:'\ub0b4 \uc5b8\uc5b4\ub85c \uc791\uc131\ud558\uace0 \ud300\uc758 \uc5b8\uc5b4\ub85c \ub4f1\ub85d\ud569\ub2c8\ub2e4'},spec:{t:'\uba85\uc138\ub97c \uc77d\uc2b5\ub2c8\ub2e4',sub:'\ubb34\uc5b8\uac00\ub97c \ubc84\uadf8\ub77c \ubd80\ub974\uae30 \uc804\uc5d0 \uba85\uc138\ub97c \ud655\uc778\ud569\ub2c8\ub2e4'},logs:{t:'\ud06c\ub798\uc2dc \ub85c\uadf8',sub:'\ud06c\ub798\uc2dc \ub85c\uadf8\ub97c \ubd99\uc5ec \ub123\uc73c\uba74 \uc911\uc694\ud55c \uc904\ub9cc \ub0a8\uc2b5\ub2c8\ub2e4'}},
+  zh:{trailer:{t:'\u4ea7\u54c1\u4ecb\u7ecd',sub:'BugIt\uff1a\u66ff\u4f60\u5199\u597d\u7f3a\u9677\u62a5\u544a\u7684 QA \u667a\u80fd\u4f53'},gate:{t:'FILE IT \u5173\u5361',sub:'\u5728\u4f60\u8f93\u5165 FILE IT \u4e4b\u524d\uff0c\u4e0d\u4f1a\u63d0\u4ea4\u4efb\u4f55\u5185\u5bb9'},duplicates:{t:'\u91cd\u590d\u5ea6\u8bc4\u5206',sub:'\u662f\u91cd\u590d\u95ee\u9898\u5417\uff1fBugIt \u7ed9\u4f60\u4e00\u4e2a\u5206\u6570'},trackers:{t:'\u5341\u4e00\u79cd\u7f3a\u9677\u7cfb\u7edf',sub:'\u5341\u4e00\u79cd\u7cfb\u7edf\uff0c\u4e00\u5957\u6d41\u7a0b\uff1a\u63d0\u4ea4\u5230\u56e2\u961f\u5df2\u7ecf\u5728\u7528\u7684\u5730\u65b9'},pricing:{t:'\u4e00\u6b21\u5b9a\u4ef7',sub:'\u5b8c\u6574\u7684 QA \u6d41\u7a0b\uff0c\u4e00\u6b21\u5b9a\u4ef7\uff0c\u4e0d\u4f1a\u81ea\u52a8\u7eed\u8d39'},quality:{t:'\u62a5\u544a\u8d28\u91cf',sub:'\u62a5\u544a\u5185\u5bb9\u592a\u5355\u8584\u65f6\uff0cBugIt \u4f1a\u544a\u8bc9\u4f60'},housestyle:{t:'\u4f60\u4eec\u7684\u5199\u6cd5',sub:'\u7ed9\u5b83\u770b\u4e00\u4e2a\u597d\u5de5\u5355\uff0c\u5b83\u5c31\u5b66\u4f1a\u4f60\u4eec\u7684\u5199\u6cd5'},privacy:{t:'\u9690\u79c1\u8131\u654f',sub:'\u4f60\u8bfb\u5230\u8349\u7a3f\u4e4b\u524d\uff0c\u4e2a\u4eba\u6570\u636e\u5df2\u88ab\u79fb\u9664'},attachments:{t:'\u9644\u4ef6',sub:'\u622a\u56fe\u3001\u5f55\u5c4f\u548c\u65e5\u5fd7\u90fd\u4f1a\u9644\u5230\u5de5\u5355\u4e0a'},languages:{t:'\u4f60\u7684\u8bed\u8a00',sub:'\u7528\u4f60\u7684\u8bed\u8a00\u64b0\u5199\uff0c\u7528\u56e2\u961f\u7684\u8bed\u8a00\u63d0\u4ea4'},spec:{t:'\u4f1a\u770b\u9700\u6c42\u6587\u6863',sub:'\u5728\u628a\u67d0\u4ef6\u4e8b\u79f0\u4e3a\u7f3a\u9677\u4e4b\u524d\uff0c\u5b83\u5148\u6838\u5bf9\u9700\u6c42'},logs:{t:'\u5d29\u6e83\u65e5\u5fd7',sub:'\u7c98\u8d34\u5d29\u6e83\u65e5\u5fd7\uff0c\u7559\u4e0b\u771f\u6b63\u91cd\u8981\u7684\u90a3\u4e00\u884c'}},
+  ru:{trailer:{t:'\u0417\u043d\u0430\u043a\u043e\u043c\u0441\u0442\u0432\u043e',sub:'BugIt: QA-\u0430\u0433\u0435\u043d\u0442, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u043f\u0438\u0448\u0435\u0442 \u043e\u0442\u0447\u0451\u0442 \u043e\u0431 \u043e\u0448\u0438\u0431\u043a\u0435 \u0437\u0430 \u0432\u0430\u0441'},gate:{t:'\u0411\u0430\u0440\u044c\u0435\u0440 FILE IT',sub:'\u041d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u0441\u043e\u0437\u0434\u0430\u0451\u0442\u0441\u044f, \u043f\u043e\u043a\u0430 \u0432\u044b \u043d\u0435 \u043d\u0430\u0431\u0435\u0440\u0451\u0442\u0435 FILE IT'},duplicates:{t:'\u041e\u0446\u0435\u043d\u043a\u0430 \u0434\u0443\u0431\u043b\u0438\u043a\u0430\u0442\u0430',sub:'\u042d\u0442\u043e \u0434\u0443\u0431\u043b\u0438\u043a\u0430\u0442? BugIt \u0434\u0430\u0451\u0442 \u0447\u0438\u0441\u043b\u043e'},trackers:{t:'\u041e\u0434\u0438\u043d\u043d\u0430\u0434\u0446\u0430\u0442\u044c \u0442\u0440\u0435\u043a\u0435\u0440\u043e\u0432',sub:'\u041e\u0434\u0438\u043d\u043d\u0430\u0434\u0446\u0430\u0442\u044c \u0442\u0440\u0435\u043a\u0435\u0440\u043e\u0432, \u043e\u0434\u0438\u043d \u043f\u0440\u043e\u0446\u0435\u0441\u0441: \u0437\u0430\u0432\u043e\u0434\u0438\u0442\u0435 \u0442\u0430\u043c, \u0433\u0434\u0435 \u043a\u043e\u043c\u0430\u043d\u0434\u0430 \u0443\u0436\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442'},pricing:{t:'\u041e\u0434\u043d\u0430 \u0446\u0435\u043d\u0430',sub:'\u041f\u043e\u043b\u043d\u044b\u0439 \u043f\u0440\u043e\u0446\u0435\u0441\u0441 QA, \u043e\u0434\u043d\u0430 \u0446\u0435\u043d\u0430, \u0438 \u0431\u0435\u0437 \u0430\u0432\u0442\u043e\u043f\u0440\u043e\u0434\u043b\u0435\u043d\u0438\u044f'},quality:{t:'\u041a\u0430\u0447\u0435\u0441\u0442\u0432\u043e \u043e\u0442\u0447\u0451\u0442\u0430',sub:'BugIt \u043f\u043e\u0434\u0441\u043a\u0430\u0436\u0435\u0442, \u043a\u043e\u0433\u0434\u0430 \u043e\u0442\u0447\u0451\u0442 \u0441\u043b\u0438\u0448\u043a\u043e\u043c \u0441\u043a\u0443\u043f\u043e\u0439'},housestyle:{t:'\u0412\u0430\u0448 \u0441\u0442\u0438\u043b\u044c \u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u0438\u044f',sub:'\u041f\u043e\u043a\u0430\u0436\u0438\u0442\u0435 \u043e\u0434\u0438\u043d \u0445\u043e\u0440\u043e\u0448\u0438\u0439 \u0442\u0438\u043a\u0435\u0442, \u0438 \u043e\u043d \u0443\u0441\u0432\u043e\u0438\u0442 \u0432\u0430\u0448 \u0441\u0442\u0438\u043b\u044c'},privacy:{t:'\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u043b\u044c\u043d\u044b\u0445 \u0434\u0430\u043d\u043d\u044b\u0445',sub:'\u041f\u0435\u0440\u0441\u043e\u043d\u0430\u043b\u044c\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 \u0443\u0431\u0438\u0440\u0430\u044e\u0442\u0441\u044f \u0434\u043e \u0442\u043e\u0433\u043e, \u043a\u0430\u043a \u0432\u044b \u043f\u0440\u043e\u0447\u0442\u0451\u0442\u0435 \u0447\u0435\u0440\u043d\u043e\u0432\u0438\u043a'},attachments:{t:'\u0412\u043b\u043e\u0436\u0435\u043d\u0438\u044f',sub:'\u0421\u043a\u0440\u0438\u043d\u0448\u043e\u0442\u044b, \u0437\u0430\u043f\u0438\u0441\u0438 \u0438 \u0436\u0443\u0440\u043d\u0430\u043b\u044b \u043f\u043e\u043f\u0430\u0434\u0430\u044e\u0442 \u0432 \u0442\u0438\u043a\u0435\u0442'},languages:{t:'\u0412\u0430\u0448 \u044f\u0437\u044b\u043a',sub:'\u041f\u0438\u0448\u0438\u0442\u0435 \u043d\u0430 \u0441\u0432\u043e\u0451\u043c \u044f\u0437\u044b\u043a\u0435, \u0437\u0430\u0432\u043e\u0434\u0438\u0442\u0435 \u043d\u0430 \u044f\u0437\u044b\u043a\u0435 \u043a\u043e\u043c\u0430\u043d\u0434\u044b'},spec:{t:'\u0427\u0438\u0442\u0430\u0435\u0442 \u0441\u043f\u0435\u0446\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044e',sub:'\u041e\u043d \u0441\u0432\u0435\u0440\u044f\u0435\u0442\u0441\u044f \u0441\u043e \u0441\u043f\u0435\u0446\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0435\u0439, \u043f\u0440\u0435\u0436\u0434\u0435 \u0447\u0435\u043c \u043d\u0430\u0437\u0432\u0430\u0442\u044c \u0447\u0442\u043e-\u0442\u043e \u0431\u0430\u0433\u043e\u043c'},logs:{t:'\u0416\u0443\u0440\u043d\u0430\u043b\u044b \u0441\u0431\u043e\u0435\u0432',sub:'\u0412\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u0436\u0443\u0440\u043d\u0430\u043b \u0441\u0431\u043e\u044f \u0438 \u043e\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u0441\u0442\u0440\u043e\u043a\u0443, \u043a\u043e\u0442\u043e\u0440\u0430\u044f \u0432\u0430\u0436\u043d\u0430'}},
+  ar:{trailer:{t:'\u0627\u0644\u0645\u0642\u062f\u0645\u0629',sub:'BugIt: \u0648\u0643\u064a\u0644 \u0636\u0645\u0627\u0646 \u062c\u0648\u062f\u0629 \u064a\u0643\u062a\u0628 \u062a\u0642\u0631\u064a\u0631 \u0627\u0644\u062e\u0637\u0623 \u0646\u064a\u0627\u0628\u0629 \u0639\u0646\u0643'},gate:{t:'\u0628\u0648\u0627\u0628\u0629 FILE IT',sub:'\u0644\u0627 \u064a\u064f\u0633\u062c\u064e\u0651\u0644 \u0623\u064a \u0634\u064a\u0621 \u062d\u062a\u0649 \u062a\u0643\u062a\u0628 FILE IT'},duplicates:{t:'\u062a\u0642\u064a\u064a\u0645 \u0627\u0644\u062a\u0643\u0631\u0627\u0631',sub:'\u0647\u0644 \u0647\u0648 \u062a\u0643\u0631\u0627\u0631\u061f \u064a\u0639\u0637\u064a\u0643 BugIt \u0631\u0642\u0645\u064b\u0627'},trackers:{t:'\u0623\u062d\u062f \u0639\u0634\u0631 \u0645\u062a\u062a\u0628\u0639\u064b\u0627',sub:'\u0623\u062d\u062f \u0639\u0634\u0631 \u0645\u062a\u062a\u0628\u0639\u064b\u0627 \u0648\u0633\u064a\u0631 \u0639\u0645\u0644 \u0648\u0627\u062d\u062f: \u0633\u062c\u0651\u0644 \u062d\u064a\u062b \u064a\u0639\u0645\u0644 \u0641\u0631\u064a\u0642\u0643 \u0628\u0627\u0644\u0641\u0639\u0644'},pricing:{t:'\u0633\u0639\u0631 \u0648\u0627\u062d\u062f',sub:'\u0633\u064a\u0631 \u0639\u0645\u0644 \u0636\u0645\u0627\u0646 \u062c\u0648\u062f\u0629 \u0643\u0627\u0645\u0644 \u0628\u0633\u0639\u0631 \u0648\u0627\u062d\u062f\u060c \u0648\u062f\u0648\u0646 \u062a\u062c\u062f\u064a\u062f \u062a\u0644\u0642\u0627\u0626\u064a'},quality:{t:'\u062c\u0648\u062f\u0629 \u0627\u0644\u062a\u0642\u0631\u064a\u0631',sub:'\u064a\u062e\u0628\u0631\u0643 BugIt \u0639\u0646\u062f\u0645\u0627 \u064a\u0643\u0648\u0646 \u062a\u0642\u0631\u064a\u0631 \u0627\u0644\u062e\u0637\u0623 \u0636\u0639\u064a\u0641\u064b\u0627'},housestyle:{t:'\u0623\u0633\u0644\u0648\u0628 \u0641\u0631\u064a\u0642\u0643',sub:'\u0627\u0639\u0631\u0636 \u0639\u0644\u064a\u0647 \u062a\u0630\u0643\u0631\u0629 \u062c\u064a\u062f\u0629 \u0648\u0627\u062d\u062f\u0629 \u0641\u064a\u062a\u0639\u0644\u0651\u0645 \u0623\u0633\u0644\u0648\u0628 \u0641\u0631\u064a\u0642\u0643'},privacy:{t:'\u0625\u062e\u0641\u0627\u0621 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0634\u062e\u0635\u064a\u0629',sub:'\u062a\u064f\u0632\u0627\u0644 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0634\u062e\u0635\u064a\u0629 \u0642\u0628\u0644 \u0623\u0646 \u062a\u0642\u0631\u0623 \u0627\u0644\u0645\u0633\u0648\u062f\u0629'},attachments:{t:'\u0627\u0644\u0645\u0631\u0641\u0642\u0627\u062a',sub:'\u062a\u0635\u0644 \u0644\u0642\u0637\u0627\u062a \u0627\u0644\u0634\u0627\u0634\u0629 \u0648\u0627\u0644\u062a\u0633\u062c\u064a\u0644\u0627\u062a \u0648\u0627\u0644\u0633\u062c\u0644\u0627\u062a \u0625\u0644\u0649 \u0627\u0644\u062a\u0630\u0643\u0631\u0629'},languages:{t:'\u0644\u063a\u062a\u0643',sub:'\u0627\u0643\u062a\u0628 \u0628\u0644\u063a\u062a\u0643 \u0648\u0633\u062c\u0651\u0644 \u0628\u0644\u063a\u0629 \u0627\u0644\u0641\u0631\u064a\u0642'},spec:{t:'\u064a\u0642\u0631\u0623 \u0627\u0644\u0645\u0648\u0627\u0635\u0641\u0627\u062a',sub:'\u064a\u0631\u0627\u062c\u0639 \u0627\u0644\u0645\u0648\u0627\u0635\u0641\u0627\u062a \u0642\u0628\u0644 \u0623\u0646 \u064a\u0635\u0641 \u0634\u064a\u0626\u064b\u0627 \u0628\u0623\u0646\u0647 \u062e\u0637\u0623'},logs:{t:'\u0633\u062c\u0644\u0627\u062a \u0627\u0644\u0623\u0639\u0637\u0627\u0644',sub:'\u0627\u0644\u0635\u0642 \u0633\u062c\u0644 \u0627\u0644\u0639\u0637\u0644 \u0648\u0627\u062d\u062a\u0641\u0638 \u0628\u0627\u0644\u0633\u0637\u0631 \u0627\u0644\u0645\u0647\u0645'}}
+};
+for(var _wt in i18n){
+  i18n[_wt].watchTiles = Object.assign({}, watchTiles.en, watchTiles[_wt] || {});
+}
+
+/* Two strings that rendered in English on a translated page until 2026-08-21, both found
+   by reading the page rather than the dictionary.
+
+   faqMoreLabel carried ten locales and not ar, so the Arabic homepage showed the English
+   link. A missing key falls back to English by design, which is why nothing failed.
+
+   demo.saas was a LITERAL inside makeLang -- `saas:'SaaS / Web App'` -- while every tab
+   beside it came from the locale's own array. So an English tab sat between three
+   translated ones. "SaaS" itself stays Latin everywhere: it is a term of art and it is
+   what the people buying this call it.
+
+   Merged HERE for the reason recorded above watchCta and accountLabels: the generated
+   add() overrides further up rebuild every locale from the English base, so anything
+   added before them is quietly replaced by English. Four separate additions to this file
+   have now been caught by that. */
+var lateLabels = {
+  en:{saas:'SaaS / Web App'},
+  ja:{saas:'SaaS / Web\u30a2\u30d7\u30ea'},
+  fr:{saas:'SaaS / Application web'},
+  de:{saas:'SaaS / Web-App'},
+  es:{saas:'SaaS / App web'},
+  'pt-br':{saas:'SaaS / App web'},
+  it:{saas:'SaaS / App web'},
+  ko:{saas:'SaaS / \uc6f9 \uc571'},
+  zh:{saas:'SaaS / \u7f51\u9875\u5e94\u7528'},
+  ru:{saas:'SaaS / \u0412\u0435\u0431-\u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u0435'},
+  ar:{saas:'SaaS / \u062a\u0637\u0628\u064a\u0642 \u0648\u064a\u0628',faqMore:'\u0639\u0631\u0636 \u062c\u0645\u064a\u0639 \u0627\u0644\u0623\u0633\u0626\u0644\u0629'}
+};
+for(var _ll2 in i18n){
+  var _lab = lateLabels[_ll2] || {};
+  if(i18n[_ll2].demo && _lab.saas) i18n[_ll2].demo.saas = _lab.saas;
+}
+/* faqMoreLabel is consumed by renderFaq(), not by the i18n object, so it is topped up in
+   place rather than merged. */
+if(typeof faqMoreLabel !== 'undefined'){
+  if(!faqMoreLabel['ar']) faqMoreLabel['ar'] = '\u0639\u0631\u0636 \u062c\u0645\u064a\u0639 \u0627\u0644\u0623\u0633\u0626\u0644\u0629';
+}
+
+/* The player is a FACADE, and that is a privacy decision rather than a performance one.
+   A plain <iframe src="youtube.com/..."> reaches Google on every page load, for every
+   visitor, before the consent banner has been answered. scripts/check-consent-network.mjs
+   asserts that this site makes zero Google requests before consent, so an always-on embed
+   would not only break a promise made in the privacy policy, it would fail the build.
+
+   So the page ships a local poster and creates the embed only in response to a press. The
+   host is youtube-nocookie.com, YouTube's privacy enhanced player, and it is the only
+   frame-src the Content-Security-Policy grants. Twelve live embeds would also have been
+   twelve player bundles on a page that currently loads none. */
+(function(){
+  var stage = document.getElementById('ytStage');
+  if(!stage) return;
+  var poster = document.getElementById('ytPoster'),
+      posterTall = document.getElementById('ytPosterTall'),
+      label  = document.getElementById('ytLabel'),
+      title  = document.getElementById('ytTitle'),
+      dur    = document.getElementById('ytDur'),
+      play   = document.getElementById('ytPlay'),
+      list   = document.getElementById('ytList'),
+      meta   = stage.querySelector('.yt-stage-meta'),
+      current = list.querySelector('.yt-item[aria-current="true"]') || list.querySelector('.yt-item'),
+      section = stage.closest('.watch') || stage;
+
+  /* The one place the two cuts are chosen between. 760px is the site's phone breakpoint and
+     the same one <source media> uses on the poster, so the frame on screen and the video that
+     replaces it are always the same shape. matchMedia rather than a resize handler: no
+     listener runs while nobody is resizing. */
+  var phone = window.matchMedia ? window.matchMedia('(max-width: 760px)') : {matches:false};
+  function cutOf(el){ return (phone.matches ? el.dataset.tall : el.dataset.wide) || el.dataset.wide; }
+
+  /* mm:ss (or h:mm:ss) as seconds. The duration is authored, so this is parsing our own
+     data rather than anything a viewer can influence. */
+  function secondsOf(text){
+    var parts = String(text || '').trim().split(':').map(Number);
+    if(!parts.length || parts.some(isNaN)) return 0;
+    return parts.reduce(function(total, n){ return total * 60 + n; }, 0);
+  }
+  function armRing(){
+    var secs = secondsOf(dur.textContent);
+    section.style.setProperty('--yt-run', (secs > 0 ? secs : 0) + 's');
+    stage.classList.remove('is-done');
+    /* Restart the fill from zero for THIS film. Re-setting the duration alone would let a
+       finished animation stay finished, so the ring would open full. */
+    stage.classList.remove('is-timed');
+    void stage.offsetWidth;
+    if(secs > 0) stage.classList.add('is-timed');
+  }
+  function syncRing(seconds){
+    if(typeof seconds !== 'number' || !isFinite(seconds)) return;
+    (section.getAnimations ? section.getAnimations() : []).forEach(function(a){
+      /* Only nudge it when it has actually drifted: writing currentTime on every message
+         would restart the compositor's work several times a second for no visible gain. */
+      if(Math.abs((a.currentTime || 0) - seconds * 1000) > 900) a.currentTime = seconds * 1000;
+    });
+  }
+  function stop(){
+    var f = stage.querySelector('iframe');
+    if(f) f.remove();
+    stage.classList.remove('is-playing','is-live','is-timed','is-done','is-held');
+    section.style.removeProperty('--yt-run');
+    if(poster.parentNode) poster.parentNode.hidden = false;
+    play.hidden = false; meta.hidden = false;
+  }
+  function start(){
+    if(stage.querySelector('iframe')) return;
+    var f = document.createElement('iframe');
+    /* encodeURIComponent even though every id here is authored: the id is read back out
+       of the DOM, and a value that reaches a URL should be encoded where it is used, not
+       where it happened to come from. */
+    /* cc_load_policy=0 asks the player not to turn captions on by default, and
+       iv_load_policy=3 removes the old annotation layer. Neither can override a viewer who
+       has captions forced on in their own YouTube account, and neither touches text that was
+       rendered INTO the film: those are the upload's, not the page's. */
+    f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(cutOf(stage)) +
+            '?autoplay=1&rel=0&modestbranding=1&playsinline=1&cc_load_policy=0&iv_load_policy=3' +
+            '&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+    f.title = title.textContent;
+    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    f.setAttribute('allowfullscreen','');
+    f.setAttribute('loading','lazy');
+    stage.appendChild(f);
+    stage.classList.add('is-playing');
+    armRing();
+    /* Ask the player to report its state. This is a postMessage to a frame that is already
+       on the page, not a request: nothing new is fetched, and nothing happens at all until
+       somebody has pressed play. */
+    f.addEventListener('load', function(){
+      try{
+        f.contentWindow.postMessage(
+          JSON.stringify({event:'listening', id:1, channel:'widget'}),
+          'https://www.youtube-nocookie.com');
+      }catch(e){}
+    });
+    if(poster.parentNode) poster.parentNode.hidden = true;
+    play.hidden = true; meta.hidden = true;
+  }
+  function select(btn){
+    var playing = !!stage.querySelector('iframe');
+    stop();
+    current = btn;
+    stage.dataset.wide = btn.dataset.wide;
+    stage.dataset.tall = btn.dataset.tall;
+    stage.dataset.id   = cutOf(btn);
+    /* Both sources are set. Writing only img.src would leave the phone showing the previous
+       film's vertical poster, because a <source> that still matches keeps winning. */
+    if(posterTall) posterTall.srcset = btn.dataset.posterTall;
+    poster.src = btn.dataset.posterWide;
+    if(label) label.textContent = btn.querySelector('.yt-t').textContent;
+    /* The subtitle IS the stage's title, and it is the LOCALIZED one. data-title was a
+       second copy of the same sentence in the markup, which is a second thing to keep
+       translated and a second thing to forget; it stays as the fallback only. */
+    var _sub = btn.querySelector('.yt-sub');
+    title.textContent = (_sub && _sub.textContent) || btn.dataset.title || '';
+    /* The stage OPENS on the trailer, so its label and title carry the trailer's translation
+       keys in the markup -- that is what makes the first paint localized rather than English.
+       The moment another film is chosen those keys are a lie, and applyLang() would put the
+       trailer's words back on the next language change. Take them off, and re-point them at
+       the film now showing so a language change still reaches the stage. */
+    if(label){label.dataset.t=btn.querySelector('.yt-t').dataset.t||'';}
+    if(_sub&&_sub.dataset.t){title.dataset.t=_sub.dataset.t;}else{delete title.dataset.t;}
+    dur.textContent = btn.dataset.dur;
+    var all = list.querySelectorAll('.yt-item');
+    for(var i=0;i<all.length;i++){
+      if(all[i] === btn) all[i].setAttribute('aria-current','true');
+      else all[i].removeAttribute('aria-current');
+    }
+    /* Choosing another film while one is playing keeps playing. Dropping back to a poster
+       there would read as the click having failed. */
+    if(playing) start();
+  }
+  /* Rotating a tablet, or dragging a desktop window narrow, changes which cut is correct.
+     Only the id is refreshed, and only while nothing is playing: swapping the src under a
+     running player would restart it from zero. */
+  function onBreak(){
+    if(stage.querySelector('iframe')) return;
+    stage.dataset.id = cutOf(stage);
+  }
+  if(phone.addEventListener) phone.addEventListener('change', onBreak);
+  else if(phone.addListener) phone.addListener(onBreak);
+  stage.dataset.id = cutOf(stage);
+
+  /* The player's own state, read from the message it sends back. Origin-checked, because a
+     message handler that trusts any sender is a message handler that can be driven by any
+     page that manages to open a frame here. -1 unstarted, 0 ended, 1 playing, 2 paused,
+     3 buffering, 5 cued: only 1 means the film is running. */
+  window.addEventListener('message', function(e){
+    if(e.origin !== 'https://www.youtube-nocookie.com') return;
+    if(!stage.querySelector('iframe')) return;
+    var d;
+    try{ d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; }catch(err){ return; }
+    if(!d || !d.info) return;
+    if(typeof d.info === 'object'){
+      /* The film's real length, from the film. The manifest gives the ring a duration before
+         the player has said anything; this replaces it with the player's own the moment it
+         does, so a re-uploaded or slightly different cut can never leave the ring finishing
+         early. Only when it actually disagrees -- rewriting the duration restarts the
+         animation's timing, so doing it on every message would stutter. */
+      if(typeof d.info.duration === 'number' && d.info.duration > 1){
+        var want = Math.round(d.info.duration);
+        if(Math.abs(want - secondsOf(dur.textContent)) >= 1 &&
+           section.style.getPropertyValue('--yt-run') !== want + 's'){
+          section.style.setProperty('--yt-run', want + 's');
+        }
+      }
+      if(typeof d.info.currentTime === 'number') syncRing(d.info.currentTime);
+    }
+    var s = typeof d.info === 'number' ? d.info : d.info.playerState;
+    if(typeof s !== 'number') return;
+    stage.classList.toggle('is-live', s === 1);
+    /* Held, not "not playing": 2 is paused and 3 is buffering, and those are the only two
+       states that should stop the ring. If the handshake with the player never completes and
+       no state ever arrives, the ring keeps running on the film's own length -- which is
+       right, because the film is running too. A ring stopped by silence would be a bug. */
+    stage.classList.toggle('is-held', s === 2 || s === 3);
+    /* 0 is ended. The ring completes and stays completed, rather than snapping back to empty
+       at the exact moment the film finishes. */
+    if(s === 0){
+      stage.classList.add('is-done');
+      /* The tile keeps a completed ring for the rest of the visit: which of twelve films you
+         have already seen is worth knowing, and it is the one thing the wall cannot say. */
+      if(current) current.classList.add('is-watched');
+    }
+    if(s === 1) stage.classList.remove('is-done');
+  });
+
+  play.addEventListener('click', start);
+  list.addEventListener('click', function(e){
+    var btn = e.target.closest ? e.target.closest('.yt-item') : null;
+    if(btn) select(btn);
+  });
+})();
