@@ -92,6 +92,75 @@ for (const w of [320, 360, 390, 768, 1280, 1512]) {
       if (open.items !== LANGS.length) fail.push(`[${lang}@${w}] the menu offers ${open.items} languages, expected ${LANGS.length}`);
       if (open.checked !== 1) fail.push(`[${lang}@${w}] ${open.checked} menu items are aria-checked, expected exactly 1`);
     }
+
+    /* THE MENU MUST BEHAVE LIKE THE MENU IT SAYS IT IS.
+       The markup declared role="menu", role="menuitemradio", aria-haspopup, aria-expanded and
+       aria-controls, and implemented none of it: the arrows did nothing, opening moved focus
+       nowhere, and Tab walked out while the menu stayed open under a button that reported
+       itself collapsed. A declared role is a promise about behaviour, and nothing was checking
+       the promise -- the existing assertions above all read geometry, which was correct.
+       Checked at one width per language: keyboard behaviour is not a function of viewport, and
+       repeating it six times would buy nothing but minutes. */
+    if (w === 1280) {
+      const kb = await page.evaluate(async () => {
+        const menu = document.getElementById("langMenu");
+        const btn = document.getElementById("langButton");
+        const list = document.getElementById("langList");
+        const items = () => [...list.querySelectorAll("button")];
+        const press = (key) => {
+          const target = document.activeElement || document;
+          target.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }));
+        };
+        const out = {};
+        /* START FROM CLOSED. The geometry block above leaves the menu OPEN, so the first click
+           here was toggling it shut and every assertion below then failed against a working
+           menu -- a false red that cost more time than the defect it was written for. */
+        if (menu.classList.contains("open")) { btn.click(); await new Promise((r) => setTimeout(r, 60)); }
+        /* Open with the pointer, the way most people do, and see where focus went. */
+        btn.click();
+        await new Promise((r) => setTimeout(r, 60));
+        out.focusOnOpen = document.activeElement && document.activeElement.closest("#langList") ? "item" : (document.activeElement === btn ? "button" : "elsewhere");
+        out.focusIsChecked = document.activeElement ? document.activeElement.getAttribute("aria-checked") === "true" : false;
+        /* Roving tabindex: exactly one item in the tab order. */
+        out.tabbable = items().filter((b) => b.tabIndex === 0).length;
+        const first = document.activeElement;
+        press("ArrowDown");
+        await new Promise((r) => setTimeout(r, 40));
+        out.arrowMoved = document.activeElement !== first && !!(document.activeElement && document.activeElement.closest("#langList"));
+        press("End");
+        await new Promise((r) => setTimeout(r, 40));
+        out.endWentLast = document.activeElement === items()[items().length - 1];
+        press("Home");
+        await new Promise((r) => setTimeout(r, 40));
+        out.homeWentFirst = document.activeElement === items()[0];
+        /* Escape closes AND hands focus back, so the reader is not dropped on <body>. */
+        press("Escape");
+        await new Promise((r) => setTimeout(r, 60));
+        out.escClosed = !menu.classList.contains("open");
+        out.escReturnedFocus = document.activeElement === btn;
+        out.expandedAfterClose = btn.getAttribute("aria-expanded");
+        /* Focus leaving must close it: an open menu under a collapsed button is a lie told to
+           anyone who cannot see the screen. */
+        btn.click();
+        await new Promise((r) => setTimeout(r, 60));
+        const away = document.querySelector("a[href], button:not(#langButton)");
+        if (away) away.focus();
+        await new Promise((r) => setTimeout(r, 80));
+        out.closedOnFocusLoss = !menu.classList.contains("open");
+        return out;
+      });
+      const K = `[${lang}@${w}] the language menu`;
+      if (kb.focusOnOpen !== "item") fail.push(`${K} does not move focus into the list when it opens (focus went to ${kb.focusOnOpen})`);
+      if (!kb.focusIsChecked) fail.push(`${K} opens on some other item than the language currently in use`);
+      if (kb.tabbable !== 1) fail.push(`${K} puts ${kb.tabbable} items in the tab order, expected exactly 1 (roving tabindex)`);
+      if (!kb.arrowMoved) fail.push(`${K} declares role="menu" but the arrow keys do not move between languages`);
+      if (!kb.endWentLast) fail.push(`${K} does not answer End`);
+      if (!kb.homeWentFirst) fail.push(`${K} does not answer Home`);
+      if (!kb.escClosed) fail.push(`${K} does not close on Escape`);
+      if (!kb.escReturnedFocus) fail.push(`${K} closes on Escape but drops focus instead of returning it to the button`);
+      if (kb.expandedAfterClose !== "false") fail.push(`${K} reports aria-expanded="${kb.expandedAfterClose}" while closed`);
+      if (!kb.closedOnFocusLoss) fail.push(`${K} stays open after focus leaves it`);
+    }
     await page.keyboard.press("Escape").catch(() => {});
 
     /* THE BYLINE. Either it is shown in full, or it is not shown -- never sliced. */
@@ -192,4 +261,4 @@ await browser.close();
 server.kill();
 
 if (fail.length) { console.error(`\ncheck-chrome FAILED (${fail.length}):\n - ` + fail.join("\n - ")); process.exit(1); }
-console.log(`\ncheck-chrome OK: the language menu is out of layout when closed and on screen when open in ${LANGS.length} languages at 6 widths, the byline is never sliced, the social labels clear the bar, and the footer links answer like the questions`);
+console.log(`\ncheck-chrome OK: the language menu is out of layout when closed and on screen when open in ${LANGS.length} languages at 6 widths, it answers the arrows, Home, End, Escape and focus loss the way the menu role it declares promises, the byline is never sliced, the social labels clear the bar, and the footer links answer like the questions`);

@@ -23,7 +23,19 @@ const fail = (msg) => { console.error(`FAIL: ${msg}`); failures++; };
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 const exists = (rel) => fs.existsSync(path.join(ROOT, rel));
 
-const LOCALES = ["", "de", "es", "fr", "it", "ja", "ko", "pt-br", "ru", "zh"];
+/* THE SUBJECT IS COMPUTED, NEVER TYPED. This was `["", "de", "es", "fr", "it", "ja", "ko",
+   "pt-br", "ru", "zh"]` -- ten locales, on a site that ships eleven. Arabic was never in it, so
+   the Arabic privacy statement and the Arabic licence were outside this guard from the day they
+   were added, and it reported OK throughout. Read from app.js and the eleventh language is
+   covered by existing rather than by being remembered. */
+const LOCALES = (() => {
+  const table = fs.readFileSync(path.join(ROOT, "app.js"), "utf8").match(/const languages=(\[\[.*?\]\]);/s);
+  if (!table) throw new Error("could not read the language table out of app.js");
+  const codes = JSON.parse(table[1].replace(/'/g, '"')).map(([c]) => c);
+  if (codes.length < 11) throw new Error(`the language table has only ${codes.length} entries`);
+  /* English is the un-suffixed file: PRIVACY.md, not PRIVACY.en.md. */
+  return codes.map((c) => (c === "en" ? "" : c));
+})();
 const privacyFile = (l) => `public/docs/PRIVACY${l ? "." + l : ""}.md`;
 const licenseFile = (l) => `public/docs/LICENSE${l ? "." + l : ""}.txt`;
 
@@ -100,9 +112,17 @@ for (const [why, accepted] of [
 // ---------------------------------------------------------------------------
 // PARITY: every locale privacy + license must reference the Portal (migrated).
 // ---------------------------------------------------------------------------
+/* A RULE DECIDES A QUESTION, NOT A SPELLING. The question is "does this document describe the
+   browser/Portal activation model?", and for ten locales the answer happens to contain the
+   English word "Portal". Arabic answers it correctly in Arabic -- «بوابة BugIt» -- and a literal
+   substring test called that an unmigrated legal document. It was the first thing this guard
+   said the day it was finally allowed to open the Arabic files, and it was wrong.
+   Each locale that does not use the English word names the word it uses instead. */
+const PORTAL_TERM = { ar: "بوابة" };  // بوابة — "portal"
 for (const l of LOCALES) {
+  const term = PORTAL_TERM[l] || "Portal";
   for (const f of [privacyFile(l), licenseFile(l)]) {
-    if (exists(f) && !read(f).includes("Portal")) fail(`${f}: not migrated to browser model (no "Portal" reference)`);
+    if (exists(f) && !read(f).includes(term)) fail(`${f}: not migrated to browser model (no "${term}" reference)`);
   }
 }
 

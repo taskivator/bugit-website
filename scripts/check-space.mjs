@@ -46,6 +46,7 @@
  */
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
+import https from "node:https";
 import { readFileSync } from "node:fs";
 import net from "node:net";
 import path from "node:path";
@@ -173,9 +174,14 @@ const PROBE = `(() => {
     return null;
   };
 
+  /* PARKED IS NOT BROKEN. An off-canvas panel sits wholly outside the viewport until it is
+     opened, and in a left-to-right document leftward overflow creates no scrollable area --
+     the viewport clamps it. What IS a defect is an element PARTIALLY outside: half readable,
+     half gone. */
   for (const { el, cs } of candidates) {
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1) continue;
+    if (r.right <= 0 || r.left >= vw) continue;
     if (cs.position === "fixed" && (el.closest("header") || el.closest(".mobile-menu"))) {
       /* the sticky header and the phone overlay are measured, but they are allowed to sit
          over the page: only their own width against the viewport matters */
@@ -212,6 +218,12 @@ const PROBE = `(() => {
     if (!t) continue;
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1) continue;
+    /* A disclosure's teaser is clamped on purpose: the collapsed report panel's .report-more
+       is the preview above the "Show full report" control, and the rule that removes the clamp
+       when the panel opens is two lines below the one that applies it. Only the COLLAPSED state
+       is exempt -- if the OPEN panel ever clips its own report, that is real and still caught.
+       (No backticks in this comment: it lives inside the probe's template literal.) */
+    if (el.closest(".report-panel.is-collapsed") && el.classList.contains("report-more")) continue;
     const hx = cs.overflowX === "hidden" || cs.overflowX === "clip";
     const hy = cs.overflowY === "hidden" || cs.overflowY === "clip";
     const wOver = el.scrollWidth - el.clientWidth;
@@ -234,6 +246,13 @@ const PROBE = `(() => {
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1) continue;
     if (r.bottom < vh * 0.25 || r.top > vh * 0.7) continue;
+    /* Mission Control holds each block of the report at opacity 0 and turns them on across a
+       twenty-five second sequence, so a block measured before its moment is legitimately
+       transparent -- and still transparent 900ms later, which is all the settle re-check can
+       see. That produced 138 findings, every one a block waiting its turn. The sequence is not
+       unowned: check-motion asserts every reveal settles and check-mission-pause asserts the
+       sequence itself, so this guard steps back from it rather than racing it. */
+    if (el.closest(".mc-armed")) continue;
     /* Gradient text is painted THROUGH the glyphs: the ink is transparent on purpose and the
        colour comes from the background. Reading cs.color alone calls the hero headline
        invisible. */
@@ -301,7 +320,17 @@ const PORT = await new Promise((res, rej) => {
   p.on("error", rej);
   p.listen(0, "127.0.0.1", () => { const { port } = p.address(); p.close(() => res(port)); });
 });
-const server = spawn(process.execPath, ["server.js"], { cwd: ROOT, env: { ...process.env, PORT: String(PORT) }, stdio: "ignore" });
+/* Keep the server's dying words. Run 4 of this sweep ended with ERR_CONNECTION_REFUSED on job
+   3 of 55 and `stdio: "ignore"` meant there was nothing to read: the harness could say the site
+   was unreachable but not why. Now a death names itself. */
+const server = spawn(process.execPath, ["server.js"], { cwd: ROOT, env: { ...process.env, PORT: String(PORT) }, stdio: ["ignore", "ignore", "pipe"] });
+let serverDied = "";
+server.stderr.on("data", (b) => { serverDied += b.toString(); });
+server.on("exit", (code, sig) => {
+  if (code === 0 || sig === "SIGTERM") return;
+  console.error(`\nTHE PREVIEW SERVER DIED (code ${code}). Every finding after this point is the harness, not the page.`);
+  if (serverDied.trim()) console.error(serverDied.trim().split("\n").slice(0, 12).map((l) => "  " + l).join("\n"));
+});
 const base = `http://127.0.0.1:${PORT}/`;
 for (let i = 0; i < 80; i++) { try { const r = await fetch(base); if (r.ok) break; } catch { await new Promise((r) => setTimeout(r, 150)); } }
 
@@ -367,7 +396,12 @@ const worker = async () => {
            quarter of a second later. Ink is only judged on what is STILL transparent once the
            animations here have settled. Geometry needs no such wait. */
         if (r.fade.length) {
-          await page.waitForTimeout(900);
+          /* 1500ms, not 900. The documentation pages run a time-based entry animation on every
+             render, and under a full parallel sweep at 1920 the first sample plus 900ms still
+             landed inside it twice in 605 renders. The settle window has to outlast the
+             animation on the slowest machine the guard runs on, or the guard reports a heading
+             that is plainly visible a moment later. */
+          await page.waitForTimeout(1500);
           const again = await page.evaluate(PROBE);
           const still = new Set(again.fade.map((f) => f.el + "|" + f.text));
           r.fade = r.fade.filter((f) => still.has(f.el + "|" + f.text));
@@ -385,8 +419,27 @@ const worker = async () => {
       }
       await page.evaluate(() => window.scrollTo(0, 0));
     }
-    for (const e of [...new Set(consoleErrors)]) findings.push({ kind: "CONSOLE", where: `${lang.code}/${v.label}`, detail: e });
-    for (const e of [...new Set(netErrors)]) findings.push({ kind: "NETWORK", where: `${lang.code}/${v.label}`, detail: e });
+    /* TWO THINGS THIS HARNESS CAUSES ITSELF, and nothing else.
+       A guard that can never be green is a guard everyone learns to ignore, so these are named
+       exactly -- URL and error text together -- rather than filtered by keyword:
+
+       1. The session probe to portal.bugit.dev is refused by CORS because the portal
+          allow-lists https://bugit.dev and this page is served from 127.0.0.1. That is the
+          portal being correctly strict about an origin the harness invented. The live header
+          is asserted below rather than assumed, so if the portal ever stops allowing the real
+          site this still fails.
+       2. Chromium aborts its own media preload when the context closes. ERR_ABORTED on a demo
+          video is the browser cancelling a request nobody is waiting for.
+
+       Anything else -- a 404, a script error, a failed stylesheet -- is still a finding. */
+    const HARNESS_ONLY = [
+      { re: /portal\.bugit\.dev\/api\/session-status/, and: /ERR_FAILED|CORS policy|Access to fetch/, why: "cross-origin session probe from the harness origin" },
+      { re: /\/public\/media\/.*\.mp4/, and: /ERR_ABORTED/, why: "Chromium cancelling its own media preload" },
+      { re: /^Failed to load resource: net::ERR_FAILED$/, and: /.*/, why: "the console half of the same cross-origin probe" },
+    ];
+    const selfInflicted = (text) => HARNESS_ONLY.some((h) => h.re.test(text) && h.and.test(text));
+    for (const e of [...new Set(consoleErrors)]) if (!selfInflicted(e)) findings.push({ kind: "CONSOLE", where: `${lang.code}/${v.label}`, detail: e });
+    for (const e of [...new Set(netErrors)]) if (!selfInflicted(e)) findings.push({ kind: "NETWORK", where: `${lang.code}/${v.label}`, detail: e });
     await ctx.close();
     process.stdout.write(`  [${String(idx + 1).padStart(3)}/${jobs.length}] ${v.label.padStart(5)} ${String(v.w) + "x" + v.h} ${lang.code.padEnd(6)} ${subjRoutes.length} routes\n`);
   }
@@ -394,7 +447,58 @@ const worker = async () => {
 await Promise.all(Array.from({ length: Math.min(CONCURRENCY, jobs.length) }, worker));
 
 await browser.close();
-server.kill();
+/* Wait for the child to be GONE, do not just ask it to go. `kill()` only sends the signal, and
+   process.exit() racing a half-closed stderr pipe aborts the whole run under a libuv assertion
+   on Windows -- exit code 127 on a CLEAN sweep. It only ever showed up when there was nothing
+   to report, because printing a long list of findings gave the handle time to finish closing:
+   a teardown bug that hid whenever the audit failed and appeared only when it passed. */
+await (async () => {
+  if (server.exitCode !== null) return;
+  server.stderr?.destroy();
+  server.kill();
+  await new Promise((res) => {
+    const done = () => { clearTimeout(t); res(); };
+    const t = setTimeout(done, 2000);
+    server.once("exit", done);
+  });
+})();
+
+/* ---------- 3b. Pay for the CORS exemption ------------------------------
+   The sweep ignores the refused session probe because the harness serves from 127.0.0.1 and
+   the portal allow-lists the real site. That reasoning is only sound if the real site IS
+   allowed, so check it instead of assuming it. Skipped, out loud, when there is no network --
+   an offline run should report less, never pass on a claim it could not test. */
+/* node:https with a keep-alive-free agent, NOT fetch. Measured: one `fetch()` here turned a
+   CLEAN sweep into exit code 127 -- undici's global connection pool outlives the script, and
+   process.exit() racing it aborts the process under a libuv assertion. Removing the call alone
+   restored exit 0, which is how I know it was this and not the browser or the child server.
+   An agent I create is an agent I can destroy. */
+const allowOrigin = await new Promise((resolve) => {
+  const agent = new https.Agent({ keepAlive: false });
+  const done = (v) => { try { agent.destroy(); } catch {} clearTimeout(t); resolve(v); };
+  const t = setTimeout(() => done(null), 12000);
+  const req = https.request(
+    { host: "portal.bugit.dev", path: "/api/session-status", method: "GET", agent, headers: { Origin: "https://bugit.dev" } },
+    (res) => { res.resume(); res.on("end", () => done(res.headers["access-control-allow-origin"] ?? "(absent)")); },
+  );
+  req.on("error", () => done(null));
+  req.end();
+});
+if (allowOrigin === null) {
+  console.log("\nlive CORS: not checked (no network) — the refused session probes above are unverified");
+} else if (allowOrigin !== "https://bugit.dev") {
+  findings.push({ kind: "NETWORK", where: "live", detail: `portal.bugit.dev answers the real site with Access-Control-Allow-Origin: ${allowOrigin} — the signed-in header state cannot reach bugit.dev` });
+} else {
+  console.log("\nlive CORS: portal.bugit.dev allows https://bugit.dev (so the refusals above are this harness's own origin)");
+}
+
+/* A run that rendered nothing must not report "clean". `--route home` matches no route (the
+   home route is the empty string) and this printed five clean sections over zero pages: the
+   exact shape of silent pass this whole audit keeps turning up. */
+if (combos === 0) {
+  console.error(`\ncheck-space FAIL: nothing was rendered — ${subjLangs.length} language(s) x ${subjWidths.length} width(s) x ${subjRoutes.length} route(s). Check the --lang/--route filter.`);
+  process.exit(1);
+}
 
 /* ---------- 4. Report --------------------------------------------------- */
 const byKind = {};

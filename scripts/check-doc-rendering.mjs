@@ -42,7 +42,10 @@ function lift(name) {
 }
 
 const render = new Function(
-  ["escapeHtml", "allowBdi", "formatLicense", "formatMarkdownDoc"].map(lift).join("\n") +
+  // licenseInline is formatLicense's half of the inline markup rules: the licence renderer used
+  // to escape `**bold**` and print the asterisks on ten translated legal pages. Lifting a
+  // function means lifting what it CALLS, or this guard fails on the fix rather than on a bug.
+  ["escapeHtml", "allowBdi", "licenseInline", "formatLicense", "formatMarkdownDoc"].map(lift).join("\n") +
     "; return { formatLicense, formatMarkdownDoc };"
 )();
 

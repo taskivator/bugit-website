@@ -146,6 +146,46 @@ for (const lang of LANGS) {
         " string(s) still in English:\n      " +
         shown.map((s) => '"' + s.slice(0, 74) + '"').join("\n      "));
     }
+
+    /* A TRANSLATION CAN BE WRONG BY OMISSION.
+       The Chinese Integrations lede rendered 48 characters where English rendered 467 and every
+       other language ran 289 to 527. It had kept the first sentence and the last and dropped
+       everything between them: the filing claim, all eleven tracker names, and the promise that
+       the credential is validated before the connection is saved.
+
+       Nothing could see it. It is Chinese, so the loop above passes. The key exists, so parity
+       passes. It is shorter than its box, so the space audit passes. Every check in this repo
+       was looking for the presence of the wrong thing; none was looking for the absence of the
+       right one.
+
+       Only substantial prose is compared -- a heading legitimately collapses to a few glyphs --
+       and the floor is per-script, because CJK says the same thing in far fewer characters.
+       Measured across this page's own copy: Japanese and Korean sit at 60-70% of English and
+       Chinese at ~50%, so 0.30 flags a stub without touching a dense-but-complete translation,
+       and the European languages, which run LONGER than English, get 0.50.
+
+       ONLY THE TEMPLATE ROUTES. The comparison is position-keyed, which is sound where the DOM
+       is fixed by index.html and every string arrives through a data-t key. It is NOT sound on
+       the document routes: those are fetched files whose paragraph COUNT differs by language,
+       so the keys slide and clause 3 of the Japanese licence gets compared with clause 4 of the
+       English one. The first version of this check reported 56 such pairs, every one of them a
+       misalignment rather than an omission. A guard that cries wolf on a correct translation
+       teaches people to ignore it, so it stays where its assumption actually holds -- which is
+       also where the real defect was. */
+    const DENSE = new Set(["ja", "zh", "ko"]);
+    const floor = DENSE.has(lang) ? 0.30 : 0.50;
+    if (route !== "") continue;
+    for (const [where, enText] of Object.entries(en[route] || {})) {
+      if (enText.length < 150) continue;
+      const mineText = (mine[route] || {})[where];
+      if (!mineText) continue;
+      const ratio = mineText.length / enText.length;
+      if (ratio >= floor) continue;
+      fail.push("[" + lang + "] " + (route || "/home") + " \u2014 a translated passage is " +
+        Math.round(ratio * 100) + "% the length of its English source (" + mineText.length +
+        " vs " + enText.length + " characters), which is a dropped claim, not a shorter language:\n      \"" +
+        mineText.slice(0, 74) + "\"\n      EN: \"" + enText.slice(0, 74) + "\"");
+    }
   }
   process.stdout.write("  " + lang.padEnd(6) + " " + ROUTES.length + " routes compared against English\n");
 }

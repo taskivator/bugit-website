@@ -175,6 +175,11 @@ jobs:
       # line that truncated in ALL ELEVEN languages including English, six clamps sized for the
       # shortest language the product ships, and an instrument that grew 13.5px every time the
       # report was opened. None of them was visible to a string check or a source scan.
+      # Fifteen guards render against server.js, so its death is fifteen false reports of a dead
+      # site -- which is exactly how it presented: ERR_CONNECTION_REFUSED on job 3 of 55. One
+      # malformed percent-escape threw inside the request handler and ended the process.
+      - name: Verify one bad URL cannot kill the preview server
+        run: node scripts/check-dev-server.mjs
       - name: Verify every language has room, on every screen, on every route
         run: node scripts/check-space.mjs
       - name: Verify every route in every language, entered cold, by click, by reload, by history
@@ -186,6 +191,13 @@ jobs:
       # on the Japanese page, is this sentence in Japanese? The film wall shipped twenty-four
       # English strings on ten translated pages and every existing language guard passed, because
       # all of them read the i18n object and the wall's copy was never in it.
+      # The ten translated licences opened with `**Avertissement sur la traduction.**` -- the
+      # asterisks on the page. The source was correct markdown and the corpus was consistent;
+      # the licence just goes through a different renderer than PRIVACY and REFUND, and that
+      # one printed the markers. No source scan and no parity check can see it. Only reading
+      # the rendered page can.
+      - name: Verify no document shows its own markup
+        run: node scripts/check-doc-markup.mjs
       - name: Verify nothing renders in English on a translated page
         run: node scripts/check-untranslated.mjs
       # The header lockup, the language menu, the social labels and the footer links: present on

@@ -45,7 +45,19 @@ const docFiles = fs
 const surfaces = [["app.js", app], ["index.html", index], ...docFiles];
 
 // The locales the site ships legal copy in. "" is the English source file.
-const LOCALES = ["", "de", "es", "fr", "it", "ja", "ko", "pt-br", "ru", "zh"];
+/* THE SUBJECT IS COMPUTED, NEVER TYPED. This was `["", "de", "es", "fr", "it", "ja", "ko",
+   "pt-br", "ru", "zh"]` -- ten locales, on a site that ships eleven. Arabic was never in it, so
+   the Arabic privacy statement and the Arabic licence were outside this guard from the day they
+   were added, and it reported OK throughout. Read from app.js and the eleventh language is
+   covered by existing rather than by being remembered. */
+const LOCALES = (() => {
+  const table = fs.readFileSync(path.join(root, "app.js"), "utf8").match(/const languages=(\[\[.*?\]\]);/s);
+  if (!table) throw new Error("could not read the language table out of app.js");
+  const codes = JSON.parse(table[1].replace(/'/g, '"')).map(([c]) => c);
+  if (codes.length < 11) throw new Error(`the language table has only ${codes.length} entries`);
+  /* English is the un-suffixed file: PRIVACY.md, not PRIVACY.en.md. */
+  return codes.map((c) => (c === "en" ? "" : c));
+})();
 
 // --- 1. The alarming wording must be gone, in every language -------------------
 // Each entry is a phrase that must not appear on ANY public surface. These are the

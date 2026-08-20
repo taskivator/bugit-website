@@ -5274,6 +5274,136 @@
     }
   }
 
+  /* ---------- 83. The clamps, sized where they still cut ------------------- */
+  /* Section 75 raised each clamp by one line, which was the right move and not enough of it: the
+     re-measurement found the same boxes still cutting, at the WIDTHS WHERE THE PANEL IS NARROWEST
+     rather than where the language is longest.
+
+       .report-panel h2   cut 21px at 320 and 390 in fr, de, es, it and pt-br. The panel is a
+                          stacked card there, so the bug's title takes four lines, not three.
+       .report-meta b     cut 22-23px at 320 and at 1180, where the two-column meta grid gives
+                          each cell about 150px.
+
+     Both go to four lines at those widths, with the reservation moved with them -- a clamp raised
+     without its min-height hands the panel back the wobble that six rounds of this file removed.
+     Neither is raised globally: at 1512 three lines is right, and a fourth reserved line there is
+     dead space in every language that does not need it. */
+  @media(max-width:760px){
+    .report-panel h2{-webkit-line-clamp:4;min-height:calc(4 * 1.28em)}
+    .report-meta b{-webkit-line-clamp:4}
+    .report-meta>div{min-height:132px}
+  }
+  @media(min-width:1160px) and (max-width:1279px){
+    .report-meta b{-webkit-line-clamp:4}
+    .report-meta>div{min-height:146px}
+  }
+
+  /* ---------- 84. The stream gets rows, not the column's width ------------- */
+  /* Section 74 solved the truncated status line by widening the status column from 296px to
+     340px. It worked, and it took those 44px OUT OF THE REPORT COLUMN -- which at 1180px is the
+     narrowest that column ever gets. Re-measured there: the bug's title went from cutting 21px to
+     cutting 69px, and a meta value from 23px to 46px. The fix moved the defect rather than
+     removing it, which is what a fix that buys space from a neighbour usually does.
+
+     So the column goes back to 296px and the LINE gets a third row instead. 152px x 3 = 456px
+     against a worst case of 351px (French), with the height reserved so the strings changing every
+     couple of seconds still cannot move the panel. Three rows is the right shape for this element
+     anyway: it is a log line, and a log line that wraps is normal where a heading that wraps is
+     not. */
+  @media(min-width:1160px){
+    .mission{grid-template-columns:minmax(0,296px) minmax(0,1fr)}
+  }
+  .mc-stream .mc-line{
+    -webkit-line-clamp:3;
+    min-height:calc(3 * 1.35em);
+  }
+
+  /* ---------- 85. The title, at the one width where the column is tightest -- */
+  /* 1160-1279 is the narrowest the report column ever is on a desktop: the instrument is
+     side-by-side there, so the status column is already taking its 296px out of a shell that is
+     only ~1085px wide. Measured in Italian at 1180 the bug's title needs five lines and was
+     getting three, cutting 46px off the single most important line in the report.
+     Five lines, reserved, and only in that range. At 1280 and above three is right and a fourth
+     reserved line would be dead space in every language that does not need it. */
+  @media(min-width:1160px) and (max-width:1279px){
+    .report-panel h2{-webkit-line-clamp:5;min-height:calc(5 * 1.28em)}
+  }
+
+  /* ---------- 86. Every clamp, from the matrix rather than from the last break */
+  /* Sections 75, 80, 83 and 85 each raised one of these by one line, and each raise moved the
+     failure to another language at another width. That is the wrong shape of fix: the number was
+     coming from whatever broke last instead of from the product.
+
+     So it was measured properly. For every language at every width, each box was cloned WITHOUT
+     its clamp at the width it really has, and every string it can ever hold was put through it --
+     for the title and the meta cells that is exactly what applyReport() writes, three scenarios of
+     a title and four short values, taken from scen(). WORST LINE NEED, over all eleven:
+
+                320  360  390  430  667  768  834 1024 1180 1280 1512 1920
+       title      5    4    4    4    2    2    2    2    6    5    4    4
+       meta       4    4    2    2    1    1    1    1    5    4    2    2
+       subtitle   2    4    4    3    3    3    3    3    3    3    3    3
+
+     1180 is the peak for the report, and that is not a mistake: it is the narrowest the report
+     column ever gets. Below 1160 the instrument stacks and the panel has the full shell; above
+     1280 the shell grows faster than the status column beside it. The tightest case sits in
+     between, which is precisely the width nobody thinks to check.
+
+     Each band gets a clamp AT OR ABOVE its need, so nothing is ever cut, and a reservation EQUAL
+     to its need, so the twenty-five second loop still cannot move the panel. A clamp above the
+     need costs nothing; a reservation above it is dead space, so they are not the same number.
+     These supersede the per-width values in 75, 80, 83 and 85. */
+  @media(max-width:760px){
+    .report-panel h2{-webkit-line-clamp:5;min-height:calc(5 * 1.28em)}
+    .report-meta b{-webkit-line-clamp:4}
+    .report-meta>div{min-height:132px}
+  }
+  @media(min-width:761px) and (max-width:1159px){
+    .report-panel h2{-webkit-line-clamp:3;min-height:calc(2 * 1.28em)}
+    .report-meta b{-webkit-line-clamp:2}
+    .report-meta>div{min-height:86px}
+  }
+  @media(min-width:1160px) and (max-width:1279px){
+    .report-panel h2{-webkit-line-clamp:6;min-height:calc(6 * 1.28em)}
+    .report-meta b{-webkit-line-clamp:5}
+    .report-meta>div{min-height:146px}
+  }
+  @media(min-width:1280px){
+    .report-panel h2{-webkit-line-clamp:5;min-height:calc(4 * 1.28em)}
+    .report-meta b{-webkit-line-clamp:4}
+    .report-meta>div{min-height:124px}
+  }
+  /* The film subtitles need four lines in German at 360 and 390 and three everywhere else. The
+     clamp is four throughout: the tiles are grid items whose row stretches to the tallest of
+     them, so a clamp above the need adds no height where the text is shorter. */
+  .yt-sub{-webkit-line-clamp:4}
+
+  /* ---------- 87. The stream line's fourth row -------------------------- */
+  /* Three rows covered every language's ACTS and its ready line. It did not cover the composed
+     result lines, which are built at runtime from the scenario -- "✓ Se encontró 1 incidencia
+     relacionada, ninguna exacta" is assembled by resultFor() out of two pieces and is longer than
+     any string in the dictionary. Measured: it cut 17px at 1920 in Spanish, which is one row.
+     Four rows, reserved. The extra row lands in the STATUS panel, which is the shorter of the two
+     columns, so the grid row that both panels share does not move -- check-instrument-size proves
+     that rather than assuming it. */
+  .mc-stream .mc-line{
+    -webkit-line-clamp:4;
+    min-height:calc(4 * 1.35em);
+  }
+
+  /* ---------- 88. A progress bar must fill from the reading start ------- */
+  /* `.report-progress i` grows with `scaleX` from `transform-origin:left`, and its gradient runs
+     at 90deg. Both are PHYSICAL, so on the Arabic page the bar starts at the left edge and grows
+     away from the side the reader begins on: the one element on the page whose whole job is to
+     say "this is how far along we are" was saying it backwards. The mirror image of the same
+     mistake as the language menu's `right:auto` -- a physical value inside a layout that flips.
+     Nothing here changes LTR: it is the RTL branch that was missing. */
+  [dir="rtl"] .report-progress i{
+    transform-origin:right;
+    background:linear-gradient(270deg,var(--purple),var(--green));
+  }
+  [dir="rtl"] .mc-armed .report-progress i{transform-origin:right}
+
 }
 
 @layer fixes {
@@ -5373,7 +5503,7 @@
   .report-panel>.report-more-toggle,.mc-armed .report-panel>.report-more-toggle{opacity:1!important;transform:none!important}
 
   .mc-stream .mc-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex:none;transition:background .3s,box-shadow .3s}
-  .mc-stream .mc-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+
   .mc-armed .mc-stream.thinking .mc-dot{background:var(--pink);box-shadow:0 0 9px var(--pink);animation:mcPulse 1.05s ease-in-out infinite}
   @keyframes mcPulse{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.12)}}
 

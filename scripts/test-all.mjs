@@ -102,6 +102,7 @@ const SUITES = [
   //                 language, plus the dead-link sweep.
   // check-instrument-size  the owner's rule that the instrument may not change size when the
   //                 report opens, or on its own while it runs.
+  "check-dev-server.mjs",
   "check-space.mjs",
   "check-routing.mjs",
   "check-instrument-size.mjs",
@@ -113,6 +114,7 @@ const SUITES = [
   // check-chrome    the header lockup, the language menu, the social labels and the footer
   //                 links: the parts present on every route, whose defects are properties of an
   //                 INTERACTION or of one narrow width and so survive a page-level sweep.
+  "check-doc-markup.mjs",
   "check-untranslated.mjs",
   "check-chrome.mjs",
 ];
