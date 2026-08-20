@@ -167,17 +167,33 @@ try {
   }
 
   // ---- 3. the contents list tracks the whole document ---------------------
-  // Walked at 90px a step, which is finer than any section on these pages, so an entry that is
-  // never current is genuinely unreachable rather than stepped over.
+  // The step is COMPUTED from the document, not typed. It used to be a flat 90px, on the stated
+  // premise that this was "finer than any section on these pages" -- and on 2026-08-21 that
+  // premise stopped being true: clause 12 of the licence, "Termination", is 87px tall and its
+  // band of scroll positions is 60px wide, so a 90px walk stepped straight over it and reported
+  // an entry that "is never marked however far you scroll". It is marked; the walk was coarser
+  // than the thing it was measuring.
+  //
+  // A guard that names its own sampling rate stops being a measurement the moment the content
+  // moves under it. The step is a third of the shortest section instead, so the premise is
+  // re-derived from the page on every run and cannot go quietly stale again.
   for (const route of ["#/docs/license", "#/docs/privacy"]) {
     await page.goto(base + "/" + route, { waitUntil: "networkidle" });
     await page.evaluate(() => { const b = document.getElementById("consentBanner"); if (b) b.remove(); });
     await page.waitForTimeout(800);
     const total = await page.evaluate(() => document.querySelectorAll(".doc-toc a").length);
     const max = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+    const step = await page.evaluate(() => {
+      const hs = [...document.querySelectorAll(".doc-toc a")]
+        .map((a) => document.getElementById((a.getAttribute("href") || "").slice(1)))
+        .filter(Boolean)
+        .map((el) => el.getBoundingClientRect().height)
+        .filter((h) => h > 0);
+      return Math.max(10, Math.floor(Math.min(...hs) / 3));
+    });
     const seen = new Set();
     let backwards = 0, prev = -1;
-    for (let y = 0; y <= max; y += 90) {
+    for (let y = 0; y <= max; y += step) {
       await page.evaluate((v) => scrollTo(0, v), y);
       await page.waitForTimeout(45);
       const i = await page.evaluate(() =>
@@ -202,7 +218,7 @@ try {
     if (backwards > 1) {
       fail.push(`${route}: the marked entry moved backwards ${backwards} times while scrolling down.`);
     }
-    note(`${route}: all ${total} entries reachable, ends on the last, no backward jumps`);
+    note(`${route}: all ${total} entries reachable at a ${step}px step, ends on the last, no backward jumps`);
   }
 
   // ---- 4. the footer cannot ride up while a document loads ----------------
