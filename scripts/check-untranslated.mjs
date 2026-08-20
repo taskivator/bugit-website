@@ -101,6 +101,20 @@ const COLLECT = `(() => {
     }
   };
   walk(document.body);
+
+  /* THE STRINGS A READER HEARS RATHER THAN SEES.
+     The demo tab strip's accessible name stayed English in ten languages, and nothing here
+     could see it: the walk above reads visible TEXT, and an aria-label is invisible by
+     definition. The merge that localises these falls back to English for any key it does not
+     carry, silently, so a missing key looks exactly like a correct one.
+     It is also what caught my own bad fix for it: the Arabic entry went in one brace too high
+     and landed on the wrong object, and Arabic alone stayed English. */
+  for (const el of document.querySelectorAll("[aria-label]")) {
+    const cs = getComputedStyle(el);
+    if (cs.display === "none" || cs.visibility === "hidden") continue;
+    const name = (el.getAttribute("aria-label") || "").trim();
+    if (name) out["aria@" + pathOf(el)] = name;
+  }
   return out;
 })()`;
 
