@@ -5962,4 +5962,1768 @@
   body.menu-open #ambient,
   body.menu-open .particle{display:none}
 
+  /* ---------- 93. The hairline grids must not show white through their cards ---- */
+  /*
+     OWNER, 2026-08-21: "as i go down the cards show a white layerd color on them, they are not
+     like the first 2 ... same for the other cards in the middle of the webpage, there is a white
+     ugly highlight on them."
+
+     FIVE GRIDS DRAW THEIR SEPARATORS THE SAME WAY: a 1px `gap` over a wrapper background, so the
+     wrapper shows through as hairlines between the cards. The wrapper colour is `--rule`, which
+     is `rgba(255,255,255,.085)` -- WHITE. That is fine for a 1px line and wrong as a plane,
+     because the cards on top of it are not opaque either: `--panel-1` is `rgba(9,6,19,.82)`.
+
+     So every card on these grids has always carried an 18% wash of white-on-white, and while a
+     card is revealing it is worse in proportion to how far through the animation it is. Measured
+     at 412px with the documentation grid centred: cards 0 to 5 at opacity 1, card 6 at 0.68 and
+     card 7 at 0.25. Those last two are the ones that look washed out, which is exactly "the
+     first two are fine and it gets worse as you go down" -- the further down the grid, the less
+     of the reveal has run when you reach it.
+
+     THE FIX IS TO MAKE BOTH LAYERS OPAQUE, at the colour they already composite to, so nothing
+     shows through anything and a mid-reveal card fades toward the hairline instead of toward
+     white. Derived, not eyeballed -- the opaque ground behind all five grids is rgb(5,4,11),
+     measured in the browser:
+         rgba(255,255,255,.086) over rgb(5,4,11)   = rgb(26,26,32)  -> #1a1a20   the hairline
+         rgba(9,6,19,.82)       over rgb(26,26,32) = rgb(12,10,21)  -> #0c0a15   the card
+     Both are the colours these already LOOK like today, so nothing changes at rest; what changes
+     is that there is no longer anything behind them to bleed through.
+  */
+  :root{
+    --rule-solid:#1a1a20;
+    --panel-solid:#0c0a15;
+  }
+  .doc-cards,
+  main section.shell.trust,
+  .report-meta,
+  .report-status,
+  .metrics{
+    background:var(--rule-solid);
+    border-color:var(--rule-solid);
+  }
+  .doc-cards>a,
+  main section.shell.trust>div,
+  .report-meta>div,
+  .report-status>div,
+  .metrics>div{
+    background:var(--panel-solid);
+  }
+
+  /* ---------- 94. Owner review, 2026-08-21 (third round) ------------------- */
+
+  /* (a) THE DEMO TABS ARE PILLS, AND A PILL NEEDS MORE SIDE PADDING THAN A BOX.
+     Owner: "the 4 core wordflow, saas, game qa and mobile app does not have enough space in
+     that bubble and they are touching the bubble." The buttons carry `border-radius:var(--r-pill)`
+     and settled on `padding:11px 15px`. On a rounded rectangle 15px of side padding is 15px of
+     clear space; on a PILL the corner radius is half the button's height, so the curve cuts
+     back across the first and last glyph and the usable gap at the text's baseline is a few
+     pixels. The text does not overflow -- it just runs into the curve, which is what "touching
+     the bubble" describes.
+     The rule of thumb for a pill is side padding at least equal to the radius, which is half
+     the height: these buttons are ~41px tall, so ~20px. 22px matches the padding the same
+     buttons already use at the wider breakpoint, so the strip does not change shape as it
+     crosses it. */
+  .demo-tabs button{padding-inline:22px}
+  @media(max-width:420px){
+    /* Four pills at 22px do not fit a 390px screen even wrapped, and shrinking the gap first
+       keeps the text clear of the curve for longer than shrinking the padding would. */
+    .demo-tabs{gap:6px}
+    .demo-tabs button{padding-inline:16px;font-size:var(--t-2xs)}
+  }
+
+  /* (b) MISSION CONTROL: THE REPORT IS THE POINT, SO GIVE IT THE ROOM.
+     Owner: "i dont think the left side where the project learning is needs that much space,
+     take some space from there and add it to the main report on the right side." The left panel
+     is a fixed list of eight short status lines; it needs enough width for its longest line and
+     nothing more. The right panel holds the report, which is the thing the section exists to
+     show and the thing that has to wrap a title, a meta grid and a code block.
+     296px -> 248px. Everything that comes off the left is picked up by the `1fr` on the right,
+     so this is 48px straight into the report. Guarded by scripts/check-overflow.mjs and
+     check-space.mjs, which run every language: German and Russian set the longest status lines,
+     so if 248px is too tight for any of them it fails there rather than looking fine in English. */
+  @media(min-width:1160px){
+    .mission{grid-template-columns:minmax(0,248px) minmax(0,1fr)}
+  }
+
+  /* (c) THE PROGRESS LINE SITS UNDER THE LIST, CENTRED.
+     Owner, on desktop: "the little progress text in the bottom left side which ends with ready
+     for your approval at the end needs to be repositoned lower and centered, its in a bad
+     position now." It was pinned bottom-left with `flex:1` on the text, so it started hard
+     against the left edge and ran the full width of the panel -- reading as a stray caption
+     rather than as the panel's own status line.
+     Centred, and dropped to the foot of the panel. The text stops stretching (`flex:0 1 auto`)
+     so the dot and the words travel together as one object instead of the dot anchoring left
+     while the text drifts right. */
+  @media(min-width:1160px){
+    /* `bottom` WAS INERT AND SO WAS CENTRING, FOR TWO SEPARATE REASONS, AND BOTH ARE DEAD RULES.
+       The original `.mc-foot` is `position:absolute; left:20px; right:20px; bottom:16px`. A later
+       rule sets `position:static`, so every one of those insets stopped applying -- including
+       the `bottom` I first wrote here.
+       The centring then failed for its own reason: that same later rule adds
+       `padding-inline-end:78px` to keep the line clear of `.mc-mascot`, and the foot's content
+       box came out at exactly the width of the line, so `justify-content:center` had nothing to
+       distribute. Measured: foot 198px wide, content box 120px, line 120px, sitting 39px left of
+       the panel's centre.
+       THERE IS NO MASCOT. `.mc-mascot` appears nowhere in index.html and nothing in app.js
+       creates one -- `document.querySelector('.mc-mascot')` returns null at every width. The
+       reservation is for an element that was removed, and it has been quietly pushing this line
+       off-centre ever since. So the padding goes, the line centres across the panel's full
+       width, and `margin-top:auto` (already on the foot) keeps it at the foot of the column,
+       which is as low as it can sit inside the panel's padding. */
+    .mc-foot{padding-inline-end:0;justify-content:center}
+    .mc-stream{flex:0 1 auto;justify-content:center;text-align:center}
+  }
+
+  /* ---------- 96. The progress line sits in the middle of the space it has -- */
+  /* Owner, after 94 centred it across the panel: "the progress line in mission control
+     should still go a bit lower, in the middle of them bottom page and last line."
+
+     NOTHING ABOUT ITS POSITION WAS WRONG. `.mc-line` reserves four rows of height (section
+     87) so a streamed string that changes every couple of seconds cannot resize the panel,
+     and `-webkit-box` paints its text at the TOP of that reservation. Measured at 1440: the
+     visible text is 14px tall, sitting at the top of a 65.9px box, with 16px above it and
+     51px of reserved emptiness below. It did not read as high because it was placed high. It
+     read as high because it was pinned to the ceiling of a box four times its size.
+
+     THE RESERVATION STAYS -- it is what stops the twenty-five second wobble that six earlier
+     rounds of this file exist to remove. What moves is the text inside it. The reservation
+     goes from the line to the stream, so the line takes its natural one-to-four rows and
+     `align-items:center` centres it in the reserved column. The dot travels with it, so it no
+     longer needs the .42em nudge that aligned it to a first row that is no longer at the top.
+
+     The foot's own top padding goes with it, because it is the last asymmetry: with it the
+     text centres in the box but the box does not centre in the gap. Without it the gap
+     between the last status row and the panel's inner edge IS the reservation, and the line
+     sits in the middle of it, equal above and below, at every desktop width. */
+  @media(min-width:1160px){
+    .mc-foot{padding-top:0;align-items:center}
+    .mc-stream{align-items:center;min-height:calc(4 * 1.35em)}
+    .mc-stream .mc-line{min-height:0}
+    .mc-stream .mc-dot{margin-block-start:0}
+  }
+
+  /* ---------- 97. A card must never fade toward something LIGHTER than itself - */
+  /* Owner, 2026-08-21: "the white background issue when scrolling we had on mobile view is
+     now happening on pc too ... make sure you fix this issue for any view we support."
+
+     SECTION 93 TREATED THE COLOUR AND LEFT THE MECHANISM RUNNING. It replaced the white-at-8.5%
+     plane behind these grids with the opaque colour that plane already composited to, #1a1a20.
+     At rest that is invisible, and it is still the right hairline colour. But the plane is what
+     a card fades THROUGH, and #1a1a20 has a luminance of 26 against a card of 11 and a page of
+     7. So a card at 40% opacity still reads as a grey slab, and the further down the grid it
+     sits the less of its reveal has run when the reader reaches it. Measured at 1600 with the
+     documentation grid entering: cards 1-2 at opacity 1.00, then .95 .84 .57 .48 .42 .37 --
+     which is exactly "the first two are fine and it gets worse as you go down", unchanged.
+
+     THE PLANE ITSELF IS THE DEFECT. These grids draw their separators by leaving a 1px gap and
+     letting a full-size background rectangle show through it. That rectangle has to be lighter
+     than the cards for the hairline to be visible, and it sits under every card, so any card
+     that animates its opacity is guaranteed to show it. No colour makes that safe.
+
+     SO THE HAIRLINE MOVES ONTO THE CARDS. Each card carries its own 1px ring, the wrapper's
+     plane goes away, and the gap between two cards is filled by the two rings that meet in it.
+     Nothing changes at rest -- same 1px lines, same colour, same rounded outer edge from the
+     wrapper's own border, and the rings are clipped away at the perimeter by the clip that is
+     already there. What changes is that the ring now fades WITH the card it belongs to, so a
+     half-revealed card is half-drawn against the page instead of half-dissolved into a slab.
+
+     SIX GRIDS, NOT FIVE. `.demo-tabs` is built the same way and 93 did not list it. Naming them
+     is still the weak part of this fix, so check-reveal now COMPUTES the subject: it walks up
+     from every element that animates opacity, at every width and in every language, and fails
+     if what is behind it is lighter than the element itself. A seventh grid built this way is
+     caught the day it is added rather than the day someone scrolls past it. */
+  .doc-cards,
+  main section.shell.trust,
+  .metrics,
+  .demo-tabs,
+  .report-meta,
+  .report-status{
+    background:transparent;
+  }
+  /* THE DEMO TABS ARE NOT A HAIRLINE GRID, whatever the design layer says. Measured, their gap
+     is 4px at desktop and 6px on a phone, not the 1px the pattern needs -- so the wrapper's
+     background was never a hairline there, it was a 4px band of white-at-8.5% between the
+     tabs, and an edge on each tab would be a 1px line floating in the middle of a 4px hole.
+     They are separate pills with space between them, so they get the transparent wrapper and
+     no edge at all. */
+  /* ONE EDGE PER CARD, NOT A RING. Owner, minutes later: "as they disappear i can see the box
+     borders duplicating", with a screenshot of the documentation grid mid-reveal showing a
+     double line down the right of every card and a second rectangle inside the wrapper's own
+     border.
+     A ring on every side means the 1px gap between two neighbours holds TWO shadows, and the
+     perimeter holds a card's ring immediately inside the wrapper's border. At rest both pairs
+     sit exactly on top of each other and read as one line. Mid-reveal they do not: each ring
+     carries its own card's opacity, so a card at 1.0 beside a card at 0.4 draws the shared gap
+     twice at two different strengths, and that is the doubling in the screenshot.
+     A separator belongs to ONE of the two things it separates. Each card draws its trailing
+     edge and its bottom edge and nothing else, so every internal line has exactly one owner and
+     fades with exactly one card. The outside is the wrapper's border, as it always was, and the
+     last column's and last row's edges fall outside the padding box, where the clip that is
+     already there removes them. */
+  .doc-cards>a,
+  main section.shell.trust>div,
+  .metrics>div{
+    box-shadow:1px 0 0 0 var(--rule-solid), 0 1px 0 0 var(--rule-solid);
+  }
+  /* box-shadow offsets are PHYSICAL and there is no logical form of them, so the Arabic build
+     needs the mirror written out: its grids flow right to left, so the gap a card has to fill
+     is the one on its left. */
+  [dir="rtl"] .doc-cards>a,
+  [dir="rtl"] main section.shell.trust>div,
+  [dir="rtl"] .metrics>div{
+    box-shadow:-1px 0 0 0 var(--rule-solid), 0 1px 0 0 var(--rule-solid);
+  }
+  /* The legacy hover glow lives in @layer legacy and would be replaced outright by the edges
+     above, which are in fixes. Composed rather than lost. */
+  .doc-cards>a:hover{box-shadow:1px 0 0 0 var(--rule-solid),0 1px 0 0 var(--rule-solid),0 0 28px rgba(255,79,201,.15)}
+  [dir="rtl"] .doc-cards>a:hover{box-shadow:-1px 0 0 0 var(--rule-solid),0 1px 0 0 var(--rule-solid),0 0 28px rgba(255,79,201,.15)}
+
+  /* ---------- 98. The cards pass BY, they do not just arrive ------------- */
+  /* Two owner reports, one answer.
+
+     "i want the same flow animation that the mobile has when scrolling with the cards on pc
+     too. do a professional job on that."
+     "i want the dissappearing effect both when scrolling up and down right now it seems like
+     it works when scrolling up only not down."
+
+     THE SECOND ONE IS A PRECISE DESCRIPTION OF WHAT `entry` MEANS. The reveal was written as
+     `animation-range: entry 2% cover 22%`: it runs while the card enters from the bottom and
+     is finished the moment it is in. Scroll-linked animations reverse, so scrolling back UP
+     replays it backwards and the card fades out. Scroll DOWN and there is nothing left to
+     play -- the card sits at its last keyframe and slides off the top at full strength. One
+     direction had an effect and the other did not, exactly as reported.
+
+     So the range becomes the WHOLE PASS, `cover 0%` to `cover 100%`, and the keyframes
+     describe a card crossing the screen: rise and fade in at the bottom, hold while it is
+     readable, fade out as it leaves the top. Symmetric by construction, in both directions,
+     because it is one timeline rather than one end of one.
+
+     THE HOLD IS WHERE THE CONTENT IS. At 900px of viewport and a 200px card the element is
+     fully on screen between cover 18% and cover 82%, so fading in by 16% and starting to go
+     at 84% means the fade only ever happens while the card is half off an edge. Nothing dims
+     while it is sitting in the middle of the screen being read.
+
+     THE HOLD ENDS WHERE THE STICKY HEADER BEGINS, and that is not the arithmetic it looks
+     like. A view() timeline insets the scrollport by `scroll-padding`, and this page sets
+     `scroll-padding-top` to the header's height (96px, 124px or 136px depending on width,
+     and `calc(var(--nav-h) + 26px)` in the current layer). So `cover 100%` is not "the card
+     has left the screen" -- it is "the card has gone under the header". Measured at 390 on a
+     107px card: progress 0.893 with its top at y=81, and progress 1.000 with its top at y=-19,
+     which is the moment its bottom edge passes below an 88px header.
+     That is exactly the right place for the fade to live. Ending the hold at 90% starts it as
+     the card meets the header and finishes it as the card disappears beneath it, so nothing
+     ever dims while it is sitting in clear space being read. The first draft used 84% and did:
+     measured, card one was at 0.26 opacity with 50px of it still visible below the header.
+
+     AND THE STAGGER, which was the first report. Measured by walking the page in 20px steps
+     and recording where each card first reaches opacity 1:
+
+         390    180 320 480 620 620 780 940 1080   about 115px between cards
+         1440   200 240 280 320 340 380 420  460   about  40px between cards
+
+     On a phone every grid is one column, so each card has its own entry and the flow spans
+     more than a screen. On a desktop a row of four shares a y and the only thing separating
+     them is this stagger, which was a quarter of the phone's. It now lives in the keyframes
+     -- pass1 to pass4, one per column position -- so a column's card finishes arriving later
+     and leaves later, and the wave runs the same way in both directions.
+
+     THE BREAKPOINTS ARE MEASURED, NOT ASSUMED. The old rule staggered `4n` and `3n` at every
+     width. The documentation grid is 4 wide above 1160, 3 down to 901, 2 down to 561 and 1
+     below; the trust grid, the pricing pair and the FAQ pair each change on their own
+     boundary. A `4n` stagger on a 3-wide grid is not a wave, it is a stutter that resets in
+     the middle of every row. */
+  @supports (animation-timeline:view()){
+    @media (prefers-reduced-motion:no-preference){
+      main section.shell:not(.hero)>*,
+      .yt-cinema,.yt-bar,
+      .trust>div,.doc-cards>a,.price-card,.groups>div,.faq details,.yt-item,
+      main section.shell.trust>div{
+        animation:pass1 linear both;
+        animation-timeline:view();
+        animation-range:cover 0% cover 100%;
+      }
+      /* Four positions in a row, four arrival times. The exit is staggered the same way round
+         as the entry, so the wave travels in one direction whichever way the reader scrolls.
+         The rise is on the way in only: a drift on the way out would fight the scroll. */
+      @keyframes pass1{
+        0%{opacity:0;transform:translateY(20px)}
+        16%{opacity:1;transform:none}
+        90%{opacity:1;transform:none}
+        100%{opacity:0;transform:none}
+      }
+      @keyframes pass2{
+        0%{opacity:0;transform:translateY(20px)}
+        22%{opacity:1;transform:none}
+        92%{opacity:1;transform:none}
+        100%{opacity:0;transform:none}
+      }
+      @keyframes pass3{
+        0%{opacity:0;transform:translateY(20px)}
+        28%{opacity:1;transform:none}
+        94%{opacity:1;transform:none}
+        100%{opacity:0;transform:none}
+      }
+      @keyframes pass4{
+        0%{opacity:0;transform:translateY(20px)}
+        34%{opacity:1;transform:none}
+        96%{opacity:1;transform:none}
+        100%{opacity:0;transform:none}
+      }
+      /* documentation: 4 wide above 1160 */
+      @media(min-width:1161px){
+        .doc-cards>a:nth-child(4n+2){animation-name:pass2}
+        .doc-cards>a:nth-child(4n+3){animation-name:pass3}
+        .doc-cards>a:nth-child(4n+4){animation-name:pass4}
+        main section.shell.trust>div:nth-child(3n+2){animation-name:pass2}
+        main section.shell.trust>div:nth-child(3n+3){animation-name:pass3}
+      }
+      /* documentation: 3 wide from 901 to 1160 */
+      @media(min-width:901px) and (max-width:1160px){
+        .doc-cards>a:nth-child(3n+2){animation-name:pass2}
+        .doc-cards>a:nth-child(3n+3){animation-name:pass3}
+      }
+      /* documentation: 2 wide from 561 to 900 */
+      @media(min-width:561px) and (max-width:900px){
+        .doc-cards>a:nth-child(2n){animation-name:pass3}
+      }
+      /* trust: 2 wide from 761 to 1160 */
+      @media(min-width:761px) and (max-width:1160px){
+        main section.shell.trust>div:nth-child(2n){animation-name:pass3}
+      }
+      /* the pricing pair is 2 wide from 761, the FAQ pair from 901 */
+      @media(min-width:761px){.pricing>.price-card:nth-child(2n){animation-name:pass3}}
+      @media(min-width:901px){.faq-grid>details:nth-child(2n){animation-name:pass3}}
+      /* THE FILM WALL IS auto-fit, so its column count changes continuously -- 6 5 4 3 2 1
+         between 1920 and 336, with boundaries at 1364, 1132, 904, 512 and 336. A per-column
+         rule would be wrong at five of those six, so this one cascades by INDEX, which reads
+         left to right and top to bottom whatever the row happens to hold. It had no stagger
+         at all before: twelve posters arriving together. */
+      .yt-item:nth-child(3n+2){animation-name:pass2}
+      .yt-item:nth-child(3n+3){animation-name:pass3}
+    }
+  }
+  /* ---------- 99. The hero pill is a badge, not a bar ---------------------- */
+  /* Owner: "in the top left corner where bugit qa agent is why its bubble is too long?? it
+     looks funny and its empty."
+     It is, and only on a desktop. Measured:
+         1920   pill 540.1px wide, holding a 7px dot, an 8px gap and 120.4px of text.
+                391.7px of it is empty.
+         1440   pill 546.5px, 398.1px empty.
+         1024   pill 163.4px, 0px empty.   <- correct
+          390   pill 163.4px, 0px empty.   <- correct
+     `.pill` is `inline-flex`, which is what keeps it at 163px on the narrow layouts. Above
+     1160 the hero copy becomes a flex column, and a flex item's `inline-flex` is BLOCKIFIED
+     to `flex` -- then stretched to the column, because the default cross-axis alignment is
+     stretch. The computed display confirms it: `inline-flex` at 1024 and 390, `flex` at 1440
+     and 1920. Nothing was wrong with the pill; it was being sized by its parent.
+     `align-self` opts out of the stretch, and `width:max-content` holds the shrink-to-fit if
+     the parent ever becomes a grid instead, where `align-self` alone would not be enough. */
+  .hero-copy>.pill{
+    align-self:flex-start;
+    justify-self:start;
+    width:max-content;
+    max-width:100%;
+  }
+
+  /* ---------- 100. One box on a phone ------------------------------------- */
+  /* The heading is a button now, so it has to stop looking like one and start looking like the
+     label it replaced. */
+  .status-head{
+    appearance:none;-webkit-appearance:none;
+    background:none;border:0;width:100%;
+    display:flex;align-items:center;gap:var(--s2);
+    text-align:start;cursor:pointer;
+    /* A BUTTON INHERITS NOTHING BY DEFAULT: the user agent gives it its own font, colour and
+       letter-spacing, so `font:inherit` is needed to escape that. But `inherit` here means the
+       PANEL's body text, not the label this element used to be -- so writing only `font:inherit`
+       threw the label's type away and rendered a 10px mono heading as 24px body copy. Measured
+       in German at 390: "Projekt wird eingelernt" came out at the panel's own size and weight,
+       sentence case, where a spaced uppercase mono label belongs. The type is restated rather
+       than inherited, at the values the design layer gives .status-head. */
+    font:inherit;
+    font-family:var(--mono);
+    font-size:var(--t-3xs);
+    font-weight:450;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+  }
+
+  /* THE CONTROL DOES THE SAME THING WHEREVER IT IS OFFERED. The first draft of this put the
+     collapse behind `max-width:760px` and left the button live above it, which would have
+     shipped a heading announcing aria-expanded="false" at 1440 while nothing on the screen
+     collapsed. A state that is declared and not honoured is the defect this site has already
+     been caught by twice, so the rules that DO the collapsing sit out here with the control
+     rather than inside the phone block. A desktop reader never needs to touch it: it starts
+     open, and only the one-box border merge below is width-scoped. */
+  .status-head{justify-content:space-between}
+  .status-head::after{
+    content:"";width:8px;height:8px;flex:none;
+    border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+    transform:rotate(-135deg);margin-block-start:3px;
+    transition:transform .25s var(--ease,ease);
+  }
+  /* Collapsed points DOWN, which is the direction the content will arrive from; expanded
+     points up. The first draft had these the wrong way round -- a chevron that says "less"
+     on a row that is already showing the least it can. */
+  .status-panel.steps-collapsed .status-head::after{transform:rotate(45deg);margin-block:0 3px}
+
+  /* COLLAPSED KEEPS THE LIVE ROW. Seven rows go, the one that is currently running stays, so
+     the section still visibly progresses at one line instead of eight. `.awaiting` is the
+     fallback for the moment before the instrument arms and after it finishes, when no row
+     carries `.active` -- without it the list would collapse to nothing at all and the heading
+     would look broken. */
+  .status-panel.steps-collapsed ul{gap:0;margin-top:var(--s2)}
+  .status-panel.steps-collapsed li{display:none}
+  .status-panel.steps-collapsed li.active{display:flex}
+  /* The live row keeps its marker, and the marker needs its own room. On a phone the row is a
+     pill with the marker absolutely placed inside it, and collapsed it is the only row on
+     screen -- so the 6px it had left between the spinner and the first letter read as touching.
+     Ten is the clearance the expanded rows have. */
+  .status-panel.steps-collapsed li.active{padding-inline-start:34px}
+  .status-panel.steps-collapsed li.awaiting{padding-inline-start:14px}
+  .status-panel.steps-collapsed:not(:has(li.active)) li.awaiting{display:flex}
+
+  @media(max-width:760px){
+    /* ONE BOX. The two panels lose their own edges and the wrapper draws a single one around
+       the pair, so the instrument reads as one object with two parts rather than as two cards
+       that happen to be stacked. The 1px gap between them stays as an internal rule. */
+    /* ONE SURFACE, not two cards floating on a lighter plane. The first draft gave `.mission`
+       a 1px gap over a `--rule-solid` background -- which is the same hairline-grid pattern
+       section 97 has just finished removing from six other places, and it looked it: two dark
+       rectangles on a grey ground with the flow chevron stranded between them. The box is one
+       panel colour from edge to edge, and the only line inside it is the rule the status half
+       carries at its bottom. */
+    .mission{
+      gap:0;background:var(--panel-solid);
+      border:1px solid var(--rule-solid);border-radius:var(--r-md);
+      overflow:hidden;overflow:clip;
+      padding:0;
+    }
+    .mission>.window{padding:14px 14px 10px}
+    .status-panel,.report-panel{border:0;border-radius:0;background:transparent}
+    .status-panel{border-bottom:1px solid var(--rule-solid)}
+    /* The connector sits ON the rule between the halves rather than in a gap of its own. */
+    .mc-flow{height:16px;margin:0}
+    .mc-flow:before{top:-1px}
+    .mc-flow:after{height:14px}
+
+  }
+
+  /* ---------- 101. A finger is 44px, and three controls were under it ------ */
+  /* Owner: "test and optimize the webpage and portal for chrome in mobile, many users use
+     that browser." check-mobile-chrome renders six phone sizes in both of the engines Chrome
+     ships on a phone -- Blink on Android, WebKit on iOS, because Apple allows no other -- and
+     measures every control's own hit box. Three came back under the 44x44 floor that Apple's
+     guidelines and WCAG 2.5.5 both set, at every size and in both engines:
+
+         #langButton            65 x 42   the language switch, in the header of every page
+         .demo-tabs button     121 x 41   all four of them, on the section the owner uses
+         .status-head          294 x 37   the disclosure section 100 has just added
+
+     Two and three pixels short reads like nothing on a screenshot and is the difference
+     between a tap and a mis-tap on a moving train. Only the height was ever short: each of
+     these is wide enough already, so a minimum height is the whole fix.
+
+     THE QUERY IS THE INPUT DEVICE, NOT THE WIDTH. `pointer:coarse` is what actually decides
+     whether a finger is doing the tapping -- a touchscreen laptop at 1400px needs this and a
+     narrow desktop window does not. The width clause stays beside it because a phone browser
+     in desktop mode reports a fine pointer while still being a phone. */
+  @media (pointer:coarse), (max-width:900px){
+    #langButton,
+    .status-head,
+    .demo-tabs button,
+    .nav-toggle,
+    .mm-signin,
+    .mm-cta,
+    .report-more-toggle,
+    /* A standalone link is a control too. This one sits on its own line under the consent
+       copy, not inside a sentence, so it is a target a finger has to find: measured 151x21. */
+    .consent-link{
+      min-height:44px;
+      align-content:center;
+    }
+  }
+
+  /* ---------- 102. AI QA ANALYSIS, rebuilt as an instrument ---------------- */
+  /* Owner: "implement very modern changes in the AI qa analysis section that still shows the
+     ticket generation flow with the scenarios we have", then: "make it super modern".
+
+     WHAT THIS PANEL IS. It is not a list of paragraphs. It is a QA agent writing a ticket in
+     front of you, one piece at a time, and cycling through three real scenarios. app.js
+     already drives all of that -- it adds `.on` to each block as the agent produces it, in
+     order, and swaps every string when the scenario or the language changes. Everything below
+     is presentation over that same machinery: not one line of app.js changes, and the DOM
+     keeps the exact shape initMission indexes into (h2, two h3s, two ps, pre, four meta cells,
+     six chips, four status cells). A redesign that renamed any of those would silently break
+     the animation it is meant to show off.
+
+     THE IDEA IS A SPINE. Every block the agent produces hangs off a vertical rail with a node
+     at its head, and the node lights the moment that block arrives. So the section stops
+     reading as a document and starts reading as a transcript of work being done -- which is
+     what it is, and which is the thing the owner asked to keep visible.
+
+     THE PIECES, and why each is the shape it is:
+       the rail      one 1px line with a node per block, drawn on the blocks themselves so it
+                     cannot fall out of step with them.
+       the head      the progress bar becomes SEVEN segments, because there are seven stages
+                     in the status panel beside it. Same number, same idea, now visible.
+       the metadata  four fields, four colours, each with its own accent so severity and
+                     component and environment and duplicate are distinguishable at a glance
+                     rather than by reading their labels.
+       the repro     a terminal card. It is a log; it should look like one.
+       the checks    capsules that light in sequence, already staged by app.js.
+       the verdict   four tiles with a state dot, so pass/attention reads before the words.
+     */
+  /* THE RAIL. Drawn by each block rather than by a single absolutely-placed line: a block
+     that is display:none in the collapsed state then takes its piece of the rail with it,
+     which one long line could not do without knowing what is hidden. The segment reaches
+     past the bottom of its block by the gap to the next one, so the pieces join up. */
+  .report-panel>*:not(.report-head):not(.report-more-toggle){
+    position:relative;
+    padding-inline-start:26px;
+  }
+  .report-panel>*:not(.report-head):not(.report-more-toggle)::before{
+    content:"";position:absolute;
+    inset-inline-start:5px;top:0;bottom:0;width:1px;
+    background:linear-gradient(180deg,var(--rule-solid),color-mix(in srgb,var(--rule-solid) 45%,transparent));
+    pointer-events:none;
+  }
+  /* THE RAIL ENDS WITH ITS BLOCK. It used to run 18px past the bottom of each one so the
+     segments would join into a continuous line, which worked everywhere except at the end:
+     the last block's tail carried on into the rule above "show full report" and butted into
+     it. Owner: "the report is touching the purple line in the bottom and doesnt look good."
+     A segment per block, ending where the block ends, reads as a sequence of steps rather
+     than one line -- which is what it is -- and has no tail to collide with anything. */
+  /* THE NODE. Hollow while the agent is still working on that block, filled and lit the
+     moment app.js marks it `.on`. `currentColor` would inherit the block's own colour, so it
+     is written out: the pass green for a block that has landed. */
+  .report-panel>*:not(.report-head):not(.report-more-toggle)::after{
+    content:"";position:absolute;
+    inset-inline-start:1px;top:.52em;width:9px;height:9px;border-radius:50%;
+    background:var(--panel-solid);
+    border:1px solid var(--rule-hard,#2a2a36);
+    transition:background .45s ease,border-color .45s ease,box-shadow .45s ease;
+    pointer-events:none;
+  }
+  .mc-armed .report-panel>.on::after{
+    background:var(--sig-pass,#2ff28c);
+    border-color:var(--sig-pass,#2ff28c);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--sig-pass,#2ff28c) 18%,transparent);
+  }
+  /* Not armed -- reduced motion, or no JS -- means the report is simply finished, so every
+     node is lit rather than every node being dead. */
+  .report-panel:not(.mc-armed *)>*:not(.report-head):not(.report-more-toggle)::after{
+    background:var(--sig-pass,#2ff28c);border-color:var(--sig-pass,#2ff28c);
+  }
+
+  /* THE HEAD: seven segments, one per stage in the panel beside it. The mask sits on the
+     TRACK, not on the fill: the fill is scaleX-animated by app.js, and a mask on a scaled
+     element scales with it, which would slide the segment boundaries as it filled. On the
+     track it is static and both layers are cut by the same comb. */
+  .report-head{gap:10px;margin-bottom:var(--s4)}
+  .report-head small{
+    font-family:var(--mono);letter-spacing:.18em;font-size:var(--t-3xs);font-weight:600;
+  }
+  .report-progress{
+    height:6px;border-radius:0;background:var(--raise-3,#151222);
+    -webkit-mask:repeating-linear-gradient(90deg,#000 0 calc(100%/7 - 3px),transparent calc(100%/7 - 3px) calc(100%/7));
+    mask:repeating-linear-gradient(90deg,#000 0 calc(100%/7 - 3px),transparent calc(100%/7 - 3px) calc(100%/7));
+  }
+  .report-progress i{
+    border-radius:0;
+    background:linear-gradient(90deg,var(--purple,#8b45ff),var(--sig,#ff4fc9) 62%,var(--sig-pass,#2ff28c));
+  }
+  .report-pct{font-family:var(--mono);font-size:var(--t-3xs);letter-spacing:.04em}
+
+  /* THE TITLE is the most important line in the report, so it gets the weight and the tight
+     tracking a headline gets, and a rule under it to separate the ticket's identity from its
+     data. */
+  .report-panel h2{letter-spacing:-.022em}
+
+  /* THE RESERVATIONS STAY, THE DEAD SPACE GOES. Section 86 gives the title and the metadata
+     cells a min-height per width -- 124px a cell at 1280 and up, five clamped lines for the
+     title -- so that a scenario change or a language change cannot resize the panel mid-cycle.
+     That is right and it is load-bearing. What it also did was park every value at the TOP of a
+     box sized for the longest language, which in English left two thirds of each cell empty and
+     read as a layout bug the moment the cells got a visible border and an accent. Centring the
+     content in the reserved height keeps the reservation exactly and spends none of it. */
+  .report-meta>div{
+    display:flex;flex-direction:column;justify-content:center;gap:3px;
+  }
+  .report-meta small{margin-bottom:0}
+
+  /* A NODE MARKS A PIECE OF THE REPORT, not every paragraph in it. The summary and its heading
+     are one piece; two nodes a line apart is noise, not information. The rail still runs past
+     the paragraph, so the thread is unbroken. */
+  .report-panel>p::after{display:none}
+
+  /* THE METADATA. Four fields, four colours. The accent is an inline-start bar rather than a
+     coloured background, so the cell stays part of the panel instead of becoming a badge, and
+     the label goes mono and small while the value takes the room. The colours are the ones
+     the page already uses for these ideas -- severity warm, component purple, environment
+     pink, duplicate cyan -- so nothing new is introduced to learn. */
+  .report-meta{gap:8px;border:0;padding:0}
+  .report-meta>div{
+    position:relative;overflow:hidden;
+    border:1px solid var(--rule-solid);border-radius:10px;
+    background:var(--panel-solid);
+    padding-inline-start:14px;
+  }
+  .report-meta>div::before{
+    content:"";position:absolute;inset-block:0;inset-inline-start:0;width:3px;
+    background:var(--field,#8b45ff);
+  }
+  .report-meta>div:nth-child(1){--field:#ff9d6b}
+  .report-meta>div:nth-child(2){--field:var(--purple,#8b45ff)}
+  .report-meta>div:nth-child(3){--field:var(--sig,#ff4fc9)}
+  .report-meta>div:nth-child(4){--field:var(--cyan,#49d8ff)}
+  .report-meta small{
+    font-family:var(--mono);letter-spacing:.14em;font-size:9.5px;color:var(--ink-3);
+  }
+  .report-meta b{font-size:var(--t-sm);font-weight:640;letter-spacing:-.01em}
+
+  /* THE REPRO STEPS ARE TEXT. Owner: "steps to produce are in a box again i dont want it
+     there use the same font as the rest."
+     They were a terminal card: a border, a dark ground, a title bar with three lights, and
+     green monospace. That is a strong frame around the one part of the report a reader most
+     wants to skim, and it made the panel look like two different documents stapled together.
+     Now it is the same voice as the summary and the analysis above it -- same family, same
+     size, same colour -- and the only thing it keeps from <pre> is the thing it needs, which
+     is that its own line breaks survive. The rail beside it already says which block it is.
+     Every one of these overrides is deliberate: @layer legacy sets the box, the mono font and
+     the green with a `font` shorthand, so each part has to be named to be undone. */
+  .report-panel pre{
+    border:0;background:none;border-radius:0;padding:0;
+    font-family:inherit;
+    font-size:var(--t-xs);
+    line-height:1.55;
+    font-weight:400;
+    /* THE SAME INK AS THE PARAGRAPHS ABOVE IT, and that is a measurement rather than a guess.
+       Owner: "the steps tp produce text looks dimmer than the rest." It was: the summary and
+       the analysis compute to rgb(216,199,231) at luminance 208, and --ink-3 gave this block
+       rgb(157,139,178) at 149 -- 28 percent darker, on the one part of the report a reader is
+       most likely to actually read line by line. --ink-3 is the tone for labels and captions,
+       not for body copy that happens to keep its own line breaks. */
+    color:var(--ink-2);
+    white-space:pre-wrap;
+    overflow-wrap:break-word;
+  }
+  .report-panel pre::after{content:none}
+  /* THE CHECKS. Owner: "the Automatically checked section has multiple visual issues", and
+     there were three.
+
+     THE TICK SAT ON THE FIRST LETTER. @layer legacy positions the tick with `left:9px`; this
+     block set `inset-inline-start:7px` -- which does beat it, logical and physical properties
+     for the same edge cascade together -- and then wrote `left:auto` on the NEXT line to
+     "clear" the physical one. Same block, later declaration, so `auto` won and the disc fell
+     back into the text flow, landing on the S of Severity in every chip.
+
+     THE LABEL SHARED A ROW WITH A CHIP. "AUTOMATICALLY CHECKED" is the heading for the set,
+     not a member of it, so it takes its own line and the chips wrap beneath as one group.
+
+     AND THE TICK ITSELF is drawn rather than typed: a glyph inside a 13px disc is at the mercy
+     of whichever font answers, and it was sitting low. Two borders rotated 45 degrees are the
+     same mark at any size, in any font, in both writing directions. */
+  .report-checked{gap:6px;margin-top:var(--s4)}
+  .report-checked .rc-label{
+    flex:1 0 100%;
+    font-family:var(--mono);letter-spacing:.14em;font-size:9.5px;
+    margin:0 0 2px;
+  }
+  .report-checked span:not(.rc-label){
+    position:relative;
+    border:1px solid var(--rule-solid);
+    background:var(--panel-solid);
+    border-radius:999px;
+    padding-block:5px;
+    padding-inline:29px 12px;
+    font-size:var(--t-3xs);font-weight:560;letter-spacing:.01em;
+    color:var(--ink-2,#c9d2e3);
+  }
+  .report-checked span:not(.rc-label)::before{
+    content:"";
+    position:absolute;
+    inset-inline-start:9px;
+    top:50%;margin-top:-6.5px;
+    transform:none;
+    width:13px;height:13px;border-radius:50%;
+    background:color-mix(in srgb,var(--sig-pass,#2ff28c) 20%,transparent);
+    border:1px solid color-mix(in srgb,var(--sig-pass,#2ff28c) 52%,transparent);
+  }
+  .report-checked span:not(.rc-label)::after{
+    content:"";
+    position:absolute;
+    inset-inline-start:14px;
+    top:50%;margin-top:-4.5px;
+    width:3px;height:6px;
+    border:solid var(--sig-pass,#2ff28c);border-width:0 1.5px 1.5px 0;
+    transform:rotate(45deg);
+  }
+  /* The tick is a corner of a box, so in a mirrored layout it has to be mirrored too, or it
+     points the wrong way. */
+  [dir="rtl"] .report-checked span:not(.rc-label)::after{transform:rotate(-45deg) scaleX(-1)}
+  /* THE VERDICT TILES. A state dot in front of the value, coloured by the class app.js
+     already puts there (`ok` pass green, `pink` needs-you), so the outcome reads before the
+     words do. */
+  .report-status{gap:8px;border:0}
+  .report-status>div{
+    border:1px solid var(--rule-solid);border-radius:12px;
+    background:var(--panel-solid);
+  }
+  .report-status small{
+    font-family:var(--mono);letter-spacing:.14em;font-size:9.5px;color:var(--ink-3);
+  }
+  .report-status b{
+    display:flex;align-items:center;gap:7px;
+    font-size:var(--t-xs);font-weight:640;
+  }
+  /* THE FOOT OF THE REPORT NEEDS AIR. The disclosure is the last thing in the panel and on a
+     phone the panel's bottom edge IS the box's purple border, so the rule above the control
+     and the border below it were 24px apart with the control between them. */
+  /* AUTO, NOT A FIXED MARGIN. The panel is a flex column and a grid item whose row height comes
+     from whichever of the two panels is taller, so the report often has slack at the bottom --
+     measured at 1280: content 846px inside an 874px panel, leaving the control 28px off the
+     edge while at 1600 the content happened to fill exactly and it sat flush. Same stylesheet,
+     same state, two positions, because the position was an accident of how much text the
+     current scenario produced. `margin-block-start:auto` puts the control at the end of the
+     column wherever the end is. In the open state the body overflows, there is no free space,
+     and the auto margin resolves to zero, so the pinned position is unchanged. */
+  .report-more-toggle{
+    margin-block-start:auto;
+    /* THE GAP ABOVE THE RULE CANNOT BE A MARGIN, because the margin is doing something else.
+       Owner: "the report again is touching the show full report line." It was: anchoring the
+       control with `margin-block-start:auto` fixed its POSITION, and auto margins collapse to
+       zero the moment there is no free space -- which is exactly the case the owner is looking
+       at, a report tall enough to fill the panel. So the fixed gap it used to have disappeared
+       precisely when it was needed.
+       The rule moves off `border-top` and onto the background, drawn 16px down inside the
+       control's own top padding. Now the space above the line is padding, which no layout can
+       collapse, and the auto margin is free to go on anchoring the control to the foot of the
+       column. 32px of padding with the line at 16 gives the same air above the line as below
+       it. */
+    border-block-start:0;
+    padding-block-start:var(--s6);
+  }
+  /* THE CLOSED STATE ONLY. `position:relative` here is just a containing block for the ::before
+     that draws the rule -- but it is the same property `position:sticky` uses, so setting it
+     unconditionally overrode the sticky that pins this bar while the report scrolls. Measured
+     at 1440 with the report open: computed position `relative`, bar at y=1474 in a 900px
+     viewport, which is why check-report-bar could not find the strip above it in any language
+     and reported twelve times that it could not measure. Open, the bar is sticky and a sticky
+     element is already a containing block for its own pseudo-elements, so it needs nothing. */
+  .report-panel:not(.is-open)>.report-more-toggle{position:relative}
+  /* A PSEUDO-ELEMENT, NOT A GRADIENT, and check-report-bar was right to reject the gradient.
+     Drawing the 1px rule as a `linear-gradient` background worked, but it put a gradient on the
+     pinned action bar -- which is the exact shape section 62 exists to forbid, because a
+     gradient there once had a transparent stop and let the report's own text show through the
+     bar. The guard cannot tell a two-identical-stop gradient from a fading one, and it should
+     not have to: a bar that is pinned over scrolling content has no business carrying a
+     gradient at all. The rule moves to ::before, which no `background` shorthand can reset and
+     no guard has to make an exception for. (::after is the chevron; ::before has been free
+     since section 62 removed the dissolve band that used to live there.) */
+  .report-more-toggle::before{
+    content:"";
+    position:absolute;
+    inset-inline:0;
+    top:var(--s4);
+    height:1px;
+    background:var(--rule-solid);
+    pointer-events:none;
+  }
+  /* ONE POSITION FOR ONE CONTROL, IN BOTH STATES. Owner: "show full report now sits higher than
+     hide full report, i want them in the same position."
+     Measured: closed it sat 25px above the panel's edge, open it pinned at 1px. The two states
+     do not share a padding to agree on -- `.report-panel.is-open` sets `padding-block:0` so the
+     scrolling body can reach the edges, while the closed panel keeps its 24px. So the control
+     sat wherever its state's padding left it.
+     The panel's bottom padding goes in BOTH states and the bar carries its own room instead. It
+     is an action bar at the foot of a panel: flush to the edge is where one belongs, it is what
+     the pinned state was already doing, and now there is only one number to be right. */
+  .report-panel{padding-block-end:0}
+  .report-more-toggle{padding-block-end:var(--s4)}
+  /* PINNED, THE RULE IS THE TOP EDGE. Owner: "there is a black bar above the hide full report
+     and its covering the text."
+     Closed, the control needs air above its line, and that air is padding so no auto margin can
+     collapse it. Open, the control is `position:sticky` with an OPAQUE background so the report
+     can scroll underneath it -- and every pixel of padding I added above the line became opaque
+     bar covering the report. The 32px lifted the bar's top edge 18px higher than it was, which
+     is the black band the owner is looking at: not a stray fill, just more of the panel's own
+     colour than the design ever asked for.
+     So the two states want different things from the same padding. Pinned, the line goes to the
+     very top edge and the padding returns to the 14px the sticky rule set, so nothing opaque
+     sits above the line at all. */
+  @media(min-width:1160px){
+    .report-panel.is-open>.report-more-toggle{padding-block-start:14px}
+    .report-panel.is-open>.report-more-toggle::before{top:0}
+  }
+  /* NO EXTRA BOTTOM PADDING, and that is the point. Owner: "show full report now sits higher
+     than hide full report, i want them in the same position."
+     They were 32px apart, and I put them there. Closed, the control is the last child and the
+     panel's bottom padding lifts it off the edge. Open, it is `position:sticky; bottom:0`, and
+     a sticky element pins to the scrollport's PADDING edge -- the same padding. So the two
+     states agree automatically, for free, as long as nothing changes the padding between them.
+     Section 102 added 32px of foot clearance for the closed state and 104b then took it away
+     again for the open one, which is exactly how you make one control sit in two places. The
+     clearance the closed state actually needed came from ending the rail at its block, not from
+     padding, so the padding goes back to being the panel's own and both states share it. */
+
+  .report-status b::before{
+    content:"";width:6px;height:6px;border-radius:50%;flex:none;
+    background:currentColor;
+    box-shadow:0 0 0 3px color-mix(in srgb,currentColor 16%,transparent);
+  }
+
+  /* ARRIVAL. A block does not just appear: a thin light passes along it once, left to right,
+     the way a line of text does when something writes it. It runs on the block's own
+     background-position, so it stays on the compositor and costs nothing, and it plays once
+     per arrival rather than looping -- an instrument that shimmers forever is a toy. */
+  @media (prefers-reduced-motion:no-preference){
+    .mc-armed .report-panel>.on{
+      background-image:linear-gradient(100deg,
+        transparent 0 42%,
+        color-mix(in srgb,var(--sig,#ff4fc9) 13%,transparent) 50%,
+        transparent 58% 100%);
+      background-repeat:no-repeat;
+      background-size:260% 100%;
+      animation:reportWrite .85s ease-out 1 both;
+    }
+    @keyframes reportWrite{
+      from{background-position:120% 50%}
+      to{background-position:-40% 50%}
+    }
+  }
+
+  /* On a phone the rail costs 26px of a 390px screen on every block, and the panel is already
+     one box with the status list collapsed above it. The nodes stay, tucked in tight. */
+  @media(max-width:560px){
+    .report-panel>*:not(.report-head):not(.report-more-toggle){padding-inline-start:18px}
+    .report-panel>*:not(.report-head):not(.report-more-toggle)::before{inset-inline-start:3px}
+    .report-panel>*:not(.report-head):not(.report-more-toggle)::after{inset-inline-start:0;width:7px;height:7px}
+    .report-panel pre{padding:30px 12px 12px}
+  }
+
+  /* ---------- 104. Owner review, fourth round ----------------------------- */
+
+  /* 104a. EVERY LINE IN A GRID IS PAINTED THE SAME WAY.
+     Owner, after three failed attempts at this: "the duplicate grid for this part is not
+     fixed yet ... private by design, no agent telemetry, those ones."
+
+     I had removed the two real doublings -- a ring per card, then a plane per grid -- and the
+     report kept coming, so I measured the pixels instead of reading the stylesheet. At device
+     ratio 1, sampled through the cells' padding where no glyph can reach:
+
+         an internal seam    12 12 | 27 27 | 12 12          one line, full strength
+         the wrapper's edge  18 17 | 22 22 | 14 14 | 12     TWO lines, a 22 and a 14
+
+     The seams are box-shadows with square corners, so they paint crisp. The frame is a 1px
+     border with a 14px radius, and a ROUNDED border is stroked and antialiased along its
+     whole length, not only at its corners -- so it splits across two rows at partial alpha.
+     One line smeared into two, which is why a guard looking for two separate lines with a gap
+     between them kept passing. It is worst at 100% and 125% display scaling, where the split
+     is most uneven.
+
+     THE OWNER CHOSE: square every card grid, so the whole page is consistent rather than one
+     section differing from the others. A square 1px border is pixel-snapped and paints at the
+     same strength as the seams it sits beside. The corners go; the six grids keep everything
+     else. The cells inside the two report grids are squared with them -- a rounded cell inside
+     a square frame would just move the antialiasing one layer in. */
+  .doc-cards,
+  main section.shell.trust,
+  .metrics,
+  .demo-tabs,
+  .report-meta,
+  .report-status{
+    border-radius:0;
+  }
+  .report-meta>div,
+  .report-status>div{
+    border-radius:0;
+  }
+
+  /* 104b. AN ACTION BAR THAT IS DECLARED STICKY HAS TO BE GIVEN AN EDGE TO STICK TO.
+     Owner: "the hide full report bar is now moving as i scroll up and down."
+     It is, and it always has been. When the report opens, the panel becomes its own scroll
+     container and section 62 pins both bars: `position:sticky;z-index:4`. The head above it
+     also carries `top:0` and does pin. The bar below it was given no inset at all, and
+     `position:sticky` with no `top` or `bottom` is inert -- the browser resolves every inset
+     to `auto`, the element never has an edge to stick to, and it simply scrolls with the
+     content. The declaration read like a decision and behaved like nothing.
+     It is easy to miss because it LOOKS pinned as long as the report is short enough not to
+     scroll; the moment the body is taller than the panel, the bar rides away. */
+  @media(min-width:1160px){
+    .report-panel.is-open>.report-more-toggle{bottom:0}
+  }
+
+  /* 104c. MORE OF THE ROW FOR THE REPORT.
+     Owner, twice: "the left project learning side still has too much space make it smaller
+     and give it to the report." Section 94 took it from 296px to 248px; this takes it to
+     210px. The column holds a label, eight one-line rows and a status line that already
+     reserves four rows of height for its longest language (section 87), so the width it needs
+     is set by the longest ROW label rather than by the stream. The right column is `1fr`, so
+     every pixel removed here lands in the report. */
+  @media(min-width:1160px){
+    .mission{grid-template-columns:minmax(0,210px) minmax(0,1fr)}
+  }
+
+  /* ---------- 105. The title reserves what it needs, not what it used to -- */
+  /* Owner: "you have a lot of space below the title you can use that space and bring the
+     report up higher."
+
+     Section 86 gives the report title a min-height so that a scenario change or a language
+     change cannot resize the panel mid-cycle. That is right and it stays. What went stale is
+     the NUMBER. Those reservations were derived when the report column was ~360px wide;
+     section 84 widened it, then 94, then 104c took the status column to 210px and handed the
+     rest over. A title that needed four lines in 360px needs two in 418px.
+
+     Re-derived by pulling all 33 report titles out of app.js -- 11 languages x 3 scenarios,
+     merged from English the way `add()` merges them -- and measuring each one in the real
+     column with the clamp lifted:
+
+         width   column   worst title   reserved   waste
+         1920      418      2 lines       4 lines    46px
+         1600      423      2             4          46px
+         1440      427      2             4          46px
+         1280      348      2             4          46px
+         1200      308      3             6          69px
+         1100      909      1             2          23px
+          900      756      1             2          23px
+          760      650      1             5          89px
+          430      346      2             5          63px
+          390      309      2             5          63px
+          360      282      3             5          42px
+          320      245      3             5          42px
+
+     The clamps are untouched: each is already at or above its band's need, and a clamp above
+     the need costs nothing while a reservation above it is dead space -- which is section 86's
+     own rule, applied to numbers that had drifted away from it. The reservation per band is
+     now the worst measured need in that band, so nothing is cut, nothing wobbles, and the
+     report starts where the title ends. */
+  @media(min-width:1280px){
+    .report-panel h2{min-height:calc(2 * 1.28em)}
+  }
+  @media(min-width:1160px) and (max-width:1279px){
+    .report-panel h2{min-height:calc(3 * 1.28em)}
+  }
+  /* TWO BANDS GET A LINE BACK, because measuring the titles was not the same as measuring the
+     instrument. check-instrument-size caught the panel resizing itself mid-cycle by exactly one
+     line -- 22.2px at 768 in ja, de and pt-br, 23.0px at 1024 in ru, 21.1px at 390 in de, es and
+     ru -- which is the wobble section 86's reservation exists to prevent, and which my own
+     re-derivation reintroduced in the two bands where the worst title measured a line shorter
+     than the worst RENDER. The 1160-and-up bands were right and keep their saving; these two
+     take the safe number. A reservation that is one line too big costs 23px; one that is a line
+     too small costs the panel jumping under the reader every twenty-five seconds. */
+  @media(min-width:761px) and (max-width:1159px){
+    .report-panel h2{min-height:calc(2 * 1.28em)}
+  }
+  @media(max-width:760px){
+    .report-panel h2{min-height:calc(4 * 1.28em)}
+  }
+
+  /* ---------- 106. A separator is a BORDER, so the engine can snap it ------ */
+  /* Owner, after the frames were squared: "the duplicate grid for the private by design, no
+     agent telemetry section is still not fixed", and then "same with the documentation
+     section, i think it was working before and now broken again."
+
+     "Working before and now broken again" was the clue. Squaring the frames (104a) is the only
+     thing that touched those two grids, and it did not introduce a second line -- it removed
+     the blur that had been hiding one. With the frames crisp, the remaining soft lines stand
+     out beside them. Measured at device ratio 1, through the cells' padding, everything
+     settled:
+
+         trust    vertical seam  ... 12 12 | 27 | 12 12 ...        one crisp line
+         docs     vertical seam  ... 12 12 | 27 | 12 12 ...        one crisp line
+         docs     ROW seam       ... 12 | 15 17 14 13 | 12 ...     one line across THREE rows
+         docs     bottom frame   ... 12 12 | 15 | 8 8 9 ...        very nearly not there
+
+     A 1px line at a fractional y cannot be drawn in one row of pixels, so it is spread across
+     two or three at partial strength. Beside a crisp 27 that reads as a second, weaker line --
+     which is exactly what "duplicate" describes. The columns of these grids land on whole
+     pixels and the rows do not, because a row's height is whatever its longest card needs,
+     and that is a fraction.
+
+     BOX-SHADOWS DO NOT SNAP. BORDERS DO. A border is part of layout, so the engine rounds it
+     onto the pixel grid; a shadow is painted at whatever subpixel offset it lands on. The
+     separators move from shadows to borders on the cells, which keeps every property this has
+     been fixed for along the way: one owner per line (no doubling), the line fades with its
+     own card (no half-faded pair), and there is no plane under the cards (no white wash).
+
+     AND THE FRAME COMES FROM THE SAME BORDERS. With `gap:0` the last column's trailing border
+     sits exactly where the wrapper's own right border would, and the last row's bottom border
+     where its bottom would -- so those two sides of the wrapper come off entirely rather than
+     being doubled or clipped away per breakpoint. The wrapper keeps the two sides nothing else
+     draws. Four sides, one owner each, all of them borders, all of them snapped. */
+  .doc-cards,
+  main section.shell.trust,
+  .metrics{
+    gap:0;
+    border-inline-end:0;
+    border-block-end:0;
+  }
+  .doc-cards>a,
+  main section.shell.trust>div,
+  .metrics>div{
+    box-shadow:none;
+    border-inline-end:1px solid var(--rule-solid);
+    border-block-end:1px solid var(--rule-solid);
+  }
+  /* The legacy hover glow is a box-shadow and would be removed by the line above, which is in
+     a later layer. Restated so the documentation cards keep it. */
+  .doc-cards>a:hover{box-shadow:0 0 28px rgba(255,79,201,.15)}
+
+  /* ---------- 107. A composited ancestor cannot snap the hairlines inside it -- */
+  /* The last piece of the duplicated-grid report, and the reason the documentation grid broke
+     while the trust grid beside it came out clean.
+
+     Measured at device ratio 1, with everything settled, sampling the same seam three ways:
+
+         as shipped                          rowSeam  12 | 14 16 10 | 12   a line over 3 rows
+         with the CARDS' reveal disabled     rowSeam  12 | 14 15 13 | 12   still smeared
+         with .docs-strip's reveal disabled  rowSeam  12 |    27    | 12   crisp
+
+     A scroll-driven animation that touches `transform` promotes its element to its own
+     compositing layer. That layer sits at whatever fractional y the page flow gave it, and
+     everything rasterised inside it is drawn at that offset WITHOUT being snapped to the pixel
+     grid -- so a 1px horizontal hairline lands across two rows at half strength each and reads
+     as a doubled, blurry line beside the crisp vertical ones. The columns survive because the
+     shell is centred in an integral width, so the layer's x offset is whole and its y is not.
+
+     THE TRUST GRID IS THE CONTROL. Section 27c animates `main section.shell:not(.hero)>*`, and
+     the trust grid IS a section -- so the things that animate are its CELLS, and no ancestor
+     of theirs is composited. Its hairlines snap. The documentation cards sit inside
+     `.docs-strip`, which is a section child and therefore animates too, so they had a
+     composited ancestor and did not snap. Same stylesheet, same cards, one extra layer.
+
+     The strip stops rising. Nothing is lost visually: the eight cards inside it already have
+     their own staggered reveal, which is the motion a reader actually sees, and it is now the
+     only one -- so there is no composited ancestor between the hairlines and the page. */
+  @supports (animation-timeline:view()){
+    @media (prefers-reduced-motion:no-preference){
+      /* IT IS THE GRID WRAPPER, not the strip around it. Measured after the first attempt:
+         `.docs-strip` came back `animation-name:none` and the seams were still smeared, because
+         `.doc-cards` ITSELF is a section child and so is an animation target in its own right --
+         while the trust grid's wrapper is a <section> and only its cells animate. That is the
+         entire asymmetry between the two grids, and it is why one looked right and one did not.
+         Every hairline wrapper is excluded, not just the one that was reported: the next grid
+         built this way should not have to be found by a person looking at it. */
+      /* AND THE SELECTOR HAS TO OUT-SPECIFY THE ONE IT IS UNDOING. `.doc-cards` is (0,1,0) and
+         `main section.shell:not(.hero)>*` is (0,2,2), so the short form lost on specificity no
+         matter how late it came -- computed animation-name stayed `pass1` and the seams stayed
+         smeared. Layers decide between layers; inside one, specificity still decides. */
+      main section.shell:not(.hero)>.doc-cards,
+      main section.shell:not(.hero)>.metrics,
+      main section.shell:not(.hero)>.report-meta,
+      main section.shell:not(.hero)>.report-status,
+      main section.shell.trust,
+      .docs-strip>.doc-cards,
+      .report-panel>.report-meta,
+      .report-panel>.report-status{animation:none}
+    }
+  }
+
+  /* ---------- 108. One owner for the frame, and it is the wrapper --------- */
+  /* Owner: "i can still see it, its the grid that surrounds the cards i think not the cards
+     themselves." Exactly right, and it was my previous change that made it so.
+
+     Section 106 took the wrapper's right and bottom borders off and let the last column's and
+     last row's cell borders stand in for them, which avoided a doubled edge without needing a
+     rule per breakpoint. The cost only shows in the pixels: the wrapper is not an animation
+     target and its borders snap to the pixel grid at any offset, while the cells ARE, and a
+     cell border lands wherever a fractional row height puts it. Measured on the trust grid:
+     left 27, top 27, seams 27 -- all wrapper- or column-aligned -- and the bottom edge 27 then
+     19 across two rows, because that one is drawn by a cell. Two sides of one frame crisp and
+     two smeared is precisely "the grid that surrounds the cards".
+
+     So the frame goes back to being one object with one owner: all four sides on the wrapper.
+     The doubling that 106 was avoiding is then removed at the other end -- the last column
+     drops its trailing border and the last row drops its bottom one, so no cell border ever
+     sits beside the frame. That needs the real column count at each width, which is measured
+     rather than assumed: the documentation grid is 4 wide above 1160, 3 down to 901, 2 down to
+     561 and 1 below; the trust grid 3, then 2 from 761, then 1; the hero's proof cells are 2
+     until 480. `:nth-child(Nn)` is the last column and `:nth-last-child(-n+N)` is the last
+     row, whatever N happens to be there.
+
+     AND THE DOCUMENTATION GRID GETS NO FRAME AT ALL. Owner: "its like the cards are inside
+     another box and that box has a grid." It is: `.docs-strip` is already a bordered, rounded
+     panel, and `.doc-cards` was drawing a SECOND frame a few pixels inside it. Two nested
+     boxes, which the rounded blur used to soften and squaring made obvious. The strip is the
+     box; the cards are a table inside it, with seams and no outer rule of their own. The trust
+     grid and the hero cells sit in no other box, so they keep theirs. */
+  main section.shell.trust,
+  .metrics{
+    border:1px solid var(--rule-solid);
+  }
+  .doc-cards{border:0}
+
+  /* .doc-cards */
+  @media(min-width:1161px){
+    .doc-cards>:nth-child(4n){border-inline-end:0}
+    .doc-cards>:nth-last-child(-n+4){border-block-end:0}
+  }
+  @media(min-width:901px) and (max-width:1160px){
+    .doc-cards>:nth-child(3n){border-inline-end:0}
+    .doc-cards>:nth-last-child(-n+3){border-block-end:0}
+  }
+  @media(min-width:561px) and (max-width:900px){
+    .doc-cards>:nth-child(2n){border-inline-end:0}
+    .doc-cards>:nth-last-child(-n+2){border-block-end:0}
+  }
+  @media(max-width:560px){
+    .doc-cards>*{border-inline-end:0}
+    .doc-cards>:nth-last-child(-n+1){border-block-end:0}
+  }
+
+  /* main section.shell.trust */
+  @media(min-width:1161px){
+    main section.shell.trust>:nth-child(3n){border-inline-end:0}
+    main section.shell.trust>:nth-last-child(-n+3){border-block-end:0}
+  }
+  @media(min-width:761px) and (max-width:1160px){
+    main section.shell.trust>:nth-child(2n){border-inline-end:0}
+    main section.shell.trust>:nth-last-child(-n+2){border-block-end:0}
+  }
+  @media(max-width:760px){
+    main section.shell.trust>*{border-inline-end:0}
+    main section.shell.trust>:nth-last-child(-n+1){border-block-end:0}
+  }
+
+  /* .metrics */
+  @media(min-width:481px){
+    .metrics>:nth-child(2n){border-inline-end:0}
+    .metrics>:nth-last-child(-n+2){border-block-end:0}
+  }
+  @media(max-width:480px){
+    .metrics>*{border-inline-end:0}
+    .metrics>:nth-last-child(-n+1){border-block-end:0}
+  }
+
+  /* ---------- 109. Cards that share a seam must not move apart ------------ */
+  /* Owner, and this is the sentence that explains every earlier report: "the cards are not
+     sticking to each other so sometimes when scrolling up they are in different positions up
+     and down and not aligned."
+
+     Section 98 reveals each card with `translateY(20px)` on a STAGGERED schedule, so that a row
+     arrives left to right instead of all at once. That is the right effect for cards that
+     stand on their own -- the film posters, the pricing pair -- and it is the wrong one for a
+     hairline grid, because in a hairline grid the line between two cards is drawn by ONE of
+     them. Move that card 12px while its neighbour sits still and the seam it owns moves with
+     it: the reader sees the neighbour's edge in one place and this card's edge in another, two
+     offset segments of what should be one line. That is the "duplicate grid", and it is why it
+     came back on the way up (the exit fade replays and the cards separate again) and looked
+     fine on the way down (the entry is over before you have finished scrolling past it).
+
+     It also explains the earlier symptom exactly: "its like the cards are inside another box
+     and that box has a grid" -- the wrapper's frame does not move, because the wrapper is not
+     animated, so it stays put while the cards slide inside it.
+
+     So the three grids whose cells share their borders fade WITHOUT moving. The stagger is
+     untouched -- the wave still runs across the row, one card lighting after the next, which
+     is the part a reader actually notices -- and the grid stays a grid the whole way through,
+     in both directions. Everything that is not a shared-border grid keeps its rise. */
+  @supports (animation-timeline:view()){
+    @media (prefers-reduced-motion:no-preference){
+      @keyframes fade1{0%{opacity:0}16%{opacity:1}90%{opacity:1}100%{opacity:0}}
+      @keyframes fade2{0%{opacity:0}22%{opacity:1}92%{opacity:1}100%{opacity:0}}
+      @keyframes fade3{0%{opacity:0}28%{opacity:1}94%{opacity:1}100%{opacity:0}}
+      @keyframes fade4{0%{opacity:0}34%{opacity:1}96%{opacity:1}100%{opacity:0}}
+      /* NOT `.metrics>div`. The hero's four proof cells are NOT scroll-revealed -- section 27c
+       excludes the hero -- but they DO carry the hero's own entrance animation, with its own
+       duration and `fill-mode:both`. Setting `animation-name` on them therefore does not add a
+       reveal, it REPLACES the keyframes that entrance animation plays. `fade1` ends at
+       `opacity:0`, so the four cards played the hero entrance straight to invisible and stayed
+       there: "the 4 cards in top of the page are disappearing now". `animation-name` alone is
+       never safe on an element that already has an animation. They are left out entirely, and
+       they need nothing: they never move, so their shared borders never come apart. */
+      .doc-cards>a,
+      main section.shell.trust>div{animation-name:fade1}
+      @media(min-width:1161px){
+        .doc-cards>a:nth-child(4n+2){animation-name:fade2}
+        .doc-cards>a:nth-child(4n+3){animation-name:fade3}
+        .doc-cards>a:nth-child(4n+4){animation-name:fade4}
+        main section.shell.trust>div:nth-child(3n+2){animation-name:fade2}
+        main section.shell.trust>div:nth-child(3n+3){animation-name:fade3}
+      }
+      @media(min-width:901px) and (max-width:1160px){
+        .doc-cards>a:nth-child(3n+2){animation-name:fade2}
+        .doc-cards>a:nth-child(3n+3){animation-name:fade3}
+      }
+      @media(min-width:561px) and (max-width:900px){
+        .doc-cards>a:nth-child(2n){animation-name:fade3}
+      }
+      @media(min-width:761px) and (max-width:1160px){
+        main section.shell.trust>div:nth-child(2n){animation-name:fade3}
+      }
+    }
+  }
+
+  /* ---------- 110. The consent banner must reserve the room it takes ------ */
+  /* Found while chasing a tap that would not land: on an iPhone SE the Mission Control toggle
+     could be opened and then not closed, because the consent banner was sitting on top of it.
+     Measured from there, and it is not a phone problem:
+
+         320x568   banner 322px   57% of the viewport
+         375x667   banner 322px   48%
+         430x932   banner 303px   33%
+        1280x800   banner 211px   26%
+
+     The banner is `position:fixed` at the bottom and NOTHING reserved its height, so the last
+     screenful of the document sat under it at every viewport -- including the desktop. Scrolled
+     all the way to the end, at 320, 375, 430 AND 1280, eight things were permanently
+     unreachable:
+
+         Documentation   License Agreement   Privacy Policy   Refund Policy
+         Commercial Transactions   Support   Cookie preferences   the copyright line
+
+     That is the entire footer legal row, and it is the row a visitor is most likely to want
+     BEFORE answering a cookie question -- while the banner itself is saying "Read our Privacy
+     Policy". There is no scroll position that clears them: the page simply ends underneath it.
+
+     So the document grows by exactly the height of the banner while the banner is shown. The
+     height is measured rather than guessed, because it is not one number: it changes with the
+     viewport, with the language, and by about 200px when the visitor opens Manage preferences.
+     app.js keeps `--consent-h` current from a ResizeObserver and marks the root while the
+     banner is up; if either ever fails the fallback is 0px, which is exactly today's behaviour
+     rather than a broken layout.
+
+     PADDING, NOT `scroll-padding`. Reserving this with `scroll-padding-block-end` would land
+     scrolls clear of the banner too, and it would also re-inset the scrollport that every
+     `view()` timeline on this page is measured against -- see the note in section 98, where
+     `scroll-padding-top` is already load-bearing for where each card's fade begins and ends. A
+     322px inset on a 568px viewport would rewrite every reveal range on the page, and only
+     until the visitor answered the banner. Padding at the end of the document adds the room
+     without touching the scrollport. */
+  :root{--consent-h:0px}
+  html.consent-open body{padding-block-end:var(--consent-h)}
+
+  /* ---------- 111. The demo stage is ONE instrument ----------------------- */
+  /* Owner: "i dont like the frame around the see it work videos, core workflow, saas, game qa,
+     it looks cheap and not modern."
+
+     Two separate things were making it read that way, and both were mine.
+
+     THE WINDOW CHROME. Section 38b gave the plate a fake title bar: three coloured dots and a
+     hairline, imitating a desktop window. That device dates precisely, it says nothing true
+     about what is playing, and BugIt does not run in a window with traffic lights -- it runs in
+     an editor. Decoration that pretends to be structure is the definition of cheap. Gone.
+
+     THE FLOATING PILL. A rounded segmented control hovering above a separate rounded rectangle
+     is two objects where the page has one idea. Everything else here -- Mission Control, the
+     analysis panel, the documentation strip -- is a single bordered surface with its controls
+     ON it. So the tabs come down onto the stage and become its top edge: one panel, one border,
+     one shared seam, drawn once by the stage. The selection is a 2px signature underline sitting
+     on that seam rather than a filled gradient lozenge, which is the same mark the navigation
+     already uses and needs no second colour to read.
+
+     The labels take the monospace face and the uppercase tracking the rest of the instrument
+     uses for channel names, so a tab reads as a CHANNEL rather than a button. The video sits
+     flush inside the plate, clipped by the plate's own radius, with nothing between the border
+     and the picture -- the padding is what made it look like a video embedded in a box.
+
+     `overflow:clip`, NOT `overflow:hidden`. Both clip the video to the radius; only `hidden`
+     creates a scroll container, and a scroll container here would become the nearest scrollport
+     for anything inside it that is on a `view()` timeline. That has already cost this page
+     three half-faded cards once. */
+  .demo-tabs{
+    /* The same width expression as the stage, so the two boxes are one column. */
+    width:min(100%,calc(62vh * 16 / 9));max-width:1120px;
+    margin:0 auto;
+    display:flex;flex-wrap:wrap;justify-content:flex-start;
+    gap:0;padding:0 var(--s2);
+    background:none;
+    border:1px solid var(--rule);
+    border-block-end:0;                 /* the stage owns the seam between them */
+    border-start-start-radius:var(--r-lg);
+    border-start-end-radius:var(--r-lg);
+    border-end-start-radius:0;
+    border-end-end-radius:0;
+    overflow:visible;
+  }
+  .demo-tabs button{
+    position:relative;
+    border:0;border-radius:0;
+    background:none;box-shadow:none;
+    color:var(--ink-3);
+    padding:15px 18px;
+    font-family:var(--mono);
+    font-size:var(--t-3xs);
+    font-weight:500;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:color .2s ease;
+  }
+  .demo-tabs button::after{
+    content:"";position:absolute;
+    inset-inline:var(--s3);inset-block-end:-1px;   /* ON the stage's top rule, not above it */
+    height:2px;background:var(--sig);
+    transform:scaleX(0);transform-origin:center;
+    transition:transform .28s var(--ease);
+  }
+  .demo-tabs button:hover{color:var(--ink);background:none}
+  /* Owner: "the playing video is still not highlighted, whatever video is playing its text must
+     be highlighted similar to hovered over it." So the channel that is playing carries the
+     signature colour outright, not a white that only reads as emphasis next to a grey. Hover uses
+     the same colour, which is the point of the request -- the difference between them is the mark
+     underneath: full strength for the one playing, a third of it for one being pointed at. */
+  .demo-tabs button.active{
+    color:var(--sig);
+    background:none;background-image:none;box-shadow:none;
+  }
+  .demo-tabs button.active::after{transform:scaleX(1)}
+  .demo-tabs button:active{transform:none}
+
+  .video-frame{
+    position:relative;
+    width:min(100%,calc(62vh * 16 / 9));max-width:1120px;
+    margin-inline:auto;margin-block-start:0;
+    padding:0;
+    border:1px solid var(--rule);
+    border-start-start-radius:0;
+    border-start-end-radius:0;
+    border-end-start-radius:var(--r-lg);
+    border-end-end-radius:var(--r-lg);
+    background:var(--panel-solid);
+    box-shadow:0 50px 110px -40px rgba(0,0,0,.95);
+    overflow:clip;
+  }
+  /* The traffic lights and their rule. */
+  .video-frame::before,.video-frame::after{content:none;display:none}
+  .video-frame video{border-radius:0;display:block;width:100%}
+
+  /* On a phone four channel names do not fit on one line in any language, so they become a
+     2x2 block rather than a ragged wrap. The underline still marks the active one wherever it
+     sits; only the bottom row's can reach the seam, which is what a marker is for. */
+  @media(max-width:760px){
+    .demo-tabs{display:grid;grid-template-columns:1fr 1fr;padding:0}
+    .demo-tabs button{padding:14px 8px;text-align:center}
+    .demo-tabs button::after{inset-inline:var(--s2)}
+  }
+
+  /* ---------- 112. The same rule, applied to the two grids 109 missed ----- */
+  /* Section 109 stopped the documentation and trust grids from coming apart while they fade,
+     and named the reason: in a hairline grid the line between two cards is drawn by ONE of them,
+     so a stagger that moves one card and not its neighbour tears the seam in half. It fixed the
+     two grids the owner had pointed at. It did not ask which OTHER grids on the page share their
+     borders, and two do.
+
+     Found by measurement, not by looking: the alignment walk added to check-hairlines.mjs walks
+     the whole page in 300px steps, down and back up, at six widths, and asserts that cells
+     sharing a row share a top. It reported
+
+         1600 @5100   div#faqList.faq-grid   two cells in a row 4.5px apart on top
+         1280 @5400   div#faqList.faq-grid   two cells in a row 4.9px apart
+         1600 @0      div.metrics            two cells in a row 1.5px apart
+
+     both on the way down and on the way back up. Naming the things you check is the defect that
+     keeps recurring here; this is what it looks like when a guard computes its own subject.
+
+     THE FAQ is the straightforward half: `details` cells carry a 1px top border, sit two to a row
+     above 900px, and were still on the `pass1`/`pass3` schedule with its `translateY(20px)`. They
+     move to `fade1`/`fade3`, which is the same stagger with the movement taken out.
+
+     THE HERO CELLS are the half that has to be done differently, and section 109 says why: they
+     are not scroll-revealed, they carry the hero's own entrance, and setting `animation-name` on
+     an element that already has an animation REPLACES its keyframes rather than adding one. That
+     is what made all four disappear last time. So nothing is set on the cells at all -- the
+     `cellIn` keyframes themselves drop their 14px rise, which is safe because `.metrics div` is
+     the only thing in this sheet that plays them. The 0.5 to 1.5px tear during the entrance goes
+     with it, and the four cells still arrive one after the next.
+
+     It also settles a small inconsistency 109 left behind. `cellIn` was given a rise so the hero
+     would enter the way the cards below it did; those cards no longer rise, so the hero matching
+     them now means not rising either. One entrance, still. */
+  @supports (animation-timeline:view()){
+    @media (prefers-reduced-motion:no-preference){
+      .faq-grid>details{animation-name:fade1}
+      @media(min-width:901px){.faq-grid>details:nth-child(2n){animation-name:fade3}}
+    }
+  }
+  @keyframes cellIn{from{opacity:0}to{opacity:1}}
+
+  /* ---------- 113. The channel rail's focus ring stays ON the rail -------- */
+  /* Owner: "the square highlight around the buttons (core workflow, saas...) is going out of
+     the box." It is, and both halves of it are left over from the pill the tabs used to be.
+
+     The page's global focus style is `outline:2px solid` at `outline-offset:2px` with a 6px
+     radius. On a lozenge floating in open space that ring sat in the gap around it. On a tab
+     that is now flush inside a 1px rail there is no gap: the ring is drawn 2px OUTSIDE the
+     button, which is outside the rail's own border, so a square of brand pink crosses the frame
+     and hangs over the stage below it.
+
+     And underneath that, the old hover/focus treatment lifted the tab by 3px and gave it a pink
+     wash and a 54px glow -- a button jumping out of the bar it is part of.
+
+     A segment cannot be ringed from outside, so it is ringed from inside: same 2px, same colour,
+     `outline-offset:-4px`, which keeps the whole indicator within the segment and therefore
+     within the rail. Nothing about its visibility is reduced -- it is the same width and the same
+     contrast, which is the part that has to hold. And the rail stays still: the underline is
+     already the thing that says which channel is selected, so focus does not need to move
+     anything to be legible. */
+  .demo-tabs button:focus-visible,
+  .demo-tabs button.active:focus-visible,
+  .demo-tabs button:not(.active):focus-visible{
+    outline:2px solid var(--sig);
+    outline-offset:-4px;
+    border-radius:var(--r-xs);
+    transform:none;
+    box-shadow:none;
+    background:none;
+    background-image:none;
+    background-color:transparent;
+    background-position:0 50%;
+    border-color:transparent;
+    color:var(--sig);
+  }
+  /* AND THE HOVER, which is what the owner was actually pointing at: "when hovered over them."
+     `@media (hover:hover){.demo-tabs button:not(.active):hover}` in the legacy layer lifted the
+     tab 3px, gave it a pink border, a pink wash and a 34px pink glow, and the active one got a
+     54px one. On the old floating lozenge that read as a button rising off the page. On a segment
+     that is now part of a rail it reads as a square of pink climbing out through the frame, which
+     is exactly the phrase used. Section 111 cancelled the wash by setting `background`, and that
+     shorthand does not touch transform, box-shadow or border-color -- so three quarters of it was
+     still there.
+
+     A segment does not rise. Hovering one previews the mark it would get: the same underline at a
+     third of its strength, drawn inside the same box, moving nothing. */
+  .demo-tabs button::after{opacity:1}
+  @media (hover:hover){
+    .demo-tabs button:hover,
+    .demo-tabs button.active:hover,
+    .demo-tabs button:not(.active):hover{
+      transform:none;
+      box-shadow:none;
+      background:none;
+      background-color:transparent;
+      background-image:none;
+      background-position:0 50%;
+      border-color:transparent;
+      /* NO COLOUR HERE, and that is not tidiness. This reset has to name `:not(.active):hover`
+         to out-specify the legacy rule it is undoing, which scores (0,3,1) -- so a colour left
+         in it would beat the plain `button:hover` below and the unselected tabs would quietly go
+         back to white. Layers decide between layers; inside one, specificity still decides. */
+    }
+    /* Owner: "change the text color when hovered over them." With the lift, the wash and the
+       glow all gone the only thing left was ink-3 to ink, which is a grey moving to a white and
+       is not enough to read as a response. An unselected channel goes to the signature colour on
+       hover, and so does the selected one. The two states are still not the same, because the
+       underline is what separates them: full strength under the channel that is playing, a third
+       of it under one you are only pointing at. */
+    .demo-tabs button:hover{color:var(--sig)}
+    .demo-tabs button:not(.active):hover::after{transform:scaleX(1);opacity:.35}
+  }
+
+  .demo-tabs button:active{transform:none;box-shadow:none}
+
+  /* ---------- 114. (withdrawn) ------------------------------------------- */
+  /* This section set the licence and privacy ledes as a compact two-column fact block, after a
+     first attempt that made them taller than the wall it was fixing. The owner then asked the
+     better question -- "its just a summary of the document right?? if so then better remove it
+     and let them read the whole thing" -- and it is. Both documents open with their own summary,
+     written and translated by whoever wrote the clauses. The lede is gone from those two routes
+     and the rules that styled it went with it; app.js no longer builds any. Kept as a heading so
+     the numbering stays stable and the reasoning is not lost. */
+  /* ---------- 115. Documentation reads at documentation size -------------- */
+  /* Owner: "overall the text in the documentation is large make them smaller." Measured on the
+     rendered privacy page at 1440:
+
+         body copy   18px / 31px      headings 45px and 27px      code 15.5px
+
+     Those are marketing sizes. They are right on the homepage, where a paragraph is three lines
+     and has to hold its own beside a 112px hero -- and they are wrong across eight thousand
+     characters of licence, where the same size means a third fewer words on screen, a page that
+     never seems to end, and a heading that shouts every time the reader reaches one. Every
+     documentation site worth copying sets its body between 15 and 16px for exactly this reason.
+
+     So documentation gets its own scale rather than the page's. It is scoped to `#docView`, so
+     nothing outside the documentation moves, and it is expressed as tokens rather than as a
+     list of font-sizes: one place to change, and the ratios between the steps stay fixed the way
+     the global scale keeps its own.
+
+     THE MEASURE GOES UP AS THE TYPE COMES DOWN, and that is not a contradiction. 56ch at 18px is
+     516px of an 780px column; at 16px the same 56ch would be 459px and the column would look
+     half empty. The measure is in CHARACTERS because that is what reading is limited by, so it
+     moves to 62ch -- about 68 characters, still inside the 50-75 band, and now using the column
+     it was given. */
+  #docView{
+    --doc-body:clamp(14.5px,.88rem + .18vw,16px);
+    --doc-h1:clamp(26px,1.15rem + 1.55vw,38px);
+    --doc-h2:clamp(17.5px,1rem + .55vw,21px);
+    --doc-measure:62ch;
+  }
+  #docView .license-doc p,
+  #docView .license-doc li,
+  #docView .license-doc .license-clause,
+  #docView .docs-content>p{
+    font-size:var(--doc-body);
+    line-height:1.7;
+  }
+  #docView .docs-content h1,
+  #docView .doc-head h1{
+    font-size:var(--doc-h1);
+  }
+  #docView .license-doc .license-title,
+  #docView .license-title{
+    font-size:var(--doc-h2);
+  }
+  /* The lede sits between the two and has to stay distinguishable from the body it introduces. */
+  #docView .doc-lede{font-size:var(--t-sm);line-height:1.62}
+  /* `code` is a share of its surrounding line, so it follows without being named again -- but
+     the guide pages set it in absolute pixels, which would not. */
+  #docView .license-doc code{font-size:.92em}
+
+  /* ---------- 116. The sheet's right-hand column carries the contents ----- */
+  /* Owner: "use the empty space in the right side of each box why are you leaving it empty? it
+     looks ugly." Measured at 1440: the sheet is 880px wide and the prose is capped at 563.5px,
+     so 316px of every document sat blank.
+
+     Filling it with text is not the answer -- that cap is the measure, and a 90-character line
+     is one nobody finishes. The space is not wasted, it is UNOCCUPIED, and what belongs in it is
+     the thing every documentation site puts there: the contents of the page you are on. It moves
+     out of the left sidebar, where it sat under fifteen navigation links and could only be read
+     by scrolling away from the document, and into the sheet's own right-hand column, sticky, so
+     "where am I" is answerable without leaving the sentence.
+
+     `overflow:clip`, NOT `overflow:hidden`, AND THAT IS THE WHOLE THING WORKING. Both clip the
+     top light to the rounded corner. Only `hidden` makes the sheet a scroll container, and a
+     sticky child resolves against the nearest scroll container -- so inside a `hidden` sheet the
+     rail would have a scrollport that never scrolls, and would sit exactly still while the page
+     moved under it. It is the same distinction that keeps the docs sidebar sticky under
+     `html{overflow-x:clip}` a few hundred lines above.
+
+     BELOW 1200px THERE IS NO COLUMN TO GIVE IT, so app.js does not build the rail at all and
+     the list goes back to the sidebar exactly as it was. `:has()` is what makes the sheet a
+     two-column grid only when a rail actually exists, so a document with fewer than three
+     sections -- which builds no list -- still gets the full width for its prose. */
+  .docs-content{overflow:clip}
+  .docs-content:has(> .docs-toc-rail){
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(180px,216px);
+    column-gap:clamp(26px,2.6vw,48px);
+    align-items:start;
+  }
+  .docs-content:has(> .docs-toc-rail) > *{grid-column:1}
+  /* IT STARTS WHERE THE DOCUMENT STARTS. Owner: "the On this page section should start from
+     where the body is not the very top of the page." Row 1 of this sheet is the header -- the
+     breadcrumb and the title -- and a contents list level with the title reads as part of the
+     title block rather than as a companion to the text. Row 2 is the document, so that is where
+     it begins; it is sticky, so it rides up with the reader from there. */
+  .docs-content > .docs-toc-rail{
+    grid-column:2;
+    grid-row:2 / span 99;
+    position:sticky;
+    top:calc(var(--nav-h,88px) + var(--s5));
+    align-self:start;
+    max-height:calc(100svh - var(--nav-h,88px) - var(--s7));
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding-inline-start:clamp(18px,1.8vw,30px);
+    border-inline-start:1px solid var(--rule-soft);
+  }
+  /* In the rail the list IS the whole object, so it drops the sidebar's own framing. */
+  .docs-content > .docs-toc-rail .doc-toc{margin:0;padding:0;border:0;background:none}
+
+  /* ---- 116b. The rhythm between clauses -------------------------------- */
+  /* Owner: "also large empty space in between each point/number." Measured on the licence: every
+     clause carried 24px of padding on top of 16.8px of margin, so 41px of nothing separated two
+     lines that are 27px tall -- a gap and a half between every numbered point, in a document
+     that is fifteen of them. On Privacy each section heading had 50px of margin above 28px of
+     padding: 78px.
+
+     Type this size does not need that much air to be readable; it needed it when the body was
+     18px and the gaps were sized against it. Both come down to something proportional to the
+     line rather than to the old size, which keeps the separation legible and gives back roughly
+     a screenful across a document. */
+  .license-doc .license-clause{padding-block-start:12px}
+  .license-doc p+p{margin-block-start:.8em}
+  .license-doc>.license-title{
+    margin-block-start:1.9em;
+    padding-block-start:14px;
+    margin-block-end:.5em;
+  }
+  .license-doc>.license-title:first-child{margin-block-start:0;padding-block-start:0}
+  .license-doc .license-list{margin-block:.6em}
+  .license-doc li{margin-block-end:.34em}
+
+  /* ---------- 117. The translation notice, and numbered lists ------------- */
+  /* Found by pointing check-doc-rendering.mjs at markdown LEADERS rather than only at markup:
+     every translated document opens with the machine-translation notice written as a blockquote,
+     app.js had no blockquote branch, and so fifty documents -- ten languages of PRIVACY,
+     GETTING_STARTED and OVERVIEW -- printed a literal chevron in front of the one paragraph that
+     tells a reader which version of a legal text governs. The Arabic privacy policy opened with
+     it. The renderer now emits the note; this is what it looks like.
+
+     It is deliberately QUIET. It is not a warning and not an error -- it is a provenance note
+     about the page you are on, and it sits above a legal document that must remain the loudest
+     thing on the screen. A hairline in the margin and a step down in size say "this is about the
+     text" without competing with it, and the logical inset mirrors itself in Arabic, where this
+     notice matters most.
+
+     The numbered list is the same find, one rule further on: there was no ordered-list branch at
+     all, so a numbered checklist printed its own numbers as prose. It takes the same shape as
+     the bulleted list beside it, with the marker drawn from the counter rather than from the
+     source text -- so a document's own words stay its own words. */
+  #docView .license-doc .doc-note{
+    margin:0 0 1.4em;
+    padding:0 0 0 var(--s4);
+    border-inline-start:2px solid var(--rule-hard,rgba(255,255,255,.14));
+    font-size:var(--t-xs);
+    line-height:1.6;
+    color:var(--ink-3);
+    max-width:var(--doc-measure);
+  }
+  #docView .license-doc .doc-note strong{color:var(--ink-2);font-weight:600}
+  #docView .license-doc ol.license-list{
+    list-style:none;
+    margin:.6em 0;
+    padding:0;
+    counter-reset:doc-ol;
+  }
+  #docView .license-doc ol.license-list>li{
+    counter-increment:doc-ol;
+    position:relative;
+    padding-inline-start:26px;
+  }
+  #docView .license-doc ol.license-list>li::before{
+    content:counter(doc-ol);
+    position:absolute;inset-inline-start:0;
+    font-family:var(--mono);
+    font-size:.82em;
+    color:var(--sig);
+    opacity:.8;
+  }
+
+  /* ---------- 118. A contents entry must not re-wrap when it is current --- */
+  /* Owner: "in commercial transaction faulty or nonconforming digital content changes when
+     clicked on and off", and "same for faq, which trackers have built in tested mapping."
+
+     Both of those are among the longest entries in their lists, and that is the whole story.
+     Section 41 marked the current entry with `font-weight:560` over an inherited 400. Heavier
+     glyphs are wider glyphs, so any label long enough to wrap re-wraps the moment it becomes
+     current: a word moves from one line to the next, the entry grows or shrinks a line, and
+     every entry below it shifts. It reads exactly as reported -- the text changing when you
+     click it -- and only the long ones do it, which is why it looked arbitrary.
+
+     There is no way to keep a weight change and keep the metrics; the metrics ARE the weight.
+     So the weight goes and the marking is carried by the two things that cost no width: the
+     text steps from ink-3 to ink, and the dot in the margin fills with the signature colour and
+     lights. Both were already there -- the weight was the only part of it that moved anything.
+     A faint raised ground is added so the current row still reads as a row rather than as a
+     brighter line of text.
+
+     It is not colour alone: the marker changes shape and fill as well, and the entry carries
+     aria-current for anything that is not looking at it.
+
+     `font-weight:inherit` WAS THE WRONG WAY TO SAY "DO NOT CHANGE IT", and the sweep caught it:
+     ten entries still changed height, all of them shrinking by exactly one line. In the sidebar
+     the list sits inside `.docs-sidebar a`, which sets 520, so `inherit` on the current entry
+     resolved to the ancestor's 400 and made it LIGHTER -- the same reflow, running backwards. In
+     the rail, which is not inside the sidebar, the base was already 400 and nothing moved, which
+     is why it looked fixed at one width and not the other. `inherit` names a place, not a value.
+     One declaration now covers both states, so they cannot differ, and the list weighs the same
+     wherever it is rendered. */
+  .doc-toc a,
+  .doc-toc a.is-current{
+    font-weight:500;
+  }
+  .doc-toc a.is-current{
+    color:var(--ink);
+    background:var(--raise-1);
+  }
+
+  /* ---------- 119. The four report fields stop reserving room they never use */
+  /* Owner: "in the mission control the boxes with severity, component, environment and
+     duplicate are too large looks unnecessary."
+
+     They are, and this is what a reservation costs when it is set by hand. The instrument may
+     not change size when the report opens or while it runs (check-instrument-size), so each
+     field reserves room for the tallest value any of the eleven languages can put in it. Those
+     numbers were entered per breakpoint and then never re-derived, so they drifted away from
+     what the content needs. Measured across 11 languages x 16 widths -- the tallest cell at
+     each width, and what was being held for it:
+
+         width   needs   reserved   wasted
+           320   133.0        132        0
+           390    93.7        132     38.3
+           560    86.5        132     45.5
+           668    67.7        132     64.3      <- almost twice what it holds
+           761    68.1         86     17.9
+           900    68.6         86     17.4
+          1024    69.0         86     17.0
+          1160    68.4        146     77.6      <- more than twice
+          1180   139.4        146      6.6
+          1280    97.4        124     26.6
+          1920    97.4        124     26.6
+
+     The worst case is almost always Arabic or a Romance language: "1 relacionada, ninguna
+     exacta" and "1 ذات صلة، لا مطابقة تامة" in the Duplicate field, and Arabic's Environment
+     value below 700px. Every band is now the measured worst case for that band plus 6px of
+     tolerance for a font that loads a fraction wider, which keeps the guarantee exactly and
+     stops paying for it eleven times over. The 1160-1179 band was holding 146px for a cell
+     that needs 68: that one alone is 78px of nothing, in the row a reader looks at first.
+
+     THE CELL IS ALSO LIGHTER. A four-field row is a caption, not four cards: the padding comes
+     in, the label drops to the smallest step, and the value stops being set at reading size. */
+  .report-meta>div{padding:8px 12px 8px 13px}
+  .report-meta small{font-size:9px;letter-spacing:.13em}
+  .report-meta b{font-size:var(--t-xs);font-weight:600;line-height:1.35}
+  .report-meta>div::before{width:2px}
+
+  /* ONE BAND PER MEASURED WORST CASE, and the numbers below are the re-measurement taken AFTER
+     the cell was made lighter -- the smaller label and value need less room, so reserving the
+     old figures would have given back nothing. Sampled at both edges of every band, because a
+     band is only as safe as its worst width: 1160 needs 55.6px and 1179 needs 93.1px, and a
+     value taken at 1160 alone would have resized the instrument at 1179. Each is the measured
+     maximum across eleven languages plus about 7px, for a font that loads a fraction wider. */
+  @media(max-width:560px){
+    /* 320-560, sampled at 320/360/390/430/560: the Spanish and Arabic Duplicate values wrap -- needs 110.4 */
+    .report-meta>div{min-height:118px}
+  }
+  @media(min-width:561px) and (max-width:760px){
+    /* 561-760, sampled at 561/600/640/668/700/760: German wraps at 561, one line above it -- needs 72.0 */
+    .report-meta>div{min-height:80px}
+  }
+  @media(min-width:761px) and (max-width:1159px){
+    /* 761-1159, sampled at 761/768/834/900/1024/1159: one line in every language -- needs 55.6 */
+    .report-meta>div{min-height:63px}
+  }
+  @media(min-width:1160px) and (max-width:1279px){
+    /* 1160-1279, sampled at 1160/1179/1180/1200/1240/1279: 1160 needs 55.6 and 1179 needs 93.1, so the band takes the taller -- needs 93.1 */
+    .report-meta>div{min-height:100px}
+  }
+  @media(min-width:1280px){
+    /* 1280 and up, sampled at 1280/1512/1920: Arabic needs the most -- needs 75.3 */
+    .report-meta>div{min-height:83px}
+  }
+
+  /* ---------- 120. The window lights sit on the panel's own spine --------- */
+  /* Owner: "the green lights in mission control are not aligned with the title."
+
+     Vertically they are: measured across four languages and seven widths, the dots' centre and
+     the title's line box agree to within 0.01px, and to within 0.7px of the glyphs themselves.
+     What is out is the whole lockup, horizontally, and it is out against everything below it.
+     Measured at 1440:
+
+         the two cards under the bar start at   668.5
+         the first light starts at              676.5      +8
+         the label inside those cards starts at 693.5     +25
+
+     So the lights hang in the gap between the two vertical lines a reader can actually see --
+     the card edge and the text column -- and land on neither. That is what reads as "not
+     aligned": there is nothing for the eye to line them up with.
+
+     The right spine is different above and below 761px, and for a real reason rather than a
+     breakpoint's sake. On a desktop the bar sits over two BORDERED cards, so the strongest line
+     on the panel is their edge and the lights belong on it. On a phone section 100 merges the
+     whole instrument into one box: there is no inner card edge left, the visible left margin is
+     the text, and the lights belong on that instead -- measured at 430, the status label starts
+     at 34.2 and the first light at 32.2, two pixels adrift. */
+  @media(min-width:761px){
+    /* Flush with the card edges below. */
+    .mission>.window{padding-inline:0}
+  }
+  @media(max-width:760px){
+    /* Flush with the text below, which is inset by the merged box's own padding. */
+    .mission>.window{padding-inline:var(--s4)}
+  }
+
 }

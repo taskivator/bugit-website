@@ -43,7 +43,11 @@ const state = (page) => page.evaluate(() => ({
   // on the index). Counting both together compares two different things and calls the
   // difference a regression.
   navLinks: document.querySelectorAll("#docNav .docs-nav-list a").length,
-  tocLinks: document.querySelectorAll("#docNav .doc-toc a").length,
+  /* NOT `#docNav .doc-toc a`. Above 1200px the contents list is built inside the sheet, in
+     its right-hand column, rather than in the left sidebar -- so a selector anchored to the
+     sidebar counts zero on exactly the viewport where the list is most visible, and reports
+     it as missing. The list is the subject; which column holds it is not. */
+  tocLinks: document.querySelectorAll("#docView .doc-toc a").length,
 }));
 
 const go = async (page, hash) => {

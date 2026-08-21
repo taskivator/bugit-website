@@ -195,8 +195,58 @@ function wireMenuKeyboard(cfg){
   var openAt=function(where){
     cfg.open(false);
     var all=cfg.items();
-    cfg.rove(where==='last'?all[all.length-1]:where==='first'?all[0]:cfg.current());
+    var want=where==='last'?all[all.length-1]:where==='first'?all[0]:cfg.current();
+    cfg.rove(want);
+    /* AND CHECK THAT IT LANDED, because in WebKit it does not always.
+       Escape closes the menu and hands focus back with btn.focus(). Press Space next and the
+       focus() this function issues, inside the keydown, is dropped: WebKit is still settling
+       the focus the Escape moved, and it puts focus back on the button on the Space keyup. The
+       menu is open, aria-expanded says so, and every arrow that follows goes nowhere -- which
+       is a keyboard-only reader stranded on the one control that changes the site's language.
+       Chromium honours it every time, which is why this survived a guard that ran in Chromium
+       and was found the day one ran in WebKit.
+       The rescue is deliberately narrow: one task later, and only if focus is STILL outside the
+       list. If the reader has already arrowed somewhere, that is their choice and it stands.
+       Asserting the effect and retrying beats trusting the call -- the same rule as waiting for
+       the effect rather than a proxy signal. */
+    lastWant=want;
+    if(want&&document.activeElement!==want)rescue();
   };
+  /* RETRY THE ACTION, DO NOT LENGTHEN THE WAIT. Whether the focus() lands is a race in WebKit,
+     not a fixed delay: the same press, on the same page, lands about half the time. One retry
+     at a chosen delay is another bet on the same race. So the effect is asserted and the action
+     repeated on a short ladder until focus is actually inside the list, or the menu closes, or
+     the budget runs out -- and only ever while focus is STILL outside the list. If the reader
+     has already arrowed somewhere, that is their choice and it stands. */
+  var lastWant=null;
+  var rescue=function(){
+    var want=lastWant;
+    if(!want)return;
+    var delays=[0,16,32,64,128],i=0;
+    var again=function(){
+      if(!cfg.isOpen())return;
+      var a=document.activeElement;
+      if(list.contains(a)&&a!==btn)return;             // it landed; nothing to do
+      cfg.rove(want);
+      if(++i<delays.length)setTimeout(again,delays[i]);
+    };
+    setTimeout(again,delays[0]);
+  };
+  /* THE THING THAT STEALS THE FOCUS IS THE KEYUP, so the answer has to run after it.
+     Space on a button activates on KEYUP, and WebKit puts focus back on the button when it
+     does -- after the keydown handler above has opened the menu and focused a row, and after a
+     setTimeout scheduled from that keydown has already run. Escape-then-Space is where it
+     shows, because Escape hands focus back with btn.focus() and the two moves collide.
+     A keyboard-only reader was left with an open menu, aria-expanded saying so, and every arrow
+     going nowhere: stranded on the one control that changes the site's language. Chromium
+     honours the focus() every time, which is why this survived every guard that ran in Chromium
+     and was found the day one ran in WebKit. */
+  btn.addEventListener('keyup',function(e){
+    if(e.key!==' '&&e.key!=='Spacebar'&&e.key!=='Enter')return;
+    if(!cfg.isOpen()||document.activeElement!==btn)return;
+    cfg.rove(lastWant||cfg.current());
+    rescue();
+  });
   btn.addEventListener('keydown',function(e){
     if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){
       e.preventDefault();
@@ -653,11 +703,19 @@ function renderDocRoute(){
         +`<span class="support-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 4.6 6v5.4c0 4.5 3.1 8.1 7.4 9.4 4.3-1.3 7.4-4.9 7.4-9.4V6z"/><path d="M9.4 12.1l1.9 1.9 3.6-3.8"/></svg></span>`
         +`<h2>${d.before}</h2><p>${d.beforeText}</p>`
       +`</div></div>`;
+  /* NO LEDE ON THE TWO LEGAL DOCUMENTS. Owner: "i dont think we need those small points in the
+     first paragraph of license agreement and privacy policy, its just a summary of the document
+     right?? if so then better remove it and let them read the whole thing."
+     It is exactly that, and both documents already open with their own: the licence with the
+     paragraph that binds the reader, the privacy policy with its own "In short" section, both
+     written by the people who wrote the clauses and translated with them. A second summary above
+     them, assembled from `sections[2]` and `sections[3]`, said the same things in different words
+     -- which on a legal page is not just redundant, it is a second version of the terms.
+     `sections` stays in the dictionaries: it is a translated string in eleven languages and the
+     parity guards count it. It is simply no longer printed above the document it summarises. */
   }else if(r==='docs/license'){
-    lede=d.sections[2];
     body=`<div id="licenseText" class="license-doc" aria-busy="true">${docSkeleton()}</div>`;
   }else if(r==='docs/privacy'){
-    lede=d.sections[3];
     body=`<div id="privacyText" class="license-doc" aria-busy="true">${docSkeleton()}</div>`;
   }else if(r==='docs/refund'){
     lede=d.refundIntro;
@@ -749,17 +807,61 @@ function docSkeleton(){
    lands. A token guards it: click through three documents quickly and three fetches are in
    flight, and only the newest one is allowed to touch the sidebar. */
 let docRenderToken=0;
+/* WHICH SIDE THE CONTENTS LIST LIVES ON.
+
+   Owner: "there is a large empty space in the right side of each body box which is unused in all
+   the docs." There is: the document panel is 780px of content column and the prose is capped at
+   its measure, because a line of 90 characters is not a line anybody reads. Filling that space
+   with more text would fix the gap and break the reading; the space is not wasted, it is
+   unoccupied, and what belongs in it is the thing every documentation site puts there.
+
+   So above 1200px the contents list moves out of the left sidebar and into a sticky rail on the
+   right, which is where a reader's eye goes to ask "where am I" without leaving the sentence.
+   Below that there is no room for a third column, and it goes back to the sidebar exactly as
+   before -- so the narrow layout is unchanged rather than newly compromised.
+
+   REBUILDING ON THE BREAKPOINT IS SAFE BY CONSTRUCTION, because docBuildToc() begins by finding
+   any existing list wherever it is, calling its __detach and removing it. That teardown already
+   had to exist: every route change builds a new list, and without it the previous one's scroll
+   listener would live on for the rest of the session reading a document that is no longer on
+   the page. Crossing 1200px is just another rebuild. */
+const DOC_TOC_WIDE = '(min-width:1200px)';
+let docLastUi=null;
+function docTocHost(){
+  const wide=window.matchMedia&&window.matchMedia(DOC_TOC_WIDE).matches;
+  const content=document.getElementById('docContent');
+  if(!wide||!content) return document.getElementById('docNav');
+  /* INSIDE the sheet, not beside it. Owner: "use the empty space in the right side of each box
+     why are you leaving it empty?" A rail in a third layout column would have left the box
+     itself exactly as empty; the space that is unoccupied is the panel's own, between the end of
+     the measure and its right edge, so that is where the list goes.
+     It is built rather than written into index.html because renderDocRoute() sets this element's
+     innerHTML on every route change, which would delete a static child. Building it here means
+     it cannot be orphaned and cannot be duplicated: the caller has already removed the previous
+     one from wherever it was. */
+  let rail=content.querySelector('.docs-toc-rail');
+  if(!rail){ rail=document.createElement('aside'); rail.className='docs-toc-rail'; content.appendChild(rail); }
+  return rail;
+}
 function docReadingUi(route,ui){
   docRenderToken++;
-  const nav=document.getElementById('docNav');
-  if(nav){const old=nav.querySelector('.doc-toc');if(old){if(old.__detach)old.__detach();old.remove();}}
+  docLastUi=ui;
   docBuildToc(ui);
   return docRenderToken;
 }
+if(window.matchMedia){
+  const mq=window.matchMedia(DOC_TOC_WIDE);
+  const onSide=()=>{ if(docLastUi&&!document.getElementById('docView').hidden) docBuildToc(docLastUi); };
+  if(mq.addEventListener)mq.addEventListener('change',onSide); else if(mq.addListener)mq.addListener(onSide);
+}
 function docBuildToc(ui){
-  const nav=document.getElementById('docNav'),content=document.getElementById('docContent');
+  const nav=docTocHost(),content=document.getElementById('docContent');
   if(!nav||!content)return;
-  const old=nav.querySelector('.doc-toc');if(old){if(old.__detach)old.__detach();old.remove();}
+  /* Wherever it is: the host changes with the viewport, so a lookup scoped to one of them
+     would leave the other's list behind and run two scroll spies over one document. */
+  document.querySelectorAll('#docView .doc-toc').forEach((o)=>{if(o.__detach)o.__detach();o.remove();});
+  /* An empty rail is a reserved column with nothing in it, which is the thing being fixed. */
+  document.querySelectorAll('#docContent .docs-toc-rail:empty').forEach((r)=>{ if(r!==nav) r.remove(); });
   // What divides THIS document: its headings, or -- for the licence, which has one heading
   // and fifteen numbered clauses -- its clauses.
   let heads=[...content.querySelectorAll('h2')];
@@ -780,7 +882,11 @@ function docBuildToc(ui){
     }
   }
   // Two sections are a document you can see the whole of; a contents list would be noise.
-  if(heads.length<3)return;
+  if(heads.length<3){
+    const empty=document.querySelector('#docContent .docs-toc-rail');
+    if(empty&&!empty.children.length)empty.remove();
+    return;
+  }
   heads.forEach((h,i)=>{if(!h.id)h.id='doc-sec-'+(i+1);});
   const toc=document.createElement('nav');
   toc.className='doc-toc';
@@ -796,7 +902,11 @@ function docBuildToc(ui){
     const a=e.target.closest('a');if(!a)return;
     e.preventDefault();
     const el=document.getElementById(a.getAttribute('href').slice(1));
-    if(el)el.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    if(!el)return;
+    /* Mark it before scrolling, not after: the scroll is animated, and an entry that lights up
+       half a second after it was pressed reads as a page that did not hear you. */
+    if(toc.__pin)toc.__pin([...toc.querySelectorAll('a')].indexOf(a));
+    el.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   });
   docSpy(toc,heads);
 }
@@ -818,6 +928,7 @@ function docSpy(toc,heads){
   };
   const read=()=>{
     raf=0;
+    if(pinned>=0){ mark(pinned); return; }
     /* The reading line is 170px down the window for most of a document, and slides to the
        bottom of the window across the final screenful. Clamping to the last entry at the
        bottom instead -- which is what this did first -- makes the list JUMP: on the licence
@@ -835,9 +946,54 @@ function docSpy(toc,heads){
   const onScroll=()=>{if(!raf)raf=requestAnimationFrame(read)};
   addEventListener('scroll',onScroll,{passive:true});
   addEventListener('resize',onScroll,{passive:true});
+  /* A CHOICE BEATS A GUESS. Owner: "sometimes when i click on a topic i want it doesnt get
+     highlighted and takes me to another point instead."
+
+     Everything above infers which section is being read from where the page is, and it has to:
+     while somebody scrolls, that is the only information there is. A CLICK is different -- it is
+     the reader saying which section they want, and inferring over the top of that can only ever
+     disagree with them. It did, reliably, near the end of a document: the reading line slides to
+     the bottom of the window across the final screenful (so the last entries are reachable while
+     reading), and the last few clauses of the licence share that screen. Click clause 13 and the
+     page scrolls as far as it can, which is the bottom, and the line then finds clause 15 above
+     it. The scroll went to the right place; the highlight did not follow.
+
+     So a click PINS its entry, and only a gesture the reader makes releases it -- wheel, touch,
+     a key, a press on the scrollbar. A programmatic smooth scroll fires `scroll` and nothing
+     else, which is exactly the distinction needed: the animation cannot un-choose what the
+     reader just chose, and the first real scroll afterwards hands the list back to the spy. */
+  let pinned=-1;
+  const unpin=()=>{ if(pinned<0)return; pinned=-1; onScroll(); };
+  /* WHICH GESTURES MEAN "I AM MOVING THE PAGE MYSELF", and this list was wrong once in a way
+     worth writing down. Owner: "when i click on 13 and hold the mouse button down 15 gets
+     highlighted."
+
+     The first version released the pin on `mousedown`, and a click is a mousedown followed some
+     time later by a click -- as long as the reader holds the button, that is exactly the window
+     where the previous pin has been dropped and the new one has not been set. `read()` runs in
+     that window, the sliding reading line at the foot of a document finds the last clause above
+     it, and entry 15 lights up until the button comes back up. Pressing INSIDE the contents list
+     is never someone scrolling; it is someone choosing.
+
+     `keydown` had the same shape for a keyboard: Enter on a focused entry is a keydown, so it
+     released the pin a frame before the click set it.
+
+     So a press releases the pin only when it lands somewhere else -- in the document, or on the
+     scrollbar, which is the one way to scroll that fires no gesture of its own -- and a key
+     releases it only if it is a key that scrolls and focus is not in the list. Wheel and touch
+     always release: neither can be part of choosing an entry. */
+  const SCROLL_KEYS=new Set(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ','Spacebar']);
+  const outside=(e)=>!(e.target&&toc.contains(e.target));
+  const onWheel=()=>unpin();
+  const onPress=(e)=>{ if(outside(e))unpin(); };
+  const onKey=(e)=>{ if(outside(e)&&SCROLL_KEYS.has(e.key))unpin(); };
+  const GESTURES=[['wheel',onWheel],['touchmove',onWheel],['mousedown',onPress],['keydown',onKey]];
+  GESTURES.forEach(([ev,fn])=>addEventListener(ev,fn,{passive:true}));
+  toc.__pin=(i)=>{ pinned=i; mark(i); };
   /* Every route change builds a new list; without this the old one's listener would live on
      for the rest of the session, reading a document that is no longer on the page. */
-  toc.__detach=()=>{removeEventListener('scroll',onScroll);removeEventListener('resize',onScroll)};
+  toc.__detach=()=>{removeEventListener('scroll',onScroll);removeEventListener('resize',onScroll);
+    GESTURES.forEach(([ev,fn])=>removeEventListener(ev,fn));};
   read();
 }
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -897,7 +1053,15 @@ function formatMarkdownDoc(txt){
   // Arabic sources wrap inline code in it (`<bdi dir="ltr">`python tools/connect.py`</bdi>`),
   // and a command that renders as prose is a command a reader cannot recognise.
   const line=s=>allowBdi(inline(s));
-  const blocks=txt.replace(/\r\n/g,'\n').split(/\n\s*\n/)
+  /* A HEADING IS ITS OWN BLOCK, whether or not the author left a blank line after it. Blocks are
+     split on blank lines, so `## Known limits` followed immediately by its bullets arrived here as
+     ONE block, matched the heading branch, and the entire list was emitted inside the <h2>. The
+     markers then printed as text, which is how it was found. Normalising the source so a heading
+     line always stands alone costs one pass and removes the whole class. */
+  const src=txt.replace(/\r\n/g,'\n')
+    .replace(/([^\n])\n(#{1,6}\s)/g,'$1\n\n$2')
+    .replace(/(^|\n)(#{1,6}\s[^\n]*)\n(?!\n)/g,'$1$2\n\n');
+  const blocks=src.split(/\n\s*\n/)
     .map(b=>b.replace(/\n[ \t]+/g,' ').trim()).filter(Boolean);
   let out='';
   for(const b of blocks){
@@ -905,6 +1069,22 @@ function formatMarkdownDoc(txt){
     if(/^###\s+/.test(b)){out+=`<h3 class="license-subtitle">${line(b.replace(/^###\s+/,''))}</h3>`;continue;}
     if(/^##\s+/.test(b)){out+=`<h2 class="license-title">${line(b.replace(/^##\s+/,''))}</h2>`;continue;}
     const lines=b.split('\n');
+    /* BLOCKQUOTES. Every translated document opens with the machine-translation notice, and it
+       is written as one: `> **Hinweis zur Uebersetzung.** ...`. Nothing here handled it, so the
+       marker fell straight through to the paragraph branch and printed. Fifty documents -- ten
+       languages of PRIVACY, GETTING_STARTED and OVERVIEW -- each showed a stray `>` in front of
+       the one paragraph that tells a reader which version of a legal text actually governs.
+       Rendered now as what it is: a note, set apart from the document it introduces. */
+    if(lines.every(l=>/^>\s?/.test(l))){
+      out+=`<blockquote class="doc-note">${line(lines.map(l=>l.replace(/^>\s?/,'')).join(' '))}</blockquote>`;
+      continue;
+    }
+    /* ORDERED LISTS. There was no branch for them at all, so a numbered checklist fell through
+       to the paragraph branch and printed its own numbers as prose. */
+    if(lines.every(l=>/^\d+\.\s+/.test(l))){
+      out+='<ol class="license-list">'+lines.map(l=>`<li>${line(l.replace(/^\d+\.\s+/,''))}</li>`).join('')+'</ol>';
+      continue;
+    }
     if(lines.every(l=>/^[-*]\s+/.test(l))){
       out+='<ul class="license-list">'+lines.map(l=>`<li>${line(l.replace(/^[-*]\s+/,''))}</li>`).join('')+'</ul>';
       continue;
@@ -1067,7 +1247,20 @@ function initReportDisclosure(){
        still `is-open` -- and the height read there is the open one, which is what this panel
        was being pinned to. The DOM cannot disagree with itself. */
     if(panel.classList.contains('is-open'))return;
-    const h=panel.getBoundingClientRect().height;
+    /* THE LAYOUT HEIGHT, NOT THE PROJECTED ONE, and this is the whole of a defect that read as
+       the box growing 7px when the report was opened, in Korean and Chinese and nowhere else.
+       `.mission` settles under a matrix3d with a small rotateX and a perspective term, and
+       getBoundingClientRect() returns the PROJECTED quad -- 534.6px for a panel whose layout
+       height is 527. That number then became a max-height, which is a layout property, so the
+       panel was handed 7.6px it did not have and the instrument grew into it. It looked
+       language-specific because it is a race: the settle finishes at different moments in
+       different languages, and only a press that lands before it finishes reads a tilted box.
+       `getComputedStyle().height` is the used value, in the element's own box and immune to any
+       transform on an ancestor; with box-sizing:border-box it already includes the padding and
+       the border, so it is the same number the rect reports once the tilt is gone. Falling back
+       to the rect keeps the old behaviour if a browser ever hands back a keyword. */
+    const used=parseFloat(getComputedStyle(panel).height);
+    const h=isFinite(used)&&used>0?used:panel.getBoundingClientRect().height;
     /* FLOOR, not round: round can return half a pixel MORE than the panel has, and this
        number becomes a max-height, so half a pixel too much is half a pixel of growth. */
     if(h>320)panel.style.setProperty('--report-h',Math.floor(h)+'px');
@@ -1603,6 +1796,34 @@ function initConsent(){
   const bReject=document.getElementById('consentReject');
   const bAccept=document.getElementById('consentAccept');
   const link=document.getElementById('cookiePrefsLink');
+
+  /* THE BANNER RESERVES ITS OWN HEIGHT. It is fixed to the bottom of the viewport and nothing
+     used to account for that, so the last screenful of the document sat underneath it. Measured
+     at maximum scroll, at 320, 375, 430 and 1280 alike, eight things could not be reached at any
+     scroll position while it was up: Documentation, License Agreement, Privacy Policy, Refund
+     Policy, Commercial Transactions, Support, Cookie preferences, and the copyright line. The
+     whole footer legal row, blocked by a banner whose own text says to read the privacy policy.
+
+     The height cannot be a constant. It is 322px at 320x568 and 211px at 1280x800, and it grows
+     by about 200px the moment Manage preferences is opened. So it is measured, and re-measured
+     whenever it changes. styles.css section 110 turns it into padding at the END of the document
+     rather than scroll-padding, which would have re-inset the scrollport that every view()
+     timeline on the page is measured against.
+
+     THE REFERENCE IS LOAD-BEARING, for the same reason it is on the report panel's observer
+     further up this file: a ResizeObserver with nothing holding it is collectable, and the
+     symptom is not an error, it is a callback that silently stops arriving. */
+  let lastReserve=-1;
+  function reserve(){
+    const on=!banner.hidden;
+    const h=on?Math.ceil(banner.getBoundingClientRect().height):0;
+    document.documentElement.classList.toggle('consent-open',on);
+    if(h===lastReserve) return;   /* writing it back unchanged can re-trigger the observer */
+    lastReserve=h;
+    document.documentElement.style.setProperty('--consent-h',h+'px');
+  }
+  if(window.ResizeObserver){ banner.__consentRO=new ResizeObserver(function(){reserve();}); banner.__consentRO.observe(banner); }
+  window.addEventListener('resize',reserve);
   function open(managing){
     const cur=C.read();
     if(adv) adv.checked=!!(cur&&cur.ad_storage);
@@ -1611,10 +1832,11 @@ function initConsent(){
     if(bSave) bSave.hidden=!managing;
     if(bManage) bManage.hidden=!!managing;
     banner.hidden=false;
+    reserve();
     try{banner.focus();}catch(e){}
   }
-  function close(){ banner.hidden=true; }
-  function collapsePrefs(){ if(prefs)prefs.hidden=true; if(bSave)bSave.hidden=true; if(bManage)bManage.hidden=false; }
+  function close(){ banner.hidden=true; reserve(); }
+  function collapsePrefs(){ if(prefs)prefs.hidden=true; if(bSave)bSave.hidden=true; if(bManage)bManage.hidden=false; reserve(); }
   function decide(advertising,analytics){
     C.write({ad_storage:advertising,ad_user_data:advertising,ad_personalization:advertising,analytics_storage:analytics});
     close();
@@ -1623,6 +1845,7 @@ function initConsent(){
   if(bReject) bReject.onclick=()=>decide(false,false);
   if(bManage) bManage.onclick=()=>open(true);
   if(bSave) bSave.onclick=()=>decide(!!(adv&&adv.checked),!!(ana&&ana.checked));
+  /* Manage preferences makes the banner about 200px taller; the reserve follows it. */
   if(link) link.onclick=(e)=>{e.preventDefault();open(true);};
   banner.addEventListener('keydown',(e)=>{ if(e.key==='Escape'&&prefs&&!prefs.hidden) collapsePrefs(); });
   if(!C.hasDecision()) open(false);
@@ -2250,9 +2473,76 @@ if(typeof faqMoreLabel !== 'undefined'){
     if(s === 1) stage.classList.remove('is-done');
   });
 
-  play.addEventListener('click', start);
+  /* ON A PHONE, HAND THE FILM TO YOUTUBE'S OWN PLAYER.
+     The stage is the full width of a 390px screen and the wall of films sits under it, so an
+     inline play leaves the picture a couple of hundred pixels tall with the rest of the page
+     competing for the same screen. Owner, 2026-08-21: "in mobile view when they tap on a
+     youtube video becasuse there is not enough space they should be auto taken to the youtube
+     video player so they can watch it".
+     A youtube.com/watch URL is the deep link both mobile platforms recognise: iOS and Android
+     hand it to the installed YouTube app, and fall back to the mobile site when there is none.
+     It also starts playing on arrival, which is the second half of the same request.
+     `www.youtube.com`, not the nocookie host, because nocookie serves the EMBED player and is
+     the frame-src the CSP grants; this is a navigation the reader asked for, not a request this
+     page makes, so the no-Google-before-consent promise is untouched. */
+  function watchOn(el){
+    var id = cutOf(el);
+    if(!id) return false;
+    window.open('https://www.youtube.com/watch?v=' + encodeURIComponent(id),
+                '_blank', 'noopener,noreferrer');
+    return true;
+  }
+
+  play.addEventListener('click', function(){
+    if(phone.matches && watchOn(stage)) return;
+    start();
+  });
   list.addEventListener('click', function(e){
     var btn = e.target.closest ? e.target.closest('.yt-item') : null;
-    if(btn) select(btn);
+    if(!btn) return;
+    /* Select first either way, so the stage and the wall agree about which film is current
+       whichever branch runs and whatever the reader comes back to. */
+    select(btn);
+    if(phone.matches && watchOn(btn)) return;
+    /* A TAP ON A FILM PLAYS IT. It used to only queue it: the poster changed and the reader
+       had to find the play button and press a second time, which reads as a dead tap. */
+    start();
+  });
+})();
+
+/* MISSION CONTROL IS ONE BOX ON A PHONE.
+   Owner, 2026-08-21: "in mobile view the mission statement is still too large and long and
+   taking lots of space you need to come up with a very creative way to make it smaller and
+   expandable in just 1 box no need to have 2".
+
+   Stacked on a phone the instrument was two bordered panels: eight status rows, then the
+   report. The eight rows are a PROGRESS display -- their value is watching them tick over --
+   so hiding them outright would have thrown away the thing that makes the section worth
+   scrolling past. Collapsed, the list keeps its LIVE row and drops the other seven, so the
+   section still moves while it costs one line instead of eight. Tapping the heading brings the
+   rest back.
+
+   The heading is a real <button> at every width rather than a phone-only upgrade, so
+   aria-expanded is always telling the truth about a control that always works. On a desktop it
+   simply starts expanded. Declaring a state and not honouring it is the defect this site has
+   already been caught by twice. */
+(function(){
+  var btn=document.getElementById('mcStepsToggle');
+  var panel=btn&&btn.closest('.status-panel');
+  if(!btn||!panel)return;
+  var phone=window.matchMedia?window.matchMedia('(max-width:760px)'):{matches:false};
+  var set=function(open){
+    btn.setAttribute('aria-expanded',open?'true':'false');
+    panel.classList.toggle('steps-collapsed',!open);
+  };
+  /* Default follows the width, and follows it back if the reader rotates the device. A choice
+     the reader has made themselves is left alone until the breakpoint is actually crossed. */
+  var touched=false;
+  var sync=function(){ if(!touched) set(!phone.matches); };
+  sync();
+  if(phone.addEventListener)phone.addEventListener('change',function(){touched=false;sync()});
+  btn.addEventListener('click',function(){
+    touched=true;
+    set(btn.getAttribute('aria-expanded')!=='true');
   });
 })();

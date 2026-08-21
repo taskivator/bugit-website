@@ -96,15 +96,39 @@ const OLD_VEIL = `@media(min-width:${MIN}px){
     background-image:linear-gradient(0deg,#0a0714 0%,#0a0714 62%,rgba(10,7,20,0) 100%)!important;
   }
   .report-panel.is-open>.report-more-toggle::before{
-    content:""!important;position:absolute;inset-inline:0;bottom:100%;height:46px;
+    /* top:auto is not decoration, and the comment carries no backticks because it lives inside
+       a template literal -- one backtick here ends the string and the file stops parsing.
+       The bar's ::before now draws the 1px rule at a top offset (section 102), and for an
+       absolutely positioned box with top, bottom AND height all set, top wins and bottom is
+       ignored -- so the veil landed on the rule's own line instead of in the 46px band above the
+       bar, moved nothing, and this control reported itself blind in all twelve languages. A
+       control has to undo the baseline it is overriding. */
+    content:""!important;position:absolute;inset-inline:0;top:auto!important;bottom:100%;height:46px;
     background:linear-gradient(to top,#0a0714 0%,rgba(10,7,20,.86) 38%,rgba(10,7,20,0) 100%);
     pointer-events:none;
   }
 }`;
 
+/* CLAMP THE CLIP TO THE VIEWPORT, and say so when there is nothing left to measure.
+   This threw -- "Clipped area is either empty or outside the resulting image" -- the moment the
+   action bar moved flush to the panel's bottom edge, because the 80px strip above it was asked
+   for at a y that no longer existed on screen. A guard that dies is worse than one that fails:
+   the suite reported a crash where it should have reported either a result or an honest "could
+   not measure here". */
+const clampClip = (clip, vw, vh) => {
+  const x = Math.max(0, Math.min(Math.round(clip.x), vw - 1));
+  const y = Math.max(0, Math.min(Math.round(clip.y), vh - 1));
+  const width = Math.max(0, Math.min(Math.round(clip.width), vw - x));
+  const height = Math.max(0, Math.min(Math.round(clip.height), vh - y));
+  return width >= 8 && height >= 8 ? { x, y, width, height } : null;
+};
+
 // Decode a PNG and reduce it to a flat luminance array, using the page's own decoder.
 const strip = async (page, clip) => {
-  const shot = await page.screenshot({ clip });
+  const vp = page.viewportSize();
+  const safe = clampClip(clip, vp.width, vp.height);
+  if (!safe) return null;
+  const shot = await page.screenshot({ clip: safe });
   return page.evaluate(async (b64) => {
     const img = new Image();
     img.src = "data:image/png;base64," + b64;
@@ -124,6 +148,19 @@ const meanDiff = (a, b) => {
   let s = 0;
   for (let i = 0; i < a.length; i++) s += Math.abs(a[i] - b[i]);
   return s / a.length;
+};
+// HOW MUCH INK IS IN THE BAND, as the standard deviation of its own luminance. A veil is only
+// as visible as what it covers, so this is the sensitivity the control has available at a given
+// scroll position -- and choosing the position by it is the difference between measuring the
+// instrument and measuring the page's paragraph lengths.
+const spread = (a) => {
+  if (!a || !a.length) return 0;
+  let m = 0;
+  for (let i = 0; i < a.length; i++) m += a[i];
+  m /= a.length;
+  let v = 0;
+  for (let i = 0; i < a.length; i++) v += (a[i] - m) * (a[i] - m);
+  return Math.sqrt(v / a.length);
 };
 
 /* ---------- measure ------------------------------------------------------ */
@@ -272,7 +309,25 @@ for (const lang of ALL_LANGS) {
     const clip = { x: state.box.x, y: Math.max(0, state.box.y - 80), width: state.box.w, height: 80 };
     let best = 0;
     let unstable = null;
-    for (const frac of [0.25, 0.5, 0.75]) {
+    /* WHERE TO STAND, decided by looking first. Three fixed fractions was already an improvement
+       on one, and it still failed for Japanese: 1.94 against a threshold of 2, because none of
+       the three happened to land on a dense line. The band is swept, each position is scored by
+       how much ink it actually holds, and the veil is compared at the densest few. The threshold
+       stops being a bet on where a language puts its paragraphs. */
+    const inked = [];
+    for (const frac of [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]) {
+      await page.evaluate((f) => {
+        const el = document.querySelector(".report-panel");
+        el.scrollTop = Math.round((el.scrollHeight - el.clientHeight) * f);
+      }, frac);
+      await page.waitForTimeout(140);
+      const look = await strip(page, clip);
+      if (look) inked.push([frac, spread(look)]);
+    }
+    inked.sort((a, b) => b[1] - a[1]);
+    const positions = inked.slice(0, 3).map(([f]) => f);
+    if (!positions.length) positions.push(0.25, 0.5, 0.75);
+    for (const frac of positions) {
       await page.evaluate((f) => {
         const el = document.querySelector(".report-panel");
         el.scrollTop = Math.round((el.scrollHeight - el.clientHeight) * f);
@@ -280,6 +335,11 @@ for (const lang of ALL_LANGS) {
       await page.waitForTimeout(250);
       const A = await strip(page, clip);
       const A2 = await strip(page, clip);
+      if (!A || !A2) {
+        unstable = `${(frac * 100).toFixed(0)}% (the strip above the bar is off screen here, so ` +
+                   `nothing could be measured)`;
+        break;
+      }
       const stable = meanDiff(A, A2);
       if (stable > 0.4) { unstable = `${(frac * 100).toFixed(0)}% (${stable.toFixed(2)})`; break; }
       const veil = await page.addStyleTag({ content: OLD_VEIL });
@@ -287,7 +347,7 @@ for (const lang of ALL_LANGS) {
       const B = await strip(page, clip);
       await page.evaluate((el) => el.remove(), veil);
       await page.waitForTimeout(80);
-      best = Math.max(best, meanDiff(A, B));
+      if (B) best = Math.max(best, meanDiff(A, B));
     }
     if (unstable) {
       fail.push(`${at} two captures of the same frame differ at ${unstable}: the comparison is ` +
@@ -296,7 +356,8 @@ for (const lang of ALL_LANGS) {
     }
     if (best < 2) {
       fail.push(`NEGATIVE CONTROL DID NOT FIRE ${at}: putting the old veil back moved the 80px ` +
-                `above the bar by at most ${best.toFixed(2)} of luminance at any scroll position, ` +
+                `above the bar by at most ${best.toFixed(2)} of luminance at the three densest of ` +
+                `nine scroll positions (ink ${inked.slice(0, 3).map(([, v]) => v.toFixed(1)).join("/")}), ` +
                 `so this check cannot see a veil.`);
     } else {
       note(`${at} bar solid, nothing above it; the old veil would have moved ${best.toFixed(1)} of luminance`);

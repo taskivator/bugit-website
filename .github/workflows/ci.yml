@@ -261,5 +261,21 @@ jobs:
         run: node scripts/check-menu-keyboard.mjs
       - name: Verify an overlay never disables the control that closes it
         run: node scripts/check-overlay-controls.mjs
+      # Chrome on Android is Blink; Chrome on iOS is WebKit. This runs both, because a
+      # Chromium-only sweep has tested half of "Chrome on mobile".
+      # "Does this look like two lines" is not a question source code can answer, and reading the
+      # stylesheet got it wrong twice. This one measures pixels, at rest and mid-reveal.
+      # The one-box instrument was designed in English, which is the shortest language here.
+      - name: Verify Mission Control is one box in every language on a phone
+        run: node scripts/check-mission-box.mjs
+      - name: Verify every hairline separator is a single painted line
+        run: node scripts/check-hairlines.mjs
+      - name: Verify the phone browsers get a page they can use
+        run: node scripts/check-mobile-chrome.mjs
+      # The channel picker and the stage are one column, and a hover paints inside it. Measured
+      # from photographs: the highlight the owner saw leaving the box was a background and a
+      # shadow, and its replacement is a 2px mark drawn on the seam the two halves share.
+      - name: Verify nothing the demo stage paints leaves the instrument
+        run: node scripts/check-demo-stage.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
         run: node scripts/check-ci-coverage.mjs

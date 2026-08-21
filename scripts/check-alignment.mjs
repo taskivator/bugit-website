@@ -176,8 +176,12 @@ try {
     try { await fetch(base); break; } catch { await new Promise((r) => setTimeout(r, 250)); }
   }
   const browser = await chromium.launch();
-  let nEdges = 0, nHeads = 0;
-  for (const width of [1440, 1280, 1024]) {
+  let nEdges = 0, nHeads = 0, nSpines = 0;
+  /* 430 IS IN THIS LIST FOR THE SPINE RULE. The heading and edge rules above hold at every one
+     of these widths; the phone is here because that is where the instrument becomes ONE box and
+     the lights have a different line to stand on. A rule proved only where the layout is the
+     same everywhere is a rule proved once. */
+  for (const width of [1440, 1280, 1024, 430]) {
     for (const lang of ["en", "ar"]) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       await page.goto(base, { waitUntil: "networkidle" });
@@ -186,20 +190,22 @@ try {
       const dir = lang === "ar" ? "rtl" : "ltr";
       const { edges, heads } = await page.evaluate(MEASURE, dir);
 
-      if (edges.length < 5) {
+      if (width > 700 && edges.length < 5) {
         fail.push(`[${width}px ${lang}] measured only ${edges.length} sections: the scan did not run`);
       }
       const xs = [...new Set(edges.map((e) => e.x))];
-      if (xs.length !== 1) {
+      /* The single-edge and centred-head rules are desktop-layout rules; a phone stacks and
+         its sections legitimately sit on their own margins. 430 is here for the spine. */
+      if (width > 700 && xs.length !== 1) {
         fail.push(`[${width}px ${lang}] the page has ${xs.length} content edges, not 1: ` +
                   edges.map((e) => `${e.id}=${e.x}`).join(" "));
       }
       nEdges += edges.length;
 
-      if (heads.length < 3) {
+      if (width > 700 && heads.length < 3) {
         fail.push(`[${width}px ${lang}] measured only ${heads.length} section heads`);
       }
-      for (const h of heads) {
+      for (const h of (width > 700 ? heads : [])) {
         // 2px, because a centred text box lands on a half pixel as often as not.
         if (Math.abs(h.left - h.right) > 2) {
           fail.push(`[${width}px ${lang}] the "${h.id}" heading's text is not centred: ` +
@@ -211,6 +217,54 @@ try {
         }
       }
       nHeads += heads.length;
+
+      /* THE WINDOW LIGHTS MUST STAND ON A LINE A READER CAN SEE.
+
+         Owner: "the green lights in mission control are not aligned with the title." They were
+         vertically -- the dots' centre and the title's line box agreed to 0.01px -- and the
+         whole lockup was out horizontally, against everything below it: at 1440 the cards under
+         the bar began at 668.5, the first light at 676.5 and the label inside those cards at
+         693.5. The lights sat in the gap between the two vertical lines that actually exist and
+         landed on neither.
+
+         The rule is written as what a reader needs rather than as a breakpoint: the first light
+         must begin on the SAME inline-start as either the panel edge below it or the text
+         column inside that panel. Which of the two is right changes with the layout -- above
+         761px the cards are bordered and their edge is the strongest line; on a phone section
+         100 merges them into one box and the text becomes the only margin there is -- and this
+         does not need to know that. It only needs the lights to be on one of them. */
+      /* MEASURED WITH THE TILT OFF, and that is not a convenience. `.mission` settles under a
+         matrix3d with about three degrees of rotateX, and getBoundingClientRect() inside a 3D
+         transform returns the PROJECTED quad -- so every descendant reports a different x purely
+         as a function of how far down the tilted plane it sits. The first run of this rule
+         reported the lights 8px out at 1024 and the panel padding as 31px instead of 25px, all
+         of it projection. The decoration is switched off for the measurement and switched back
+         on after: alignment is a property of the layout, not of the animation over it. */
+      const tilt = await page.addStyleTag({
+        content: ".mission,.mission *{animation:none !important;transform:none !important}",
+      });
+      await page.waitForTimeout(60);
+      const spine = await page.evaluate((rtl) => {
+        const dot = document.querySelector(".mission > .window span");
+        const panel = document.querySelector(".mission .status-panel");
+        const head = document.querySelector(".mission .status-head");
+        if (!dot || !panel || !head) return null;
+        const start = (el) => { const r = el.getBoundingClientRect(); return rtl ? r.right : r.left; };
+        return { dot: +start(dot).toFixed(2), panel: +start(panel).toFixed(2), head: +start(head).toFixed(2) };
+      }, dir === "rtl");
+      await tilt.evaluate((el) => el.remove());
+      if (!spine) {
+        fail.push(`[${width}px ${lang}] the mission window bar was not found, so its spine was not measured`);
+        /* A PIXEL AND A HALF, because "aligned with the text inside a bordered box" resolves
+           through that box's own border and padding, and at a fractional shell width those land
+           a third of a pixel apart. Anything a reader can see is several pixels. */
+      } else if (Math.abs(spine.dot - spine.panel) > 1.5 && Math.abs(spine.dot - spine.head) > 1.5) {
+        fail.push(`[${width}px ${lang}] the window lights begin at ${spine.dot}, which is neither the ` +
+                  `panel edge below them (${spine.panel}) nor the text inside it (${spine.head}), so they ` +
+                  `line up with nothing`);
+      } else {
+        nSpines++;
+      }
 
       // The negative controls, once each. Break one section's edge and pull one heading off
       // centre, and require both measurements to notice, so a clean run cannot be a run that

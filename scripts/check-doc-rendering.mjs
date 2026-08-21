@@ -94,12 +94,42 @@ for (const name of fs.readdirSync(docsDir).sort()) {
   //    is a decision to make deliberately, not to discover.
   for (const tag of html.match(/<([a-z]+)[ >]/gi) || []) {
     const el = tag.slice(1).trim().replace(">", "").toLowerCase();
-    if (!["p", "h2", "h3", "ul", "li", "a", "strong", "code", "b", "bdi", "span"].includes(el)) {
+    if (!["p", "h2", "h3", "ul", "li", "a", "strong", "code", "b", "bdi", "span", "blockquote", "ol"].includes(el)) {
       failures.push(`${name}: renders an unexpected <${el}> element`);
     }
   }
 
-  // 4. The no-dash rule, on the rendered string.
+  // 4. NO MARKDOWN LEADER MAY SURVIVE INTO THE READER'S TEXT.
+  //
+  //    Rule 1 above catches a TAG that renders as text. It cannot see a markdown marker
+  //    that renders as text, because the marker is not a tag -- and one had been shipping
+  //    in fifty documents. Every translated document opens with the machine-translation
+  //    notice as a blockquote, formatMarkdownDoc() had no blockquote branch, and so ten
+  //    languages of PRIVACY, GETTING_STARTED and OVERVIEW each printed a literal `>` in
+  //    front of the paragraph that says which version of a legal text governs.
+  //
+  //    Checked on the rendered OUTPUT and on the text a reader actually sees, so it fails
+  //    for a marker the renderer ignored and for a marker a translator introduced alike.
+  const LEADERS = [
+    [/^>\s/, "a blockquote marker"],
+    [/^#{1,6}\s/, "a heading marker"],
+    [/^[-*+]\s/, "a list marker"],
+    [/^\d+\. \s*\S/, "an ordered-list marker"],
+    [/^\|/, "a table row"],
+    [/^\u0060\u0060\u0060/, "a code fence"],
+  ];
+  for (const chunk of html.replace(/<[^>]+>/g, "\n").split("\n")) {
+    const t = chunk.replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&").trim();
+    if (!t) continue;
+    for (const [re, what] of LEADERS) {
+      if (re.test(t)) {
+        failures.push(`${name}: ${what} renders as visible text: ${t.slice(0, 90)}`);
+        break;
+      }
+    }
+  }
+
+  // 5. The no-dash rule, on the rendered string.
   const lines = html.replace(/<\/(p|li|h2|h3)>/g, "\n").split("\n");
   lines.forEach((line) => {
     if (DASH.test(line.replace(NA_CELL, "||"))) {

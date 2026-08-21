@@ -57,6 +57,66 @@ async function controlsOn(page) {
   });
 }
 
+/* WHAT A FINGER ACTUALLY DOES BEFORE IT TAPS.
+
+   Playwright's honest tap refuses when something else is on top of the target, which is the
+   right rule and the reason this file exists. What it does NOT do is scroll further: if the
+   element is already inside the viewport it is considered scrolled into view, even when it has
+   landed under a fixed overlay, and it then retries the same blocked point until it times out.
+   On an iPhone SE that is what happened -- the Mission Control toggle opened, the page settled
+   with it 25px from the bottom of a 568px viewport, and the consent banner (322px tall, 57% of
+   that screen) was over it. A person would flick the page and tap it where it is clear.
+
+   So this does that first, and the FAILURE becomes the stronger statement: not "something was
+   in the way once", but "there is no scroll position at which this control can be tapped".
+   That is a real trap and this is where it is caught -- the same sweep found that the whole
+   footer legal row had no reachable scroll position at all while the banner was up.
+
+   `behavior:'instant'` is not decoration. The page sets `html{scroll-behavior:smooth}`, so a
+   plain scrollTo animates and every rect read in the same turn is read mid-flight. */
+const scrollClear = (page, id) =>
+  page.evaluate((elId) => {
+    const el = document.getElementById(elId);
+    if (!el) return "the control is no longer in the document";
+    const blocker = () => {
+      const r = el.getBoundingClientRect();
+      if (r.bottom < 4 || r.top > window.innerHeight - 4) return "off screen";
+      const cx = r.left + r.width / 2;
+      const cy = Math.min(Math.max(r.top + r.height / 2, 2), window.innerHeight - 2);
+      const top = document.elementFromPoint(cx, cy);
+      if (!top || top === el || el.contains(top) || top.contains(el)) return null;
+      let name = top.tagName.toLowerCase() + (top.id ? "#" + top.id : "");
+      for (let p = top; p; p = p.parentElement) {
+        const cs = getComputedStyle(p);
+        if (cs.position === "fixed" || cs.position === "sticky") {
+          name = p.tagName.toLowerCase() + (p.id ? "#" + p.id : "");
+        }
+      }
+      return name;
+    };
+    /* BRING IT INTO VIEW BEFORE SWEEPING AROUND IT, or the sweep is centred on wherever the
+       previous control happened to leave the page. #mcStepsToggle sits about 1,400px down; the
+       sweep reaches 820px either side of where it starts, so from the top of the page it never
+       arrived, and reported "covered at every scroll position" about a control that is clear at
+       scrollY 1342 with the banner's top edge 240px below it. The sweep is for finding a gap
+       near the control, not for finding the control. */
+    el.scrollIntoView({ block: "center", behavior: "instant" });
+    let last = blocker();
+    if (!last) return null;
+    const start = window.scrollY;
+    const step = Math.max(40, Math.round(window.innerHeight / 8));
+    for (let i = 1; i <= 10; i++) {
+      for (const sign of [-1, 1]) {
+        window.scrollTo({ top: Math.max(0, start + sign * i * step), behavior: "instant" });
+        const b = blocker();
+        if (!b) return null;
+        last = b;
+      }
+    }
+    window.scrollTo({ top: start, behavior: "instant" });
+    return last;
+  }, id);
+
 const inertAncestor = (page, id) =>
   page.evaluate((elId) => {
     const el = document.getElementById(elId);
@@ -89,6 +149,14 @@ async function run(engineName, engine, deviceName, broken) {
 
   for (const c of controls) {
     const loc = page.locator("#" + c.id);
+    const blockedOpen = await scrollClear(page, c.id);
+    if (blockedOpen && blockedOpen !== "off screen") {
+      failures.push(
+        `${where}: #${c.id} is covered by ${blockedOpen} at every scroll position, so there is ` +
+          `no way to tap it at all`,
+      );
+      continue;
+    }
     try {
       await loc.tap({ timeout: 4000 });                    // honest tap, no force
     } catch {
@@ -105,6 +173,14 @@ async function run(engineName, engine, deviceName, broken) {
         `${where}: #${c.id} is inside an inert <${inert}> while the thing it controls is open, ` +
           `so the control that closes it cannot be reached`,
       );
+    }
+    const blockedClose = await scrollClear(page, c.id);
+    if (blockedClose && blockedClose !== "off screen") {
+      failures.push(
+        `${where}: #${c.id} is covered by ${blockedClose} at every scroll position while what it ` +
+          `controls is open, so it can never be closed`,
+      );
+      continue;
     }
     try {
       await loc.tap({ timeout: 4000 });                    // honest tap again: it must CLOSE

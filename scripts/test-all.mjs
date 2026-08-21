@@ -47,6 +47,9 @@ if (!ready) { console.error(`server did not become ready at ${base}`); shutdown(
 
 // 4. Run every declared suite against the served site.
 const SUITES = [
+  // FIRST, and static: if a guard is not wired, say so in a second rather than after a
+  // twenty-minute browser sweep that was never the full sweep it looked like.
+  "check-ci-coverage.mjs",
   // check-assets and check-chrome-a11y used to run only in CI, or nowhere at all, so a local
   // `npm test` could pass while CI failed and vice versa. Both lists are now checked against
   // each other by scripts/check-ci-coverage.mjs.
@@ -146,6 +149,29 @@ const SUITES = [
   //                 control -- it rewrites app.js on the wire to restore the bug and fails
   //                 if that still passes.
   "check-overlay-controls.mjs",
+  // check-menu-keyboard   the language menu declares role="menu", which is a PROMISE about
+  //                 keyboard behaviour: arrows move, Escape closes, Home/End jump. It had none
+  //                 of it. Declared ARIA is checked by operating the control, not by reading it.
+  // check-mission-box     eleven languages x four phone widths x two states x two engines: on a
+  //                 phone Mission Control is ONE box, and collapsed it shows one live row.
+  // check-mobile-chrome   the four things a phone does that a desktop never does: zoom on focus
+  //                 into a sub-16px field, honest taps, the URL bar eating 100vh, and text
+  //                 auto-boosting. Chromium and WebKit.
+  // check-hairlines       a separator is ONE line. Measured from PIXELS, at rest and mid-reveal,
+  //                 because "does this look like two lines" is not a question source can answer.
+  //                 It reported the same defect the owner reported, twice, after I had twice
+  //                 declared it fixed by reading the stylesheet.
+  // check-demo-stage      the channel picker and the stage are ONE column, the channel that is
+  //                 playing is the only one marked, and nothing a hover paints leaves the
+  //                 instrument. Photographed and pixel-diffed, because what the owner saw
+  //                 escaping the box was a background and a shadow, and what replaced it is a
+  //                 2px mark on the seam the rail and the stage share -- neither of which is
+  //                 the button's own rectangle.
+  "check-menu-keyboard.mjs",
+  "check-mission-box.mjs",
+  "check-mobile-chrome.mjs",
+  "check-hairlines.mjs",
+  "check-demo-stage.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

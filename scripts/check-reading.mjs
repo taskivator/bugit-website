@@ -257,21 +257,50 @@ try {
   // it. Without this, every assertion above would pass just as happily against a flat page.
   await page.goto(base + "/#/docs/privacy", { waitUntil: "networkidle" });
   await page.waitForTimeout(700);
-  const controlSaw = await page.evaluate(() => {
-    const s = document.createElement("style");
-    // The original defect: a clamp() with no space before the plus.
-    s.textContent = ":root{--t-2xl:clamp(29px,1.35rem+ 2.1vw,45px)}";
-    document.head.appendChild(s);
+  const controlSaw = await page.evaluate((names) => {
     const content = document.getElementById("docContent");
-    const h1 = parseFloat(getComputedStyle(content.querySelector("h1")).fontSize);
+    const h1el = content.querySelector("h1");
+    const sizeOf = () => parseFloat(getComputedStyle(h1el).fontSize);
+    const intact = sizeOf();
+
+    /* WHICH TOKEN THE TITLE IS ACTUALLY SIZED BY, FOUND BY BREAKING THEM, one at a time, and
+       keeping the one that moves the title.
+
+       This control used to name `--t-2xl`, which is what the documentation title was sized by
+       when the malformed clamp shipped. Section 115 later gave documentation its own scale, and
+       the control went on breaking a token the title no longer reads: it reported "the type
+       scale was broken and the check still passed" about a page whose type scale it had not
+       touched. Reading the stylesheet for a matching rule is no better -- several rules match an
+       h1 and the cascade decides between them, so the first one found is not the one that wins.
+       Breaking a token and looking at the title is the only method that cannot be wrong about
+       which token the title uses. */
+    let prop = null;
+    for (const name of names) {
+      const s = document.createElement("style");
+      // The original defect: a clamp() with no space before the plus, which makes the whole
+      // declaration invalid at computed-value time with no parse error and no warning.
+      s.textContent = `:root,#docView,#docContent{${name}:clamp(29px,1.35rem+ 2.1vw,45px)}`;
+      document.head.appendChild(s);
+      const now = sizeOf();
+      s.remove();
+      if (now < intact - 0.5) { prop = name; break; }
+    }
+
+    const s = document.createElement("style");
+    s.textContent = prop
+      ? `:root,#docView,#docContent{${prop}:clamp(29px,1.35rem+ 2.1vw,45px)}`
+      : `:root,#docView,#docContent{${names.map((n) => `${n}:clamp(29px,1.35rem+ 2.1vw,45px)`).join(";")}}`;
+    document.head.appendChild(s);
+    const h1 = sizeOf();
     const p = [...content.querySelectorAll(".license-doc p")].find((x) => x.textContent.length > 40);
     const body = parseFloat(getComputedStyle(p).fontSize);
     s.remove();
-    return { h1, body, wouldFail: h1 < body * 1.6 };
-  });
+    return { h1, body, prop, intact, wouldFail: h1 < body * 1.6 };
+  }, TOKENS);
   if (!controlSaw.wouldFail) {
     fail.push("NEGATIVE CONTROL DID NOT FIRE: the type scale was broken the way it shipped " +
-              `(h1 ${controlSaw.h1}px against ${controlSaw.body}px body) and the hierarchy ` +
+              `(h1 ${controlSaw.h1}px against ${controlSaw.body}px body, via ` +
+              `${controlSaw.prop || "no custom property found"}) and the hierarchy ` +
               "check still passed, so it cannot see a flattened document.");
   } else {
     note(`negative control fired: with the malformed clamp restored, the title collapses to ` +

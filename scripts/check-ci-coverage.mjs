@@ -38,23 +38,33 @@ const failures = [];
 
 for (const g of guards) {
   if (!ci.includes(g)) failures.push(`${g} exists in scripts/ but is never run by ci.yml`);
+  // ...AND THE OTHER DIRECTION, which this file did not check and should have. On 2026-08-22
+  // the repo had 50 guards; ci.yml ran all of them and `npm test` ran 45. check-hairlines,
+  // check-mission-box, check-mobile-chrome and check-menu-keyboard were each written to answer
+  // a defect the owner had reported, and none of them could ever fail on the machine where the
+  // page is actually being looked at. That is the same failure this file was written for,
+  // pointed the other way: CI-only coverage means a regression is found by a push, not by the
+  // person who caused it, and it means `npm test` reads as a full sweep when it is not.
+  if (!suites.includes(g)) {
+    failures.push(`${g} exists in scripts/ but is not in test-all.mjs SUITES, so \`npm test\` never runs it`);
+  }
 }
 for (const s of suites) {
   if (!ci.includes(s)) failures.push(`${s} is declared in test-all.mjs SUITES but is never run by ci.yml`);
-  if (!guards.includes(s)) failures.push(`${s} is declared in test-all.mjs SUITES but no such file exists`);
+  if (!guards.includes(s) && s !== SELF) failures.push(`${s} is declared in test-all.mjs SUITES but no such file exists`);
 }
 
 if (failures.length) {
   for (const f of failures) console.error(`FAIL: ${f}`);
   console.error(
     `\ncheck-ci-coverage: ${failures.length} guard(s) not wired.\n` +
-      `Add a step to .github/workflows/ci.yml that runs it, or delete the guard. ` +
+      `Wire it into BOTH .github/workflows/ci.yml and scripts/test-all.mjs SUITES, or delete it. ` +
       `A guard that never runs is worse than no guard: it reads as coverage.`
   );
   process.exit(1);
 }
 
 console.log(
-  `check-ci-coverage: OK — all ${guards.length} guards run in CI, ` +
+  `check-ci-coverage: OK — all ${guards.length} guards run in CI AND in \`npm test\`, ` +
     `and all ${suites.length} declared suites are among them.`
 );

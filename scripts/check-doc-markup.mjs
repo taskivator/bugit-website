@@ -18,7 +18,7 @@
    defect wearing different clothes, and any new document or new renderer inherits the check. */
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import net from "node:net";
@@ -42,6 +42,38 @@ const MARKERS = [
   { re: /&lt;bdi|<bdi dir/i, what: "a bdi tag printed as text" },
   { re: /&amp;|&quot;|&lt;|&gt;/, what: "double-escaped HTML" },
 ];
+
+/* ...AND THE LINE LEADERS, WHICH ARE READ OUT OF THE CORPUS RATHER THAN TYPED ABOVE.
+
+   MARKERS is a hand-written list, and on 2026-08-22 it cost exactly what a hand-written list
+   costs. It named bold, code spans, links, headings, bdi and double-escaping -- and not
+   blockquotes. Every translated document opens with the machine-translation notice written as
+   one, formatMarkdownDoc had no blockquote branch, and fifty documents printed a literal `>` in
+   front of the paragraph that says which version of a legal text governs. This file rendered
+   all of them, in a real browser, and passed, because nobody had thought to add a chevron.
+
+   So the leaders are computed. Every line-initial run of punctuation in every source document
+   under public/docs is collected -- whatever it is, whether or not the renderer handles it --
+   and none of them may begin a line the reader sees. A marker the sources start using tomorrow
+   is covered tomorrow, with nothing to remember. */
+const SOURCES = readdirSync(path.join(ROOT, "public/docs")).filter((f) => /\.md$/.test(f));
+const LEADERS = new Set();
+for (const f of SOURCES) {
+  for (const raw of readFileSync(path.join(ROOT, "public/docs", f), "utf8").split(/\r?\n/)) {
+    /* PUNCTUATION LEADERS ONLY, and the exclusion is a division of labour rather than a dodge.
+       A clause number is a marker in the SOURCE and a design element on the PAGE: formatLicense
+       deliberately prints it, as <b>1.</b> inside the clause, so "1. Grant" in the rendered text
+       is correct output. innerText cannot tell that from an unrendered "1.", because innerText
+       has no tags left in it. check-doc-rendering.mjs reads the MARKUP, where a number inside
+       its own element and a number loose in a paragraph are plainly different things, and it
+       carries the ordered-list rule for that reason. This one reads what a reader reads. */
+    const m = raw.match(/^\s*([>|#*+\-]{1,3})\s+\S/);
+    if (m) LEADERS.add(m[1]);
+  }
+}
+if (LEADERS.size < 3) {
+  throw new Error(`only ${LEADERS.size} line leader(s) found in public/docs; this check has lost its subject`);
+}
 
 const freePort = () => new Promise((res, rej) => {
   const p = net.createServer();
@@ -89,6 +121,18 @@ for (const lang of LANGS) {
     /* A page that arrived empty proves nothing, and a guard that silently passes on nothing is
        the failure mode this whole audit keeps finding. Say so instead. */
     if (text.trim().length < 200) { findings.push(`${lang}/${route}: the document never rendered (${text.trim().length} characters)`); continue; }
+    /* Leaders are judged per LINE, because a chevron mid-sentence is punctuation and a chevron
+       at the start of one is a marker that did not render. */
+    for (const ln of text.split(/\n/)) {
+      const t = ln.trim();
+      if (!t) continue;
+      for (const lead of LEADERS) {
+        if (t.startsWith(lead + " ")) {
+          findings.push(`${lang}/${route}: a line begins with the source marker "${lead}"  «${t.slice(0, 80)}»`);
+          break;
+        }
+      }
+    }
     for (const m of MARKERS) {
       const hit = text.match(m.re);
       if (!hit) continue;
@@ -108,4 +152,4 @@ if (findings.length) {
   for (const f of findings) console.error("  - " + f);
   process.exit(1);
 }
-console.log(`check-doc-markup OK: ${read} rendered documents (${LANGS.length} languages x ${DOC_ROUTES.length} routes) and not one of them shows a markdown marker`);
+console.log(`check-doc-markup OK (${LEADERS.size} source line leaders computed): ${read} rendered documents (${LANGS.length} languages x ${DOC_ROUTES.length} routes) and not one of them shows a markdown marker`);

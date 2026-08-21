@@ -178,20 +178,39 @@ try {
     fail.push(`the phone is showing ${mobState.poster}. <source media> must pick the tall ` +
               "poster, or the still and the video that replaces it are different shapes.");
   }
+  /* A PHONE HANDS OFF, IT DOES NOT EMBED, and that is a change of contract rather than a
+     regression. Owner, 2026-08-21: "in mobile view when they tap on a youtube video because
+     there is not enough space they should be auto taken to the youtube video player so they can
+     watch it, also auto play the video when they tap on a video."
+     So this check used to assert the opposite of what the product is now supposed to do. What is
+     still asserted, and matters just as much, is everything AROUND the handoff: the stage is
+     still the tall cut in a 9:16 frame, because that is the poster a finger lands on, and the id
+     the handoff opens still has to be the Short rather than the landscape cut. Only the last
+     step changed -- from "what did it embed" to "where did it take you". */
+  const opened = [];
+  ph.on("page", (p) => opened.push(p.url()));
   await mob.evaluate(() => document.getElementById("ytPlay").click());
-  await mob.waitForTimeout(400);
+  await mob.waitForTimeout(700);
   const mobSrc = await mob.evaluate(() => {
     const f = document.querySelector("#ytStage iframe");
     return f ? f.src : "";
   });
-  if (!mobSrc.includes(`/embed/${mobState.tall}`)) {
-    fail.push(`a phone pressed play and got "${mobSrc.split("/embed/")[1] || mobSrc}". ` +
-              `It must embed the Short ${mobState.tall}.`);
-  } else note(`phone: 9:16 stage, tall poster, embeds the Short ${mobState.tall}`);
+  const handoff = opened.find((u) => /youtube\.com/.test(u)) || "";
+  if (mobSrc) {
+    fail.push(`a phone pressed play and got an EMBED (${mobSrc.split("/embed/")[1] || mobSrc}). ` +
+              `On a phone it has to open the YouTube player instead: a 9:16 film inside a 390px ` +
+              `column is the reason the handoff exists.`);
+  } else if (!handoff.includes(mobState.tall)) {
+    fail.push(`a phone pressed play and opened "${handoff || "nothing at all"}". It must open the ` +
+              `Short ${mobState.tall} on youtube.com.`);
+  } else {
+    note(`phone: 9:16 stage, tall poster, play hands off to the Short ${mobState.tall}`);
+  }
 
   // ---- 6. the negative control ---------------------------------------------
   // Point the phone's stage at the landscape cut and require check 4 to notice. Without this
   // a clean run is equally consistent with a check that read the id it had just written.
+  opened.length = 0;
   await mob.evaluate(() => {
     const st = document.getElementById("ytStage");
     const f = st.querySelector("iframe");
@@ -200,16 +219,14 @@ try {
     document.getElementById("ytPlay").hidden = false;
   });
   await mob.evaluate(() => document.getElementById("ytPlay").click());
-  await mob.waitForTimeout(300);
-  const controlSrc = await mob.evaluate(() => {
-    const f = document.querySelector("#ytStage iframe");
-    return f ? f.src : "";
-  });
-  if (controlSrc.includes(`/embed/${mobState.tall}`)) {
-    fail.push("NEGATIVE CONTROL DID NOT FIRE: the phone was pointed at the landscape cut and " +
-              "still embedded the Short, so this check is not reading what play actually does.");
+  await mob.waitForTimeout(600);
+  const controlUrl = opened.find((u) => /youtube\.com/.test(u)) || "";
+  if (!controlUrl || controlUrl.includes(mobState.tall)) {
+    fail.push("NEGATIVE CONTROL DID NOT FIRE: the phone's stage was repointed at the landscape " +
+              `cut and play still opened ${controlUrl ? "the Short" : "nothing"}, so this check is ` +
+              "not reading where play actually takes a reader.");
   } else {
-    note("negative control fired: repointing the stage changed what play embedded");
+    note("negative control fired: repointing the stage changed which film play opened");
   }
 
   await browser.close();
@@ -226,5 +243,5 @@ if (fail.length) {
 }
 console.log("check-channel OK: the page and channel.json agree on both cuts of all " +
             `${catalogue.length} films, the posters are the shape they claim, a desktop plays ` +
-            "the landscape cut in a 16:9 stage and a phone plays the Short in a 9:16 one, and " +
+            "the landscape cut in a 16:9 stage and a phone is handed to YouTube for the Short, and " +
             "the check was proven able to see the wrong cut.");

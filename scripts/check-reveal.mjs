@@ -75,9 +75,11 @@ const ALL_LANGS = JSON.parse(langMatch[1].replace(/'/g, '"')).map(([code]) => co
 const MATRIX = [
   ...ALL_LANGS.map((l) => ({ lang: l, size: [390, 844] })),
   ...ALL_LANGS.map((l) => ({ lang: l, size: [1440, 900] })),
-  { lang: "en", size: [768, 1024] },
-  { lang: "en", size: [1280, 900] },
-  { lang: "en", size: [1920, 1080] },
+  // The owner asked for this to hold "for any view we support", so the en sweep covers the
+  // whole ladder rather than only its two ends: small phone, large phone, tablet portrait,
+  // tablet landscape, laptop, desktop.
+  ...[[320, 700], [600, 900], [768, 1024], [820, 1180], [1024, 800], [1280, 900], [1600, 900], [1920, 1080]]
+    .map((size) => ({ lang: "en", size })),
 ];
 const langFilter = pick("--lang");
 const widthFilter = pick("--width");
@@ -138,10 +140,54 @@ const PROBE = () => {
     const parent = t.parentElement;
     const where = parent && typeof parent.className === "string"
       ? parent.className.trim().split(/\s+/)[0] + "#" + ([...parent.children].indexOf(t) + 1) : "?";
+    /* WHAT IS BEHIND A FADING ELEMENT MATTERS AS MUCH AS WHETHER IT FINISHES FADING.
+       An element that animates opacity is see-through for the whole of its reveal, so the
+       reader sees whatever is underneath it in proportion to how far the animation has got. On
+       the hairline grids the layer underneath was `--rule`, white at 8.5%, and the cards on top
+       were themselves only 82% opaque -- so every card arrived carrying a white wash that got
+       worse the further down the grid it sat. Reported as "a white ugly highlight".
+       This walks up from the fading element to the first ancestor that paints an opaque
+       background, and reports the lightest translucent layer it passed. A fade toward a DARK
+       ground is the design; a fade toward a light one is the defect. */
+    const luminance = (c) => {
+      const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(c || "");
+      if (!m) return null;
+      return { l: (+m[1] * 0.299 + +m[2] * 0.587 + +m[3] * 0.114),
+               a: m[4] === undefined ? 1 : +m[4], css: c };
+    };
+    let bleed = null;
+    if (touchesOpacity) {
+      const own = luminance(getComputedStyle(t).backgroundColor);
+      if (own && own.a > 0) {
+        // Composite every layer between this element and the first opaque background, so the
+        // comparison is against what a reader actually sees through the element mid-fade.
+        // THE FIRST VERSION OF THIS STOPPED AT THE FIRST OPAQUE ANCESTOR WITHOUT LOOKING AT IT,
+        // which is how section 93 silenced this very check: it replaced the translucent white
+        // plane under the hairline grids with the opaque colour that plane composited to, the
+        // wash carried on exactly as before, and the guard went quiet because the layer was no
+        // longer translucent. Opaque or not is not the question. Lighter or not is.
+        const stack = [];
+        let ground = 0, on = "<canvas>", css = "-";
+        for (let n = t.parentElement; n; n = n.parentElement) {
+          const bg = luminance(getComputedStyle(n).backgroundColor);
+          if (!bg || bg.a === 0) continue;
+          if (bg.a < 1) { stack.push({ bg, n }); continue; }
+          ground = bg.l; on = name(n); css = bg.css; break;
+        }
+        for (let i = stack.length - 1; i >= 0; i--) {
+          const s = stack[i];
+          ground = s.bg.l * s.bg.a + ground * (1 - s.bg.a);
+          if (s.bg.a > 0.02) { on = name(s.n); css = s.bg.css; }
+        }
+        const ownEff = own.l * own.a + ground * (1 - own.a);
+        bleed = { delta: ground - ownEff, own: ownEff, gnd: ground, on, css, ownCss: own.css };
+      }
+    }
     out.push({
       key: t.dataset.revealKey + "/" + (an.animationName || "?"),
       progress: progress == null ? 0 : progress,
       opacity: +getComputedStyle(t).opacity,
+      bleed,
       touchesOpacity,
       scroller: name(src),
       range: isPage
@@ -202,35 +248,66 @@ async function measure(page, lang, [w, h], inject) {
 
   const found = [];
   for (const r of peak.values()) {
-    if (r.progress < 0.999) {
-      found.push(
-        `${r.label} never finishes its reveal: peak progress ${r.progress.toFixed(3)} anywhere in ` +
-        `the page's scroll. It is driven by ${r.scroller}, which has ${r.range}px of scroll range. ` +
-        (r.scroller === "<page>" ? "" :
-          `A reveal is meant to be driven by the reader's scroll; a nested box becomes its timeline ` +
-          `the moment it is given overflow:hidden. If that overflow is only there to clip the ` +
-          `corners, use overflow:clip -- it clips identically and creates no scroll container.`)
-      );
-    }
+    /* THE ASSERTION IS FULL OPACITY, NOT FULL PROGRESS, and that changed for a reason.
+       This file used to require every scroll-driven animation to reach progress 1.0 as well.
+       That was a proxy for the real requirement and it stopped being true the day the reveals
+       became a PASS: section 98 gives every card `animation-range: cover 0% cover 100%`, so
+       progress 1 now means "the reader has scrolled the card entirely off the top of the
+       screen" -- which the last row above the footer can never do, however far the page
+       scrolls, and which says nothing at all about whether the card was ever readable.
+       What a reader is owed is that the thing became fully visible at some point. That is the
+       rule, and it still catches the defect the progress rule was written for: a nested scroll
+       container freezes the timeline, so the opacity never arrives either. The scroller is
+       named in the finding, because when this fails that is almost always why. */
     if (r.touchesOpacity && r.opacity < 0.99) {
       found.push(
-        `${r.label} never becomes fully visible: peak opacity ${r.opacity.toFixed(3)}. The reader ` +
-        `sees it dimmed beside its neighbours.`
+        `${r.label} never becomes fully visible: peak opacity ${r.opacity.toFixed(3)} anywhere in ` +
+        `the page's scroll, so the reader sees it dimmed beside its neighbours. It is driven by ` +
+        `${r.scroller}, which has ${r.range}px of scroll range` +
+        (r.scroller === "<page>" ? "." :
+          ` -- and a reveal is meant to be driven by the reader's scroll. A nested box becomes its ` +
+          `timeline the moment it is given overflow:hidden; a scroller that cannot scroll is a ` +
+          `timeline that never advances. If that overflow is only there to clip the corners, use ` +
+          `overflow:clip -- it clips identically and creates no scroll container.`)
       );
     }
   }
-  return { found, n: peak.size };
+  return { found, n: peak.size, peak: [...peak.values()] };
 }
+
+/* THE WHITE WASH UNDER A FADE. An element that animates its opacity is see-through for the
+   whole of its reveal, so the reader sees whatever is behind it in proportion to how far the
+   animation has run. If that is DARKER than the element, the card simply dissolves into the
+   page, which is the effect. If it is LIGHTER, the card arrives carrying a wash that is worst
+   where the reveal has run least -- the bottom of the grid -- which is the shape the owner
+   reported twice: "the first 2 are fine ... as i go down the cards show a white layerd color".
+
+   The threshold is the midpoint of a measured pair, not a round number:
+     the defect   the six hairline grids put a plane at luminance 26.7 under cards at 11.9.
+                  delta +14.8, at every one of nine widths. Reported by the owner on mobile,
+                  then again on desktop after section 93 changed its colour but not its role.
+     the page     with the plane gone, the WORST delta anywhere on the site is -2.5: the price
+                  card, which is very slightly lighter than the page it fades into.
+   +4 sits between them with 6.5 of headroom below and 10.8 above. */
+const bleedFindings = (peak) => (peak || [])
+  .filter((r) => r.bleed && r.bleed.delta > 4)
+  .map((r) =>
+    `${r.label} fades toward ${r.bleed.css} on ${r.bleed.on}, which is LIGHTER than the element ` +
+    `itself: luminance ${r.bleed.gnd.toFixed(1)} behind ${r.bleed.own.toFixed(1)} in front ` +
+    `(its own background is ${r.bleed.ownCss}). Half-revealed, it reads as a grey slab. A plane ` +
+    `that has to be lighter than its cards cannot sit UNDER them -- give each card its own 1px ` +
+    `ring instead and let the wrapper's background go.`);
 
 const page = await browser.newPage();
 for (const c of subject) {
-  const { found, n } = await measure(page, c.lang, c.size);
+  const { found, n, peak } = await measure(page, c.lang, c.size);
   cells++; animations += n;
   if (n === 0) {
     fail.push(`[${c.lang} ${c.size[0]}x${c.size[1]}] no scroll-driven reveal found at all: the scan ` +
               `did not run, and an empty sweep must never read as a clean one.`);
   }
   for (const f of found) fail.push(`[${c.lang} ${c.size[0]}x${c.size[1]}] ${f}`);
+  for (const r of bleedFindings(peak)) fail.push(`[${c.lang} ${c.size[0]}x${c.size[1]}] ${r}`);
 }
 note(`${cells} render(s) swept, ${animations} scroll-driven reveal(s) measured across them`);
 
@@ -238,11 +315,35 @@ note(`${cells} render(s) swept, ${animations} scroll-driven reveal(s) measured a
 // Put the scroll container back and require BOTH assertions to fire. Without this, a scan that
 // quietly stopped finding subjects would report a clean page for ever.
 const ctl = await measure(page, "en", [390, 844], ".doc-cards{overflow:hidden !important}");
-const sawStalled = ctl.found.some((f) => f.includes("never finishes its reveal"));
 const sawDim = ctl.found.some((f) => f.includes("never becomes fully visible"));
-if (!sawStalled) fail.push("NEGATIVE CONTROL DID NOT FIRE: shipping overflow:hidden back onto .doc-cards left every reveal reaching progress 1, so this check cannot see the mechanism.");
-if (!sawDim) fail.push("NEGATIVE CONTROL DID NOT FIRE: shipping overflow:hidden back onto .doc-cards left no card measurably dim, so this check cannot see the symptom.");
-if (sawStalled && sawDim) note(`negative control fired: ${ctl.found.length} finding(s) when .doc-cards is made a scroll container again`);
+if (!sawDim) {
+  fail.push("NEGATIVE CONTROL DID NOT FIRE: shipping overflow:hidden back onto .doc-cards left no " +
+            "card measurably dim, so this check cannot see the defect it exists for.");
+} else {
+  note(`negative control fired: ${ctl.found.length} finding(s) when .doc-cards is made a scroll container again`);
+}
+
+/* SECOND AND THIRD NEGATIVE CONTROLS, for the white wash, one per shape it has taken.
+   TRANSLUCENT is how it shipped: a white-at-8.5% plane under 82%-opaque cards.
+   OPAQUE is how section 93 left it, and it is the important one -- that version was invisible
+   to the rule this file used to carry, so a control that only rebuilds the translucent shape
+   would prove the guard can see a defect the site no longer had while missing the one it did. */
+const WASH_TRANSLUCENT =
+  ".doc-cards,main section.shell.trust,.report-meta,.report-status,.metrics{background:rgba(255,255,255,.085) !important}" +
+  ".doc-cards>a,main section.shell.trust>div,.report-meta>div,.report-status>div,.metrics>div{background:rgba(9,6,19,.82) !important}";
+const WASH_OPAQUE =
+  ".doc-cards,main section.shell.trust,.metrics,.demo-tabs,.report-meta,.report-status{background:#1a1a20 !important}" +
+  ".doc-cards>a,main section.shell.trust>div,.metrics>div,.demo-tabs>button{box-shadow:none !important}";
+for (const [what, css] of [["translucent", WASH_TRANSLUCENT], ["opaque", WASH_OPAQUE]]) {
+  const wash = await measure(page, "en", [390, 844], css);
+  const n = bleedFindings(wash.peak).length;
+  if (!n) {
+    fail.push(`NEGATIVE CONTROL DID NOT FIRE: putting the ${what} hairline plane back left the ` +
+              `bleed check silent, so it cannot see the white wash it exists for.`);
+  } else {
+    note(`white-wash control (${what}) fired: ${n} finding(s) when the plane is put back under the cards`);
+  }
+}
 
 await browser.close();
 server.kill();
@@ -256,6 +357,7 @@ if (fail.length) {
   process.exit(1);
 }
 console.log(
-  "check-reveal OK: every scroll-driven reveal reaches the end of its range and finishes fully " +
-  "opaque -- in every language, at every width."
+  "check-reveal OK: every scroll-driven reveal becomes fully visible somewhere in the page's " +
+  "scroll, and nothing fades toward a layer lighter than itself -- in every language, at every " +
+  "width."
 );

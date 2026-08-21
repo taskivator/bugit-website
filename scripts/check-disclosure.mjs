@@ -155,12 +155,59 @@ for (const view of VIEWS) {
       catch { skipped++; await ctx.close(); continue; }
     }
 
+    /* THE CONTRACT IS THE ROUND TRIP, NOT A PARTICULAR STARTING STATE.
+
+       This used to require every disclosure to begin collapsed, and it failed Mission Control
+       on the desktop for it. That control is SUPPOSED to begin expanded there: the step list is
+       the instrument, and section 100 collapses it to a single live row only on a phone, where
+       the panel would otherwise be 1100px tall. Demanding `false` everywhere was a rule written
+       from one example -- the language menu -- and generalised without asking whether it was a
+       property of disclosures or a property of that menu.
+
+       What is genuinely required is weaker in one way and stronger in two:
+
+         - the control must DECLARE a state, not omit it or invent a third one;
+         - that declaration must MATCH what is on screen. `aria-expanded="true"` beside a hidden
+           panel is a control lying about itself, which is worse than either state, and a rule
+           that only ever looked for the string "false" could never see it;
+         - and one activation must flip it, a second must flip it back -- to wherever it began.
+
+       The Safari focusout/click race that this whole file exists for is caught by the round
+       trip, which is what it always actually tested. */
     const start = await el.getAttribute("aria-expanded");
-    if (start !== "false") {
-      fail.push(`[${where}] "${c.label}" starts at aria-expanded="${start}" on a fresh page.`);
+    if (start !== "false" && start !== "true") {
+      fail.push(`[${where}] "${c.label}" declares aria-expanded="${start}", which is neither state.`);
       await ctx.close();
       continue;
     }
+    /* HOW MUCH OF IT IS SHOWING, not whether it is display:none.
+
+       The first version of this cross-check asked whether the controlled panel was rendered at
+       all, and it called Mission Control a liar for saying "false" while its step list was on
+       screen. It was not lying. Collapsed, that list still shows ONE row -- the step the agent is
+       on -- because a phone needs a summary rather than a 1100px panel or a blank space. A
+       disclosure does not have to disappear to be collapsed.
+
+       So the truth of the declaration is measured instead of assumed: the panel is measured in
+       both states, and the state that calls itself expanded has to be the bigger one. That holds
+       for a menu that vanishes, for a list that collapses to a summary, and for anything else a
+       disclosure might do -- and it still catches the thing worth catching, a control whose
+       aria-expanded runs backwards or never moves. */
+    const panelSize = () => page.evaluate((sel) => {
+      const t = document.querySelector(sel);
+      const id = t && t.getAttribute("aria-controls");
+      const p = id && document.getElementById(id);
+      if (!p) return null;                       /* nothing named: nothing to measure */
+      const cs = getComputedStyle(p);
+      if (cs.display === "none" || cs.visibility === "hidden" || p.hasAttribute("hidden")) return 0;
+      const r = p.getBoundingClientRect();
+      const rows = [...p.querySelectorAll("*")].filter((n) => {
+        const s = getComputedStyle(n);
+        return s.display !== "none" && s.visibility !== "hidden";
+      }).length;
+      return Math.round(r.width * r.height) + rows;
+    }, c.sel);
+    const sizeAtStart = await panelSize();
     // Activate, and report an interception rather than throwing on it: a full-screen overlay
     // legitimately covers the control that opened it.
     const act = async () => {
@@ -177,6 +224,7 @@ for (const view of VIEWS) {
       continue;
     }
     const opened = await el.getAttribute("aria-expanded");
+    const sizeAtOpen = await panelSize();
 
     // THE CONTRACT IS "IT CLOSES AGAIN", NOT "THIS EXACT BUTTON CLOSES IT". The mobile menu is a
     // full-screen overlay that covers its own opener and puts everything behind it `inert`,
@@ -210,16 +258,30 @@ for (const view of VIEWS) {
     const closed = await el.getAttribute("aria-expanded");
     measured++;
 
-    if (opened !== "true") {
-      fail.push(`[${where}] "${c.label}" (${c.sel}) did not open: aria-expanded="${opened}" after one ${view.touch ? "tap" : "click"}.`);
-    } else if (closed !== "false") {
-      fail.push(`[${where}] "${c.label}" (${c.sel}) will not close (pressed ${closedBy}): aria-expanded is still "${closed}" ` +
-                `after a second ${view.touch ? "tap" : "click"} on the control that opened it. ` +
+    const flipped = start === "true" ? "false" : "true";
+    if (opened !== flipped) {
+      fail.push(`[${where}] "${c.label}" (${c.sel}) did not change state: it began "${start}" and is ` +
+                `still "${opened}" after one ${view.touch ? "tap" : "click"}.`);
+    } else if (closed !== start) {
+      fail.push(`[${where}] "${c.label}" (${c.sel}) did not come back (pressed ${closedBy}): it began "${start}" and is "${closed}" ` +
+                `after a second ${view.touch ? "tap" : "click"} on the control that changed it. ` +
                 `On Safari this is the focusout/click race: the browser does not focus a button on ` +
                 `tap, so anything focused inside the panel blurs with relatedTarget=null, a ` +
                 `"focus has left" handler closes the panel during pointerdown, and the click that ` +
                 `follows reopens it.`);
+    } else if (sizeAtOpen !== null && sizeAtStart !== null && sizeAtOpen === sizeAtStart) {
+      fail.push(`[${where}] "${c.label}" (${c.sel}) reports aria-expanded="${opened}" but the panel it ` +
+                `names did not change at all, so the state it declares is not a state it is in.`);
+    } else if (sizeAtOpen !== null && sizeAtStart !== null &&
+               (start === "true") !== (sizeAtStart > sizeAtOpen)) {
+      fail.push(`[${where}] "${c.label}" (${c.sel}) has aria-expanded backwards: it calls itself ` +
+                `"${start}" while showing ${sizeAtStart} and "${opened}" while showing ${sizeAtOpen}.`);
     }
+    /* AND NOT "IT CAME BACK TO THE SAME PIXELS". That rule was here for one run and it failed
+       Mission Control, correctly measuring 12157 before and 12324 after -- because the instrument
+       is RUNNING. It advances a step while the two taps happen, so the panel legitimately holds a
+       different amount of content at the end than at the start. A live region is not a broken
+       disclosure. What has to come back is the STATE, and that is asserted above. */
     await ctx.close();
   }
   await browser.close();
