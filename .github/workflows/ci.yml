@@ -101,7 +101,11 @@ jobs:
       # before consent and after Reject; the tag loads only after Accept. One lean job,
       # single Chromium, no matrix.
       - name: Install Chromium for the consent network test
-        run: npx playwright install --with-deps chromium
+        # WebKit as well as Chromium. check-disclosure.mjs runs the interaction contracts in
+        # both, because the language menu shipped a defect that only Safari has: it does not
+        # focus a button on tap, so the menu closed and reopened within one gesture and would
+        # not collapse. Every other guard in this repo is Chromium-only and all of them passed.
+        run: npx playwright install --with-deps chromium webkit
       - name: Prove strict prior-consent tag gating (browser network capture)
         run: |
           PORT=3123 node server.js &
@@ -212,5 +216,29 @@ jobs:
       # width, which is exactly what a page-level sweep steps over.
       - name: Verify the page chrome in every language
         run: node scripts/check-chrome.mjs
+      # A reveal that never finishes leaves a card greyed out for ever, and the cause has no
+      # visible connection to it: `overflow:hidden` on a grid makes that grid the scroll
+      # container an `animation-timeline:view()` inside it resolves against, and a scroller that
+      # cannot scroll is a timeline that never advances. Three cards shipped stranded at 0.31,
+      # 0.57 and 0.71 opacity, and check-motion -- which asserts that reveals settle -- passed,
+      # because it renders one viewport and reads only what is on screen.
+      - name: Verify every scroll-driven reveal reaches the reader
+        run: node scripts/check-reveal.mjs
+      # The report's pinned action bar had a 46px gradient band above it AND a see-through top
+      # to its own background, so the report faded out into a smear that travelled with it.
+      # The stylesheet had already been corrected for this once and the correction never
+      # applied: an identical-specificity rule later in the same layer restored the gradient.
+      # Reading the source said the bar was solid; only the rendered page said otherwise.
+      - name: Verify nothing is painted over the report
+        run: node scripts/check-report-bar.mjs
+      # THE ONLY STEP HERE THAT RUNS A SECOND ENGINE. A control that declares aria-expanded must
+      # open and close again, by tap and by click, in WebKit as well as Chromium. Owner,
+      # 2026-08-21: "language select on mobile view does not collapse by tapping the language
+      # select button" -- true on an iPhone, false in every Chromium viewport this repo tests.
+      # Safari does not move focus to a button on tap, so the focused row inside the open menu
+      # blurred with relatedTarget=null, the "focus has left" handler closed the menu during
+      # pointerdown, and the click that followed reopened it.
+      - name: Verify every disclosure closes again, in both engines
+        run: node scripts/check-disclosure.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
         run: node scripts/check-ci-coverage.mjs

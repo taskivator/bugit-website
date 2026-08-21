@@ -118,6 +118,24 @@ const SUITES = [
   "check-doc-markup.mjs",
   "check-untranslated.mjs",
   "check-chrome.mjs",
+  // check-reveal    every scroll-driven reveal, at every width and in every language, must reach
+  //                 the end of its range and finish fully opaque. check-motion already claims
+  //                 this ground and passes on the broken tree: it renders one viewport, reads
+  //                 only what is on screen, and its threshold is 0.9. Three cards shipped
+  //                 stranded at 0.31, 0.57 and 0.71 underneath it.
+  // check-report-bar the report's pinned action bar must be opaque and must paint nothing over
+  //                 the report above it. Two veils were stacked there and the stylesheet's own
+  //                 correction for one of them had never applied, because an identical rule
+  //                 later in the same layer put it back.
+  "check-reveal.mjs",
+  "check-report-bar.mjs",
+  // check-disclosure  the only guard here that runs a second BROWSER ENGINE. Every control that
+  //                 declares aria-expanded must open and close again, by tap and by click, in
+  //                 WebKit as well as Chromium. The language menu would not close on Safari --
+  //                 tapping it closed and reopened the menu inside one gesture -- and forty
+  //                 Chromium guards saw nothing, because the difference is that Safari does not
+  //                 focus a button on tap.
+  "check-disclosure.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

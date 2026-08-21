@@ -168,9 +168,34 @@ function initLang(){const list=document.getElementById('langList');const langTag
     else if(e.key==='End'){e.preventDefault();rove(all[all.length-1]);}
     else if(e.key==='Tab'){close(false);}
   });
-  /* Focus leaving the menu closes it. relatedTarget is where focus is GOING, so Tab out of the
-     last item closes it without fighting the browser for where focus lands. */
-  menu.addEventListener('focusout',e=>{if(!menu.contains(e.relatedTarget))close(false)});
+  /* FOCUS LEAVING THE MENU CLOSES IT -- decided from where focus actually ENDED UP, and never
+     while the opener is being pressed.
+     This used to read `relatedTarget`, which is null both when focus has genuinely left the
+     document and when the browser simply has not moved it yet. Safari does the second on every
+     tap: it does not focus a <button> on tap, so pressing the button while the menu is open
+     blurs the focused ROW to null. Reading that as "focus left" closed the menu during
+     pointerdown, and the click that followed found a closed menu and opened it again -- one
+     gesture, closed and reopened, and the reader sees a menu that will not close. Owner,
+     2026-08-21. Chromium never does it, which is why forty guards passed.
+     Deferring the check by a task was the first attempt and it is a RACE, not an order: between
+     mousedown and click the event loop can turn, and in WebKit on a desktop it does -- the
+     deferred check ran first, closed, and the click reopened. check-disclosure.mjs caught that
+     within a minute of being written.
+     So ask WHAT rather than WHEN. The one focus loss this handler must ignore is the one caused
+     by a press on the button that owns the menu, and that is a state: the opener is either held
+     down or it is not. Every genuine way out -- Tab, a click elsewhere, focus leaving the
+     document -- arrives here with it up. */
+  var pressingBtn=false;
+  btn.addEventListener('pointerdown',function(){pressingBtn=true});
+  window.addEventListener('pointerup',function(){pressingBtn=false},true);
+  window.addEventListener('pointercancel',function(){pressingBtn=false},true);
+  menu.addEventListener('focusout',function(){setTimeout(function(){
+    /* The opener is mid-press: its own click is about to decide, and it is the only thing that
+       should. Every other way out of this menu -- Tab, a click elsewhere, focus leaving the
+       document -- reaches the line below with the button not held down. */
+    if(pressingBtn)return;
+    if(!menu.contains(document.activeElement))close(false);
+  },0)});
   document.addEventListener('click',e=>{if(!menu.contains(e.target))close(false)});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.classList.contains('open'))close(true)})}
 // Requirements + platform-support FAQ. Kept as a standalone localized map (not

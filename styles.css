@@ -1532,7 +1532,12 @@
   main section.shell.trust{
     grid-template-columns:repeat(3,minmax(0,1fr));
     gap:1px;background:var(--rule);
-    border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden;
+    /* clip, NOT hidden. `overflow:hidden` makes this a scroll container, and the cards inside
+       reveal on an `animation-timeline:view()` -- which resolves against the nearest scroll
+       container. A scroller that cannot scroll is a timeline that never advances, so the cards
+       froze part-drawn ("Runs in VS Code" at opacity .569). clip does the same clipping and
+       creates no scroller. hidden stays first as the fallback for browsers without clip. */
+    border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden;overflow:clip;
     padding-block:0;
     margin-block:var(--section-y) 0;
   }
@@ -1643,7 +1648,9 @@
      inset is what mattered, because it put the only section on the page whose heading did not
      start on the shell edge 26px in from every other one. */
   .docs-strip{border:0;background:none;border-radius:0;padding-inline:0}
-  .doc-cards{gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
+  /* clip, not hidden -- see the note on the trust grid. FAQ and Support were the two
+     cards left part-drawn by the dead view() timeline this created. */
+  .doc-cards{gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden;overflow:clip}
   .doc-cards a{
     background:#07050f;padding:var(--s5);border:0;border-radius:0;
     display:flex;flex-direction:column;gap:var(--s2);
@@ -2020,13 +2027,20 @@
          container: a view() timeline on a row resolved against the LIST rather than the page,
          so rows below the list's own fold sat at opacity 0 until someone scrolled inside it.
          The wall of posters is not a scroll container, so the reason went with it. */
-      .trust>div,.doc-cards>a,.price-card,.groups>div,.faq details,.yt-item{
+      /* WRITTEN AGAINST `main section.shell.trust`, not `.trust`. The block rule above is
+         `main section.shell:not(.hero)>*` at (0,2,2); `.trust>div` scores (0,1,1) and even
+         `.trust>div:nth-child(3n+3)` only (0,2,1), so for as long as these were bare classes
+         the generic rule won and the trust grid had no stagger at all -- six identical ranges
+         under a comment promising six different ones. The 3n is the trust grid's three
+         columns; the rule was right and simply unreachable. */
+      .trust>div,.doc-cards>a,.price-card,.groups>div,.faq details,.yt-item,
+      main section.shell.trust>div{
         animation:riseIn linear both;
         animation-timeline:view();
         animation-range:entry 2% cover 22%;
       }
-      .trust>div:nth-child(3n+2),.doc-cards>a:nth-child(4n+2){animation-range:entry 2% cover 26%}
-      .trust>div:nth-child(3n+3),.doc-cards>a:nth-child(4n+3){animation-range:entry 2% cover 30%}
+      main section.shell.trust>div:nth-child(3n+2),.doc-cards>a:nth-child(4n+2){animation-range:entry 2% cover 26%}
+      main section.shell.trust>div:nth-child(3n+3),.doc-cards>a:nth-child(4n+3){animation-range:entry 2% cover 30%}
       .doc-cards>a:nth-child(4n+4){animation-range:entry 2% cover 34%}
       @keyframes riseIn{
         from{opacity:0;transform:translateY(20px)}
@@ -5469,6 +5483,33 @@
   /* (d) AN ANCHOR MUST NOT LAND UNDER THE HEADER.
      The header is 76px and sticky, so `#features` put the section's first line beneath it. */
   section[id]{scroll-margin-top:92px}
+
+  /* ---------- 91. Owner review, 2026-08-21 (second round) ---------------- */
+
+  /* (a) NOTHING IS PAINTED ABOVE "HIDE FULL REPORT".
+     Round one took the box-shadow off this bar and the owner reports the shadow is still
+     there and still travels with the report. It does, because the shadow was never the only
+     thing painting it. Measured at 1920 with the report open, two veils stack above the
+     label:
+       - section 62's `::before`, a 46px gradient band from the panel's colour to transparent;
+       - the bar's OWN background, `linear-gradient(0deg, #0a0714 0%, #0a0714 62%, transparent
+         100%)` -- the top 38%, 20px of a 54px bar, is see-through, so the report's text shows
+         through the button itself.
+     Together: a ~66px dark-to-transparent smear pinned above a bar the report scrolls under,
+     which is exactly "a shadow that moves up and down with the report".
+     Section 57 already set this bar to a solid `#0a0714`. It has never applied: an
+     identical-specificity rule further down the same layer puts the gradient back, and the
+     later one wins. So this is stated once more, last, where nothing can undo it. */
+  @media(min-width:1160px){
+    .report-panel.is-open>.report-more-toggle{
+      background-image:none;
+      background-color:#0a0714;
+      box-shadow:none;
+    }
+    /* The band above the bar goes entirely -- not hidden, removed, so it cannot be revived by
+       a later opacity or background rule. */
+    .report-panel.is-open>.report-more-toggle::before{content:none}
+  }
 
 }
 

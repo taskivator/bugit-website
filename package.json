@@ -38,7 +38,10 @@
     "test:motion": "node scripts/check-motion.mjs",
     "test:channel": "node scripts/check-channel.mjs",
     "test:ground": "node scripts/check-ground.mjs",
-    "test:reading": "node scripts/check-reading.mjs"
+    "test:reading": "node scripts/check-reading.mjs",
+    "test:reveal": "node scripts/check-reveal.mjs",
+    "test:report-bar": "node scripts/check-report-bar.mjs",
+    "test:disclosure": "node scripts/check-disclosure.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",
