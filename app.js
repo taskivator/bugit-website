@@ -1063,11 +1063,41 @@ function initAuth(){var slot=document.getElementById('authSlot');if(slot)slot.da
    Honor a genuine in-page anchor (#features …); a doc route (#/…) is scrolled to
    top by renderDocRoute; anything else starts at the top (hero). Instant, so
    there is no visible scroll animation on load. */
+/* WHERE AN IN-PAGE ANCHOR SHOULD LAND.
+   A section marked `data-land` says which element the reader actually came to see -- the film
+   player, the demo tabs -- because those sections open with an eyebrow, a heading and a
+   subtitle, so landing on the section shows the label rather than the thing. Everything else
+   keeps the browser's own behaviour, which is right when the first line IS the point. */
+function landOn(section, smooth){
+  /* The SECTION names its landing child by selector. An earlier version looked for any
+     descendant carrying [data-land], which is true of every ancestor as well -- so the skip
+     link, whose target is <main>, found the film player inside it and scrolled a keyboard user
+     into the middle of the page instead of to the top of the content. */
+  const sel=section.dataset?section.dataset.land:null;
+  const focus=sel?section.querySelector(sel):null;
+  const behavior=(smooth&&!matchMedia('(prefers-reduced-motion: reduce)').matches)?'smooth':'instant';
+  if(focus){focus.scrollIntoView({behavior:behavior,block:'center'});return true}
+  section.scrollIntoView({behavior:behavior,block:'start'});
+  return false;
+}
+document.addEventListener('click',function(e){
+  const a=e.target&&e.target.closest?e.target.closest('a[href^="#"]'):null;
+  if(!a)return;
+  const href=a.getAttribute('href');
+  if(!href||href==='#'||href.startsWith('#/'))return;
+  const sec=document.getElementById(href.slice(1));
+  /* Only take over for a section that NAMES a landing target on itself; otherwise leave the
+     browser alone, so the header offset, the skip link and the focus behaviour are untouched. */
+  if(!sec||!sec.dataset||!sec.dataset.land)return;
+  e.preventDefault();
+  if(location.hash!==href){history.pushState(null,'',href);}
+  landOn(sec,true);
+});
 function initInitialScroll(){
   const h=location.hash;
   if(h && !h.startsWith('#/')){
     const anchor=document.getElementById(h.slice(1));
-    if(anchor){anchor.scrollIntoView({behavior:'instant',block:'start'});return;}
+    if(anchor){landOn(anchor,false);return;}
   }
   if(!h.startsWith('#/')) window.scrollTo({top:0,left:0,behavior:'instant'});
 }
@@ -1398,7 +1428,7 @@ window.addEventListener('hashchange',function(){
   var isSpa=function(h){return /^#\/.+/.test(h)};
   if(isSpa(from)&&to&&!isSpa(to)){
     var el=document.getElementById(to.slice(1));
-    if(el)el.scrollIntoView({behavior:'instant',block:'start'});
+    if(el)landOn(el,false);
   }
 });document.addEventListener('DOMContentLoaded',()=>{renderParticles();renderTools();initLang();initDemo();initDocNav();initMobileNav();applyLang(currentLang);renderDocRoute();initAuth();initMission();initReportDisclosure();initConsent();requestAnimationFrame(initInitialScroll)});
 

@@ -5437,6 +5437,39 @@
     .report-pct{min-width:max-content}
   }
 
+  /* ---------- 90. Owner review, 2026-08-21 ------------------------------ */
+
+  /* (a) THE DOCUMENTATION NAVIGATION ANSWERS LIKE THE FAQ.
+     Measured: hovering an FAQ question goes to var(--sig) (the pink). The doc sidebar links went
+     to a pale lavender and the doc cards changed only their background, so the text never moved.
+     Same gesture, three different answers. They all use the FAQ's own token now, so if that
+     colour is ever retuned these follow it instead of drifting again. */
+  .docs-sidebar a:hover{color:var(--sig)}
+  .doc-cards a:hover b{color:var(--sig)}
+  .docs-strip a:hover b{color:var(--sig)}
+
+  /* (b) NO SHADOW ABOVE "HIDE FULL REPORT".
+     The open panel painted two stacked shadows UPWARD from the toggle to fade the report out
+     behind it. With the panel's height now pinned, there is nothing to fade: the report ends
+     where it ends, and the shadows read as a dark smear above the control. The solid background
+     stays -- it is what keeps text from showing through the button. */
+  @media(min-width:1160px){
+    .report-panel.is-open>.report-more-toggle{box-shadow:none}
+  }
+
+  /* (c) THE TWO HERO COLUMNS END TOGETHER.
+     Measured at 1920 and 1512: the instrument's ink runs 156..1059 while the copy's runs
+     169..963, so the right column finished 96px below the left. At 1280 they already agree,
+     which is why this only applies above it. The space is distributed BETWEEN the blocks rather
+     than dumped in front of the last one, so the column keeps its rhythm and simply breathes. */
+  @media(min-width:1440px){
+    .hero-copy{display:flex;flex-direction:column;justify-content:space-between}
+  }
+
+  /* (d) AN ANCHOR MUST NOT LAND UNDER THE HEADER.
+     The header is 76px and sticky, so `#features` put the section's first line beneath it. */
+  section[id]{scroll-margin-top:92px}
+
 }
 
 @layer fixes {
