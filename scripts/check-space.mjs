@@ -396,14 +396,42 @@ const worker = async () => {
            quarter of a second later. Ink is only judged on what is STILL transparent once the
            animations here have settled. Geometry needs no such wait. */
         if (r.fade.length) {
-          /* 1500ms, not 900. The documentation pages run a time-based entry animation on every
-             render, and under a full parallel sweep at 1920 the first sample plus 900ms still
-             landed inside it twice in 605 renders. The settle window has to outlast the
-             animation on the slowest machine the guard runs on, or the guard reports a heading
-             that is plainly visible a moment later. */
-          await page.waitForTimeout(1500);
-          const again = await page.evaluate(PROBE);
-          const still = new Set(again.fade.map((f) => f.el + "|" + f.text));
+          /* WAIT FOR THE ANIMATION TO STOP, DON'T GUESS HOW LONG IT TAKES.
+             This was a fixed window, raised from 900ms to 1500ms when two headings at 1920
+             still landed inside the entry animation. The CI runner is slower than this machine
+             and 1500ms was not enough there either: three more headings, on pages whose text is
+             plainly visible a moment later. Guessing a duration means re-guessing it on every
+             new machine.
+             So: ask the page when its animations have finished. getAnimations() reports exactly
+             what is still running on the elements in question, and their `finished` promises
+             resolve when they are done. The deadline is a backstop for an infinite animation,
+             not the mechanism. */
+          /* WATCH THE INK, NOT THE CLOCK — and not the animation list either. Waiting on
+             `getAnimations().finished` looks right and is a trap on this page: the ground runs
+             several INFINITE animations (the particle drift, the sheen), so their promises never
+             resolve and every check burned its whole timeout. The sweep went from minutes to
+             hours and I stopped it.
+             What actually needs to settle is the opacity of the specific elements just reported.
+             Poll those: leave as soon as they are opaque, or as soon as they stop changing. A
+             page whose reveal has finished exits in ~200ms; only a genuinely stuck element pays
+             the full deadline. */
+          /* RE-ASK THE PROBE, DON'T RE-FIND THE ELEMENTS.
+             Two earlier attempts failed in instructive ways. A fixed wait had to be re-guessed
+             on every machine (900ms here, 1500ms here, still not enough on the CI runner). Then
+             I polled the reported elements by re-selecting them — and when that lookup missed,
+             it found nothing, returned instantly, and waited zero milliseconds while looking
+             exactly like it had waited: seven doc ledes reported as invisible on a page whose
+             text is measurably opaque 900ms after it renders.
+             The probe already knows how to find what is faded. Ask it again until it stops
+             saying so, or until the deadline. Nothing to keep in sync, and an empty result is
+             the answer rather than a silent no-op. */
+          let again = null;
+          for (let i = 0; i < 14; i++) {
+            await page.waitForTimeout(200);
+            again = await page.evaluate(PROBE);
+            if (!again.fade.length) break;
+          }
+          const still = new Set((again ? again.fade : []).map((f) => f.el + "|" + f.text));
           r.fade = r.fade.filter((f) => still.has(f.el + "|" + f.text));
         }
         if (r.pan > 1) {

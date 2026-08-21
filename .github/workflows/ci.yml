@@ -185,6 +185,13 @@ jobs:
       - name: Verify every route in every language, entered cold, by click, by reload, by history
         run: node scripts/check-routing.mjs
       # Owner rule: the instrument may not change size when the report opens, or on its own.
+      # The progress label CYCLES through every stage over 25 seconds, so whether a clip is on
+      # screen when you look is luck: this shipped cutting text in six languages while the
+      # space sweep called the page clean on one machine and failed it on another. This guard
+      # measures every string the loop can write, and demands real headroom rather than a fit,
+      # because the version that shipped had 4px to spare on the machine it was tuned on.
+      - name: Verify the progress label fits every language it can show
+        run: node scripts/check-progress-label.mjs
       - name: Verify Mission Control keeps its size
         run: node scripts/check-instrument-size.mjs
       # Reads the rendered page and asks the reader's question rather than the maintainer's:

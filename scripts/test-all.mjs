@@ -105,6 +105,7 @@ const SUITES = [
   "check-dev-server.mjs",
   "check-space.mjs",
   "check-routing.mjs",
+  "check-progress-label.mjs",
   "check-instrument-size.mjs",
   // check-untranslated  reads the RENDERED page and asks the reader's question: on the Japanese
   //                 page, is this sentence in Japanese? Every other language guard here reads

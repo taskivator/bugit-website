@@ -5404,6 +5404,39 @@
   }
   [dir="rtl"] .mc-armed .report-progress i{transform-origin:right}
 
+  /* ---------- 89. The progress label must fit its worst string ----------- */
+  /* CI found `.report-pct` cutting 27px in fr/pt-br/it/ru at 1180. It passed here for a reason
+     worth writing down: the label CYCLES through every stage over 25 seconds, so whether the
+     sweep sees a clip depends on which stage was showing when it measured. Windows caught a short
+     one, Linux caught a long one. Measuring the string on screen was always a lottery.
+
+     Measured properly -- every string the loop can write, which is `mission.phases[]` plus
+     `initializing` and `complete`, each with " · 100%" -- the worst case is Italian
+     "Inizializzazione del progetto" at 265-288px depending on width, against a cell holding 212
+     at 1180, 262 at 1280 and 218 at 320. It clips in all three, everywhere, in every browser.
+     And it clips at the END, so the part it eats is the percentage: the only part of that label
+     that is not already shown in the status list beside it.
+
+     The head cannot grow (the panel is fixed) and it cannot wrap (37d locked it to one line
+     because it was oscillating 22px<->50px as the label changed). So the space comes from the two
+     places that can give it up without losing anything:
+
+       the eyebrow's tracking, 0.14em -> 0.06em, worth ~24px on a 14-character uppercase label,
+       and the progress bar, which is a decoration that reads the same at 8px as at 49px.
+
+     Applied only in the pinch band and at the narrowest phone, so every other width keeps the
+     design's full tracking. */
+  @media(min-width:1160px) and (max-width:1320px){
+    .report-head small{letter-spacing:.06em}
+    .report-head .report-progress{min-width:8px}
+    .report-pct{min-width:max-content}
+  }
+  @media(max-width:360px){
+    .report-head small{letter-spacing:.06em}
+    .report-head .report-progress{min-width:8px}
+    .report-pct{min-width:max-content}
+  }
+
 }
 
 @layer fixes {
