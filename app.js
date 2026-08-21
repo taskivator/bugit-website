@@ -203,6 +203,12 @@ function wireMenuKeyboard(cfg){
       if(cfg.isOpen())cfg.close(true);else openAt('current');
       return;
     }
+    /* TAB OUT OF AN OPEN MENU CLOSES IT, FROM THE BUTTON TOO. The row handler below already does
+       this, but it only ever sees the key when focus is INSIDE the list -- and after Space in
+       WebKit focus is on the button, not in the list, so Tab left an open menu under a button
+       still reporting aria-expanded="true". An open menu whose owner says it is collapsed is a
+       lie told to exactly the reader this keyboard contract exists for. */
+    if(e.key==='Tab'&&cfg.isOpen()){cfg.close(false);return}
     if(e.key==='ArrowDown'){e.preventDefault();openAt('first');return}
     if(e.key==='ArrowUp'){e.preventDefault();openAt('last');return}
     if(printable(e)){
@@ -212,6 +218,33 @@ function wireMenuKeyboard(cfg){
       if(hit){e.preventDefault();cfg.rove(hit)}
       else if(!was)cfg.close(false);   /* nothing matched: leave the page as it was found */
     }
+  });
+  /* SPACE IS DECIDED ON KEYUP IN WEBKIT, AND THAT IS WHERE IT WAS GETTING UNDONE.
+     A native <button> turns Enter into a click on keydown but Space into a click on KEYUP, and
+     WebKit puts focus back on the button after servicing it. So the keydown above opened the
+     menu and focused a row, and a moment later focus was on the button again with the menu open:
+     every arrow that followed went nowhere. Chromium restores nothing and looked correct, which
+     is why this needed a second engine to see at all.
+     preventDefault here stops the synthetic click. The re-assert covers the focus restore, which
+     WebKit performs even when the click is cancelled -- so the fix cannot rely on the click
+     alone. Reading `document.activeElement` first means a reader who has already arrowed away is
+     left where they are. */
+  btn.addEventListener('keyup',function(e){
+    if(e.key===' '||e.key==='Spacebar')e.preventDefault();
+  });
+  /* THE BUTTON MUST NOT HOLD FOCUS WHILE ITS OWN MENU IS OPEN.
+     Space is the case that forced this. A native <button> turns Space into a click on KEYUP, and
+     WebKit restores focus to the button AFTER servicing it -- after our keyup handler has already
+     run, so a synchronous `activeElement === btn` check looks correct and is then undone. The
+     first attempt at this checked exactly that and passed on iPhone while still failing on
+     desktop Safari, which is the same engine and a different focus path.
+     Waiting a tick would be a race dressed as a fix. This waits for the EVENT instead: whenever
+     the button takes focus while the menu is open, focus belongs in the list, so put it back.
+     The three legitimate ways the button gets focus all close the menu FIRST -- Escape, Tab, and
+     a click on the button itself -- so `isOpen()` is already false by the time they arrive and
+     none of them bounce. No recursion either: roving focuses a row, which blurs the button. */
+  btn.addEventListener('focus',function(){
+    if(cfg.isOpen())cfg.rove(cfg.current());
   });
   list.addEventListener('keydown',function(e){
     var all=cfg.items(),at=all.indexOf(document.activeElement);
@@ -1112,9 +1145,40 @@ function initMobileNav(){
   const closeBtn=document.getElementById('navClose');
   if(!toggle||!menu)return;
   const isOpen=()=>menu.classList.contains('open');
-  /* Everything the overlay covers. Computed each time rather than captured once, so a section
-     added to the page later is hidden too without anyone remembering this line exists. */
-  const behind=()=>[...document.body.children].filter(el=>el!==menu&&el.tagName!=='SCRIPT');
+  /* Everything the overlay covers, EXCEPT the toggle that closes it.
+     
+     THE TOGGLE LIVES INSIDE THE HEADER, AND THE HEADER IS BEHIND THE OVERLAY. The first version
+     of this inerted every body child except the menu, which included the <header> the hamburger
+     sits in -- and `inert` is inherited and cannot be undone by a descendant. So opening the
+     menu removed its own close button from hit-testing: the button still looked pressable, still
+     said aria-label="Close menu", and did nothing at all. Reproduced on the second tap in
+     Chromium, in real Chrome and in WebKit; Playwright had to pass force:true to land it, which
+     is exactly what a real finger cannot do. With the page scroll-locked behind it, a visitor is
+     left tapping a dead control on a frozen page.
+
+     So inert SIBLINGS ALONG THE PATH instead of whole subtrees: walk from each element that must
+     stay live up to <body>, and at every level inert the siblings that are not on a keep-path.
+     The header itself stays interactive, its other contents (logo, language, account) do not,
+     and the toggle keeps working. Computed each time rather than captured once, so a section
+     added to the page later is covered without anyone remembering this line exists. */
+  const keepLive=()=>[menu,toggle];
+  const onKeepPath=()=>{
+    const set=new Set();
+    keepLive().forEach(el=>{ for(let n=el;n&&n!==document.body;n=n.parentElement)set.add(n); });
+    return set;
+  };
+  const behind=()=>{
+    const keep=onKeepPath(),out=[];
+    const walk=el=>{
+      for(const child of el.children){
+        if(child.tagName==='SCRIPT')continue;
+        if(keep.has(child)){ walk(child); }        // on the path: descend, do not inert
+        else out.push(child);                       // off the path: inert the whole subtree
+      }
+    };
+    walk(document.body);
+    return out;
+  };
   let savedY=0;
   const open=()=>{
     // iOS-safe scroll lock: overflow:hidden alone does not lock the document on

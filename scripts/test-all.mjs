@@ -136,6 +136,16 @@ const SUITES = [
   //                 Chromium guards saw nothing, because the difference is that Safari does not
   //                 focus a button on tap.
   "check-disclosure.mjs",
+  // check-overlay-controls  a control that OPENS an overlay must still work once the overlay
+  //                 is open. The mobile menu inerted every body child except itself, and the
+  //                 hamburger that closes it lives in the header -- so opening the menu
+  //                 removed its own close button from hit-testing, on a page whose scroll was
+  //                 already locked. Reported as "tapping it again crashes Chrome". Taps are
+  //                 honest here: no force anywhere, because force() dispatches the event a
+  //                 finger cannot. Chromium and WebKit, and it carries its own negative
+  //                 control -- it rewrites app.js on the wire to restore the bug and fails
+  //                 if that still passes.
+  "check-overlay-controls.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

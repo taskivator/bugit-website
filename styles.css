@@ -4660,16 +4660,12 @@
      through the letters -- which is what "the text collides with Hide full report" was. A
      gradient to a transparent stop fades the text ABOVE the bar and leaves the bar itself
      see-through. Solid, with the shadow doing the fading instead. */
-  @media(min-width:1160px){
-    .report-panel.is-open>.report-more-toggle{
-      background:#0a0714;
-      box-shadow:0 -18px 24px -10px #0a0714,0 -34px 30px -22px #0a0714;
-    }
-    .report-panel.is-open .report-head{
-      background:#0a0714;
-      box-shadow:0 16px 20px -12px #0a0714;
-    }
-  }
+  /* The rules that used to sit here restated the solid background and added a soft shadow to
+     each bar, to fade the report out as it passed. Both are gone. The background is stated
+     where the bars are defined, and the shadows were the other half of what the owner has
+     been reporting: a 24px and a 34px spread of the panel's own colour, pinned to a bar,
+     with the text sliding underneath it. That is indistinguishable from a shadow that moves
+     with the report, because that is exactly what it is. */
 
   /* ---------- 61. The mark against the wordmark ---------------------------- */
   /* The lockup is a mark, a name at 32px and a byline at 12.5px -- a text block 57px tall. The
@@ -4682,47 +4678,27 @@
     .brand img.blip-logo{width:76px;height:76px}
   }
 
-  /* ---------- 62. Content dissolves at the pinned bars --------------------- */
-  /* The report scrolls under a bar that is pinned to the bottom of the panel, and the blocks in
-     it are bordered boxes -- the meta grid, the status grid. Their top edge is a horizontal
-     hairline the width of the panel, so as it approached the bar it read as a second line
-     sliding up to meet the bar's own. Nothing was wrong with it; it just looked like a rule
-     coming loose.
-     A soft-edged band of the panel's own colour, above the bar and below the head, so content
-     fades out before it reaches either. The bars stay solid, and nothing crosses their edge. */
+  /* ---------- 62. The pinned bars are solid; nothing is painted over the report ---- */
+  /* WHAT WAS HERE AND WHY IT IS GONE. The report scrolls under a bar pinned to the bottom of the
+     panel and past a head pinned to the top, and the blocks inside it are bordered boxes. As one
+     approached a bar its top hairline read as a second rule sliding up to meet the bar's own. The
+     answer was a 46px band of the panel's own colour at each edge -- `.report-more-toggle::before`
+     below and `.report-head::after` above -- so content faded out before it reached either.
+
+     The owner rejected it twice. On a dark panel it does not read as a dissolve, it reads as a
+     shadow; and because it is pinned to a bar while the text moves underneath, it reads as a
+     shadow that slides up and down with the report. Round one removed only the BOTTOM band, with
+     a later override in section 91. The top band was identical and untouched, so the same smear
+     came straight back at the top of the panel and was reported again.
+
+     Both are removed HERE, at the source, and section 91's override goes with them: one statement
+     about this treatment instead of three, and nothing left for a later rule to revive. The
+     hairline the bands were hiding is much the lesser problem, and both bars are opaque already.
+     Guarded by scripts/check-report-bar.mjs, which now measures BOTH edges rather than the one
+     that was complained about. */
   @media(min-width:1160px){
-    .report-panel.is-open>.report-more-toggle::before,
-    .report-panel.is-open .report-head::after{
-      content:"";
-      position:absolute;
-      inset-inline:0;
-      height:46px;
-      pointer-events:none;
-    }
-    .report-panel.is-open>.report-more-toggle::before{
-      bottom:100%;
-      background:linear-gradient(to top,#0a0714 0%,rgba(10,7,20,.86) 38%,rgba(10,7,20,0) 100%);
-    }
-    /* THE TOP BAND ONLY EXISTS ONCE THERE IS SOMETHING UNDER THE HEAD. Painted unconditionally
-       it lay over the first 46px of the report -- which, at the top of the panel, is the first
-       line of the bug's title -- and greyed it out. It fades in over the first 44px of scroll,
-       driven by the panel's own scroll position, so it is absent exactly when nothing has
-       scrolled beneath it. Where scroll timelines are unsupported it stays absent, which is the
-       safe end: the head is opaque on its own. */
-    .report-panel.is-open .report-head::after{
-      top:100%;
-      opacity:0;
-      background:linear-gradient(to bottom,#0a0714 0%,rgba(10,7,20,.86) 38%,rgba(10,7,20,0) 100%);
-    }
-    @supports (animation-timeline:scroll()){
-      .report-panel.is-open .report-head::after{
-        animation:headBand linear both;
-        animation-timeline:scroll(nearest block);
-        animation-range:0 44px;
-      }
-    }
-    /* Both bars have to be positioned for their own pseudo-element to hang off them, and both
-       have to sit above the content they are covering. */
+    /* Structural, and the only part that survives: each bar has to sit above the content it is
+       covering, or the report scrolls over the top of it instead of under it. */
     .report-panel.is-open .report-head,
     .report-panel.is-open>.report-more-toggle{position:sticky;z-index:4}
   }
@@ -4736,10 +4712,6 @@
   /* Where :has() is unsupported, the sibling combinator covers the same case: #docNav is always
      the element before the content. */
   #docNav[hidden] + .docs-content{grid-column:1 / -1}
-  @keyframes headBand{
-    from{opacity:0}
-    to{opacity:1}
-  }
 
   /* ---------- 64. The wall answers with its type, not with a panel ---------- */
   /* Hovering a tile filled its whole row with a lighter panel, which is a lot of paint for
@@ -5091,19 +5063,22 @@
     position:sticky;top:0;z-index:3;
     margin-block-start:0;
     padding-block:18px 12px;
-    background:linear-gradient(180deg,
-      var(--panel,#0a0714) 0%,
-      var(--panel,#0a0714) 72%,
-      rgba(10,7,20,0) 100%);
+    /* SOLID. This was a gradient to a transparent stop, so the report's own text showed
+       through the bottom 28% of the head -- and because the head is pinned while the text
+       moves under it, that reads as a shadow travelling with the report. It is the same
+       defect as the one on the action bar below, and it outlived two fixes because those
+       fixes were written as overrides further down the layer while this rule, at identical
+       specificity and later in the file, quietly won. Stated once, here, where it is used. */
+    background:var(--panel,#0a0714);
   }
   .report-panel.is-open>.report-more-toggle{
     position:sticky;bottom:0;z-index:3;
     margin-block-end:0;
     padding-block:14px 18px;
-    background:linear-gradient(0deg,
-      var(--panel,#0a0714) 0%,
-      var(--panel,#0a0714) 62%,
-      rgba(10,7,20,0) 100%);
+    /* SOLID, for the reason on the head above: the top 38% of this bar was see-through, so
+       the report was legible THROUGH the button, which is what "the shadow above Hide full
+       report" has been every time it has been reported. */
+    background:var(--panel,#0a0714);
   }
   .report-panel.is-open>.report-status{margin-block-end:var(--s2)}
   @media (prefers-reduced-motion:no-preference){
@@ -5485,31 +5460,10 @@
   section[id]{scroll-margin-top:92px}
 
   /* ---------- 91. Owner review, 2026-08-21 (second round) ---------------- */
-
-  /* (a) NOTHING IS PAINTED ABOVE "HIDE FULL REPORT".
-     Round one took the box-shadow off this bar and the owner reports the shadow is still
-     there and still travels with the report. It does, because the shadow was never the only
-     thing painting it. Measured at 1920 with the report open, two veils stack above the
-     label:
-       - section 62's `::before`, a 46px gradient band from the panel's colour to transparent;
-       - the bar's OWN background, `linear-gradient(0deg, #0a0714 0%, #0a0714 62%, transparent
-         100%)` -- the top 38%, 20px of a 54px bar, is see-through, so the report's text shows
-         through the button itself.
-     Together: a ~66px dark-to-transparent smear pinned above a bar the report scrolls under,
-     which is exactly "a shadow that moves up and down with the report".
-     Section 57 already set this bar to a solid `#0a0714`. It has never applied: an
-     identical-specificity rule further down the same layer puts the gradient back, and the
-     later one wins. So this is stated once more, last, where nothing can undo it. */
-  @media(min-width:1160px){
-    .report-panel.is-open>.report-more-toggle{
-      background-image:none;
-      background-color:#0a0714;
-      box-shadow:none;
-    }
-    /* The band above the bar goes entirely -- not hidden, removed, so it cannot be revived by
-       a later opacity or background rule. */
-    .report-panel.is-open>.report-more-toggle::before{content:none}
-  }
+  /* The override that lived here removed the gradient band above "Hide full report". Section 62
+     no longer paints either band, so there is nothing left to override, and keeping a second
+     statement about the same button is exactly how the first one came to be contradicted by a
+     later rule of equal specificity. The bar's solid colour is stated once, in section 57. */
 
 }
 
@@ -5986,5 +5940,26 @@
      is what a real title bar shows. The tracking comes down with the caps for the same reason it
      did on the badge: .06em is tracking for uppercase. */
   .window b{text-transform:none;letter-spacing:.01em}
+
+
+  /* ---------- 92. Nothing expensive keeps painting under an opaque overlay ---- */
+  /*
+     The mobile menu is `background:rgba(7,6,18,.99)` at `inset:0`, so while it is open NOTHING
+     behind it is visible. It was all still being composited: `#ambient` with two 467px radial
+     layers animating on a 24 and 31 second loop, and 128 fixed-position particles. Measured on
+     an iPhone 14 viewport with the menu open, both were still `display:block`.
+
+     Opening the menu also sets `position:fixed` on `<body>`, which changes the containing block
+     for every fixed layer on the page and forces the whole set to be laid out and rasterised
+     again. Doing that repeatedly, on a device where the OS kills a web process that asks for
+     too much, is a plausible mechanism for a browser that dies on the second or third tap. It
+     is NOT a proven one: desktop WebKit survives ten rapid toggles because it has no such
+     ceiling, and the confirmed defect on this control was the inert bug fixed in app.js.
+
+     Either way this costs nothing to be right about: none of it can be seen while the overlay
+     is up, so not painting it is free, and the layers come straight back on close.
+  */
+  body.menu-open #ambient,
+  body.menu-open .particle{display:none}
 
 }

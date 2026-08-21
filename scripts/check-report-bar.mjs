@@ -178,23 +178,49 @@ for (const lang of ALL_LANGS) {
     await page.waitForTimeout(150);
 
     // 1. is there anything here to measure?
+    //
+    // THE SUBJECT IS COMPUTED, AND THAT IS THE WHOLE POINT OF THIS REWRITE. The first version of
+    // this file measured `#reportMoreToggle` by id, because that was the bar the owner named. The
+    // treatment had TWO halves -- a band above the action bar and an identical band below the
+    // report head -- so removing the half this guard watched left the other half live, and the
+    // same smear was reported again days later at the top of the panel. Naming the thing you
+    // check is this project's recurring defect.
+    // So: every element the browser reports as PINNED inside the open panel (position sticky or
+    // fixed) is a bar the report scrolls past, and each one is held to the same contract. A third
+    // bar added later is covered on the day it renders.
     const state = await page.evaluate(() => {
       const p = document.querySelector(".report-panel");
+      if (!p) return null;
+      const pinned = [...p.querySelectorAll("*")].filter((el) => {
+        const q = getComputedStyle(el).position;
+        return q === "sticky" || q === "fixed";
+      });
+      const describe = (el) => {
+        const cs = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        const pseudo = (which) => {
+          const ps = getComputedStyle(el, which);
+          if (ps.content === "none" || ps.content === "normal") return null;
+          // A generated box is only a VEIL if it hangs outside its own element. The chevron on
+          // the action bar is an ::after that sits inside it, and it is not what this is about.
+          const outside = ps.bottom === "100%" || ps.top === "100%" ||
+                          parseFloat(ps.bottom) > r.height || parseFloat(ps.top) > r.height;
+          return { content: ps.content, bg: ps.backgroundImage, outside: outside };
+        };
+        return {
+          name: (el.id ? "#" + el.id : "." + (el.className || "").toString().split(" ")[0]),
+          bg: cs.backgroundImage, bgColor: cs.backgroundColor, shadow: cs.boxShadow,
+          before: pseudo("::before"), after: pseudo("::after"),
+          h: Math.round(r.height),
+        };
+      };
       const t = document.getElementById("reportMoreToggle");
-      if (!p || !t) return null;
-      const cs = getComputedStyle(t);
-      const before = getComputedStyle(t, "::before");
-      const after = getComputedStyle(t, "::after");
-      const r = t.getBoundingClientRect();
+      const r = t ? t.getBoundingClientRect() : null;
       return {
         open: p.classList.contains("is-open"),
         scrollable: p.scrollHeight - p.clientHeight,
-        bg: cs.backgroundImage, bgColor: cs.backgroundColor, shadow: cs.boxShadow,
-        beforeContent: before.content, afterContent: after.content,
-        // ::after is the chevron and belongs INSIDE the bar; only a box that hangs above it is
-        // a veil, so the test is where it sits, not that it exists.
-        afterTop: after.top, afterBottom: after.bottom, beforeBottom: before.bottom,
-        box: { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) },
+        bars: pinned.map(describe),
+        box: r ? { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) } : null,
       };
     });
     if (!state) { fail.push(`${at} no report panel on the page at all.`); continue; }
@@ -204,24 +230,35 @@ for (const lang of ALL_LANGS) {
                 `bar cannot veil anything and this cell would pass whatever the CSS said.`);
       continue;
     }
+    if (!state.bars.length) {
+      fail.push(`${at} the open panel reports NO pinned bars at all, so this check measured nothing. ` +
+                `Either the bars stopped being sticky or the selector no longer finds them.`);
+      continue;
+    }
+    if (!state.box) { fail.push(`${at} #reportMoreToggle is missing.`); continue; }
 
-    // 2. the bar is opaque
-    if (state.bg !== "none") {
-      fail.push(`${at} the action bar's background is a gradient, not a solid: ${state.bg}. Its ` +
-                `transparent stop is the report's own text showing through the button.`);
-    }
-    const alpha = /rgba?\([^)]*?,\s*([\d.]+)\s*\)$/.exec(state.bgColor);
-    if (alpha && Number(alpha[1]) < 1) {
-      fail.push(`${at} the action bar's background-color is ${state.bgColor}: the report scrolls ` +
-                `visibly underneath it.`);
-    }
-    if (state.shadow !== "none") {
-      fail.push(`${at} the action bar carries a box-shadow (${state.shadow}), which is painted over ` +
-                `the report above it.`);
-    }
-    if (state.beforeContent !== "none") {
-      fail.push(`${at} the action bar generates a ::before box (content: ${state.beforeContent}) ` +
-                `above itself. Nothing may be painted over the report.`);
+    // 2. EVERY pinned bar is opaque, and none of them paints outside itself.
+    for (const bar of state.bars) {
+      if (bar.bg !== "none") {
+        fail.push(`${at} pinned bar ${bar.name} has a gradient background (${bar.bg}). Its ` +
+                  `transparent stop is the report's own text showing through it.`);
+      }
+      const alpha = /rgba?\([^)]*?,\s*([\d.]+)\s*\)$/.exec(bar.bgColor);
+      if (alpha && Number(alpha[1]) < 1) {
+        fail.push(`${at} pinned bar ${bar.name} has background-color ${bar.bgColor}: the report ` +
+                  `scrolls visibly underneath it.`);
+      }
+      if (bar.shadow !== "none") {
+        fail.push(`${at} pinned bar ${bar.name} carries a box-shadow (${bar.shadow}), which is ` +
+                  `painted over the report beside it.`);
+      }
+      for (const [which, ps] of [["::before", bar.before], ["::after", bar.after]]) {
+        if (ps && ps.outside) {
+          fail.push(`${at} pinned bar ${bar.name} generates a ${which} box OUTSIDE its own edge ` +
+                    `(content: ${ps.content}, background: ${ps.bg}). That is a veil over the ` +
+                    `report, and it is what the owner reports as a shadow that moves with it.`);
+        }
+      }
     }
 
     // 3. and in pixels.

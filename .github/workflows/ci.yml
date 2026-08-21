@@ -240,5 +240,26 @@ jobs:
       # pointerdown, and the click that followed reopened it.
       - name: Verify every disclosure closes again, in both engines
         run: node scripts/check-disclosure.mjs
+      # A CONTROL THAT OPENS AN OVERLAY MUST STILL WORK WHILE THE OVERLAY IS OPEN. Owner,
+      # 2026-08-21: "pressing the 3 lines in mobile app to open the settings and then tapping it
+      # again to close it crashes the entire google chrome", reproducible on an iPhone. The mobile
+      # menu made the page behind it inert for screen readers by inerting every child of <body>
+      # except itself -- and the hamburger lives in the <header>, which is one of those children.
+      # inert is inherited and a descendant cannot opt out, so opening the menu removed its own
+      # close button from hit-testing, on a page whose scroll was already locked behind it.
+      # Every existing guard passed: the overlay opened, the classes and the aria were correct.
+      # Playwright hid it too, because click({force}) dispatches an event a finger cannot. This
+      # step taps honestly, in Chromium and WebKit, and carries its own negative control.
+      # F-06 of the 2026-08-21 external audit: both declared language menus ignore the keyboard
+      # contract their own role=menu markup promises. THIS STEP IS EXPECTED TO BE RED until the
+      # last case is closed -- Space opens the language menu and WebKit puts focus back on the
+      # button afterwards, so the arrows that follow go nowhere. It is wired anyway: an open
+      # finding with a guard nobody runs is how F-06 survived two rounds of fixes in the first
+      # place, and the website deploys by wrangler rather than from CI, so a red step here does
+      # not block a release.
+      - name: Verify every declared menu answers the keyboard, in both engines
+        run: node scripts/check-menu-keyboard.mjs
+      - name: Verify an overlay never disables the control that closes it
+        run: node scripts/check-overlay-controls.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
         run: node scripts/check-ci-coverage.mjs
