@@ -139,7 +139,96 @@ function renderParticles(){const root=document.getElementById('ambient');if(!roo
 function renderTools(){document.querySelectorAll('[data-tools]').forEach(row=>{row.innerHTML=row.dataset.tools.split(',').filter(Boolean).map(k=>{const t=officialLogos[k]||[toolData[k]?.[0]||k,k];return `<div class="tool" title="${t[0]}">${officialLogo(t[0],t[1])}<span>${t[0]}</span></div>`}).join('')})}
 function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}let currentLang=(function(){var m=document.cookie.match(/(?:^|; )bugitLang=([^;]+)/);return (m&&decodeURIComponent(m[1]))||localStorage.getItem('bugitLang')||'en';})();
 function applyLang(lang){if(!i18n[lang])lang='en';currentLang=lang;localStorage.setItem('bugitLang',lang);(function(){var h=location.hostname,shared=(h==='bugit.dev'||/\.bugit\.dev$/.test(h));if(shared){document.cookie='bugitLang=;path=/;max-age=0;samesite=lax';document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax;domain=.bugit.dev';}else{document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax';}})();document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
-function initLang(){const list=document.getElementById('langList');const langTag=c=>i18n[c].name;list.innerHTML=languages.map(([c],i)=>`<button type="button" role="menuitemradio" aria-checked="false" data-lang="${c}" lang="${c}" style="--i:${i}"><span class="lang-n">${langTag(c)}</span><span class="lang-c" aria-hidden="true">${c.toUpperCase()}</span></button>`).join('');const menu=document.getElementById('langMenu'),btn=document.getElementById('langButton');btn.setAttribute('aria-haspopup','true');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','langList');list.setAttribute('role','menu');const items=()=>[...list.querySelectorAll('button')];
+/* A DECLARED MENU IS A PROMISE ABOUT THE KEYBOARD, AND ONE PLACE KEEPS IT.
+   External audit F-06, 2026-08-21: "Both live language menus declare menu semantics but ignore
+   keyboard controls." role="menu" with menuitemradio rows, aria-haspopup and aria-expanded is
+   not decoration. It tells a screen reader -- and every keyboard-only visitor -- that Enter or
+   Space opens, the arrows walk the rows, Home and End jump to the ends, a letter jumps to a
+   name, Escape closes and hands focus back, and Tab leaves. A buyer who cannot open the language
+   menu cannot reach localized sign-in, pricing or documentation at all.
+
+   IT IS SHARED BECAUSE THE HEADER CARRIES TWO DECLARED MENUS. The language menu and the account
+   menu both say role="menu"; only the first had any of this. One implementation, or the second
+   one drifts again the next time someone fixes only the menu they were told about.
+
+   ENTER AND SPACE ARE HANDLED HERE RATHER THAN LEFT TO THE BROWSER'S SYNTHETIC CLICK, and that
+   is not tidiness. A native <button> turns Enter into a click on keydown and Space into a click
+   on KEYUP -- and WebKit puts focus back on the button after that keyup, so Space opened the
+   menu and left focus outside it, in Safari only, while Chromium was correct. Measured in both
+   engines, 2026-08-21. preventDefault() on keydown means no synthetic click is generated at all
+   and one code path decides in every engine. The pointer path (btn.onclick) is untouched.
+
+   cfg: { btn, list, items(), rove(el), current(), isOpen(), open(focus), close(giveBack) }
+   open/close stay with the CALLER: each menu owns its own class name, its own aria-expanded
+   sync, and -- for the language menu -- the Safari focusout guard that must not be disturbed. */
+function wireMenuKeyboard(cfg){
+  var btn=cfg.btn,list=cfg.list;
+  /* TYPE-AHEAD, over text each ROW carries rather than a table written here. A row offers its
+     visible name and its own language tag, so "d" reaches Deutsch and "j" reaches 日本語 -- and
+     a locale added tomorrow is searchable the day it renders, with nothing to remember. */
+  var keysOf=function(el){
+    var out=[(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase()];
+    var tag=el.getAttribute('lang')||el.getAttribute('data-lang')||'';
+    if(tag)out.push(tag.toLowerCase());
+    return out.filter(Boolean);
+  };
+  var buf='',bufTimer=null;
+  var match=function(ch){
+    if(bufTimer)clearTimeout(bufTimer);
+    buf+=ch.toLowerCase();
+    bufTimer=setTimeout(function(){buf=''},700);
+    var all=cfg.items();if(!all.length)return null;
+    /* The same letter pressed again CYCLES through the rows that begin with it; anything longer
+       is a prefix and searches from the row in hand. */
+    var repeat=buf.length>1&&buf.split('').every(function(c){return c===buf[0]});
+    var needle=repeat?buf.charAt(0):buf;
+    var from=all.indexOf(document.activeElement);
+    var start=(from<0?-1:from)+((repeat||buf.length===1)?1:0);
+    if(start<0)start=0;
+    for(var i=0;i<all.length;i++){
+      var el=all[(start+i)%all.length],k=keysOf(el);
+      for(var j=0;j<k.length;j++)if(k[j].indexOf(needle)===0)return el;
+    }
+    return null;
+  };
+  var printable=function(e){return !!e.key&&e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey};
+  var openAt=function(where){
+    cfg.open(false);
+    var all=cfg.items();
+    cfg.rove(where==='last'?all[all.length-1]:where==='first'?all[0]:cfg.current());
+  };
+  btn.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){
+      e.preventDefault();
+      if(cfg.isOpen())cfg.close(true);else openAt('current');
+      return;
+    }
+    if(e.key==='ArrowDown'){e.preventDefault();openAt('first');return}
+    if(e.key==='ArrowUp'){e.preventDefault();openAt('last');return}
+    if(printable(e)){
+      var was=cfg.isOpen();
+      if(!was)cfg.open(false);
+      var hit=match(e.key);
+      if(hit){e.preventDefault();cfg.rove(hit)}
+      else if(!was)cfg.close(false);   /* nothing matched: leave the page as it was found */
+    }
+  });
+  list.addEventListener('keydown',function(e){
+    var all=cfg.items(),at=all.indexOf(document.activeElement);
+    if(e.key==='ArrowDown'){e.preventDefault();cfg.rove(at<0?all[0]:all[(at+1)%all.length]);return}
+    if(e.key==='ArrowUp'){e.preventDefault();cfg.rove(at<0?all[all.length-1]:all[(at-1+all.length)%all.length]);return}
+    if(e.key==='Home'){e.preventDefault();cfg.rove(all[0]);return}
+    if(e.key==='End'){e.preventDefault();cfg.rove(all[all.length-1]);return}
+    /* Tab out of a menu closes it. An open menu under a button reporting itself collapsed is a
+       lie told to anyone who cannot see the screen. */
+    if(e.key==='Tab'){cfg.close(false);return}
+    /* Space activates the focused row. Enter already does on every row here, but Space does
+       nothing at all on an <a>, and the account menu's rows are links. */
+    if((e.key===' '||e.key==='Spacebar')&&at>=0){e.preventDefault();all[at].click();return}
+    if(printable(e)){var hit=match(e.key);if(hit){e.preventDefault();cfg.rove(hit)}}
+  });
+}
+function initLang(){const list=document.getElementById('langList');const langTag=c=>i18n[c].name;list.innerHTML=languages.map(([c],i)=>`<button type="button" role="menuitemradio" aria-checked="false" data-lang="${c}" lang="${c}" style="--i:${i}"><span class="lang-n">${langTag(c)}</span><span class="lang-c" aria-hidden="true">${c.toUpperCase()}</span></button>`).join('');const menu=document.getElementById('langMenu'),btn=document.getElementById('langButton');btn.setAttribute('aria-haspopup','menu');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','langList');list.setAttribute('role','menu');const items=()=>[...list.querySelectorAll('button')];
   const sync=()=>btn.setAttribute('aria-expanded',menu.classList.contains('open')?'true':'false');
   /* Roving tabindex: the eleven languages are reachable with the arrows, not with Tab. Without
      this a menu is just eleven extra tab stops wearing menu roles. */
@@ -156,18 +245,12 @@ function initLang(){const list=document.getElementById('langList');const langTag
   const close=(giveBack)=>{if(!menu.classList.contains('open'))return;menu.classList.remove('open');sync();items().forEach(b=>b.tabIndex=-1);if(giveBack)btn.focus()};
   items().forEach(b=>b.tabIndex=-1);
   btn.onclick=()=>{menu.classList.contains('open')?close(false):open(true)};
-  btn.addEventListener('keydown',e=>{
-    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();open(false);rove(e.key==='ArrowDown'?items()[0]:items()[items().length-1]);}
-  });
   list.onclick=e=>{const b=e.target.closest('button');if(!b)return;close(true);applyLang(b.dataset.lang)};
-  list.addEventListener('keydown',e=>{
-    const all=items(),at=all.indexOf(document.activeElement);
-    if(e.key==='ArrowDown'){e.preventDefault();rove(all[(at+1)%all.length]);}
-    else if(e.key==='ArrowUp'){e.preventDefault();rove(all[(at-1+all.length)%all.length]);}
-    else if(e.key==='Home'){e.preventDefault();rove(all[0]);}
-    else if(e.key==='End'){e.preventDefault();rove(all[all.length-1]);}
-    else if(e.key==='Tab'){close(false);}
-  });
+  /* The whole keyboard contract -- Enter/Space, the arrows, Home/End, type-ahead and Tab -- is
+     wireMenuKeyboard's, shared with the account menu. Escape is below, at document level,
+     because it must work from anywhere the reader has got to. */
+  wireMenuKeyboard({btn:btn,list:list,items:items,rove:rove,current:current,
+    isOpen:()=>menu.classList.contains('open'),open:open,close:close});
   /* FOCUS LEAVING THE MENU CLOSES IT -- decided from where focus actually ENDED UP, and never
      while the opener is being pressed.
      This used to read `relatedTarget`, which is null both when focus has genuinely left the
@@ -1079,7 +1162,44 @@ function initMobileNav(){
 var PORTAL_ORIGIN='https://portal.bugit.dev';
 function acctLinks(){return [['dashboard','/dashboard'],['licenses','/dashboard/license'],['downloads','/dashboard/downloads'],['settings','/dashboard/account']];}
 function acctListHtml(){var items=acctLinks().map(function(it){return '<a href="'+PORTAL_ORIGIN+it[1]+'" role="menuitem" data-t="account.'+it[0]+'"></a>';}).join('');var so='<form method="POST" action="'+PORTAL_ORIGIN+'/api/signout"><button type="submit" class="acct-signout" role="menuitem" data-t="account.signout"></button></form>';return items+so;}
-function initAcctMenu(){var menu=document.getElementById('acctMenu'),btn=document.getElementById('acctButton'),list=document.getElementById('acctList');if(!menu||!btn||btn.dataset.ready)return;btn.dataset.ready='1';var sync=function(){btn.setAttribute('aria-expanded',menu.classList.contains('open')?'true':'false')};btn.onclick=function(){menu.classList.toggle('open');sync()};list.addEventListener('click',function(e){if(e.target.closest('a,button'))menu.classList.remove('open')});document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');sync()}});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classList.contains('open')){menu.classList.remove('open');sync();btn.focus()}});}
+/* THE ACCOUNT MENU IS THE OTHER DECLARED MENU, and until 2026-08-21 it kept none of the
+   promise: opening it moved focus nowhere, the arrows did nothing, all five rows sat in the tab
+   order, and selecting one dropped the `open` class WITHOUT syncing aria-expanded, so the button
+   went on reporting itself expanded over a closed menu. The audit named the language menus;
+   this one was the same defect standing beside them, on the surface every signed-in customer
+   uses. It now shares the language menu's keyboard implementation rather than a copy of it. */
+function initAcctMenu(){
+  var menu=document.getElementById('acctMenu'),btn=document.getElementById('acctButton'),list=document.getElementById('acctList');
+  if(!menu||!btn||btn.dataset.ready)return;
+  btn.dataset.ready='1';
+  var sync=function(){btn.setAttribute('aria-expanded',menu.classList.contains('open')?'true':'false')};
+  /* Queried live, never captured: renderAccount() rewrites these rows whenever the session or
+     the language changes, so a list captured at wiring time would be pointing at dead nodes. */
+  var items=function(){return [].slice.call(list.querySelectorAll('[role="menuitem"]'))};
+  var rove=function(el){items().forEach(function(b){b.tabIndex=b===el?0:-1});if(el)el.focus()};
+  var current=function(){return items()[0]};
+  /* `void list.offsetHeight` for the same reason as the language menu: the panel is display:none
+     until `.open` lands, and focus() on a display:none element is a no-op that reports nothing. */
+  var open=function(focus){
+    menu.classList.add('open');sync();void list.offsetHeight;
+    items().forEach(function(b){b.tabIndex=-1});
+    if(focus!==false)rove(current());
+  };
+  var close=function(giveBack){
+    if(!menu.classList.contains('open'))return;
+    menu.classList.remove('open');sync();
+    items().forEach(function(b){b.tabIndex=-1});
+    if(giveBack)btn.focus();
+  };
+  /* POINTER BEHAVIOUR IS UNCHANGED: a mouse open moves no focus. The rows still leave the tab
+     order, so the menu is ONE tab stop rather than five, and ArrowDown from the button walks in. */
+  btn.onclick=function(){menu.classList.contains('open')?close(false):open(false)};
+  list.addEventListener('click',function(e){if(e.target.closest('a,button'))close(false)});
+  document.addEventListener('click',function(e){if(!menu.contains(e.target))close(false)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classList.contains('open'))close(true)});
+  wireMenuKeyboard({btn:btn,list:list,items:items,rove:rove,current:current,
+    isOpen:function(){return menu.classList.contains('open')},open:open,close:close});
+}
 function renderAccount(name){var slot=document.getElementById('authSlot'),list=document.getElementById('acctList'),label=document.getElementById('acctLabel');if(list)list.innerHTML=acctListHtml();if(label){if(name){label.textContent=name;label.removeAttribute('data-t');}else{label.setAttribute('data-t','account.myAccount');}}var mm=document.getElementById('mmAcct');if(mm){mm.innerHTML=acctListHtml();if(name){var nm=document.createElement('div');nm.className='mm-acct-name';nm.textContent=name;mm.insertBefore(nm,mm.firstChild);}mm.hidden=false;}var ms=document.querySelector('.mm-signin');if(ms)ms.hidden=true;if(slot)slot.dataset.state='in';applyLang(currentLang);initAcctMenu();}
 function renderSignedOut(){var slot=document.getElementById('authSlot');if(slot)slot.dataset.state='out';var mm=document.getElementById('mmAcct');if(mm){mm.hidden=true;mm.innerHTML='';}var ms=document.querySelector('.mm-signin');if(ms)ms.hidden=false;}
 function initAuth(){var slot=document.getElementById('authSlot');if(slot)slot.dataset.state='loading';var ctrl=('AbortController'in window)?new AbortController():null;var timer=ctrl?setTimeout(function(){try{ctrl.abort()}catch(e){}},4000):null;fetch(PORTAL_ORIGIN+'/api/session-status',{credentials:'include',signal:ctrl?ctrl.signal:undefined,headers:{'accept':'application/json'}}).then(function(r){return r.ok?r.json():Promise.reject()}).then(function(d){if(timer)clearTimeout(timer);if(d&&d.authenticated){renderAccount(d.name||null)}else{renderSignedOut()}}).catch(function(){if(timer)clearTimeout(timer);renderSignedOut()});}
