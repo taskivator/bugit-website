@@ -1335,8 +1335,19 @@ function initDocNav(){
 function initMobileNav(){
   const toggle=document.getElementById('navToggle');
   const menu=document.getElementById('mobileMenu');
-  const closeBtn=document.getElementById('navClose');
   if(!toggle||!menu)return;
+  /* THE HAMBURGER IS THE CLOSE CONTROL. The overlay used to draw its own close button in the
+     same corner; the header paints above the overlay, so every tap aimed at that button landed
+     here instead and the one the reader could see was the one that could never be pressed.
+     Its label has to say which of the two things it does, IN THE READER'S LANGUAGE: it was
+     written in English from here on every open, over a page that had been translated. Setting
+     data-t-aria as well means a language change while the menu is open re-reads the right one
+     rather than putting "Open menu" on a control that closes. */
+  const relabel=(key)=>{
+    toggle.dataset.tAria=key;
+    const v=get(i18n[currentLang]||i18n.en,key);
+    toggle.setAttribute('aria-label',v===undefined?(key==='a11y.closeMenu'?'Close menu':'Open menu'):v);
+  };
   const isOpen=()=>menu.classList.contains('open');
   /* Everything the overlay covers, EXCEPT the toggle that closes it.
      
@@ -1361,11 +1372,25 @@ function initMobileNav(){
     return set;
   };
   const behind=()=>{
+    /* BEING ON THE PATH AND BEING THE DESTINATION ARE NOT THE SAME THING, and conflating them
+       inerted the entire overlay. The walk descends through anything on a keep-path so it can
+       inert that level's other children -- correct for the <header>, which is only on the path
+       because the hamburger lives in it. The MENU is not on a path to something else: it IS the
+       thing being kept live. Descending into it inerted .mm-head and .mm-links, which is every
+       link, the account rows and the overlay's own close button, so a reader who opened the menu
+       could tap any of them and nothing at all happened. Reproduced on Chromium and WebKit:
+       elementFromPoint over each link returned the overlay rather than the link, and an honest
+       tap timed out. It also meant the focus move on open landed nowhere, because focus() into
+       an inert subtree is a no-op.
+       Nothing looked wrong and nothing else caught it: the only guard here that opens this menu
+       measures the CONTROL, and the control was the one thing still working. */
+    const live=new Set(keepLive());
     const keep=onKeepPath(),out=[];
     const walk=el=>{
       for(const child of el.children){
         if(child.tagName==='SCRIPT')continue;
-        if(keep.has(child)){ walk(child); }        // on the path: descend, do not inert
+        if(live.has(child))continue;                // IS the thing kept live: leave it whole
+        if(keep.has(child)){ walk(child); }        // on the path to one: descend, do not inert
         else out.push(child);                       // off the path: inert the whole subtree
       }
     };
@@ -1381,7 +1406,7 @@ function initMobileNav(){
     savedY=window.scrollY||window.pageYOffset||0;
     menu.classList.add('open');document.body.classList.add('menu-open');
     document.body.style.top=`-${savedY}px`;
-    toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close menu');
+    toggle.setAttribute('aria-expanded','true');relabel('a11y.closeMenu');
     // The Tab trap below is correct, but a screen reader browses the document rather than
     // tabbing through it: behind this overlay the whole page stayed readable. `inert` is the
     // only thing that removes a subtree from BOTH the tab order and the accessibility tree.
@@ -1392,24 +1417,29 @@ function initMobileNav(){
     menu.classList.remove('open');document.body.classList.remove('menu-open');
     document.body.style.top='';
     window.scrollTo({top:savedY,left:0,behavior:'instant'});
-    toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open menu');
+    toggle.setAttribute('aria-expanded','false');relabel('a11y.openMenu');
     // Un-inert BEFORE returning focus: focusing an element inside an inert subtree does nothing
     // at all, and the reader would be left on <body> with no idea the menu had closed.
     behind().forEach(el=>el.removeAttribute('inert'));
     toggle.focus({preventScroll:true});
   };
   toggle.addEventListener('click',()=>isOpen()?close():open());
-  if(closeBtn)closeBtn.addEventListener('click',close);
   menu.addEventListener('click',e=>{if(e.target.closest('a'))close();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&isOpen())close();});
   window.addEventListener('resize',()=>{if(window.innerWidth>1320&&isOpen())close();});
-  menu.addEventListener('keydown',e=>{
-    if(e.key!=='Tab')return;
-    const f=menu.querySelectorAll('a,button');if(!f.length)return;
+  /* The trap runs over the overlay's own controls PLUS the toggle, because the toggle is the
+     control that closes this overlay and it lives outside it. A trap that excluded it would
+     cycle a keyboard reader round the links with no way out of the overlay but Escape. */
+  const cycle=()=>[].slice.call(menu.querySelectorAll('a,button')).concat([toggle]);
+  const trap=e=>{
+    if(e.key!=='Tab'||!isOpen())return;
+    const f=cycle();if(!f.length)return;
     const first=f[0],last=f[f.length-1];
     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
     else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
-  });
+  };
+  menu.addEventListener('keydown',trap);
+  toggle.addEventListener('keydown',trap);
 }
 /* Authenticated account state. Reflects the REAL portal/Supabase session via a
    read-only, CORS-restricted status endpoint on portal.bugit.dev — never a
@@ -2473,40 +2503,119 @@ if(typeof faqMoreLabel !== 'undefined'){
     if(s === 1) stage.classList.remove('is-done');
   });
 
-  /* ON A PHONE, HAND THE FILM TO YOUTUBE'S OWN PLAYER.
-     The stage is the full width of a 390px screen and the wall of films sits under it, so an
-     inline play leaves the picture a couple of hundred pixels tall with the rest of the page
-     competing for the same screen. Owner, 2026-08-21: "in mobile view when they tap on a
-     youtube video becasuse there is not enough space they should be auto taken to the youtube
-     video player so they can watch it".
-     A youtube.com/watch URL is the deep link both mobile platforms recognise: iOS and Android
-     hand it to the installed YouTube app, and fall back to the mobile site when there is none.
-     It also starts playing on arrival, which is the second half of the same request.
-     `www.youtube.com`, not the nocookie host, because nocookie serves the EMBED player and is
-     the frame-src the CSP grants; this is a navigation the reader asked for, not a request this
-     page makes, so the no-Google-before-consent promise is untouched. */
-  function watchOn(el){
-    var id = cutOf(el);
-    if(!id) return false;
-    window.open('https://www.youtube.com/watch?v=' + encodeURIComponent(id),
-                '_blank', 'noopener,noreferrer');
-    return true;
+  /* THE FILM PLAYS ON THIS PAGE, ON EVERY SCREEN.
+     For one day a tap on a phone opened youtube.com/watch, which iOS and Android hand to the
+     installed YouTube app. Owner, 2026-08-22: "why tapping on the videos in mobile view opens
+     the YouTube app??? ... they want the video to be [played] on the YouTube player we [have]
+     IN THE WEBSITE ... customer should be smoothly and with a nice animation taken up into the
+     player we have and play the video".
+     So the handoff is gone. What it was solving is real and is solved here instead: the reason
+     a tap felt cramped is that the wall of films sits BELOW the stage, so on a phone the film
+     you just chose starts playing several hundred pixels above the thing you are looking at.
+     A tap now carries the reader to the player rather than sending them to another app.
+
+     TWO THINGS HAPPEN, IN THIS ORDER, AND THE ORDER IS THE POINT.
+     1. The embed is created inside the press itself. A cross-origin player is granted autoplay
+        on the user activation that exists when its frame is created; build that frame 600ms
+        later, after an animation has finished, and it arrives without one and sits there
+        showing its own play button. So playback starts first and the animation runs over it.
+     2. The page then travels to the stage while a clone of the poster under the finger flies
+        into it. Both boxes are re-read on every frame, so the clone tracks the tile while the
+        page is still moving and lands exactly on the player rather than near where it used to
+        be. */
+  var reduced = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
+  var ease = function(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2; };
+
+  /* A sticky header covers the top of the viewport, so the room the stage can be centred in
+     starts below it. Measured rather than assumed: the header's height is a different number
+     at every width and in several languages. */
+  function headerRoom(){
+    var h = document.querySelector('header');
+    if(!h) return 0;
+    var cs = getComputedStyle(h);
+    if(cs.position !== 'fixed' && cs.position !== 'sticky') return 0;
+    return h.getBoundingClientRect().height;
+  }
+  function restingScroll(){
+    var r = stage.getBoundingClientRect();
+    var top = headerRoom();
+    var room = Math.max(0, window.innerHeight - top);
+    var y = window.scrollY + r.top - top - Math.max(0, (room - r.height)/2);
+    var max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    return Math.min(Math.max(0, y), max);
+  }
+
+  var flying = null;
+  function dropClone(){
+    if(flying && flying.parentNode) flying.parentNode.removeChild(flying);
+    flying = null;
+  }
+  function travel(from){
+    var target = restingScroll();
+    var startY = window.scrollY;
+    var far = Math.abs(target - startY) > 2;
+    if(reduced.matches){
+      /* reduced motion REMOVES the motion, it does not remove the arrival: not scrolling at
+         all would leave the reader looking at a wall while a film plays off screen, which is
+         the dead tap this replaced. */
+      if(far) window.scrollTo({top:target, behavior:'instant'});
+      return;
+    }
+    var thumb = from && from.querySelector ? from.querySelector('.yt-thumb') : null;
+    var img = thumb ? thumb.querySelector('img') : null;
+    dropClone();
+    if(thumb && img && (img.currentSrc || img.src)){
+      flying = document.createElement('i');
+      flying.className = 'yt-fly';
+      flying.setAttribute('aria-hidden','true');
+      flying.style.backgroundImage = 'url("' + String(img.currentSrc || img.src).replace(/"/g,'%22') + '")';
+      document.body.appendChild(flying);
+    }
+    var clone = flying;
+    var rad = function(el){ return parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0; };
+    var r0 = thumb ? rad(thumb) : 0, r1 = rad(stage);
+    stage.classList.add('is-entering');
+    var DUR = clone ? 620 : 420, t0 = null;
+    /* A clone that outlives its flight is a fixed element covering the page, so it is also
+       removed on a timer that does not depend on the loop still running. */
+    var bail = setTimeout(function(){ if(flying === clone) dropClone(); }, DUR + 600);
+    requestAnimationFrame(function step(now){
+      if(t0 === null) t0 = now;
+      var t = Math.min(1, (now - t0)/DUR), e = ease(t);
+      if(far) window.scrollTo({top: startY + (target - startY)*e, behavior:'instant'});
+      if(clone && flying === clone && thumb){
+        var a = thumb.getBoundingClientRect(), b = stage.getBoundingClientRect();
+        clone.style.left   = (a.left + (b.left - a.left)*e) + 'px';
+        clone.style.top    = (a.top + (b.top - a.top)*e) + 'px';
+        clone.style.width  = (a.width + (b.width - a.width)*e) + 'px';
+        clone.style.height = (a.height + (b.height - a.height)*e) + 'px';
+        clone.style.borderRadius = (r0 + (r1 - r0)*e) + 'px';
+        clone.style.opacity = t < .74 ? '1' : String(Math.max(0, 1 - (t - .74)/.26));
+      }
+      if(t < 1){ requestAnimationFrame(step); return; }
+      clearTimeout(bail);
+      if(flying === clone) dropClone();
+      stage.classList.remove('is-entering');
+    });
   }
 
   play.addEventListener('click', function(){
-    if(phone.matches && watchOn(stage)) return;
     start();
+    /* No origin box: the reader pressed the stage itself, so there is nothing to fly from and
+       usually nowhere to travel to. travel() still runs, because a press on a stage that is
+       half off the bottom of a phone should still settle it. */
+    travel(null);
   });
   list.addEventListener('click', function(e){
     var btn = e.target.closest ? e.target.closest('.yt-item') : null;
     if(!btn) return;
-    /* Select first either way, so the stage and the wall agree about which film is current
-       whichever branch runs and whatever the reader comes back to. */
+    /* Select first, so the stage and the wall agree about which film is current whatever the
+       reader comes back to. */
     select(btn);
-    if(phone.matches && watchOn(btn)) return;
     /* A TAP ON A FILM PLAYS IT. It used to only queue it: the poster changed and the reader
        had to find the play button and press a second time, which reads as a dead tap. */
     start();
+    travel(btn);
   });
 })();
 

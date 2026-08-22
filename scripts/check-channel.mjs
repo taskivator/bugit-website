@@ -178,15 +178,15 @@ try {
     fail.push(`the phone is showing ${mobState.poster}. <source media> must pick the tall ` +
               "poster, or the still and the video that replaces it are different shapes.");
   }
-  /* A PHONE HANDS OFF, IT DOES NOT EMBED, and that is a change of contract rather than a
-     regression. Owner, 2026-08-21: "in mobile view when they tap on a youtube video because
-     there is not enough space they should be auto taken to the youtube video player so they can
-     watch it, also auto play the video when they tap on a video."
-     So this check used to assert the opposite of what the product is now supposed to do. What is
-     still asserted, and matters just as much, is everything AROUND the handoff: the stage is
-     still the tall cut in a 9:16 frame, because that is the poster a finger lands on, and the id
-     the handoff opens still has to be the Short rather than the landscape cut. Only the last
-     step changed -- from "what did it embed" to "where did it take you". */
+  /* A PHONE PLAYS IT HERE. For one day this asserted the opposite: a tap opened a
+     youtube.com/watch URL, which both mobile platforms hand to the installed YouTube app.
+     Owner, 2026-08-22: "why tapping on the videos in mobile view opens the YouTube app??? ...
+     they want the video to be [played] on the YouTube player we [have] IN THE WEBSITE".
+     Everything around the press is unchanged and matters just as much: the stage is the tall
+     cut in a 9:16 frame, because that is the poster a finger lands on. Only the last step moved
+     back -- from "where did it take you" to "what did it embed", and LEAVING is now a failure.
+     Whether the reader is carried to the player is check-watch-inline's question, on every tile
+     rather than on this one. */
   const opened = [];
   ph.on("page", (p) => opened.push(p.url()));
   await mob.evaluate(() => document.getElementById("ytPlay").click());
@@ -196,15 +196,18 @@ try {
     return f ? f.src : "";
   });
   const handoff = opened.find((u) => /youtube\.com/.test(u)) || "";
-  if (mobSrc) {
-    fail.push(`a phone pressed play and got an EMBED (${mobSrc.split("/embed/")[1] || mobSrc}). ` +
-              `On a phone it has to open the YouTube player instead: a 9:16 film inside a 390px ` +
-              `column is the reason the handoff exists.`);
-  } else if (!handoff.includes(mobState.tall)) {
-    fail.push(`a phone pressed play and opened "${handoff || "nothing at all"}". It must open the ` +
-              `Short ${mobState.tall} on youtube.com.`);
+  if (handoff) {
+    fail.push(`a phone pressed play and was sent to ${handoff}. The film plays on this page: a ` +
+              "press must not hand the reader to another app.");
+  }
+  if (!mobSrc) {
+    fail.push("a phone pressed play and no player was created at all.");
+  } else if (!mobSrc.includes(`/embed/${mobState.tall}`)) {
+    fail.push(`a phone pressed play and embedded ` +
+              `"${(mobSrc.split("/embed/")[1] || mobSrc).split("?")[0]}". It must embed the Short ` +
+              `${mobState.tall}: a 1920x1080 cut in a 9:16 frame is black bars over half the height.`);
   } else {
-    note(`phone: 9:16 stage, tall poster, play hands off to the Short ${mobState.tall}`);
+    note(`phone: 9:16 stage, tall poster, play embeds the Short ${mobState.tall} here`);
   }
 
   // ---- 6. the negative control ---------------------------------------------
@@ -220,13 +223,16 @@ try {
   });
   await mob.evaluate(() => document.getElementById("ytPlay").click());
   await mob.waitForTimeout(600);
-  const controlUrl = opened.find((u) => /youtube\.com/.test(u)) || "";
-  if (!controlUrl || controlUrl.includes(mobState.tall)) {
+  const controlSrc = await mob.evaluate(() => {
+    const f = document.querySelector("#ytStage iframe");
+    return f ? f.src : "";
+  });
+  if (!controlSrc || controlSrc.includes(`/embed/${mobState.tall}`)) {
     fail.push("NEGATIVE CONTROL DID NOT FIRE: the phone's stage was repointed at the landscape " +
-              `cut and play still opened ${controlUrl ? "the Short" : "nothing"}, so this check is ` +
-              "not reading where play actually takes a reader.");
+              `cut and play still embedded ${controlSrc ? "the Short" : "nothing"}, so this check ` +
+              "is not reading what play actually puts on the page.");
   } else {
-    note("negative control fired: repointing the stage changed which film play opened");
+    note("negative control fired: repointing the stage changed which film play embedded");
   }
 
   await browser.close();
@@ -243,5 +249,5 @@ if (fail.length) {
 }
 console.log("check-channel OK: the page and channel.json agree on both cuts of all " +
             `${catalogue.length} films, the posters are the shape they claim, a desktop plays ` +
-            "the landscape cut in a 16:9 stage and a phone is handed to YouTube for the Short, and " +
+            "the landscape cut in a 16:9 stage and a phone embeds the Short on this page, and " +
             "the check was proven able to see the wrong cut.");

@@ -171,7 +171,18 @@ const SUITES = [
   "check-mission-box.mjs",
   "check-mobile-chrome.mjs",
   "check-hairlines.mjs",
+  // check-overlay-contents  what an overlay CONTAINS has to work, not just the control that
+  //                 opened it. The mobile menu inerted its own links, its account rows and its
+  //                 own close button: every one of them visible, opaque and completely dead.
+  //                 check-overlay-controls passed throughout, because the control it taps was
+  //                 the one element deliberately kept live.
+  // check-watch-inline    a tap on a film plays it HERE. For one day it called window.open on a
+  //                 youtube.com/watch URL, which both mobile platforms hand to the YouTube app,
+  //                 so every visitor who pressed play on a phone left the site. Every tile, on
+  //                 three phones, in both engines.
   "check-demo-stage.mjs",
+  "check-overlay-contents.mjs",
+  "check-watch-inline.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

@@ -1220,6 +1220,26 @@
   .lang-list button{border-radius:var(--r-xs);padding:9px 10px;font-size:var(--t-xs)}
   .lang-list button:hover,.lang-list button.active{background:var(--raise-3);color:var(--ink)}
   .nav-toggle{border-radius:var(--r-sm);background:var(--raise-1);border-color:var(--rule)}
+  /* IT IS THE CLOSE CONTROL WHILE THE OVERLAY IS OPEN, so it says so. The overlay used to draw
+     its own close button in this exact corner and the header paints above the overlay, so every
+     tap aimed at that button landed on this one: the visible control was the dead one. There is
+     one control now, and three lines that do not close anything are not a close button.
+     7px is the real distance between the bars: three 2px bars with 5px gaps put their centres
+     16px, 23px and 30px down, so the outer two travel 7px to meet in the middle. */
+  .nav-toggle span{transition:transform .26s var(--ease),opacity .18s ease}
+  body.menu-open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  body.menu-open .nav-toggle span:nth-child(2){opacity:0;transform:scaleX(.3)}
+  body.menu-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  @media (prefers-reduced-motion:reduce){.nav-toggle span{transition:none}}
+
+  /* A PANEL THE HEADER OWNS HAS TO OUTRANK THE BANNER WHILE IT IS OPEN. The header is a
+     stacking context at z-index 90 and the consent banner is a sibling at the same 90 that
+     comes later in the document, so it wins every overlap -- and the language panel's own
+     z-index:100 is spent INSIDE the header and can never reach past it. On a 320px screen the
+     banner is 322px tall and covered eight of the eleven languages: they were visible, and a
+     finger landing on one reached the banner. Raised only while a panel is actually open, so
+     the banner is never obscured by a header that is merely sitting there. */
+  header:has(.lang.open),header:has(.acct.open){z-index:120}
 
   /* ---------- 7. Hero ----------------------------------------------------- */
   .hero{
@@ -2547,6 +2567,40 @@
     .yt-play i svg{width:24px;height:24px}
     .yt-stage-meta{padding:var(--s4)}
     .yt-list{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s5) var(--s3)}
+  }
+
+  /* THE TAP TRAVELS INTO THE PLAYER.
+     A tile is 150px wide near the bottom of a phone; the stage is the full column, several
+     hundred pixels above it. Cutting straight from one to the other reads as the page having
+     jumped, so the poster under the finger is cloned, fixed to the viewport, and flown into
+     the stage while the page scrolls to meet it. The clone is decoration and nothing else: it
+     has no text, it is aria-hidden, it cannot be hit, and app.js removes it on arrival and
+     again on a timer that does not depend on the flight still running.
+     Geometry is animated rather than transform: the tile is 16:9 and the phone stage is 9:16,
+     and a scale that turns one into the other squashes the picture inside it. It is one fixed
+     element, so it is out of flow and resizing it reflows nothing else on the page. */
+  .yt-fly{
+    position:fixed;z-index:140;display:block;
+    background-size:cover;background-position:center;background-repeat:no-repeat;
+    border:1px solid var(--rule);
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.95);
+    pointer-events:none;
+  }
+  /* The stage answers the arrival rather than sitting there already playing. */
+  /* .4s, not the flight's own length: app.js drops this class when the travel finishes,
+     and the travel is 420ms without a clone and 620ms with one. An animation longer than
+     the shorter of those would be cut mid-scale and snap. */
+  .yt-stage.is-entering{animation:ytEnter .4s var(--ease) both}
+  @keyframes ytEnter{
+    0%{transform:scale(.955)}
+    62%{transform:scale(1.006)}
+    100%{transform:scale(1)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    /* REMOVED, not shortened. app.js does not build a clone at all under this preference; the
+       rule is here so a clone left behind by anything else still cannot cover the page. */
+    .yt-stage.is-entering{animation:none}
+    .yt-fly{display:none}
   }
 
   /* ---------- 34. The tool wall ------------------------------------------- */
@@ -4964,6 +5018,19 @@
   }
   @media(max-width:560px){
     .lang-list{grid-template-columns:1fr;width:min(80vw,264px)}
+  }
+  /* AND IT HAS TO FIT THE SCREEN. One column of eleven languages is 517px tall. On a 320x568
+     phone the panel hangs from y=76, so it ran 25px past the BOTTOM OF THE SCREEN with
+     max-height:none and overflow:visible -- there was no scroll position that could reach the
+     last rows, because the panel is anchored to a sticky header and travels with it. Two
+     conditions, because the same panel breaks on a short landscape phone at a width that gets
+     two columns. dvh with a vh fallback: the mobile URL bar is exactly the difference. */
+  @media(max-width:560px),(max-height:620px){
+    .lang-list{
+      max-height:calc(100vh - 120px);
+      max-height:calc(100dvh - 120px);
+      overflow-y:auto;overscroll-behavior:contain;
+    }
   }
 
 

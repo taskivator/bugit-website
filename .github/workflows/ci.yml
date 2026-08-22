@@ -277,5 +277,12 @@ jobs:
       # shadow, and its replacement is a 2px mark drawn on the seam the two halves share.
       - name: Verify nothing the demo stage paints leaves the instrument
         run: node scripts/check-demo-stage.mjs
+      # An overlay's CONTENTS, not just the control that opened it. The mobile menu inerted its
+      # own links and its own close button: visible, opaque and completely dead to a finger.
+      - name: Verify everything inside an open overlay can actually be used
+        run: node scripts/check-overlay-contents.mjs
+      # A tap on a film plays it on this page. It briefly opened the YouTube app instead.
+      - name: Verify tapping a film plays it here and does not leave the site
+        run: node scripts/check-watch-inline.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
         run: node scripts/check-ci-coverage.mjs

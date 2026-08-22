@@ -110,7 +110,11 @@
   <div class="mobile-menu" id="mobileMenu">
     <div class="mm-head">
       <span class="mm-title"><strong>BugIt</strong> <em>by Taskivator</em></span>
-      <button class="mm-close" id="navClose" type="button" data-t-aria="a11y.closeMenu" aria-label="Close menu">✕</button>
+      <!-- No close button here. The hamburger in the header is kept interactive on purpose
+           while this overlay is open, the header paints ABOVE the overlay, and the two sat in
+           the same corner: every tap aimed at a ✕ drawn here actually landed on the hamburger,
+           so the button a reader could see was the one control that could never be pressed.
+           The hamburger becomes an X while the menu is open and is the single close control. -->
     </div>
     <nav class="mm-links" data-t-aria="a11y.siteNav" aria-label="Site navigation">
       <a href="#features" data-t="nav.features">Features</a>

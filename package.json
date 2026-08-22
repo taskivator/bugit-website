@@ -46,7 +46,9 @@
     "test:mobile-chrome": "node scripts/check-mobile-chrome.mjs",
     "test:hairlines": "node scripts/check-hairlines.mjs",
     "test:mission-box": "node scripts/check-mission-box.mjs",
-    "test:demo-stage": "node scripts/check-demo-stage.mjs"
+    "test:demo-stage": "node scripts/check-demo-stage.mjs",
+    "test:overlay-contents": "node scripts/check-overlay-contents.mjs",
+    "test:watch-inline": "node scripts/check-watch-inline.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",
