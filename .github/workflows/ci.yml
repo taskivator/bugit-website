@@ -291,5 +291,23 @@ jobs:
       # Nothing pinned over a small screen: the docs contents rail, and the header in landscape.
       - name: Verify nothing sits on a phone screen uninvited
         run: node scripts/check-phone-height.mjs
+      # A disclosure that opens something has to show it. The instrument does not grow, so the
+      # report opens into a scroller whose top is what was already on the screen.
+      - name: Verify pressing "Show full report" puts the report in front of the reader
+        run: node scripts/check-report-reveal.mjs
+      # Two of the step marker's three states are animated in `transform`, which is also where
+      # its centring was written, and an animation replaces the property it animates.
+      - name: Verify the Mission Control marker stays centred in its row while it animates
+        run: node scripts/check-mission-marker.mjs
+      # The reveal's fade is measured against the scrollport; a phone held sideways has 390px.
+      - name: Verify nothing is still faded while it sits on a landscape phone screen
+        run: node scripts/check-dim-on-screen.mjs
+      # Support is the one documentation route short enough to fit a screen, which took the
+      # scrollbar away under the reader and left the progress line reading 100%.
+      - name: Verify the documentation chrome neither lies nor moves
+        run: node scripts/check-docs-chrome.mjs
+      # The two hairlines beside a section eyebrow, photographed at four display scalings.
+      - name: Verify the rules either side of a label are the same line
+        run: node scripts/check-rule-pair.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
         run: node scripts/check-ci-coverage.mjs

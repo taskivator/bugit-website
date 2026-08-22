@@ -323,7 +323,16 @@
     .status-panel .mc-mascot,.status-panel .mc-foot{display:none}
     .status-panel ul{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
     .status-panel li{padding:7px 11px 7px 27px;font-size:12px;line-height:1.15;border-bottom:0;border:1px solid rgba(255,255,255,.11);border-radius:999px;background:rgba(255,255,255,.05)}
-    .status-panel li:before{top:50%;left:8px;transform:translateY(-50%);width:13px;height:13px;font-size:9px}
+    /* `translate`, NOT `transform`, and that is the whole of a defect the owner reported as
+       "the green tick animation goes out of it box". On a phone these rows are CHIPS and the
+       tick is centred in one with translateY(-50%). mcPop -- the pop each tick makes as its
+       step completes -- animates `transform`, and an animation on `transform` REPLACES the
+       property it is written in: for the 0.42s the pop lasts, the centring was simply gone,
+       so the tick dropped half its own height and, at the 1.18 peak of a curve that
+       overshoots, finished 3px below the chip's bottom edge before snapping back.
+       The individual `translate` property composes with `transform` instead of being
+       overwritten by it, so the centring holds for every frame of the pop. */
+    .status-panel li:before{top:50%;left:8px;translate:0 -50%;width:13px;height:13px;font-size:9px}
     .status-panel li.awaiting{flex:1 0 100%;text-align:center;padding-left:11px;background:rgba(255,79,201,.10);border-color:rgba(255,79,201,.34)}
     .status-panel li.awaiting:before{display:none}
     /* The connector: a 22px chevron, not a line of copy. The sentence stays in the DOM for
@@ -957,6 +966,17 @@
     /* Anchors must not land under the sticky header. */
     scroll-padding-top:96px;
     -webkit-text-size-adjust:100%;
+    /* THE GUTTER IS ALWAYS THERE, so the layout cannot move when the scrollbar is not.
+       Owner, 2026-08-23: "in the documentation section when i click on support the page moves
+       from left to right and it doesnt happen with the rest." Support is the one documentation
+       route short enough to fit a screen -- measured at 1440x900 it has 0px of scroll where
+       every other route has between 1,756 and 5,602 -- so opening it takes the scrollbar away,
+       the viewport gets ~15px wider, and a centred layout slides right by half of that. Coming
+       back puts it straight again, which is why it reads as the page moving rather than as a
+       page being wrong. Reserving the gutter costs a strip of the ground colour on the short
+       page and nothing anywhere else; on the platforms that draw scrollbars over the content
+       (every phone, and macOS by default) the declaration does nothing at all. */
+    scrollbar-gutter:stable;
   }
   body{
     margin:0;
@@ -1158,6 +1178,25 @@
   @media (orientation:landscape) and (max-height:560px){
     header.nav.shell{position:static}
   }
+
+  /* THE SCROLL LOCK TAKES THE CLOSE BUTTON OFF THE SCREEN, AND THE MENU HAS NO OTHER ONE.
+     Opening the mobile menu freezes the page with `body{position:fixed;top:-<scrollY>}`, which
+     is the iOS-safe lock. But `position:sticky` sticks to a SCROLL POSITION, and a fixed body
+     no longer scrolls: the header lands at its document offset, which the negative top has just
+     moved off the top of the viewport. Measured on 2026-08-23 at iPhone 13 size, having scrolled
+     400px: the toggle's rect was top -388, `elementFromPoint` at its centre returned null, and an
+     honest tap timed out. In landscape the header is `position:static`, so it is off screen for
+     an even more direct reason.
+     The overlay is full-screen, everything behind it is inert, Escape is a keyboard key: a reader
+     who had scrolled at all was left on a frozen page with no way out but a reload.
+     While the menu is open the header is therefore PINNED to the viewport rather than to the
+     document, which puts the X back in the corner the reader is already looking at. This wins
+     over the landscape rule above by specificity, deliberately: the rule that hides the header to
+     buy height applies while the menu is CLOSED, and the one control that closes the menu cannot
+     be a casualty of it.
+     Every guard in this repo opened this menu from the top of the page, where the bug does not
+     exist. `check-overlay-controls.mjs` now scrolls first. */
+  body.menu-open header.nav.shell{position:fixed;top:0;left:0;right:0;z-index:90}
 
   /* The header only draws its rule once the page has moved, so the hero opens
      without a line across it. Scroll-driven, so no scroll listener is added to a
@@ -2027,12 +2066,39 @@
     .metrics div:nth-child(4){animation-delay:.48s}
     @keyframes cellIn{from{opacity:0}to{opacity:1}}
 
-    /* The rule beside every eyebrow draws itself. */
+    /* The rule beside every eyebrow draws itself.
+
+       BOTH OF THEM, AND NEITHER KEEPS THE TRANSFORM AFTERWARDS. Owner, 2026-08-23: "there are
+       two lines on each side of the faq text and the line on the right is dimmed and
+       differernt from the rest", and the same on SEE IT WORK.
+
+       This block was written when the eyebrow had a single dash on its left. Section 37a later
+       gave it a matching dash on the right and did not add it here, so one rule of each pair
+       animated and the other did not -- and `both` meant the animated one held a transform for
+       ever. A transform-animated element is promoted to its own composited layer, and a layer's
+       bounds are snapped to whole DEVICE pixels: a 1px hairline is 1.5 device pixels at 150%
+       display scaling, so the composited one rasterises differently from its plain twin.
+
+       PHOTOGRAPHED at 4x and measured pixel by pixel, both heads, at 1440/1512/1920 and at
+       100/125/150/200% scaling -- 24 captures. With one rule animated the pair came out 1.5
+       device rows against 2.0 at 150%, which is one crisp line and one pale one. Animating both
+       does NOT fix it: two composited layers snap independently, and the pair still differed.
+       What fixes it is `backwards` instead of `both`: the rules still draw, and the moment the
+       animation ends the transform is gone, both are painted by the ordinary path, and their
+       coverage is identical in all 24 -- 1.00/1.00 at 100%, 1.31/1.31 at 125%, 1.54/1.54 at
+       150%, 2.00/2.00 at 200%.
+
+       So: never leave a hairline holding an animated transform it does not need. */
     .eyebrow::before,.section-head span::before{
-      animation:ruleDraw .6s var(--ease) both;
+      animation:ruleDraw .6s var(--ease) backwards;
       transform-origin:left center;
     }
+    .eyebrow::after,.section-head span::after{
+      animation:ruleDraw .6s var(--ease) backwards;
+      transform-origin:right center;
+    }
     [dir="rtl"] .eyebrow::before,[dir="rtl"] .section-head span::before{transform-origin:right center}
+    [dir="rtl"] .eyebrow::after,[dir="rtl"] .section-head span::after{transform-origin:left center}
     @keyframes ruleDraw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
   }
 
@@ -2103,6 +2169,16 @@
     header.nav.shell::after{
       content:"";position:absolute;inset-block-end:-1px;inset-inline-start:0;
       height:1px;width:100%;transform-origin:left center;
+      /* EMPTY IS THE RESTING STATE, and stating it is the whole of a defect the owner
+         reported as "in the support page the thin bar at the top is there as if the user is
+         at the bottom of the page". A scroll timeline on a page that cannot scroll has a
+         zero-length range and is INACTIVE -- the animation then contributes nothing at all,
+         `both` or not, and the element renders at whatever the stylesheet says. Nothing said
+         anything, so it rendered at its natural scaleX(1): a full bar reading 100%.
+         MEASURED at 1440x900: `transform: none` on the support route against
+         `matrix(0,0,0,1,0,0)` on every other one, which is the same 100%/0% the reader sees.
+         The doc rail one section down has always had this line; the header never did. */
+      transform:scaleX(0);
       background:linear-gradient(90deg,var(--sig-2),var(--sig));
       animation:progress linear both;
       animation-timeline:scroll();
@@ -2164,6 +2240,7 @@
   @media (prefers-reduced-motion:reduce){
     .hero-copy>*,.mission-wrap,.metrics div,
     .eyebrow::before,.section-head span::before,
+    .eyebrow::after,.section-head span::after,
     .hero-title span,#ambient .aurora,
     .trust>div,.doc-cards>a,.price-card,.groups>div,.faq details,.yt-item,
     .mission,.yt-cinema,.yt-bar,main section.shell:not(.hero)>*{
@@ -2324,8 +2401,18 @@
   .mission{flex:1 1 auto;grid-template-rows:auto minmax(0,1fr)}
   .status-panel ul{flex:1 1 auto;display:flex;flex-direction:column}
   .status-panel li{display:flex;align-items:center;flex:1 1 auto;min-height:38px}
-  /* The tick is centred on a row whose height is now shared rather than fixed. */
-  .status-panel li:before{top:50%;transform:translateY(-50%)}
+  /* The tick is centred on a row whose height is now shared rather than fixed.
+     `translate`, NEVER `transform`, and this is the whole of what the owner reported as "the
+     green tick animation goes out of it box". Two of this marker's three states are ANIMATED --
+     `spin` on the active row, which runs for as long as the step does, and `mcPop` on the row
+     that has just finished -- and both are written in `transform`. An animation replaces the
+     property it animates, so for every frame of both of them the centring simply was not there:
+     MEASURED at 390px, 375px, 393px and in landscape, on Chromium and WebKit, the marker sat
+     8px BELOW the centre of a 38px row for the entire time it was moving, which on a phone --
+     where the row is a pill and is the only row on screen -- puts a 16px circle through the
+     pill's rounded bottom corner. The individual `translate` property composes with `transform`
+     instead of being overwritten by it, so the centring survives every frame of both. */
+  .status-panel li:before{top:50%;translate:0 -50%}
   .status-panel li.awaiting{flex:0 0 auto}
   .status-panel li.awaiting:before{top:50%}
 
@@ -2866,7 +2953,7 @@
     .status-panel{padding:var(--s4)}
     .status-panel ul{gap:7px;margin-top:var(--s3)}
     .status-panel li{padding:7px 12px 7px 27px;font-size:var(--t-3xs);line-height:1.25}
-    .status-panel li:before{top:50%;transform:translateY(-50%);left:8px}
+    .status-panel li:before{top:50%;translate:0 -50%;left:8px}
     .status-panel li.awaiting{
       margin-top:0;padding-top:7px;padding-bottom:7px;font-size:var(--t-3xs);
     }
@@ -2893,7 +2980,7 @@
     .status-panel{padding:var(--s4)}
     .status-panel ul{gap:7px;margin-top:var(--s3)}
     .status-panel li{padding:7px 12px 7px 27px;font-size:var(--t-3xs);line-height:1.25}
-    .status-panel li:before{top:50%;transform:translateY(-50%);left:8px}
+    .status-panel li:before{top:50%;translate:0 -50%;left:8px}
     .status-panel li.awaiting{
       margin-top:0;padding-top:7px;padding-bottom:7px;font-size:var(--t-3xs);
     }
@@ -7875,6 +7962,68 @@
   @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     /* Flush with the text below, which is inset by the merged box's own padding. */
     .mission>.window{padding-inline:var(--s4)}
+  }
+
+
+
+  /* =========================================================================
+     121. NOTHING FADES OUT WHILE THERE IS STILL SCREEN ABOVE IT
+     ========================================================================= */
+  /* Owner, 2026-08-23: "in landscape mode in mobile the fading is agressive, they fade still
+     with some space left at the top of the phone."
+
+     Section 98's pass is a two-ended gesture: a block rises in over the first 16-34% of its
+     cover range and fades back OUT over the last 10%, so the wave travels the same way
+     whichever way the reader scrolls. The exit is measured against the cover range, which is
+     the scrollport plus the block -- and the scrollport is what a phone held sideways has 390px
+     of, minus the 108px the sticky header insets it by. MEASURED at 844x390, walking the whole
+     page in 130px steps and reading each block's own animation progress:
+
+         "Backed by a 7-day refund policy"   opacity 0     top 48  bottom 66   pass1 @100%
+         the FAQ section head               opacity 0     top  1  bottom 80   pass1 @100%
+         the demo tabs                      opacity 0.16  top  5  bottom 102  pass1 @98.4%
+         "Open the channel"                 opacity 0.18  top 17  bottom 103  pass1 @98.2%
+         DOCUMENTATION                      opacity 0.26  top 84  bottom 104  pass1 @97.4%
+
+     Every one of them is a block sitting whole on the screen, below the header, with clear
+     space above it, painting at nothing. On a tall screen the same 90% mark puts the block
+     under the header where fading it is honest; on 390px it puts it a third of the way down a
+     screen the reader is still reading.
+
+     So on a short screen the pass keeps its arrival and loses its departure. The names and the
+     stagger are untouched -- the four keyframe sets are RESTATED here rather than reassigned,
+     because which of pass1..pass4 a block gets is decided by six width-scoped rules further up
+     and re-deriving that here would be a fifth place to keep the same idea.
+
+     THE ARRIVAL IS SHORTENED TOO, and for the same arithmetic seen from the other end. The
+     percentages are of the cover range, so the taller the block the longer it takes: the Team
+     card is 688px, which on this screen is a 970px range, and 28% of it left the card painting
+     at 0.61 with its top already 230px up a 390px screen -- and a scroll-driven arrival holds
+     wherever the reader stops, so that is where it stays until they scroll again. Halved, the
+     same card is whole by the time it is on the screen, and the four still arrive in order. */
+  @supports (animation-timeline:view()){
+    @media (prefers-reduced-motion:no-preference) and (max-height:620px){
+      @keyframes pass1{
+        0%{opacity:0;transform:translateY(20px)}
+        8%{opacity:1;transform:none}
+        100%{opacity:1;transform:none}
+      }
+      @keyframes pass2{
+        0%{opacity:0;transform:translateY(20px)}
+        11%{opacity:1;transform:none}
+        100%{opacity:1;transform:none}
+      }
+      @keyframes pass3{
+        0%{opacity:0;transform:translateY(20px)}
+        14%{opacity:1;transform:none}
+        100%{opacity:1;transform:none}
+      }
+      @keyframes pass4{
+        0%{opacity:0;transform:translateY(20px)}
+        17%{opacity:1;transform:none}
+        100%{opacity:1;transform:none}
+      }
+    }
   }
 
 }

@@ -1265,10 +1265,51 @@ function initReportDisclosure(){
        number becomes a max-height, so half a pixel too much is half a pixel of growth. */
     if(h>320)panel.style.setProperty('--report-h',Math.floor(h)+'px');
   }
-  function render(){
+  /* THE PRESS HAS TO SHOW SOMETHING.
+     The instrument is the same size open or closed -- that is the owner's rule, and section 73
+     of the stylesheet is where it is kept -- so the report does not push the page down when it
+     opens. It opens into a scroller, and a scroller starts at the top. The top is the head, the
+     title and the four meta boxes, which are exactly what was already on the screen.
+     MEASURED on an iPhone 13, WebKit: the press revealed 714px of report and put 28px of it
+     inside the viewport, and the before/after screenshots are the same picture with one word
+     changed. Owner, 2026-08-23: "when show full report is tapped there is no indication that
+     the report opened and they can scroll down to see it some ppl might miss it".
+     So the press carries the reader to the first line of the thing they asked for. The panel's
+     OWN scroller is moved and nothing else: scrollIntoView() walks every scrollable ancestor and
+     would take the whole page with it, which is the mistake that hid the mobile menu's close
+     button from the guard that was measuring it. */
+  function bodyTop(){
+    const first=panel.querySelector('.report-more');
+    if(!first)return null;
+    const head=panel.querySelector('.report-head');
+    const headH=head?head.offsetHeight:0;
+    /* LAYOUT OFFSETS, NOT RECTS. The blocks are mid-`reportIn` at the moment of the press --
+       it translates them 10px -- and a rect would carry that translate into the number.
+       Both are read against the same offsetParent (.mission is the positioned ancestor of the
+       panel and of its children), so the difference is the block's position inside the panel. */
+    let y=first.offsetTop-panel.offsetTop-panel.clientTop;
+    if(!isFinite(y)||y<=0){
+      y=panel.scrollTop+(first.getBoundingClientRect().top-panel.getBoundingClientRect().top);
+    }
+    /* Under the pinned head, with a hairline of air, not flush against it. */
+    return Math.max(0,Math.round(y-headH-6));
+  }
+  function revealBody(){
+    const y=bodyTop();
+    if(y==null)return;
+    const still=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /* The movement IS the indication, so it is not instant unless the reader has asked for
+       no motion. */
+    try{ panel.scrollTo({top:y,behavior:still?'auto':'smooth'}); }
+    catch(_){ panel.scrollTop=y; }
+  }
+  function render(fresh){
     panel.classList.toggle('is-collapsed',applies()&&!open);
     panel.classList.toggle('is-open',applies()&&open);
-    if(open)panel.scrollTop=0;
+    /* Only on the press. render() also runs on resize and on every observed size change, and
+       dragging a reader back to the top of a report they are half way through would be its own
+       defect. */
+    if(open&&fresh)revealBody();
     btn.setAttribute('aria-expanded',open?'true':'false');
     btn.dataset.t=open?'report.hideFull':'report.showFull';
     const v=get(i18n[currentLang]||i18n.en,btn.dataset.t);
@@ -1289,7 +1330,7 @@ function initReportDisclosure(){
        Only when OPENING: on the way back the panel returns to its natural height and there is
        nothing to freeze. */
     if(!open)measure();
-    open=!open;render();
+    open=!open;render(true);
   });
   /* Closed from outside, by the instrument, when it starts writing the next report. */
   window.__reportClose=function(){ if(open){open=false;render();} };
@@ -1406,6 +1447,13 @@ function initMobileNav(){
     savedY=window.scrollY||window.pageYOffset||0;
     menu.classList.add('open');document.body.classList.add('menu-open');
     document.body.style.top=`-${savedY}px`;
+    /* The header is pinned to the viewport while this is open (styles.css: the scroll lock
+       would otherwise carry the only close control off the top of the screen). It paints ABOVE
+       the overlay, so the overlay's own first row has to start below it. Measured HERE, on the
+       press, rather than written as a number: the header is 72px at one breakpoint and
+       `height:auto` at another, and it grows with the reader's font size. */
+    const head=document.querySelector('header.nav.shell');
+    menu.style.paddingTop=head?`${Math.ceil(head.getBoundingClientRect().height)}px`:'';
     toggle.setAttribute('aria-expanded','true');relabel('a11y.closeMenu');
     // The Tab trap below is correct, but a screen reader browses the document rather than
     // tabbing through it: behind this overlay the whole page stayed readable. `inert` is the
@@ -1415,7 +1463,7 @@ function initMobileNav(){
   };
   const close=()=>{
     menu.classList.remove('open');document.body.classList.remove('menu-open');
-    document.body.style.top='';
+    document.body.style.top='';menu.style.paddingTop='';
     window.scrollTo({top:savedY,left:0,behavior:'instant'});
     toggle.setAttribute('aria-expanded','false');relabel('a11y.openMenu');
     // Un-inert BEFORE returning focus: focusing an element inside an inert subtree does nothing
@@ -2410,13 +2458,14 @@ if(typeof faqMoreLabel !== 'undefined'){
     });
   }
   var sawMessage = false, sawPlaying = false, lastState = null,
-      blockedTimer = null, silentTimer = null;
+      blockedTimer = null, silentTimer = null, capT1 = null, capT2 = null, capDone = false;
   function stop(){
     var f = stage.querySelector('iframe');
     if(f) f.remove();
     stage.classList.remove('is-playing','is-live','is-timed','is-done','is-held','is-muted');
     section.style.removeProperty('--yt-run');
     clearTimeout(blockedTimer); clearTimeout(silentTimer);
+    clearTimeout(capT1); clearTimeout(capT2); capDone = false;
     sawMessage = false; sawPlaying = false; lastState = null; ringArmed = false;
     if(poster.parentNode) poster.parentNode.hidden = false;
     play.hidden = false; meta.hidden = false;
@@ -2430,6 +2479,27 @@ if(typeof faqMoreLabel !== 'undefined'){
         JSON.stringify({event:'command', func:func, args:args || [], id:1, channel:'widget'}),
         'https://www.youtube-nocookie.com');
     }catch(e){}
+  }
+  /* CAPTIONS OFF, AND OFF MEANS OFF.
+     `cc_load_policy=0` on the URL is a request, not a setting: it asks the player not to turn
+     captions on by DEFAULT, and it loses to a viewer whose YouTube account has them forced on,
+     which on a phone is most often the account's own "always show captions" preference rather
+     than anything this page did. Owner, 2026-08-23: "the subtitle is still running for youtube
+     videos in mobile view i want them turned off".
+     So the page stops asking and tells the player instead, over the same widget channel every
+     other command here uses. Both names are sent because the two are different modules --
+     'captions' is the HTML5 player's, 'cc' the older one -- and neither errors when it is not
+     there. setOption goes first and turns the CURRENT track off; unloadModule then takes the
+     module out, which is the half that survives an account preference.
+     Sent more than once ON PURPOSE: the module is not loaded at the handshake, so a single
+     early command lands on a player that has nothing to unload and does nothing at all.
+     The films keep their captions on YouTube itself, where the channel link in the header and
+     the footer leads, so this turns them off in the embed rather than taking them away. */
+  function silenceCaptions(){
+    cmd('setOption',['captions','track',{}]);
+    cmd('setOption',['cc','track',{}]);
+    cmd('unloadModule',['captions']);
+    cmd('unloadModule',['cc']);
   }
   function start(){
     if(stage.querySelector('iframe')) return;
@@ -2461,6 +2531,12 @@ if(typeof faqMoreLabel !== 'undefined'){
           JSON.stringify({event:'listening', id:1, channel:'widget'}),
           'https://www.youtube-nocookie.com');
       }catch(e){}
+      /* Once as soon as the frame answers, and twice more while the player is assembling
+         itself: whichever of the three finds the captions module loaded is the one that
+         removes it, and the other two cost a postMessage each. */
+      silenceCaptions();
+      capT1 = setTimeout(silenceCaptions, 1200);
+      capT2 = setTimeout(silenceCaptions, 3200);
     });
     /* WHEN THE PLATFORM WILL NOT LET IT START. Android and the desktop start it with sound:
        the frame is built inside the press, so it still holds the activation that permits it,
@@ -2572,7 +2648,12 @@ if(typeof faqMoreLabel !== 'undefined'){
     lastState = s;
     stage.classList.toggle('is-live', s === 1);
     /* THE FILM IS RUNNING. This, and only this, starts the ring. */
-    if(s === 1){ sawPlaying = true; runRing(); }
+    if(s === 1){
+      sawPlaying = true; runRing();
+      /* The one moment the captions module is certainly loaded, because the film it belongs
+         to is on screen. Once per run: the state repeats on every seek. */
+      if(!capDone){ capDone = true; silenceCaptions(); }
+    }
     /* Held, not "not playing": 2 is paused and 3 is buffering, and those are the only two
        states that should stop the ring. If the handshake with the player never completes and
        no state ever arrives, the ring keeps running on the film's own length -- which is

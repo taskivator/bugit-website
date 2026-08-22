@@ -50,7 +50,12 @@
     "test:overlay-contents": "node scripts/check-overlay-contents.mjs",
     "test:watch-inline": "node scripts/check-watch-inline.mjs",
     "test:mission-live-row": "node scripts/check-mission-live-row.mjs",
-    "test:phone-height": "node scripts/check-phone-height.mjs"
+    "test:phone-height": "node scripts/check-phone-height.mjs",
+    "test:report-reveal": "node scripts/check-report-reveal.mjs",
+    "test:mission-marker": "node scripts/check-mission-marker.mjs",
+    "test:dim-on-screen": "node scripts/check-dim-on-screen.mjs",
+    "test:docs-chrome": "node scripts/check-docs-chrome.mjs",
+    "test:rule-pair": "node scripts/check-rule-pair.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

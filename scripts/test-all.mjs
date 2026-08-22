@@ -193,6 +193,29 @@ const SUITES = [
   "check-watch-inline.mjs",
   "check-mission-live-row.mjs",
   "check-phone-height.mjs",
+  // check-report-reveal   pressing "Show full report" has to show some of the report. The
+  //                 instrument is the same size open or closed and the report opens into a
+  //                 scroller that starts at the top, so the press put 28px of 714 in front of
+  //                 the reader and changed one word on a button.
+  // check-mission-marker  the step marker is centred with a transform, and both of the
+  //                 animations it runs are written in `transform`, which replaces it: the
+  //                 marker spent every moving frame 8px below the centre of its row, and on a
+  //                 phone that row is a pill.
+  // check-dim-on-screen   the reveal's exit fade is measured against the scrollport, and a
+  //                 phone held sideways has 390px of one: five blocks were painting at nothing
+  //                 while sitting whole on the screen with clear space above them.
+  // check-docs-chrome    the documentation's chrome must not lie about where the reader is and
+  //                 must not move sideways: Support is the one route short enough to fit a
+  //                 screen, so it took the scrollbar away and read 100% on a page nobody had
+  //                 scrolled.
+  // check-rule-pair      the two hairlines beside a section eyebrow, photographed: one of the
+  //                 pair held an animated transform for ever, which composites it, and a
+  //                 composited hairline snaps to whole device pixels while its twin does not.
+  "check-report-reveal.mjs",
+  "check-mission-marker.mjs",
+  "check-dim-on-screen.mjs",
+  "check-docs-chrome.mjs",
+  "check-rule-pair.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {
