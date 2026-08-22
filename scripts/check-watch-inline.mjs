@@ -21,10 +21,17 @@
  *   PLAYS      an embed exists on the privacy host, carrying the id that tile asked for.
  *   ARRIVES    the player is substantially on screen once the transition settles, because a
  *              film playing 1,400px above the wall a finger is in reads as a dead tap.
+ *   RING       the countdown around the stage is NOT running. In this context the player host
+ *              is aborted, so nothing can play; a ring moving here is the page announcing a
+ *              film over a still frame. Owner, 2026-08-22: "the video DOES NOT play but the
+ *              highlight around it starts moving". It used to start when the frame was
+ *              appended, which is when the page ASKED for a film, not when one began.
  *   HONEST     the tap is a real tap. No force: what Playwright refuses, a finger cannot do.
  *
- * The player host is aborted at the network layer. The assertion is about the frame this page
- * creates and where it points, and there is no reason to fetch a video from Google to ask it.
+ * Those run with the player host aborted, because they are questions about the frame this page
+ * builds and where it points. AND THEN one film per engine is played for real, over the real
+ * network, and the player is asked whether it started -- because "the frame is correct" and
+ * "the film is running" turned out to be two different things.
  */
 import { chromium, webkit, devices } from "playwright";
 import { spawn } from "node:child_process";
@@ -35,12 +42,25 @@ import net from "node:net";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const EMBED_HOST = "https://www.youtube-nocookie.com";
 
-/* The negative control puts the handoff back. Served rather than injected, because the handler
-   is bound at init from a closure: re-running anything after load would not restore it. */
-const BREAK_FROM = "    select(btn);";
-const BREAK_TO =
-  "    select(btn);window.open('https://www.youtube.com/watch?v='+encodeURIComponent(cutOf(btn))," +
-  "'_blank','noopener,noreferrer');/*NEGATIVE CONTROL: the handoff that shipped for one day.*/";
+/* Two negative controls, because this file now asserts two different things. Both are served
+   rather than injected: the handlers are bound at init from a closure, so re-running anything
+   after load would not restore the old behaviour. */
+const CONTROLS = [
+  {
+    what: "the handoff to the YouTube app is put back",
+    from: "    select(btn);",
+    to: "    select(btn);window.open('https://www.youtube.com/watch?v='+encodeURIComponent(cutOf(btn))," +
+        "'_blank','noopener,noreferrer');/*NEGATIVE CONTROL: the handoff that shipped for one day.*/",
+    rule: "STAYS",
+  },
+  {
+    what: "the ring is started by the frame again rather than by the player",
+    from: "    ringArmed = false;\n  }\n  function runRing(){",
+    to: "    ringArmed = false;stage.classList.add('is-timed');" +
+        "/*NEGATIVE CONTROL: the ring runs whether or not anything plays.*/\n  }\n  function runRing(){",
+    rule: "RING",
+  },
+];
 
 const TARGETS = [
   ["chromium", chromium, "Pixel 7"],
@@ -73,7 +93,10 @@ const SEEN = () => {
     frac: r.height > 0 ? vis / r.height : 0,
     src: f ? f.src : "",
     top: Math.round(r.top),
-    strays: document.querySelectorAll(".yt-fly").length,
+    /* is-timed is the countdown ring. The player host is aborted in this context, so nothing
+       is playing and nothing ever will: a ring running here is the page telling the reader a
+       film is under way over a frame that will never move. */
+    ring: st.classList.contains("is-timed"),
   };
 };
 
@@ -88,8 +111,8 @@ async function run(engineName, engine, deviceName, broken) {
     await ctx.route("**/app*.js", async (route) => {
       const res = await route.fetch();
       const body = await res.text();
-      if (body.includes(BREAK_FROM)) patched = true;
-      route.fulfill({ response: res, body: body.split(BREAK_FROM).join(BREAK_TO) });
+      if (body.includes(broken.from)) patched = true;
+      route.fulfill({ response: res, body: body.split(broken.from).join(broken.to) });
     });
   }
   const opened = [];
@@ -156,9 +179,12 @@ async function run(engineName, engine, deviceName, broken) {
           "reader is not looking",
       );
     }
-    if (seen.strays) {
-      failures.push(`${where}: ${seen.strays} flight clone(s) outlived the transition and are ` +
-                    "still fixed over the page");
+    if (seen.ring) {
+      failures.push(
+        `${where}: after tapping "${t.label}" the countdown ring is running while the player has ` +
+          "not said a word and cannot play at all here, so the page is claiming a film is under " +
+          "way over a still frame",
+      );
     }
   }
   if (!patched) failures.push("the negative control could never be installed: its anchor is gone");
@@ -179,12 +205,64 @@ try {
     failures = failures.concat(r.failures);
     taps += r.taps;
   }
-  const control = await run("webkit", webkit, "iPhone 14", true);
-  if (!control.failures.length) {
-    failures.push(
-      "NEGATIVE CONTROL DID NOT FIRE: with the handoff put back -- the state in which every tap " +
-        "opened the YouTube app -- this check still passed, so it is not measuring what it claims",
-    );
+  /* AND ONE FILM THAT REALLY PLAYS, per engine, over the real network.
+     Everything above runs with the player host aborted, which is right for asking what frame
+     this page builds and where it points -- but it cannot tell whether a film ever moves. The
+     defect that made this section necessary was exactly that: the frame was correct, the ring
+     was running, and nothing played. So one tile per engine is tapped with the host reachable
+     and the PLAYER is asked, through the state it posts back, whether it started.
+     It is allowed to get there muted. A cross-origin player is not given the reader's
+     activation on iOS and cannot start itself with sound; the page mutes it and starts it
+     rather than leaving a still frame, and YouTube's own controls carry the way back to sound.
+     Headless Chromium refuses unmuted autoplay for the same reason a phone does, so that
+     recovery is exercised here rather than assumed. */
+  for (const [name, engine, dev] of [["chromium", chromium, "Pixel 7"], ["webkit", webkit, "iPhone 14"]]) {
+    const b = await engine.launch();
+    const ctx = await b.newContext({ ...devices[dev] });
+    const page = await ctx.newPage();
+    await page.goto(BASE, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => document.getElementById("consentBanner")?.remove());
+    const tile = page.locator(".yt-item").nth(1);
+    await tile.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+    await tile.tap();
+    let state = null;
+    for (let i = 0; i < 32; i++) {
+      state = await page.evaluate(() => {
+        const s = document.getElementById("ytStage");
+        return { live: s.classList.contains("is-live"), ring: s.classList.contains("is-timed"),
+                 muted: s.classList.contains("is-muted") };
+      });
+      if (state.live) break;
+      await page.waitForTimeout(500);
+    }
+    if (!state.live) {
+      failures.push(
+        `${name}/${dev}: a film was tapped with the player reachable and it never reported ` +
+          "playing within 16s. The frame is built and the poster is gone, so the reader is " +
+          "looking at a still picture where a film should be running.",
+      );
+    } else if (!state.ring) {
+      failures.push(`${name}/${dev}: the film is playing and the countdown ring is not running`);
+    } else {
+      console.log(`  ${name}/${dev}: the film really plays${state.muted ? " (muted: the platform " +
+        "refused to start it with sound, and the page recovered)" : " with sound"}`);
+    }
+    await b.close();
+  }
+
+  /* Both controls, because this file asserts two different things now. */
+  const fired = [];
+  for (const c of CONTROLS) {
+    const control = await run("webkit", webkit, "iPhone 14", c);
+    if (!control.failures.length) {
+      failures.push(
+        `NEGATIVE CONTROL DID NOT FIRE (${c.rule}): with ${c.what}, this check still passed, so ` +
+          `it is not measuring what it claims about ${c.rule}`,
+      );
+    }
+    fired.push(`${c.rule}:${control.failures.length}`);
   }
   if (!taps) failures.push("no film was tapped, so a clean result here means nothing");
 
@@ -195,8 +273,8 @@ try {
   }
   console.log(
     `check-watch-inline: OK (${taps} films tapped across ${TARGETS.length} device/engine pairs, ` +
-      `every one played here and brought the player on screen, negative control fired with ` +
-      `${control.failures.length} finding(s))`,
+      `every one played here and brought the player on screen; one film per engine watched all ` +
+      `the way to playing over the real network; negative controls fired ${fired.join(", ")})`,
   );
 } finally {
   try { server.kill(); } catch {}

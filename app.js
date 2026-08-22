@@ -1599,8 +1599,9 @@ function initMission(){
   function setText(el,t){ if(el && t!=null && el.textContent!==t) el.textContent=t; }
   function newCycle(){
     // fade the previous result out and clear state before rebuilding (window stays put)
-    steps.forEach(function(li){ li.classList.remove('active','done'); });
-    if(awaitLi) awaitLi.classList.remove('active');
+    steps.forEach(function(li){ li.classList.remove('active','done','is-live'); });
+    if(awaitLi) awaitLi.classList.remove('active','is-live');
+    lastLive=null;
     metaC.forEach(function(c){ c.classList.remove('on','pulse'); });
     metaB.forEach(function(b){ if(b) b.classList.remove('on'); });
     [h2,metaBox,h3s[0],ps[0],h3s[1],ps[1],pre,checkedBox,statusBox].forEach(function(el){ if(el) el.classList.remove('on'); });
@@ -1658,7 +1659,7 @@ function initMission(){
     return;
   }
 
-  var lastPct='', lastStream='', lastThinking=null, lastBar=-1;
+  var lastPct='', lastStream='', lastThinking=null, lastBar=-1, lastLive=null;
   function frame(tc){
     var ST=cy.ST, COMP=cy.COMP;
     // reset window: gently dim the content and rewind the bar; content swap happens at wrap
@@ -1677,6 +1678,27 @@ function initMission(){
 
     for(var j=0;j<7;j++){ setStep(steps[j], tc>=ST[j].d?'done':(tc>=ST[j].s?'active':'')); }
     if(awaitLi){ if(tc>=cy.AW) awaitLi.classList.add('active'); else awaitLi.classList.remove('active'); }
+
+    /* WHICH ROW THE COLLAPSED PANEL SHOWS, said outright instead of inferred.
+       Collapsed on a phone the panel is one line, and the stylesheet used to work out which
+       line by itself: show whichever row is `active`, and fall back to "Awaiting your approval"
+       when none is. A step is only `active` between its start and its finish, so in each of the
+       seven GAPS between one step finishing and the next starting there is no active row at
+       all, and the one visible line flipped to "Awaiting your approval" and back, seven times a
+       cycle, while the progress bar was still moving. Owner, 2026-08-22: "the awaiting for
+       approval box is always there so when the progress bar changes its visible behind it".
+       The gaps are deliberate -- a step reads as finished for a moment before the next begins,
+       and that is what `done` is for in the expanded panel. So what the collapsed panel shows
+       is now its own question: the LATEST row the run has reached, which stays put across a
+       gap, and the awaiting row only once the run has actually reached it. */
+    var live=null;
+    for(var q=0;q<7;q++){ if(tc>=ST[q].s) live=steps[q]; }
+    if(awaitLi && tc>=cy.AW) live=awaitLi;
+    if(live!==lastLive){
+      if(lastLive) lastLive.classList.remove('is-live');
+      if(live) live.classList.add('is-live');
+      lastLive=live;
+    }
 
     var m=L().mission, s=scen(cy.sci);
     var curShort=m.initializing, curStream=m.initializing, thinking=true;
@@ -2354,6 +2376,15 @@ if(typeof faqMoreLabel !== 'undefined'){
     if(!parts.length || parts.some(isNaN)) return 0;
     return parts.reduce(function(total, n){ return total * 60 + n; }, 0);
   }
+  /* THE RING FOLLOWS THE PLAYER, NOT THE FRAME.
+     It used to start the moment the iframe was appended, which is the moment the page ASKED
+     for a film rather than the moment one began. Owner, 2026-08-22: "the video DOES NOT play
+     but the highlight around it starts moving". On iOS an unmuted film in a cross-origin frame
+     is not allowed to start itself, so the player sat on its first frame while our ring counted
+     down over it, telling the reader something was running when nothing was.
+     So arming and running are two different things now: arming sets this film's length and
+     clears the last one, and only the player saying "playing" starts it. */
+  var ringArmed = false;
   function armRing(){
     var secs = secondsOf(dur.textContent);
     section.style.setProperty('--yt-run', (secs > 0 ? secs : 0) + 's');
@@ -2362,7 +2393,13 @@ if(typeof faqMoreLabel !== 'undefined'){
        finished animation stay finished, so the ring would open full. */
     stage.classList.remove('is-timed');
     void stage.offsetWidth;
-    if(secs > 0) stage.classList.add('is-timed');
+    ringArmed = false;
+  }
+  function runRing(){
+    if(ringArmed) return;
+    if(secondsOf(dur.textContent) <= 0) return;
+    ringArmed = true;
+    stage.classList.add('is-timed');
   }
   function syncRing(seconds){
     if(typeof seconds !== 'number' || !isFinite(seconds)) return;
@@ -2372,13 +2409,27 @@ if(typeof faqMoreLabel !== 'undefined'){
       if(Math.abs((a.currentTime || 0) - seconds * 1000) > 900) a.currentTime = seconds * 1000;
     });
   }
+  var sawMessage = false, sawPlaying = false, lastState = null,
+      blockedTimer = null, silentTimer = null;
   function stop(){
     var f = stage.querySelector('iframe');
     if(f) f.remove();
-    stage.classList.remove('is-playing','is-live','is-timed','is-done','is-held');
+    stage.classList.remove('is-playing','is-live','is-timed','is-done','is-held','is-muted');
     section.style.removeProperty('--yt-run');
+    clearTimeout(blockedTimer); clearTimeout(silentTimer);
+    sawMessage = false; sawPlaying = false; lastState = null; ringArmed = false;
     if(poster.parentNode) poster.parentNode.hidden = false;
     play.hidden = false; meta.hidden = false;
+  }
+  /* One command to the player, over the same channel the handshake opened. */
+  function cmd(func, args){
+    var f = stage.querySelector('iframe');
+    if(!f || !f.contentWindow) return;
+    try{
+      f.contentWindow.postMessage(
+        JSON.stringify({event:'command', func:func, args:args || [], id:1, channel:'widget'}),
+        'https://www.youtube-nocookie.com');
+    }catch(e){}
   }
   function start(){
     if(stage.querySelector('iframe')) return;
@@ -2411,6 +2462,35 @@ if(typeof faqMoreLabel !== 'undefined'){
           'https://www.youtube-nocookie.com');
       }catch(e){}
     });
+    /* WHEN THE PLATFORM WILL NOT LET IT START. Android and the desktop start it with sound:
+       the frame is built inside the press, so it still holds the activation that permits it,
+       and a real Chrome on a Pixel profile reports state 3 then state 1 within 1.6s. iOS does
+       not pass activation to a cross-origin frame at all, so the film sits on its first frame
+       for as long as the reader is prepared to wait.
+       Muted playback needs no activation anywhere. So if the player has TALKED to us and still
+       has not started, mute it and start it: the film runs, and YouTube's own controls carry
+       the reader's way back to sound, which is a real gesture inside the player's own frame and
+       the only kind that can turn it on.
+       `sawMessage` is the whole condition. Silence means the API never answered, not that the
+       film was refused, and muting a player that may already be running with sound would be a
+       worse bug than the one this fixes. */
+    var waited = 0;
+    var recover = function(){
+      if(sawPlaying || !sawMessage) return;
+      /* 3 IS BUFFERING, AND BUFFERING IS TRYING. A player fetching its first bytes over a slow
+         connection has not refused anything, and muting it there would take the sound off a
+         film that was about to play with it. A refusal looks different: the player reports
+         itself unstarted or cued and then stops reporting. Waited out once, so a genuinely
+         slow start costs a second and a refusal is still recovered from. */
+      if(lastState === 3 && waited < 1){ waited++; blockedTimer = setTimeout(recover, 1200); return; }
+      cmd('mute'); cmd('playVideo');
+      stage.classList.add('is-muted');
+    };
+    blockedTimer = setTimeout(recover, 1400);
+    /* And if it never answers at all, the film is probably running and the ring should run
+       with it. A ring stopped by silence would be the same class of lie in the other
+       direction. */
+    silentTimer = setTimeout(function(){ if(!sawMessage) runRing(); }, 3000);
     if(poster.parentNode) poster.parentNode.hidden = true;
     play.hidden = true; meta.hidden = true;
   }
@@ -2466,6 +2546,9 @@ if(typeof faqMoreLabel !== 'undefined'){
   window.addEventListener('message', function(e){
     if(e.origin !== 'https://www.youtube-nocookie.com') return;
     if(!stage.querySelector('iframe')) return;
+    /* IT ANSWERED. Recorded before anything is parsed out of it, because the only thing the
+       recovery above needs to know is whether the player is talking at all. */
+    sawMessage = true;
     var d;
     try{ d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; }catch(err){ return; }
     if(!d || !d.info) return;
@@ -2486,7 +2569,10 @@ if(typeof faqMoreLabel !== 'undefined'){
     }
     var s = typeof d.info === 'number' ? d.info : d.info.playerState;
     if(typeof s !== 'number') return;
+    lastState = s;
     stage.classList.toggle('is-live', s === 1);
+    /* THE FILM IS RUNNING. This, and only this, starts the ring. */
+    if(s === 1){ sawPlaying = true; runRing(); }
     /* Held, not "not playing": 2 is paused and 3 is buffering, and those are the only two
        states that should stop the ring. If the handshake with the player never completes and
        no state ever arrives, the ring keeps running on the film's own length -- which is
@@ -2524,87 +2610,34 @@ if(typeof faqMoreLabel !== 'undefined'){
         page is still moving and lands exactly on the player rather than near where it used to
         be. */
   var reduced = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : {matches:false};
-  var ease = function(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2; };
 
-  /* A sticky header covers the top of the viewport, so the room the stage can be centred in
-     starts below it. Measured rather than assumed: the header's height is a different number
-     at every width and in several languages. */
-  function headerRoom(){
-    var h = document.querySelector('header');
-    if(!h) return 0;
-    var cs = getComputedStyle(h);
-    if(cs.position !== 'fixed' && cs.position !== 'sticky') return 0;
-    return h.getBoundingClientRect().height;
-  }
-  function restingScroll(){
-    var r = stage.getBoundingClientRect();
-    var top = headerRoom();
-    var room = Math.max(0, window.innerHeight - top);
-    var y = window.scrollY + r.top - top - Math.max(0, (room - r.height)/2);
-    var max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    return Math.min(Math.max(0, y), max);
-  }
-
-  var flying = null;
-  function dropClone(){
-    if(flying && flying.parentNode) flying.parentNode.removeChild(flying);
-    flying = null;
-  }
-  function travel(from){
-    var target = restingScroll();
-    var startY = window.scrollY;
-    var far = Math.abs(target - startY) > 2;
-    if(reduced.matches){
-      /* reduced motion REMOVES the motion, it does not remove the arrival: not scrolling at
-         all would leave the reader looking at a wall while a film plays off screen, which is
-         the dead tap this replaced. */
-      if(far) window.scrollTo({top:target, behavior:'instant'});
-      return;
-    }
-    var thumb = from && from.querySelector ? from.querySelector('.yt-thumb') : null;
-    var img = thumb ? thumb.querySelector('img') : null;
-    dropClone();
-    if(thumb && img && (img.currentSrc || img.src)){
-      flying = document.createElement('i');
-      flying.className = 'yt-fly';
-      flying.setAttribute('aria-hidden','true');
-      flying.style.backgroundImage = 'url("' + String(img.currentSrc || img.src).replace(/"/g,'%22') + '")';
-      document.body.appendChild(flying);
-    }
-    var clone = flying;
-    var rad = function(el){ return parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0; };
-    var r0 = thumb ? rad(thumb) : 0, r1 = rad(stage);
+  /* THE PAGE TRAVELS TO THE PLAYER, AND THE BROWSER DOES THE TRAVELLING.
+     The first version of this flew a clone of the poster into the stage and scrolled the page
+     itself, a frame at a time, writing left/top/width/height on a fixed element and calling
+     scrollTo sixty times a second. Owner, 2026-08-22: "the animation to play the youtube videos
+     is very laggy on mobile when tapped and looks terrible". Every one of those writes is main
+     thread work, and the main thread at that exact moment is booting a YouTube player, which is
+     the heaviest thing this page ever does. The animation and the thing it was celebrating were
+     fighting over the same thread, and the animation lost.
+     A native smooth scroll is handed to the compositor and keeps running while the main thread
+     is busy, which is precisely the condition here. So the scroll IS the animation, and what is
+     left is one opacity fade on a pseudo-element that the compositor also owns. Nothing is
+     animated on the stage itself: it is the iframe's parent, and a transform on the parent of a
+     cross-origin player costs a re-layer of the video on every frame. */
+  function travel(){
+    stage.scrollIntoView({block:'center', behavior: reduced.matches ? 'auto' : 'smooth'});
+    if(reduced.matches) return;
+    stage.classList.remove('is-entering');
+    void stage.offsetWidth;
     stage.classList.add('is-entering');
-    var DUR = clone ? 620 : 420, t0 = null;
-    /* A clone that outlives its flight is a fixed element covering the page, so it is also
-       removed on a timer that does not depend on the loop still running. */
-    var bail = setTimeout(function(){ if(flying === clone) dropClone(); }, DUR + 600);
-    requestAnimationFrame(function step(now){
-      if(t0 === null) t0 = now;
-      var t = Math.min(1, (now - t0)/DUR), e = ease(t);
-      if(far) window.scrollTo({top: startY + (target - startY)*e, behavior:'instant'});
-      if(clone && flying === clone && thumb){
-        var a = thumb.getBoundingClientRect(), b = stage.getBoundingClientRect();
-        clone.style.left   = (a.left + (b.left - a.left)*e) + 'px';
-        clone.style.top    = (a.top + (b.top - a.top)*e) + 'px';
-        clone.style.width  = (a.width + (b.width - a.width)*e) + 'px';
-        clone.style.height = (a.height + (b.height - a.height)*e) + 'px';
-        clone.style.borderRadius = (r0 + (r1 - r0)*e) + 'px';
-        clone.style.opacity = t < .74 ? '1' : String(Math.max(0, 1 - (t - .74)/.26));
-      }
-      if(t < 1){ requestAnimationFrame(step); return; }
-      clearTimeout(bail);
-      if(flying === clone) dropClone();
-      stage.classList.remove('is-entering');
-    });
+    setTimeout(function(){ stage.classList.remove('is-entering'); }, 700);
   }
 
   play.addEventListener('click', function(){
     start();
-    /* No origin box: the reader pressed the stage itself, so there is nothing to fly from and
-       usually nowhere to travel to. travel() still runs, because a press on a stage that is
-       half off the bottom of a phone should still settle it. */
-    travel(null);
+    /* travel() still runs when the reader pressed the stage itself: on a phone the stage is
+       most of the screen and a press often lands on one that is half off the bottom of it. */
+    travel();
   });
   list.addEventListener('click', function(e){
     var btn = e.target.closest ? e.target.closest('.yt-item') : null;
@@ -2615,7 +2648,7 @@ if(typeof faqMoreLabel !== 'undefined'){
     /* A TAP ON A FILM PLAYS IT. It used to only queue it: the poster changed and the reader
        had to find the play button and press a second time, which reads as a dead tap. */
     start();
-    travel(btn);
+    travel();
   });
 })();
 
@@ -2639,7 +2672,11 @@ if(typeof faqMoreLabel !== 'undefined'){
   var btn=document.getElementById('mcStepsToggle');
   var panel=btn&&btn.closest('.status-panel');
   if(!btn||!panel)return;
-  var phone=window.matchMedia?window.matchMedia('(max-width:760px)'):{matches:false};
+  /* A PHONE HELD SIDEWAYS IS STILL A PHONE, and it is the one that can least afford eight
+     rows: 390px of height, and the instrument stood 1117px tall in it. The width test
+     alone said 844px is a desktop. The stylesheet's instrument blocks carry the same pair
+     of conditions, so what collapses and what is drawn stay in step. */
+  var phone=window.matchMedia?window.matchMedia('(max-width:760px),(orientation:landscape) and (max-height:560px)'):{matches:false};
   var set=function(open){
     btn.setAttribute('aria-expanded',open?'true':'false');
     panel.classList.toggle('steps-collapsed',!open);

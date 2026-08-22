@@ -181,8 +181,18 @@ const SUITES = [
   //                 so every visitor who pressed play on a phone left the site. Every tile, on
   //                 three phones, in both engines.
   "check-demo-stage.mjs",
+  // check-mission-live-row  the collapsed panel's ONE line must be the row the run has reached.
+  //                 The stylesheet used to infer it from `.active`, and a step is only active
+  //                 between its start and its finish, so in each of the seven gaps the line
+  //                 flipped to "Awaiting your approval" and back while the bar was still
+  //                 climbing. A photograph cannot see that; this samples a whole cycle.
+  // check-phone-height    the two boxes that stayed on a small screen uninvited: a contents
+  //                 rail still sticky with no column to be sticky in, which the document then
+  //                 scrolled through, and a header taking a fifth of a landscape phone.
   "check-overlay-contents.mjs",
   "check-watch-inline.mjs",
+  "check-mission-live-row.mjs",
+  "check-phone-height.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

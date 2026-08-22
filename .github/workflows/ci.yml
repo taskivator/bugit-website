@@ -284,5 +284,12 @@ jobs:
       # A tap on a film plays it on this page. It briefly opened the YouTube app instead.
       - name: Verify tapping a film plays it here and does not leave the site
         run: node scripts/check-watch-inline.mjs
+      # The collapsed status panel's one line, sampled across a whole cycle rather than
+      # photographed once: it must be the row the run has reached, never the approval row.
+      - name: Verify the collapsed Mission Control shows the row the run has reached
+        run: node scripts/check-mission-live-row.mjs
+      # Nothing pinned over a small screen: the docs contents rail, and the header in landscape.
+      - name: Verify nothing sits on a phone screen uninvited
+        run: node scripts/check-phone-height.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
         run: node scripts/check-ci-coverage.mjs

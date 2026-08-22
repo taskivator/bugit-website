@@ -303,7 +303,7 @@
   .mc-orb{position:relative;display:grid;place-items:center;will-change:transform;animation:mcFloat 6.8s ease-in-out infinite}
   .mc-face{width:160px;height:160px;display:block}
   @keyframes mcFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.022)}}
-  @media(max-width:760px){.mc-face{width:124px;height:124px}.mc-mascot{min-height:164px}.mc-mascot:before{width:216px;height:216px}}
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){.mc-face{width:124px;height:124px}.mc-mascot{min-height:164px}.mc-mascot:before{width:216px;height:216px}}
   /* MISSION CONTROL ON A PHONE.
      Side by side on desktop, the checklist and the report it produced are read as one
      picture. Stacked on a 844px screen they were 2228px tall (696 + 1449), so the two
@@ -318,7 +318,7 @@
      opacity 0 until the script marks it .on. !important is needed to beat the reset
      rule, which is itself !important; this selector is the more specific of the two. */
   .report-panel>.report-more-toggle,.mc-armed .report-panel>.report-more-toggle{opacity:1!important;transform:none!important}
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     .status-panel{min-height:0;padding:15px 15px 13px}
     .status-panel .mc-mascot,.status-panel .mc-foot{display:none}
     .status-panel ul{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
@@ -1143,6 +1143,22 @@
     border-bottom:1px solid transparent;
     transition:border-color .3s ease,background .3s ease;
   }
+  /* A SHORT SCREEN CANNOT AFFORD A PERMANENT HEADER. A phone held sideways has about 390px
+     of height and the header takes 72 of them, close to a fifth of everything the reader has,
+     on every screenful of the page. Owner, 2026-08-22: "in mobie view in landscape mode because
+     the height is limitted i want the top navigation bar to disappear and does not follow as
+     the user scroll down so they can see more content".
+     So it is a normal part of the page there: it is at the top when the page is at the top,
+     and it leaves when the reader scrolls past it. Everything in it is still reachable, at the
+     top of the page where it lives, and the language and account panels are cap-limited by the
+     same viewport height so neither of them runs off a short screen either.
+     Height rather than orientation alone: a window 400px tall wants this whichever way round
+     the device is, and orientation:landscape on its own would take the header off a tall
+     tablet held sideways that has plenty of room for it. */
+  @media (orientation:landscape) and (max-height:560px){
+    header.nav.shell{position:static}
+  }
+
   /* The header only draws its rule once the page has moved, so the hero opens
      without a line across it. Scroll-driven, so no scroll listener is added to a
      file this redesign otherwise leaves alone; where it is unsupported the rule
@@ -2569,38 +2585,32 @@
     .yt-list{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s5) var(--s3)}
   }
 
-  /* THE TAP TRAVELS INTO THE PLAYER.
-     A tile is 150px wide near the bottom of a phone; the stage is the full column, several
-     hundred pixels above it. Cutting straight from one to the other reads as the page having
-     jumped, so the poster under the finger is cloned, fixed to the viewport, and flown into
-     the stage while the page scrolls to meet it. The clone is decoration and nothing else: it
-     has no text, it is aria-hidden, it cannot be hit, and app.js removes it on arrival and
-     again on a timer that does not depend on the flight still running.
-     Geometry is animated rather than transform: the tile is 16:9 and the phone stage is 9:16,
-     and a scale that turns one into the other squashes the picture inside it. It is one fixed
-     element, so it is out of flow and resizing it reflows nothing else on the page. */
-  .yt-fly{
-    position:fixed;z-index:140;display:block;
-    background-size:cover;background-position:center;background-repeat:no-repeat;
-    border:1px solid var(--rule);
-    box-shadow:0 40px 90px -30px rgba(0,0,0,.95);
-    pointer-events:none;
+  /* THE ARRIVAL, AND NOTHING THE MAIN THREAD HAS TO DRAW.
+     The first version of this flew a clone of the poster into the stage: a fixed element whose
+     left, top, width and height were rewritten every frame while the page scrolled itself a
+     frame at a time. Owner, 2026-08-22: "the animation to play the youtube videos is very laggy
+     on mobile when tapped and looks terrible". All of that is main thread work, competing with
+     a YouTube player booting on the same thread, which is the heaviest thing this page does.
+     What is left is one opacity fade on a pseudo-element, which the compositor owns outright,
+     over a scroll the browser is doing natively for the same reason. Nothing is animated on the
+     stage itself: it is the iframe's parent, and transforming the parent of a cross-origin
+     player re-layers the video on every frame of the animation.
+     inset:0 with pointer-events:none: it sits over the picture and cannot take a tap meant for
+     the player underneath it. */
+  .yt-stage::after{
+    content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;
+    background:
+      radial-gradient(58% 58% at 50% 50%,rgba(255,79,201,.20),transparent 72%),
+      linear-gradient(180deg,rgba(193,121,255,.14),transparent 58%);
   }
-  /* The stage answers the arrival rather than sitting there already playing. */
-  /* .4s, not the flight's own length: app.js drops this class when the travel finishes,
-     and the travel is 420ms without a clone and 620ms with one. An animation longer than
-     the shorter of those would be cut mid-scale and snap. */
-  .yt-stage.is-entering{animation:ytEnter .4s var(--ease) both}
-  @keyframes ytEnter{
-    0%{transform:scale(.955)}
-    62%{transform:scale(1.006)}
-    100%{transform:scale(1)}
+  .yt-stage.is-entering::after{animation:ytArrive .62s ease-out both}
+  @keyframes ytArrive{
+    0%{opacity:1}
+    100%{opacity:0}
   }
   @media (prefers-reduced-motion:reduce){
-    /* REMOVED, not shortened. app.js does not build a clone at all under this preference; the
-       rule is here so a clone left behind by anything else still cannot cover the page. */
-    .yt-stage.is-entering{animation:none}
-    .yt-fly{display:none}
+    /* REMOVED, not shortened. app.js does not add the class at all under this preference. */
+    .yt-stage.is-entering::after{animation:none}
   }
 
   /* ---------- 34. The tool wall ------------------------------------------- */
@@ -2867,6 +2877,30 @@
     .mc-mascot{display:none}
     .mc-foot{padding-inline-end:0}
   }
+
+  /* THE SAME INSTRUMENT TREATMENT ON A (orientation:landscape) and (max-height:560px) SCREEN, and the reason is the one written above:
+     both halves have to be seen together. The block above says "an 844px screen" and means
+     844px of HEIGHT, which is a phone held upright. A phone held sideways has 390px, and there
+     the full-height instrument was 1117px tall: PROJECT LEARNING sat 250px above the top of the
+     screen while AI QA ANALYSIS was 263px below it, 531px apart on a screen 390px tall, so the
+     two headings could not be brought into view together at any scroll position. Owner,
+     2026-08-22: "in landscape mode the mission control seperates into 2 sections and the
+     project learning and AI QA analysis part cant be both seen together".
+     These are COPIES rather than a widened media query because the block above also carries
+     .nav and .metrics, and a landscape phone is not asking for the pricing table to stack.
+     Everything the instrument's own phone blocks contain is widened in place instead. */
+  @media (orientation:landscape) and (max-height:560px){
+    .status-panel{padding:var(--s4)}
+    .status-panel ul{gap:7px;margin-top:var(--s3)}
+    .status-panel li{padding:7px 12px 7px 27px;font-size:var(--t-3xs);line-height:1.25}
+    .status-panel li:before{top:50%;transform:translateY(-50%);left:8px}
+    .status-panel li.awaiting{
+      margin-top:0;padding-top:7px;padding-bottom:7px;font-size:var(--t-3xs);
+    }
+    .report-panel.is-collapsed .report-status{display:none}
+    .mc-mascot{display:none}
+    .mc-foot{padding-inline-end:0}
+  }
   @media(max-width:480px){
     .metrics{grid-template-columns:minmax(0,1fr)}
     .icon-row{grid-template-columns:repeat(auto-fit,minmax(126px,1fr))}
@@ -2923,7 +2957,7 @@
   .report-head{min-height:22px}
   .report-pct{white-space:nowrap}
 
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     .report-meta>div{min-height:0}
     .report-panel h2{min-height:0}
     .report-panel>p.report-more{min-height:0}
@@ -3498,6 +3532,23 @@
     border:1px solid var(--rule);
     border-radius:var(--r-lg);
     background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.012));
+  }
+  /* ONE COLUMN MEANS THE RAIL IS ABOVE THE DOCUMENT, NOT BESIDE IT, and a rail that sticks
+     when there is nothing beside it to stay level with simply stays on the screen. It pinned
+     itself 84px down and the document scrolled THROUGH it: the sheet's own background is 86%
+     opaque, so the contents list stayed legible behind every paragraph, all the way down.
+     Owner, 2026-08-22: "the on the page part in documentation when scrolling down on mobile
+     view stays on the background of the document being scrolled". Measured at four scroll
+     positions on two phones: elementFromPoint over the contents list returned the document's
+     own paragraphs at every one of them.
+     Sticky is right where the rail has a column of its own to hold a line in. Here it has none,
+     so it scrolls away with everything else, and the inner scroller it needed in order to fit a
+     tall list into a tall viewport goes with it.
+     This sits AFTER the rule it overrides on purpose: both are one class, so the cascade is
+     decided by order, and written above it the media query lost to the rule it was written to
+     beat and changed nothing at all. */
+  @media(max-width:899px){
+    .docs-sidebar{position:static;max-height:none;overflow:visible}
   }
   .docs-sidebar a{
     position:relative;
@@ -5197,7 +5248,7 @@
   .report-meta>div{min-height:124px}
   .doc-cards small{-webkit-line-clamp:4}
   .yt-sub{-webkit-line-clamp:3}
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     .report-panel h2{min-height:0}
     .report-meta>div{min-height:0}
   }
@@ -5270,7 +5321,7 @@
      reservation that is smaller than the clamp is the wobble waiting to come back. The toggle is
      reserved for two lines: its label is the one string on the panel that CHANGES when pressed,
      so a single-line reservation moves the box at the exact moment the owner is watching it. */
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     .report-panel h2{min-height:calc(3 * 1.28em)}
     .report-meta>div{min-height:112px}
     .report-more-toggle{min-height:53px}
@@ -5344,7 +5395,7 @@
      without its min-height hands the panel back the wobble that six rounds of this file removed.
      Neither is raised globally: at 1512 three lines is right, and a fourth reserved line there is
      dead space in every language that does not need it. */
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     .report-panel h2{-webkit-line-clamp:4;min-height:calc(4 * 1.28em)}
     .report-meta b{-webkit-line-clamp:4}
     .report-meta>div{min-height:132px}
@@ -5409,7 +5460,7 @@
      to its need, so the twenty-five second loop still cannot move the panel. A clamp above the
      need costs nothing; a reservation above it is dead space, so they are not the same number.
      These supersede the per-width values in 75, 80, 83 and 85. */
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     .report-panel h2{-webkit-line-clamp:5;min-height:calc(5 * 1.28em)}
     .report-meta b{-webkit-line-clamp:4}
     .report-meta>div{min-height:132px}
@@ -5647,6 +5698,20 @@
   .mc-armed .status-panel li.done:before{content:'✓';background:var(--green);border:0;color:#06130c;animation:mcPop .42s cubic-bezier(.34,1.56,.64,1)}
   .mc-armed .status-panel li.awaiting{opacity:.32;border:0}
   .mc-armed .status-panel li.awaiting:before{content:'';background:transparent;border:2px solid rgba(255,255,255,.22);animation:none}
+
+  /* THE MARKER BELONGS TO THE LEADING EDGE, AND `left` IS NOT THAT IN ARABIC.
+     Every rule that places this ring uses a physical `left`, so in Arabic it stayed at the far
+     LEFT of the row while the row reserved its 34px of clearance on the RIGHT, where the text
+     begins. Measured at 1024px with the panel collapsed: the row ran 79 to 945, the Arabic text
+     sat at 743 to 911, and the ring was drawn at 79 to 99 -- 644px away from the line it marks,
+     against an empty gap on the other side. Nothing overlapped, which is why no overflow or
+     collision check ever saw it; it was simply on the wrong end.
+     Stated once, logically, after every rule that sets it. left/right are cleared first so the
+     physical values in the three earlier rules cannot win in one direction or the other. */
+  .status-panel li:before{left:auto;right:auto;inset-inline-start:0}
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
+    .status-panel li:before{left:auto;right:auto;inset-inline-start:8px}
+  }
   .mc-armed .status-panel li.awaiting.active{opacity:1}
   .mc-armed .status-panel li.awaiting.active:before{content:'';background:transparent;border:2px solid var(--pink);animation:await 1.9s ease-out infinite}
   @keyframes mcPop{0%{transform:scale(.2);opacity:0}60%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
@@ -6435,23 +6500,42 @@
      on a row that is already showing the least it can. */
   .status-panel.steps-collapsed .status-head::after{transform:rotate(45deg);margin-block:0 3px}
 
-  /* COLLAPSED KEEPS THE LIVE ROW. Seven rows go, the one that is currently running stays, so
-     the section still visibly progresses at one line instead of eight. `.awaiting` is the
-     fallback for the moment before the instrument arms and after it finishes, when no row
-     carries `.active` -- without it the list would collapse to nothing at all and the heading
-     would look broken. */
+  /* COLLAPSED KEEPS THE LIVE ROW. Seven rows go, the one the run has reached stays, so the
+     section still visibly progresses at one line instead of eight.
+     WHICH row that is comes from the simulation, which is the only thing that knows. This used
+     to be inferred here -- show `.active`, fall back to `.awaiting` when nothing is active --
+     and a step is only `active` between its start and its finish. In each of the seven gaps
+     between one step finishing and the next starting, nothing was active, so the single visible
+     line flipped to "Awaiting your approval" and back on every gap while the progress bar was
+     still moving. `.is-live` is set by app.js and does not move during a gap.
+     The two rules below it are the states the simulation never reaches and therefore never
+     marks: reduced motion, and the moment before the instrument arms. Without them the list
+     would collapse to nothing and the heading would look broken. */
   .status-panel.steps-collapsed ul{gap:0;margin-top:var(--s2)}
   .status-panel.steps-collapsed li{display:none}
-  .status-panel.steps-collapsed li.active{display:flex}
+  .status-panel.steps-collapsed li.is-live{display:flex}
+  .status-panel.steps-collapsed:not(:has(li.is-live)) li.active{display:flex}
+  .status-panel.steps-collapsed:not(:has(li.is-live,li.active)) li.awaiting{display:flex}
   /* The live row keeps its marker, and the marker needs its own room. On a phone the row is a
      pill with the marker absolutely placed inside it, and collapsed it is the only row on
      screen -- so the 6px it had left between the spinner and the first letter read as touching.
-     Ten is the clearance the expanded rows have. */
-  .status-panel.steps-collapsed li.active{padding-inline-start:34px}
-  .status-panel.steps-collapsed li.awaiting{padding-inline-start:14px}
-  .status-panel.steps-collapsed:not(:has(li.active)) li.awaiting{display:flex}
+     Ten is the clearance the expanded rows have. The awaiting row draws no spinner and needs
+     none of it, and :not(.awaiting) keeps the two from fighting over the same specificity. */
+  .status-panel.steps-collapsed li.active:not(.awaiting),
+  .status-panel.steps-collapsed li.is-live:not(.awaiting){padding-inline-start:34px}
+  /* THE CLEARANCE FOLLOWS THE MARKER. Collapsed, the approval row was given 14px of room on
+     its leading edge, which is right on a phone and only on a phone: the marker is a 16px ring
+     drawn at the row's leading edge, and the phone rules hide it. Above that breakpoint the
+     ring is drawn, so 14px put it straight through the first two letters of the line. Owner,
+     2026-08-22: "when project learning is collapsed the circle in the beginnign of awaiting for
+     approval collides witht the A and W". 28px is the clearance the expanded rows have; 14px
+     stays exactly where the marker is hidden, under the same condition that hides it. */
+  .status-panel.steps-collapsed li.awaiting{padding-inline-start:28px}
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
+    .status-panel.steps-collapsed li.awaiting{padding-inline-start:14px}
+  }
 
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     /* ONE BOX. The two panels lose their own edges and the wrapper draws a single one around
        the pair, so the instrument reads as one object with two parts rather than as two cards
        that happen to be stacked. The 1px gap between them stays as an internal rule. */
@@ -6983,7 +7067,7 @@
   @media(min-width:761px) and (max-width:1159px){
     .report-panel h2{min-height:calc(2 * 1.28em)}
   }
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     .report-panel h2{min-height:calc(4 * 1.28em)}
   }
 
@@ -7788,7 +7872,7 @@
     /* Flush with the card edges below. */
     .mission>.window{padding-inline:0}
   }
-  @media(max-width:760px){
+  @media(max-width:760px),(orientation:landscape) and (max-height:560px){
     /* Flush with the text below, which is inset by the merged box's own padding. */
     .mission>.window{padding-inline:var(--s4)}
   }

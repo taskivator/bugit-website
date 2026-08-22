@@ -114,6 +114,7 @@ const WINDOWS = (name) => {
   const kids = cells.map(R);
   const near = (a, b) => Math.abs(a - b) < 2;
   const out = { v: [], h: [] };
+  let inked = 0;
 
   /* A WINDOW IS A SEPARATOR WINDOW ONLY WHERE A LINE IS DECLARED, and getting that wrong cost
      five findings that were all the same mistake. The subject is every grid whose cells touch,
@@ -142,6 +143,63 @@ const WINDOWS = (name) => {
   const declared = (aEl, aSide, bEl, bSide) =>
     anyShadow || (aEl && bw(aEl, aSide) > 0) || (bEl && bw(bEl, bSide) > 0);
 
+  /* SAMPLE WHERE THERE IS NO INK.
+     A horizontal window is scanned DOWN a couple of vertical lines, and this file's whole
+     defence against reporting letters was that those lines run "inside the cells' padding, where
+     no glyph can reach". They were actually placed at 35% and 65% of the cell's width, which is
+     the middle of the text. It held only while the text stayed clear of the seam. At 768 the
+     pricing rows wrap to two lines, the second reaches within 6px of the row below, and the
+     profile across that seam read
+         7.1 x9   101.2 107.4 60.8   7.1 7.1 7.1   46.4 107.4 107.4 35.1   7.1 x4
+     -- two bright bands three pixels apart, reported as one separator drawn twice. They are
+     letters. Ink is 100+ luminance and a hairline here is 26, but brightness is the wrong test
+     (the injected controls draw in their own colour), so the fix is to look somewhere else
+     instead: the sample lines are chosen to miss every glyph, image and icon that comes near the
+     seam. If a cell has no clear column at all, the window is not measured and says so. */
+  const inkNear = (cellEl, y0, y1) => {
+    const bad = [];
+    const add = (r) => { if (r.bottom > y0 - 2 && r.top < y1 + 2 && r.width > 0) bad.push([r.left - 3, r.right + 3]); };
+    const walker = document.createTreeWalker(cellEl, NodeFilter.SHOW_TEXT);
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      if (!t.textContent.trim()) continue;
+      const rg = document.createRange();
+      rg.selectNodeContents(t);
+      for (const r of rg.getClientRects()) add(r);
+    }
+    for (const n of cellEl.querySelectorAll("svg,img,canvas,video,[style*='background-image']")) add(R(n));
+    /* A marker drawn by ::before is ink too, and it has no node to walk to. But only a NARROW
+       one: a pseudo-element that runs the full width of its cell is a rule, not a glyph, and
+       avoiding it means refusing to look at exactly the kind of line this file exists to count.
+       That is not hypothetical -- the repeated-seam control draws its second line as a full
+       width ::after, and while this rule made no exception the control's own windows were all
+       dropped as "inked" and the control could never fire. */
+    for (const pseudo of ["::before", "::after"]) {
+      const cs = getComputedStyle(cellEl, pseudo);
+      if (!cs.content || cs.content === "none" || cs.content === "normal") continue;
+      const w = parseFloat(cs.width) || 0;
+      if (!w) continue;
+      const c = R(cellEl);
+      if (w > c.width * 0.5) continue;
+      const left = isFinite(parseFloat(cs.left)) ? c.left + parseFloat(cs.left) : c.left;
+      add({ left, right: left + w, top: y0, bottom: y1, width: w });
+    }
+    return bad;
+  };
+  const clearXs = (aEl, bEl, box0, y0, y1) => {
+    const bad = [...inkNear(aEl, y0, y1), ...inkNear(bEl, y0, y1)];
+    const free = (x) => !bad.some(([l, r]) => x > l && x < r);
+    const out2 = [];
+    /* Several places to stand, so a wide line of text costs one clear column rather than the
+       whole window. Ordered from the middle outwards: the middle of a cell is furthest from the
+       perpendicular seam and from a rounded corner, both of which have their own bumps. */
+    for (const frac of [0.35, 0.65, 0.5, 0.22, 0.78, 0.12, 0.88, 0.06, 0.94, 0.29, 0.71]) {
+      const x = box0.left + box0.width * frac;
+      if (free(x)) out2.push(x);
+      if (out2.length === 2) break;
+    }
+    return out2;
+  };
+
   for (let i = 0; i < kids.length; i++) {
     for (let j = 0; j < kids.length; j++) {
       if (i === j) continue;
@@ -157,9 +215,10 @@ const WINDOWS = (name) => {
       }
       if (near(a.left, b.left) && b.top >= a.bottom - 0.5 && b.top - a.bottom <= 2
           && declared(cells[i], "Bottom", cells[j], "Top")) {
-        out.h.push({ y0: a.bottom - 6, y1: b.top + 6,
-                     xs: [a.left + a.width * 0.35, a.left + a.width * 0.65],
-                     what: "the gap between two rows" });
+        const y0 = a.bottom - 6, y1 = b.top + 6;
+        const xs = clearXs(cells[i], cells[j], a, y0, y1);
+        if (xs.length) out.h.push({ y0, y1, xs, what: "the gap between two rows" });
+        else inked++;
       }
     }
   }
@@ -176,17 +235,56 @@ const WINDOWS = (name) => {
     out.v.push({ x0: g.left - 4, x1: g.left + 7, ys: [mid(first, "y")], what: "the wrapper's leading edge" });
   if (declared(el, "Right", lastEl, "Right"))
     out.v.push({ x0: g.right - 7, x1: g.right + 4, ys: [mid(last, "y")], what: "the wrapper's trailing edge" });
-  if (declared(el, "Top", firstEl, "Top"))
-    out.h.push({ y0: g.top - 4, y1: g.top + 7, xs: [mid(first, "x")], what: "the wrapper's top edge" });
-  if (declared(el, "Bottom", lastEl, "Bottom"))
-    out.h.push({ y0: g.bottom - 7, y1: g.bottom + 4, xs: [mid(last, "x")], what: "the wrapper's bottom edge" });
+  if (declared(el, "Top", firstEl, "Top")) {
+    const y0 = g.top - 4, y1 = g.top + 7;
+    const xs = clearXs(firstEl, firstEl, first, y0, y1);
+    if (xs.length) out.h.push({ y0, y1, xs: [xs[0]], what: "the wrapper's top edge" });
+    else inked++;
+  }
+  if (declared(el, "Bottom", lastEl, "Bottom")) {
+    const y0 = g.bottom - 7, y1 = g.bottom + 4;
+    const xs = clearXs(lastEl, lastEl, last, y0, y1);
+    if (xs.length) out.h.push({ y0, y1, xs: [xs[0]], what: "the wrapper's bottom edge" });
+    else inked++;
+  }
   if (!out.v.length && !out.h.length) return null;
+
+  /* A STICKY HEADER FLOATING OVER A GRID IS NOT A SEPARATOR DRAWN TWICE.
+     This reads PIXELS, which is its whole strength and also the one thing it cannot reason
+     about: a window is an 11px band around an edge, and if the reader has scrolled that edge
+     underneath the translucent header, the band contains the header's own bottom rule as well as
+     the grid's. Two lines, a few pixels apart, both real, neither one a duplicate. It reported
+     exactly that twice -- div.metrics at 1600 and the FAQ grid at 360, both with the wrapper's
+     top edge at y≈45 while the header ran to 70 and 76 -- and both survived every attempt to fix
+     them in the stylesheet, because there was nothing there to fix.
+     So a window covered by something FIXED or STICKY is not measured. What is painted there
+     belongs to two elements and the question this file asks has no answer. The count of skipped
+     windows is carried back and printed: a check that quietly stops looking reads as coverage. */
+  const overlays = [];
+  for (const n of document.querySelectorAll("body *")) {
+    const cs = getComputedStyle(n);
+    if (cs.position !== "fixed" && cs.position !== "sticky") continue;
+    if (cs.display === "none" || cs.visibility === "hidden" || +cs.opacity === 0) continue;
+    /* The subject's own sticky ancestor is not floating OVER the subject; it carries it. */
+    if (n === el || n.contains(el)) continue;
+    const r = R(n);
+    if (r.width < 8 || r.height < 8) continue;
+    overlays.push(r);
+  }
+  const coveredH = (w) => overlays.some((o) =>
+    o.bottom > w.y0 && o.top < w.y1 && w.xs.some((x) => x > o.left && x < o.right));
+  const coveredV = (w) => overlays.some((o) =>
+    o.right > w.x0 && o.left < w.x1 && w.ys.some((y) => y > o.top && y < o.bottom));
+  let skipped = 0;
+  out.h = out.h.filter((w) => (coveredH(w) ? (skipped++, false) : true));
+  out.v = out.v.filter((w) => (coveredV(w) ? (skipped++, false) : true));
+  if (!out.v.length && !out.h.length) return { skippedOnly: skipped, inked };
 
   const box = { x: Math.round(Math.max(0, g.left - 8)), y: Math.round(Math.max(0, g.top - 8)) };
   box.width = Math.round(Math.min(window.innerWidth - box.x, g.width + 16));
   box.height = Math.round(Math.min(window.innerHeight - box.y, g.height + 16));
   if (box.width < 20 || box.height < 20) return null;
-  return { box, windows: out, ops: [...el.children].map((k) => +(+getComputedStyle(k).opacity).toFixed(2)) };
+  return { box, windows: out, skipped, inked, ops: [...el.children].map((k) => +(+getComputedStyle(k).opacity).toFixed(2)) };
 };
 
 /* Count the painted lines inside each window. A line is a run of pixels measurably lighter than
@@ -223,7 +321,18 @@ const COUNT = async ([shot, box, windows, threshold]) => {
     const raw = [];
     let open = null;
     for (let i = 0; i < n; i++) {
-      const ridge = profile[i] - Math.min(at(i - 2), at(i + 2)) > threshold;
+      /* BRIGHTER THAN BOTH SIDES, not brighter than the darker side.
+         The comment above says a separator "is brighter than what sits on BOTH sides of it",
+         and then `Math.min` asked only that it beat the darker one -- which a STEP does. The
+         metrics grid reads, going down through its top edge:
+             5.1 x8   25.7 25.7   7.6   10.9 x12
+         page ground, the seam, the groove just inside it, then flat card fill. The fill is 3.3
+         above the groove two pixels back and 0 above itself two pixels on, so every pixel of a
+         twelve-pixel plateau cleared a threshold of 3 and the first of them was reported as a
+         second line 1.8px from the seam. It is not a line; it is where the card starts.
+         `Math.max` is the test the comment already describes, and both negative controls still
+         fire under it: a real second line has ground or groove on BOTH sides of it. */
+      const ridge = profile[i] - Math.max(at(i - 2), at(i + 2)) > threshold;
       if (ridge) { if (!open) open = { a: i, b: i }; else open.b = i; }
       else if (open) { raw.push(open); open = null; }
     }
@@ -259,24 +368,57 @@ const COUNT = async ([shot, box, windows, threshold]) => {
       .map((r) => +(origin + ((r.a + r.b) / 2) / s).toFixed(1));
   };
 
+  /* A SAMPLE THAT FALLS OUTSIDE THE PICTURE IS NOT BLACK, IT IS UNKNOWN.
+     `lum()` answers null past the edge of the screenshot and the profile recorded that as 0 --
+     so a window running off the clip ended in a row of zeros, and the flat panel just before
+     them cleared the ridge test against them. Measured 2026-08-22 on the pricing list:
+       7 7 7 7 7 7 7 7 7 7 7 7 7 17 17 7 7 7 7 7 7 0 0 0 0
+     one seam at 17, and a "second line" three pixels away that was the edge of the photograph.
+     Unknown samples are dropped and the origin moves with them, so the profile only ever
+     describes pixels that were actually looked at. */
+  const trim = (vals, origin) => {
+    let a = 0, b = vals.length - 1;
+    while (a <= b && vals[a] === null) a++;
+    while (b >= a && vals[b] === null) b--;
+    const out = [];
+    for (let i = a; i <= b; i++) out.push(vals[i] === null ? vals[Math.max(a, i - 1)] : vals[i]);
+    return { prof: out, origin: origin + a / s };
+  };
+
   const res = { v: [], h: [] };
   for (const w of windows.v) {
-    const prof = [];
+    const vals = [];
     for (let x = (w.x0 - box.x) * s; x <= (w.x1 - box.x) * s; x++) {
-      let t = 0, n = 0;
-      for (const y of w.ys) { const v = lum(x, (y - box.y) * s); if (v != null) { t += v; n++; } }
-      prof.push(n ? t / n : 0);
+      let t = 0, n = 0, out = 0;
+      for (const y of w.ys) { const v = lum(x, (y - box.y) * s); if (v != null) { t += v; n++; } else out++; }
+      vals.push(n ? t / n : null);
+      if (out && !n) { /* wholly outside the picture */ }
     }
-    res.v.push({ what: w.what, lines: runs(prof, w.x0) });
+    const trimmed = trim(vals, w.x0);
+    const prof = trimmed.prof;
+    {
+      const lines = runs(prof, trimmed.origin);
+      /* THE EVIDENCE, WHEN THERE IS SOMETHING TO EXPLAIN. A finding here is a claim about
+         pixels, and "two lines 3.8px apart" is not enough to act on: the same sentence covers a
+         genuine doubled seam, a texture bump and the crest of a gradient. The profile that
+         produced it is carried back with it, so a failure names its own cause. Only for windows
+         that flagged, so the clean case stays cheap. */
+      res.v.push({ what: w.what, lines, prof: lines.length > 1 ? prof.map((v) => +v.toFixed(1)) : null });
+    }
   }
   for (const w of windows.h) {
-    const prof = [];
+    const vals = [];
     for (let y = (w.y0 - box.y) * s; y <= (w.y1 - box.y) * s; y++) {
       let t = 0, n = 0;
       for (const x of w.xs) { const v = lum((x - box.x) * s, y); if (v != null) { t += v; n++; } }
-      prof.push(n ? t / n : 0);
+      vals.push(n ? t / n : null);
     }
-    res.h.push({ what: w.what, lines: runs(prof, w.y0) });
+    const trimmedH = trim(vals, w.y0);
+    const prof = trimmedH.prof;
+    {
+      const lines = runs(prof, trimmedH.origin);
+      res.h.push({ what: w.what, lines, prof: lines.length > 1 ? prof.map((v) => +v.toFixed(1)) : null });
+    }
   }
   return res;
 };
@@ -303,7 +445,7 @@ const FLAT_GROUND = "#ambient{display:none !important}";
 
 async function sweep(browser, inject, label) {
   const found = [];
-  let grids = 0, seps = 0;
+  let grids = 0, seps = 0, covered = 0, inkedOut = 0;
   for (const W of WIDTHS) {
     const page = await browser.newPage({ viewport: { width: W, height: 900 }, deviceScaleFactor: 2 });
     const css = FLAT_GROUND + (inject ? "\n" + inject : "");
@@ -328,9 +470,29 @@ async function sweep(browser, inject, label) {
         await page.evaluate(([n, f]) => {
           const el = document.querySelector('[data-hair-key="' + n + '"]');
           if (!el) return;
-          window.scrollTo(0, Math.max(0, Math.round(window.scrollY + el.getBoundingClientRect().top - window.innerHeight * f)));
+          /* INSTANT, AND THE WHOLE FILE DEPENDED ON IT.
+             This page sets `html{scroll-behavior:smooth}`, so a plain scrollTo GLIDES. The
+             window was computed from the boxes at one moment and the photograph taken 320ms
+             later, part way through that glide -- a picture of somewhere else. That is how a
+             12px band that holds one hairline came back holding
+                 7.1 x9  101.2 107.4 60.8  7.1 7.1 7.1  46.4 107.4 107.4 35.1  7.1 x4
+             which is a line of TEXT that had slid into frame, reported as "one separator drawn
+             more than once". It is also why the findings moved between runs: the glide lands
+             wherever the wait happens to catch it. Cropped at the same scroll position by hand,
+             the band holds exactly one line. */
+          window.scrollTo({
+            top: Math.max(0, Math.round(window.scrollY + el.getBoundingClientRect().top - window.innerHeight * f)),
+            behavior: "instant",
+          });
         }, [name, frac]);
         await page.waitForTimeout(320);
+        /* And prove it stopped, rather than trusting the word "instant". A page can still be
+           settling for reasons of its own, and every measurement below assumes the boxes it
+           read are the boxes in the picture. */
+        await page.waitForFunction(() => new Promise((res) => {
+          const a = window.scrollY;
+          requestAnimationFrame(() => requestAnimationFrame(() => res(window.scrollY === a)));
+        }), null, { timeout: 4000 }).catch(() => {});
         /* AT REST MEANS AT REST, and scrolling to a position is not enough to get there. The
            reveals are driven by view() timelines, so a cell's opacity is a function of WHERE IT
            IS, not of how long the page has been open. At 360 every one of these grids is a
@@ -348,7 +510,14 @@ async function sweep(browser, inject, label) {
           : null;
         if (settle) await page.waitForTimeout(120);
         const spec = await page.evaluate(WINDOWS, name);
-        if (!spec) { if (settle) await settle.evaluate((el) => el.remove()); continue; }
+        if (!spec || spec.skippedOnly !== undefined) {
+          covered += spec ? spec.skippedOnly : 0;
+          inkedOut += spec && spec.inked ? spec.inked : 0;
+          if (settle) await settle.evaluate((el) => el.remove());
+          continue;
+        }
+        covered += spec.skipped || 0;
+        inkedOut += spec.inked || 0;
         const shot = (await page.screenshot({ clip: spec.box })).toString("base64");
         const res = await page.evaluate(COUNT, [shot, spec.box, spec.windows, 3]);
         if (settle) await settle.evaluate((el) => el.remove());
@@ -363,7 +532,9 @@ async function sweep(browser, inject, label) {
               const gap = +span.toFixed(1);
               found.push(`[${W} ${state}] ${name}: ${w.what} holds ${w.lines.length} painted lines ` +
                          `${gap}px apart (at ${w.lines.join(", ")}). One separator, drawn more than once. ` +
-                         `Cell opacities were ${spec.ops.join(" ")}${label ? " (" + label + ")" : ""}.`);
+                         `Cell opacities were ${spec.ops.join(" ")}${label ? " (" + label + ")" : ""}.` +
+                         (w.prof ? `
+           profile: ${w.prof.join(" ")}` : ""));
             }
           }
         }
@@ -371,13 +542,18 @@ async function sweep(browser, inject, label) {
     }
     await page.close();
   }
-  return { found, grids, seps };
+  return { found, grids, seps, covered, inkedOut };
 }
 
 const browser = await chromium.launch();
 const real = await sweep(browser, null, null);
 for (const f of real.found) fail.push(f);
 note(`${real.grids} grid render(s) across ${WIDTHS.length} widths, ${real.seps} separator window(s) inspected`);
+/* Said out loud, because a check that quietly stops looking reads as coverage. These are the
+   windows the reader could not see either: the page was scrolled so a sticky element sat over
+   them, and what is painted there belongs to two elements at once. */
+if (real.covered) note(`${real.covered} window(s) not measured: a fixed or sticky element was drawn over them at that scroll position`);
+if (real.inkedOut) note(`${real.inkedOut} window(s) not measured: every sample line across them would have crossed text or an icon`);
 if (!real.grids) {
   fail.push("no hairline grid was found at any width, so this sweep measured nothing. An empty " +
             "sweep must never read as a clean one.");
@@ -526,9 +702,25 @@ if (!walkCtl.found.length) {
    coincidence can hide and which appears on the internal gaps and the perimeter alike. If a
    sampling change ever weakens this file the way it weakened it once already (a single scanline
    dropped the ring control from 17 findings to 3), OFFSET is the one that keeps shouting. */
-const RING = ".doc-cards>a,main section.shell.trust>div,.metrics>div{box-shadow:0 0 0 1px #3a3a48 !important}";
+/* THE RING CONTROL HAD TO BE REBUILT, because the design it reproduced no longer exists.
+   It was "a full ring on every card", which put two shadows into the 1px GAP the cells used to
+   be separated by. Sections 106-108 closed that gap: the seams are now the cells' own edges with
+   `gap:0`. Two 1px rings on two touching cards land on the SAME pixel and draw one thicker line,
+   and so do two rings inside a restored 1px gap -- both were tried and neither produced a
+   doubling, because in this layout there is nowhere for the second line to BE.
+   That silence mattered: three real sampling faults hid behind it for a whole round.
+   So the control now says the same thing in the grammar of the design that exists: every cell
+   repeats its own top seam two pixels further in. At every row boundary that is one separator
+   drawn twice, two pixels apart, which is exactly what the owner photographed -- and it does not
+   depend on a gap, a shadow or a radius surviving the next restyle. */
+const RING = ".doc-cards>a,main section.shell.trust>div,.metrics>div,.faq details,article.price-card li" +
+  "{position:relative !important}" +
+  ".doc-cards>a::after,main section.shell.trust>div::after,.metrics>div::after," +
+  ".faq details::after,article.price-card li::after" +
+  "{content:'' !important;position:absolute !important;left:0 !important;right:0 !important;" +
+  "top:2px !important;height:1px !important;background:#3a3a48 !important;z-index:5 !important}";
 const OFFSET = ".doc-cards>a,main section.shell.trust>div,.metrics>div{outline:1px solid #3a3a48 !important;outline-offset:3px}";
-for (const [what, css] of [["ring", RING], ["offset", OFFSET]]) {
+for (const [what, css] of [["repeated seam", RING], ["offset", OFFSET]]) {
   const ctl = await sweep(browser, css, "control");
   if (!ctl.found.length) {
     fail.push(`NEGATIVE CONTROL DID NOT FIRE: the ${what} defect produced no doubled line, so this ` +
