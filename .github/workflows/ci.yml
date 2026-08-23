@@ -73,6 +73,9 @@ jobs:
       # beside it was not. This asserts the site matches tracker_routing.FILEABLE.
       - name: Verify tracker capability claims match what BugIt files to
         run: node scripts/check-tracker-claims.mjs
+
+      - name: Attachment claim is stated in every language
+        run: node scripts/check-attachment-claim.mjs
       - name: Verify Google Ads tag shape (single load, consent-first, CSP hosts)
         run: node scripts/check-ads-tag.mjs
       - name: Verify immutable caching is confined to content-hashed filenames
