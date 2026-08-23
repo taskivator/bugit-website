@@ -14,6 +14,7 @@
     "test:mission-pause": "node scripts/check-mission-pause.mjs",
     "test:tracker-claims": "node scripts/check-tracker-claims.mjs",
     "test:attachment-claim": "node scripts/check-attachment-claim.mjs",
+    "test:forced-colors": "node scripts/check-forced-colors.mjs",
     "test:logo": "node scripts/check-logo.mjs",
     "test:brand": "node scripts/check-brand-sync.mjs",
     "test:trust-icons": "node scripts/check-trust-icons.mjs",

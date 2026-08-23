@@ -28,9 +28,18 @@
  *            sized to the taller of the two and hangs its bottom off the screen while the bar is
  *            showing. Measured by rendering 90px shorter -- the bar's real height -- and
  *            requiring the open menu's controls to still be reachable.
+ *   NOTICE   A fixed, page-blocking notice that eats the screen. Added 2026-08-24 with the three
+ *            LANDSCAPE rows below, which is what made it visible: the consent bar was 230px of a
+ *            340px iPhone held sideways -- 68% of the screen -- and 64% of a landscape Pixel 7.
+ *            The reader met 110px of page above a cookie notice. It is `position:fixed`, so no
+ *            overflow or space rule in this repository could see it, and every rule above ran
+ *            only on portrait screens 640 to 932 tall, where the same bar is a reasonable share.
+ *            Measured BEFORE the bar is dismissed, because `sweep` dismisses it for every other
+ *            rule here -- a rule about the bar that runs after that measures its absence.
  *
  * The subject is COMPUTED: every field, every control and every disclosure the page actually
- * has, at six phone sizes in two engines. Not a list of selectors to keep in step with markup.
+ * has, at nine phone sizes -- six upright and three sideways -- in two engines. Not a list of
+ * selectors to keep in step with markup.
  */
 import { chromium, webkit } from "playwright";
 import { spawn, spawnSync } from "node:child_process";
@@ -52,6 +61,12 @@ const DEVICES = [
   { name: "iPhone SE 375x667", size: [375, 667], dpr: 2 },
   { name: "iPhone 390x844", size: [390, 844], dpr: 3 },
   { name: "iPhone 430x932", size: [430, 932], dpr: 3 },
+  /* THE SAME PHONES, HELD SIDEWAYS. Every row above is portrait, so every rule in this file was
+     only ever asked of a screen 640 to 932 pixels tall. Turn the phone and it is 340 to 430, and
+     a fixed notice that is a reasonable share of the tall one is most of the short one. */
+  { name: "iPhone 750x340 landscape", size: [750, 340], dpr: 3 },
+  { name: "Android 863x360 landscape", size: [863, 360], dpr: 2.625 },
+  { name: "iPhone 932x430 landscape", size: [932, 430], dpr: 3 },
 ];
 const ROUTES = ["/", "/docs/user-guide", "/refund"];
 
@@ -181,6 +196,56 @@ const BAR_PROBE = () => {
 };
 
 /* ---------- measure ------------------------------------------------------ */
+/* THE NOTICE IS MEASURED BEFORE IT IS DISMISSED, which is why it is not part of PROBE.
+   `sweep` clicks #consentReject on every page load so the rest of the rules can see the page,
+   and PROBE therefore runs on a document with no consent bar in it. A rule about the bar has to
+   run first or it measures its absence -- and it looked like it worked, because on one device in
+   one engine the dismissal timed out and the bar was still there, which is a finding that
+   appears and disappears with the speed of a click. */
+const NOTICE_PROBE = () => {
+  const name = (el) => {
+    const cls = typeof el.className === "string" && el.className.trim()
+      ? "." + el.className.trim().split(/\s+/).slice(0, 2).join(".") : "";
+    const txt = (el.getAttribute("aria-label") || el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 24);
+    return el.tagName.toLowerCase() + (el.id ? "#" + el.id : "") + cls + (txt ? ' "' + txt + '"' : "");
+  };
+  const vh = window.innerHeight, vw = document.documentElement.clientWidth;
+  let notice = null;
+  for (const el of document.querySelectorAll("body *")) {
+    const cs = getComputedStyle(el);
+    if (cs.position !== "fixed") continue;
+    if (cs.display === "none" || cs.visibility === "hidden" || +cs.opacity < 0.05) continue;
+    const r = el.getBoundingClientRect();
+    if (r.height < vh * 0.2 || r.width < vw * 0.6) continue;      // not a page-blocking notice
+    if (r.top < 0 || r.bottom > vh + 1) continue;                  // not wholly on screen: a menu
+    /* WHAT MAKES A FIXED PANEL A NOTICE IS THAT IT ASKS THE READER FOR SOMETHING. Without this
+       the rule fired on `#ambient`, the decorative gradient behind the whole page: fixed,
+       inset:0, and therefore 100% of every screen -- 54 findings that were all one backdrop. */
+    const own = el.querySelectorAll("button, a[href], input, select");
+    if (!own.length) continue;
+    if (parseFloat(cs.zIndex) < 0) continue;
+    const pct = Math.round((r.height / vh) * 100);
+    const out = [];
+    for (const c of own) {
+      const cr = c.getBoundingClientRect();
+      if (cr.width < 2 || cr.height < 2) continue;
+      /* A control inside a region that SCROLLS is reachable by scrolling that region, which is
+         what the region is for. The rule is about controls the reader cannot get to at all. */
+      let scrolled = false;
+      for (let n = c.parentElement; n && n !== el.parentElement; n = n.parentElement) {
+        const ncs = getComputedStyle(n);
+        if (/auto|scroll/.test(ncs.overflowY) && n.scrollHeight > n.clientHeight + 1) { scrolled = true; break; }
+      }
+      if (scrolled) continue;
+      if (cr.bottom > r.bottom + 1 || cr.top < r.top - 1) {
+        out.push(name(c) + " at " + Math.round(cr.top) + ".." + Math.round(cr.bottom));
+      }
+    }
+    if (pct > 50 || out.length) notice = { el: name(el), h: Math.round(r.height), pct, out };
+  }
+  return notice;
+};
+
 async function sweep(browser, engine, inject, dom) {
   const found = [];
   let cells = 0, fields = 0, controls = 0;
@@ -199,6 +264,8 @@ async function sweep(browser, engine, inject, dom) {
     }
     for (const route of ROUTES) {
       await page.goto(base + route, { waitUntil: "load" });
+      await page.waitForTimeout(250);
+      const noticeSeen = await page.evaluate(NOTICE_PROBE);
       try { await page.click("#consentReject", { timeout: 1200 }); } catch {}
       await page.waitForTimeout(250);
       /* A render with no stylesheet is not a result. The portal's guard learned this the
@@ -213,6 +280,7 @@ async function sweep(browser, engine, inject, dom) {
         continue;
       }
       const r = await page.evaluate(PROBE);
+      r.notice = noticeSeen;
       cells++;
       fields += r.zoom.length;
       controls += r.tap.length;
@@ -233,6 +301,18 @@ async function sweep(browser, engine, inject, dom) {
       }
       if (r.over) {
         found.push(`${at} the page scrolls sideways: ${r.over.el} runs ${r.over.past}px past the right edge.`);
+      }
+      if (r.notice) {
+        if (r.notice.out.length) {
+          found.push(`${at} NOTICE ${r.notice.el} is ${r.notice.h}px tall and ${r.notice.out.length} of its own ` +
+                     `control(s) fall outside it, so the reader must scroll the notice to reach the button that ` +
+                     `dismisses it: ${r.notice.out.slice(0, 3).join(", ")}`);
+        }
+        if (r.notice.pct > 50) {
+          found.push(`${at} NOTICE ${r.notice.el} covers ${r.notice.pct}% of the screen (${r.notice.h}px of ` +
+                     `${Math.round(r.notice.h / r.notice.pct * 100)}). A reader who has just arrived is looking ` +
+                     `mostly at a notice.`);
+        }
       }
     }
 
@@ -283,6 +363,15 @@ const CONTROLS = [
   ["ZOOM", null, "ZOOM ", ZOOM_DOM],
   ["TAP", ".nav-toggle,.mm-cta,.footer nav a{width:20px !important;height:20px !important;min-height:0 !important;min-width:0 !important;padding:0 !important;overflow:hidden}", "TAP "],
   ["BOOST", "html{-webkit-text-size-adjust:200% !important;text-size-adjust:200% !important}", "BOOST "],
+  /* THE BANNER AS IT SHIPPED, not a caricature of it. Undoing the two short-screen rules in
+     @layer fixes puts the consent bar back to a flex COLUMN with 18px of padding and no cap on
+     its copy, which is what measured 230px of a 340px screen. If this control ever stops firing,
+     the rule above has stopped being able to see the thing it was written for. */
+  ["NOTICE",
+   "@media (max-height:520px){.consent{padding:18px 0 calc(18px + env(safe-area-inset-bottom)) !important}" +
+   ".consent-inner{flex-direction:column !important;gap:14px !important}" +
+   ".consent-copy{max-height:none !important;overflow:visible !important}}",
+   "NOTICE "],
 ];
 const ctlBrowser = await chromium.launch();
 for (const [what, css, marker, dom] of CONTROLS) {
@@ -309,6 +398,4 @@ if (fail.length) {
   console.error(`\ncheck-mobile-chrome: ${fail.length} finding(s).`);
   process.exit(1);
 }
-console.log("check-mobile-chrome OK: no zoom-on-focus field, no undersized control, text-size-adjust " +
-            "pinned, no sideways scroll and no overlay lost behind the address bar -- on six phone " +
-            "sizes, in both of the engines Chrome ships on a phone.");
+console.log("check-mobile-chrome OK: no zoom-on-focus field, no undersized control, text-size-adjust pinned, no sideways scroll, no overlay lost behind the address bar and no notice eating the screen -- on nine phone sizes, upright and sideways, in both of the engines Chrome ships on a phone.");

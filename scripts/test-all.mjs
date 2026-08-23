@@ -232,6 +232,14 @@ const SUITES = [
   "check-dim-on-screen.mjs",
   "check-docs-chrome.mjs",
   "check-rule-pair.mjs",
+  // check-forced-colors  Windows High Contrast, which nothing above renders in. `forced-colors`
+  //                 is not a theme: the UA replaces colour, and it replaces `box-shadow` and
+  //                 every gradient with NOTHING rather than with a colour. The focus ring on
+  //                 this site is a box-shadow behind an explicit `outline:none`, so a keyboard
+  //                 reader with High Contrast on had no focus indicator on any control on any
+  //                 page. It is also the only guard here that runs Gecko, which had never
+  //                 rendered this site at any width.
+  "check-forced-colors.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

@@ -8189,4 +8189,98 @@
     .demo-stack .demo-video{will-change:auto;filter:none}
   }
 
+  /* ===== A landscape phone is 340px tall, and the consent banner took 230 of them
+           ================================================================
+     MEASURED 2026-08-24, WebKit and Chromium agreeing to the pixel:
+
+         iPhone 14 landscape   750x340    banner 230px   68% of the screen
+         Pixel 7 landscape     863x360    banner 230px   64%
+         iPhone 14 portrait    390x664    banner 323px   49%
+         iPad Pro 11 landscape 1194x834   banner 233px   28%
+
+     Two thirds of a sideways phone was a cookie notice. The reader saw 110px of the
+     page above it, and anything they scrolled to landed underneath it -- which is how
+     this was found: check-overlay-controls, newly running landscape devices, reported
+     that Mission Control's step-list toggle could not be tapped at all on an iPhone 14
+     held sideways. It could not. The banner was over it.
+
+     The height was not the banner's content, it was its SHAPE. `.consent-inner` is a
+     flex COLUMN at every size, so on a screen 750px wide and 340px tall the actions sat
+     under the copy and the whole thing grew downwards while half the width went unused.
+     A short screen that is also wide has room for a row.
+
+     WHAT DELIBERATELY DOES NOT CHANGE: `.consent-btn` keeps its padding and its type
+     size. The saving comes from the layout and the outer padding, never from the
+     controls -- shrinking a touch target to win vertical space would trade this defect
+     for a worse one, and scripts/check-mobile-chrome.mjs holds the 44px floor.
+
+     `dvh` and not `vh` for the cap, because the address bar on a phone makes the
+     viewport two different heights during one visit and `vh` is the taller of them. */
+  @media (max-height:520px){
+    .consent{padding:10px 0 calc(10px + env(safe-area-inset-bottom))}
+    .consent-inner{gap:10px}
+    /* THE CAP GOES ON THE COPY, NOT ON THE BANNER. Capping the banner and letting it scroll
+       puts the ACTIONS inside the scrolling region, so on the shortest screens the three
+       buttons ended up below the fold of the notice itself and the reader had to scroll a
+       cookie banner to find the button that dismisses it. Capping the copy instead leaves the
+       actions, the padding and the safe-area gutter permanently on screen, and it is the copy
+       -- five wrapped lines of it at this width -- that was the height in the first place.
+       No word of the notice is removed: it scrolls. */
+    .consent-copy{max-height:26dvh;overflow-y:auto;overscroll-behavior:contain}
+    .consent-copy strong{font-size:14px;margin-bottom:2px}
+    .consent-copy p{font-size:13px;line-height:1.4}
+    .consent-link{margin-top:4px}
+  }
+  /* Wide AND short is a phone held sideways, and that is the one with room for a row: the
+     actions sit BESIDE the copy rather than under it, so the banner is as tall as the taller
+     of the two rather than the sum. */
+  @media (max-height:520px) and (min-width:640px){
+    .consent-inner{flex-direction:row;align-items:center;gap:20px}
+    .consent-copy{flex:1 1 auto;min-width:0}
+    .consent-actions{flex:0 0 auto}
+  }
+
+  /* ===== Windows High Contrast: the focus ring is a shadow, and forced colours
+           delete every shadow ==============================================
+     MEASURED, 2026-08-24, on 13 consecutive Tab presses across the home page with
+     `forced-colors: active`: every focused control reported `outline: none` and
+     `box-shadow: none`. Nav links, the skip link, the brand, the consent buttons,
+     the social links. Not one of them showed where the keyboard was.
+
+     The cause is one rule in @layer design:
+
+         :where(a,button,summary,[tabindex]):focus-visible{
+           outline:none; box-shadow:var(--focus);
+         }
+
+     which is the right trade in ordinary colour, because a two-layer shadow ring
+     hugs a rounded control the way an outline used not to. Forced colours force
+     `box-shadow` to `none` (CSS Forced Colors 1, section 2), so what is left is the
+     `outline:none` that was put there to make room for the ring. WCAG 2.4.7 fails
+     for the readers who switched High Contrast on precisely because they need it,
+     and who are disproportionately the ones navigating by keyboard.
+
+     An outline is the one focus affordance forced colours keeps, and `Highlight` is
+     the system colour reserved for it, so the reader's own scheme picks the colour
+     rather than us. It sits in @layer fixes because two earlier layers set
+     `outline:none` on focus at higher specificity than the rule that caused this,
+     and a correction that a redesign can outrank is not a correction.
+
+     scripts/check-forced-colors.mjs presses Tab through the real pages in forced
+     colours and fails if any focused control paints nothing. It computes the
+     controls from the page, so a control added next month is covered the day it
+     is added. */
+  @media (forced-colors:active){
+    a:focus-visible,
+    button:focus-visible,
+    summary:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible{
+      outline:3px solid Highlight;
+      outline-offset:2px;
+    }
+  }
+
 }

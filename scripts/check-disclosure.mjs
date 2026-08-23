@@ -248,6 +248,24 @@ for (const view of VIEWS) {
         closedBy = `"${cover.label}"`;
         try { const b = page.locator("#" + cover.id).first(); view.touch ? await b.tap() : await b.click(); await page.waitForTimeout(450); }
         catch (e) { closeErr = String(e).split("\n")[0]; }
+        /* NOT EVERY INTERCEPTOR IS THE OVERLAY'S OWN CLOSE CONTROL, and the paragraph above only
+           holds for the ones that are. On 2026-08-24 this reported the report disclosure as "did
+           not come back" on a WebKit iPhone and named the Safari focusout race as the cause. The
+           cause was the CONSENT BANNER: it is fixed to the bottom of a 664px screen, it lay over
+           the toggle, the second tap was intercepted by it, and the guard pressed "Reject
+           non-essential" and then asked whether the disclosure had collapsed. It could not have.
+           Nothing had been pressed that could collapse it.
+           So: if pressing the interceptor left the disclosure exactly where it was, it was not
+           the control that closes this overlay. Dismissing it has cleared the way, so press the
+           real one again and judge that. */
+        if (!closeErr) {
+          const still = await el.getAttribute("aria-expanded");
+          if (still === opened) {
+            const retry = await act();
+            if (retry) closeErr = retry;
+            else closedBy = `"${cover.label}", which changed nothing, then the control itself`;
+          }
+        }
       }
     }
     if (closeErr) {
@@ -265,10 +283,13 @@ for (const view of VIEWS) {
     } else if (closed !== start) {
       fail.push(`[${where}] "${c.label}" (${c.sel}) did not come back (pressed ${closedBy}): it began "${start}" and is "${closed}" ` +
                 `after a second ${view.touch ? "tap" : "click"} on the control that changed it. ` +
-                `On Safari this is the focusout/click race: the browser does not focus a button on ` +
-                `tap, so anything focused inside the panel blurs with relatedTarget=null, a ` +
-                `"focus has left" handler closes the panel during pointerdown, and the click that ` +
-                `follows reopens it.`);
+                `TWO CAUSES ARE WORTH SEPARATING BEFORE EITHER IS BELIEVED. On Safari this is ` +
+                `often the focusout/click race: the browser does not focus a button on tap, so ` +
+                `anything focused inside the panel blurs with relatedTarget=null, a "focus has ` +
+                `left" handler closes the panel during pointerdown, and the click that follows ` +
+                `reopens it. But if the press was intercepted, look first at WHAT intercepted it: ` +
+                `something unrelated lying over the control -- the consent banner has done this -- ` +
+                `is not evidence of a race at all.`);
     } else if (sizeAtOpen !== null && sizeAtStart !== null && sizeAtOpen === sizeAtStart) {
       fail.push(`[${where}] "${c.label}" (${c.sel}) reports aria-expanded="${opened}" but the panel it ` +
                 `names did not change at all, so the state it declares is not a state it is in.`);

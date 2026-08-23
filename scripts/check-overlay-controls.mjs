@@ -23,8 +23,64 @@
  * has landed here before in exactly one engine. A missing engine is a FAILURE, not a skip.
  */
 import { chromium, webkit, devices } from "playwright";
+import { spawn, spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import net from "node:net";
 
-const BASE = process.env.BASE || "http://localhost:3000";
+/* THIS GUARD HAD NEVER BEEN POINTED AT THE SUITE'S OWN SERVER.
+ *
+ * It read `process.env.BASE`. `scripts/test-all.mjs` sets `BASE_URL`, as does every other guard
+ * here that takes one, so the variable this file read was never set by anything -- it fell
+ * through to the hard-coded `http://localhost:3000` on every run, local and CI. CI starts no
+ * server before this step at all.
+ *
+ * It passed for years anyway, and the reason is written in test-all.mjs's own header: `npm test`
+ * on Windows used to leak its server, and sixteen orphans were once found alive on this machine,
+ * the oldest four days old. One of them was squatting on 3000. So this file was measuring a
+ * SNAPSHOT OF THE SITE FROM SOME EARLIER RUN, and the day the orphans were finally cleaned up it
+ * failed with ERR_CONNECTION_REFUSED -- which is the first honest thing it had said in a while.
+ *
+ * Both names are accepted now, and with neither set it starts its own server rather than hoping
+ * something is listening. A guard that measures whatever happens to be on a port is worse than no
+ * guard, because it reports on a build nobody chose.
+ */
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+let ownServer = null;
+async function resolveBase() {
+  const given = process.env.BASE_URL || process.env.BASE;
+  if (given) {
+    try { const r = await fetch(given, { redirect: "manual" }); if (r.status) return given; } catch {}
+    console.error(`check-overlay-controls: nothing answered at ${given}, so this sweep would have measured nothing.`);
+    process.exit(1);
+  }
+  const port = await new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.on("error", reject);
+    probe.listen(0, "127.0.0.1", () => { const { port: p } = probe.address(); probe.close(() => resolve(p)); });
+  });
+  ownServer = spawn(process.execPath, ["server.js"], {
+    cwd: ROOT, env: { ...process.env, PORT: String(port) }, stdio: "ignore",
+  });
+  const url = `http://127.0.0.1:${port}`;
+  for (let i = 0; i < 80; i++) {
+    try { const r = await fetch(url + "/"); if (r.ok) return url; } catch {}
+    await new Promise((r) => setTimeout(r, 250));
+  }
+  console.error("check-overlay-controls: could not start a server of its own.");
+  stopServer();
+  process.exit(1);
+}
+function stopServer() {
+  if (!ownServer) return;
+  try { ownServer.kill(); } catch {}
+  if (process.platform === "win32" && ownServer.pid) {
+    try { spawnSync("taskkill", ["/pid", String(ownServer.pid), "/T", "/F"], { stdio: "ignore" }); } catch {}
+  }
+  ownServer = null;
+}
+process.on("exit", stopServer);
+const BASE = await resolveBase();
 
 /* The negative control rewrites app.js on the wire, restoring the blanket version of `behind()`.
    Injecting a stylesheet or re-running a function after load would not do: the handler is bound
@@ -66,13 +122,43 @@ const rewrite = (body, from, to, what) => {
   return body.split(from).join(to);
 };
 
+/* THE DEVICE IS A SCREEN AND AN ORIENTATION, AND THIS LIST USED TO BE FIVE PORTRAIT PHONES.
+ *
+ * Two whole classes of reader were absent. A TABLET, which is the band where the phone layout
+ * hands over to the desktop one and therefore the likeliest place for an overlay to be anchored
+ * against the wrong thing -- and every browser on an iPad is WebKit, so a Chromium tablet cell
+ * would not have covered it either. And a phone HELD SIDEWAYS, which is the same device with
+ * 390px of height instead of 844: an overlay that clears the fold in portrait has less than half
+ * the room in landscape, and this file's own reasoning about "wholly inside the viewport" is a
+ * statement about a height nothing was varying.
+ *
+ * The names are Playwright's own device descriptors, so the numbers, the pixel ratios and the
+ * user agents are its and not mine. */
 const TARGETS = [
   ["chromium", chromium, "Pixel 7"],
   ["chromium", chromium, "Galaxy S9+"],
+  ["chromium", chromium, "Pixel 7 landscape"],
+  ["chromium", chromium, "Galaxy Tab S9"],
+  ["chromium", chromium, "Galaxy Tab S9 landscape"],
   ["webkit", webkit, "iPhone 14"],
   ["webkit", webkit, "iPhone SE"],
   ["webkit", webkit, "iPhone 13 Pro Max"],
+  ["webkit", webkit, "iPhone 14 landscape"],
+  ["webkit", webkit, "iPad Mini"],
+  ["webkit", webkit, "iPad (gen 11)"],
+  ["webkit", webkit, "iPad Pro 11"],
+  ["webkit", webkit, "iPad Pro 11 landscape"],
 ];
+
+/* A device name that Playwright does not know silently spreads `undefined` into the context and
+   the cell then measures a 1280x720 desktop while calling itself an iPad. Every name above is
+   checked against the registry before anything is launched. */
+for (const [, , dev] of TARGETS) {
+  if (!devices[dev]) {
+    console.error(`check-overlay-controls: "${dev}" is not a Playwright device, so that cell would have measured a default desktop instead.`);
+    process.exit(1);
+  }
+}
 
 async function controlsOn(page) {
   return page.evaluate(() => {
@@ -439,6 +525,8 @@ if (staleMutations.length) {
     );
   }
 }
+
+stopServer();
 
 if (failures.length) {
   console.error("check-overlay-controls: FAIL");

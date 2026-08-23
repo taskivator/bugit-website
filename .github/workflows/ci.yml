@@ -318,5 +318,16 @@ jobs:
       # The two hairlines beside a section eyebrow, photographed at four display scalings.
       - name: Verify the rules either side of a label are the same line
         run: node scripts/check-rule-pair.mjs
+      # WINDOWS HIGH CONTRAST, and the only step here that runs GECKO. `forced-colors: active`
+      # is what a Windows reader with High Contrast on gets: the UA replaces colour, and it
+      # replaces every box-shadow and every gradient with NOTHING rather than with a colour.
+      # The focus ring on this site is a box-shadow sitting behind an explicit `outline:none`,
+      # so a keyboard reader in that mode had no focus indicator on any control on any page.
+      # Firefox is installed for it because Gecko had never rendered this site at any width,
+      # and because the two engines disagree about what survives the forcing.
+      - name: Install Firefox for the forced-colours sweep
+        run: npx playwright install --with-deps firefox
+      - name: Verify Windows High Contrast still shows focus and every control's edge
+        run: node scripts/check-forced-colors.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
         run: node scripts/check-ci-coverage.mjs
