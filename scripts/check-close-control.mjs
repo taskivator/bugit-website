@@ -118,16 +118,58 @@ const WIDTHS = [64, 100, 130, 160, 200, 280, 320, 360, 390, 430];
 const HEIGHTS = [120, 400, 844];
 const ZOOMS = [1, 2, 3, 5];
 
+/* PROVE IT CAN FAIL, AND INJURE THE PAGE THE WAY IT WAS ACTUALLY INJURED.
+   The build this file was written against had two things wrong at once, and removing either one
+   alone does not reproduce it. The header row could not fit, so the X was pushed past the right
+   edge of a page whose scroll was locked -- and today a second line of defence closes the overlay
+   rather than let that happen, which this file correctly counts as a pass. So a control that only
+   un-did the CSS would watch the menu shut politely and conclude the guard was blind. Both come
+   out together, and the run must go red. (The same trap took check-overlay-controls' own control
+   out of service on 2026-08-23: it went green because the product had learned to heal the wound
+   it was inflicting, and it said so instead of passing quietly.) */
+const CSS_BREAKS = [
+  [".brand{flex:1 100 auto;min-width:0;overflow:hidden}", "the brand may no longer shrink"],
+  [".nav-actions{flex:0 1 auto;min-width:0}", "the actions may no longer shrink"],
+  [".lang{flex:0 1 auto;min-width:0}", "the language control may no longer shrink"],
+];
+const JS_BREAKS = [
+  ["requestAnimationFrame(()=>{ if(isOpen()&&!canReach(toggle))close(); });", "the self-close on open"],
+  ["if(!canReach(toggle))close();", "the self-close on resize"],
+];
+/* A mutation whose text has moved on rewrites nothing and the control goes green having changed
+   not one byte, which is the quietest way for a guard to lose its eyes. Each rewrite says whether
+   it bit, and "never applied" is reported as its own distinct fault. */
+const staleMutations = [];
+const applyBreaks = (body, pairs) => {
+  let out = body;
+  for (const [from, what] of pairs) {
+    if (!out.includes(from)) { staleMutations.push(what); continue; }
+    out = out.split(from).join("/*NEGATIVE CONTROL*/");
+  }
+  return out;
+};
+
 const browser = await chromium.launch();
 let measured = 0, sawNarrow = false;
 
-async function one({ w, h, zoom, rtl, rotate }) {
+async function one({ w, h, zoom, rtl, rotate, broken, sink }) {
+  const out = sink || fail;
   const where = `${w}x${h}${zoom > 1 ? ` zoomed ${zoom}x while open` : ""}` +
     `${rotate ? ` rotated to ${rotate[0]}x${rotate[1]} while open` : ""}${rtl ? " RTL" : ""}`;
   const ctx = await browser.newContext({
     viewport: { width: w, height: h }, deviceScaleFactor: 1,
     locale: rtl ? "ar" : "en",
   });
+  if (broken) {
+    await ctx.route("**/styles*.css", async (route) => {
+      const res = await route.fetch();
+      route.fulfill({ response: res, body: applyBreaks(await res.text(), CSS_BREAKS) });
+    });
+    await ctx.route("**/app*.js", async (route) => {
+      const res = await route.fetch();
+      route.fulfill({ response: res, body: applyBreaks(await res.text(), JS_BREAKS) });
+    });
+  }
   const page = await ctx.newPage();
   try {
     const cdp = await ctx.newCDPSession(page);
@@ -141,7 +183,7 @@ async function one({ w, h, zoom, rtl, rotate }) {
     await page.waitForTimeout(150);
 
     const found = await page.evaluate(FIND);
-    if (!found) { fail.push(`${where}: no control on the page declares an overlay through aria-controls`); return; }
+    if (!found) { out.push(`${where}: no control on the page declares an overlay through aria-controls`); return; }
 
     await page.evaluate(() => document.querySelector("[data-close-probe]").click());
     await page.waitForTimeout(350);
@@ -166,25 +208,25 @@ async function one({ w, h, zoom, rtl, rotate }) {
       await page.waitForTimeout(450);
       s = await page.evaluate(LOOK);
     }
-    if (s.vw < 160) sawNarrow = true;
+    if (s.vw < 160 && !broken) sawNarrow = true;
 
     // A menu that closed itself rather than trap the reader is a pass, not a finding: the page
     // is not locked and the control is back where it was.
     if (!s.open) {
-      if (s.locked) fail.push(`${where}: the overlay closed but the page is still locked`);
-      if (s.inert) fail.push(`${where}: the overlay closed and left ${s.inert} element(s) inert`);
-      measured++;
+      if (s.locked) out.push(`${where}: the overlay closed but the page is still locked`);
+      if (s.inert) out.push(`${where}: the overlay closed and left ${s.inert} element(s) inert`);
+      if (!broken) measured++;
       return;
     }
 
     if (!s.inside) {
-      fail.push(`${where}: the page is locked and the control that closes it is ${s.over}px outside ` +
+      out.push(`${where}: the page is locked and the control that closes it is ${s.over}px outside ` +
         `the viewport (box ${JSON.stringify(s.box)} in ${s.vw}x${s.vh}) -- a reader cannot scroll to it, ` +
         `and Escape is a key a phone does not have`);
       return;
     }
     if (!s.reached) {
-      fail.push(`${where}: the control that closes the overlay is on screen but a press at ` +
+      out.push(`${where}: the control that closes the overlay is on screen but a press at ` +
         `${JSON.stringify(s.point)} does not reach it`);
       return;
     }
@@ -192,13 +234,13 @@ async function one({ w, h, zoom, rtl, rotate }) {
     await page.evaluate(() => document.querySelector("[data-close-probe]").click());
     await page.waitForTimeout(400);
     const after = await page.evaluate(LOOK);
-    if (after.open) fail.push(`${where}: the overlay is still open after its own close control was pressed`);
-    if (after.locked) fail.push(`${where}: the page is still locked after the close: the reader cannot scroll`);
-    if (after.inert) fail.push(`${where}: ${after.inert} element(s) left inert after the close: that part of the page is dead to touch and to a screen reader`);
-    if (after.expanded !== "false") fail.push(`${where}: the control still reports aria-expanded=${after.expanded}`);
-    measured++;
+    if (after.open) out.push(`${where}: the overlay is still open after its own close control was pressed`);
+    if (after.locked) out.push(`${where}: the page is still locked after the close: the reader cannot scroll`);
+    if (after.inert) out.push(`${where}: ${after.inert} element(s) left inert after the close: that part of the page is dead to touch and to a screen reader`);
+    if (after.expanded !== "false") out.push(`${where}: the control still reports aria-expanded=${after.expanded}`);
+    if (!broken) measured++;
   } catch (e) {
-    fail.push(`${where}: ${String(e).split("\n")[0]}`);
+    out.push(`${where}: ${String(e).split("\n")[0]}`);
   } finally {
     await ctx.close();
   }
@@ -213,8 +255,28 @@ for (const zoom of [1, 3, 5]) await one({ w: 390, h: 844, zoom, rotate: [844, 39
 await one({ w: 844, h: 390, zoom: 1, rotate: [390, 844] });
 await one({ w: 844, h: 390, zoom: 3, rotate: [390, 844] });
 
+/* Two cases, chosen because they are the two shapes the defect took: a viewport too narrow for
+   the row to fit at all, and a normal phone zoomed until it is. */
+const control = [];
+await one({ w: 100, h: 400, zoom: 1, rtl: false, broken: true, sink: control });
+await one({ w: 390, h: 844, zoom: 5, rtl: false, broken: true, sink: control });
+
 await browser.close();
 stop();
+
+if (staleMutations.length) {
+  for (const m of [...new Set(staleMutations)]) {
+    fail.push(
+      `NEGATIVE CONTROL NEVER APPLIED: this file's copy of ${m} no longer appears in the source ` +
+        `it rewrites, so that mutation changed nothing and proved nothing`,
+    );
+  }
+} else if (!control.length) {
+  fail.push(
+    "NEGATIVE CONTROL DID NOT FIRE: with the header row unable to shrink and the overlay's " +
+      "self-close removed -- the build this guard was written against -- it still passed",
+  );
+}
 
 if (!sawNarrow) {
   console.error("check-close-control: no case ever produced a viewport under 160px, so the width this guard exists for was never reached.");
@@ -229,4 +291,4 @@ if (fail.length) {
   for (const f of fail) console.error("  - " + f);
   process.exit(1);
 }
-console.log(`check-close-control: OK (${measured} viewport/zoom/direction cases; the overlay's close control is on screen and works in all of them)`);
+console.log(`check-close-control: OK (${measured} viewport/zoom/direction cases; the overlay's close control is on screen and works in all of them; negative control fired with ${control.length} finding(s))`);

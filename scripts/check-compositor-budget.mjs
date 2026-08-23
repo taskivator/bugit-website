@@ -43,8 +43,27 @@ const fail = [];
 // Measured headroom, not aspiration. The page sat at 145.6 MB when this was written and needs
 // 0 MB at 1x; these leave room for a real effect to be added deliberately without leaving room
 // for another accident of this size.
+/* The stylesheet is matched line for line, so the mutation needs a real newline. */
+const BR = "\n";
 const BUDGET_TOTAL_MB = { 1: 24, 3: 180 };
 const BUDGET_ONE_MB = { 1: 12, 3: 90 };
+
+/* PROVE IT CAN FAIL. A budget nobody has watched go over is a budget nobody has tested, and this
+   file's own subject is COMPUTED from the page -- so if the enumeration ever stopped finding the
+   composited surfaces, every number would fall to zero and the run would go green for the worst
+   possible reason. The mutation puts the largest of the removed effects back exactly as the page
+   shipped it, by serving the old stylesheet: the suppression block is deleted on the wire and the
+   blurs return. Anything but a red run here means this guard is not measuring the page. */
+const BREAK_FROM =
+  "    .card,.mission,.video-frame,.yt-stage,#ytStage,header.nav.shell,#consentBanner,.consent{" + BR +
+  "      -webkit-backdrop-filter:none;" + BR +
+  "      backdrop-filter:none;" + BR +
+  "    }";
+const BREAK_TO = "/*NEGATIVE CONTROL: the backdrop-filters are back, as the page shipped them.*/";
+/* A mutation whose text has moved on rewrites nothing: `split(x).join(y)` returns the source
+   untouched and the control goes green having changed not one byte. So the rewrite records
+   whether it actually bit, and "never applied" is reported as its own fault. */
+let mutationBit = false;
 
 let base = process.env.BASE_URL || "";
 let server = null;
@@ -114,42 +133,74 @@ const COST = ({ dpr, zoom }) => {
 
 const browser = await chromium.launch();
 let measured = 0;
+
+async function state({ menuOpen, zoom, broken }) {
+  const found = [];
+  const ctx = await browser.newContext({
+    viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true,
+  });
+  if (broken) {
+    await ctx.route("**/styles*.css", async (route) => {
+      const res = await route.fetch();
+      const body = await res.text();
+      if (body.includes(BREAK_FROM)) mutationBit = true;
+      route.fulfill({ response: res, body: body.split(BREAK_FROM).join(BREAK_TO) });
+    });
+  }
+  const page = await ctx.newPage();
+  try {
+    await page.goto(base + "/", { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(1400);
+    try { await page.evaluate(() => document.getElementById("consentReject")?.click()); } catch {}
+    await page.waitForTimeout(200);
+    if (menuOpen) {
+      await page.evaluate(() => document.getElementById("navToggle")?.click());
+      await page.waitForTimeout(400);
+    }
+    const r = await page.evaluate(COST, { dpr: 3, zoom });
+    if (!broken) measured++;
+    const where = `iPhone 390pt DPR3, zoom ${zoom}x, menu ${menuOpen ? "open" : "closed"}`;
+    if (r.total > BUDGET_TOTAL_MB[zoom]) {
+      const top = r.rows.slice(0, 4).map((x) => `${x.what} ${x.mb}MB (${x.why})`).join("; ");
+      found.push(`${where}: the page asks the compositor for ${r.total} MB, over its ${BUDGET_TOTAL_MB[zoom]} MB budget. Largest: ${top}`);
+    }
+    for (const x of r.rows) {
+      if (x.mb > BUDGET_ONE_MB[zoom]) {
+        found.push(`${where}: ${x.what} alone asks for ${x.mb} MB (${x.box[0]}x${x.box[1]}, ${x.why}), over the ${BUDGET_ONE_MB[zoom]} MB a single element may take`);
+      }
+      if (x.wastedBackdrop) {
+        found.push(`${where}: ${x.what} has a backdrop-filter behind an OPAQUE background (${x.bg}), so it renders nothing at all and costs ${x.mb} MB`);
+      }
+    }
+  } catch (e) {
+    found.push(`zoom ${zoom}x menu ${menuOpen}: ${String(e).split("\n")[0]}`);
+  }
+  await ctx.close();
+  return found;
+}
+
 for (const menuOpen of [false, true]) {
   for (const zoom of [1, 3]) {
-    const ctx = await browser.newContext({
-      viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true,
-    });
-    const page = await ctx.newPage();
-    try {
-      await page.goto(base + "/", { waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(1400);
-      try { await page.evaluate(() => document.getElementById("consentReject")?.click()); } catch {}
-      await page.waitForTimeout(200);
-      if (menuOpen) {
-        await page.evaluate(() => document.getElementById("navToggle")?.click());
-        await page.waitForTimeout(400);
-      }
-      const r = await page.evaluate(COST, { dpr: 3, zoom });
-      measured++;
-      const where = `iPhone 390pt DPR3, zoom ${zoom}x, menu ${menuOpen ? "open" : "closed"}`;
-      if (r.total > BUDGET_TOTAL_MB[zoom]) {
-        const top = r.rows.slice(0, 4).map((x) => `${x.what} ${x.mb}MB (${x.why})`).join("; ");
-        fail.push(`${where}: the page asks the compositor for ${r.total} MB, over its ${BUDGET_TOTAL_MB[zoom]} MB budget. Largest: ${top}`);
-      }
-      for (const x of r.rows) {
-        if (x.mb > BUDGET_ONE_MB[zoom]) {
-          fail.push(`${where}: ${x.what} alone asks for ${x.mb} MB (${x.box[0]}x${x.box[1]}, ${x.why}), over the ${BUDGET_ONE_MB[zoom]} MB a single element may take`);
-        }
-        if (x.wastedBackdrop) {
-          fail.push(`${where}: ${x.what} has a backdrop-filter behind an OPAQUE background (${x.bg}), so it renders nothing at all and costs ${x.mb} MB`);
-        }
-      }
-    } catch (e) {
-      fail.push(`zoom ${zoom}x menu ${menuOpen}: ${String(e).split("\n")[0]}`);
-    }
-    await ctx.close();
+    for (const f of await state({ menuOpen, zoom, broken: false })) fail.push(f);
   }
 }
+
+/* The control runs at 1x with the menu shut -- the cheapest state on the page. If even THAT goes
+   over budget with the blurs back, the guard can see; a control that needs the worst case to
+   fire would be proving something weaker than it looks. */
+const control = await state({ menuOpen: false, zoom: 1, broken: true });
+if (!mutationBit) {
+  fail.push(
+    "NEGATIVE CONTROL NEVER APPLIED: this file's copy of the suppression block no longer appears " +
+      "in styles.css, so the mutation changed nothing and proved nothing",
+  );
+} else if (!control.length) {
+  fail.push(
+    "NEGATIVE CONTROL DID NOT FIRE: with the backdrop-filters put back exactly as the page " +
+      "shipped them, this check still found the page inside its budget, so it is not measuring the page",
+  );
+}
+
 await browser.close();
 stop();
 
@@ -162,4 +213,4 @@ if (fail.length) {
   for (const f of [...new Set(fail)]) console.error("  - " + f);
   process.exit(1);
 }
-console.log(`check-compositor-budget: OK (4 phone states measured; the page stays inside its buffer budget at 1x and 3x zoom)`);
+console.log(`check-compositor-budget: OK (4 phone states measured; the page stays inside its buffer budget at 1x and 3x zoom; negative control fired with ${control.length} finding(s))`);

@@ -43,6 +43,17 @@ const fail = [];
 const WIDTHS = [360, 412, 786, 1024, 1440];
 const LANGS = ["en", "de", "ru", "ja", "ar"];
 
+/* PROVE IT CAN FAIL, WITH THE DEFECT THAT WAS ACTUALLY UNDER THE FLOOR.
+   This guard reads its own floor out of the stylesheet, which is the right way round -- and it is
+   also the way it could go quietly blind: if `--t-3xs` ever failed to resolve the floor would fall
+   to nothing and every page on earth would clear it. So the byline is put back at the 11px it
+   shipped at, by serving the old stylesheet, and a run that stays green means this file is not
+   reading the page. The size is the one an Android sweep found on 2026-08-23, not an invented one:
+   a control that injures the page in a way it was never injured proves less than it appears to. */
+const BREAK_FROM = ".brand em{font-size:11.5px;margin-top:5px}";
+const BREAK_TO = ".brand em{font-size:11px;margin-top:5px}/*NEGATIVE CONTROL: the byline is back under the floor.*/";
+let mutationBit = false;
+
 let base = process.env.BASE_URL || "";
 let server = null;
 if (!base) {
@@ -113,38 +124,68 @@ const MEASURE = () => {
 
 const browser = await chromium.launch();
 let measured = 0, floorSeen = 0, FLOOR = 0;
+
+async function render({ width, lang, broken }) {
+  const found = [];
+  const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1, locale: lang });
+  if (broken) {
+    await ctx.route("**/styles*.css", async (route) => {
+      const res = await route.fetch();
+      const body = await res.text();
+      if (body.includes(BREAK_FROM)) mutationBit = true;
+      route.fulfill({ response: res, body: body.split(BREAK_FROM).join(BREAK_TO) });
+    });
+  }
+  const page = await ctx.newPage();
+  try {
+    await page.goto(base + "/", { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(700);
+    if (lang !== "en") {
+      await page.evaluate((l) => { try { document.cookie = `lang=${l};path=/;max-age=600`; } catch {} }, lang);
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.waitForTimeout(700);
+    }
+    try { await page.evaluate(() => document.getElementById("consentReject")?.click()); } catch {}
+    await page.waitForTimeout(150);
+    const r = await page.evaluate(MEASURE);
+    if (!r.floor || !Number.isFinite(r.floor)) {
+      found.push(`${width}px ${lang}: the stylesheet declares no --t-3xs, so this guard has no floor to check against`);
+    } else {
+      if (!FLOOR) FLOOR = r.floor;          // the narrowest width comes first: the clamp's bottom
+      floorSeen = FLOOR;
+      if (!broken) measured++;
+      for (const u of r.under) {
+        if (u.px >= FLOOR - 0.05) continue;
+        found.push(`${width}px ${lang}: ${u.what} renders at ${u.px}px, under the ${FLOOR}px floor the scale declares -- "${u.text}"`);
+      }
+    }
+  } catch (e) {
+    found.push(`${width}px ${lang}: ${String(e).split("\n")[0]}`);
+  }
+  await ctx.close();
+  return found;
+}
+
 for (const width of WIDTHS) {
   for (const lang of LANGS) {
-    const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1, locale: lang });
-    const page = await ctx.newPage();
-    try {
-      await page.goto(base + "/", { waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(700);
-      if (lang !== "en") {
-        await page.evaluate((l) => { try { document.cookie = `lang=${l};path=/;max-age=600`; } catch {} }, lang);
-        await page.reload({ waitUntil: "domcontentloaded" });
-        await page.waitForTimeout(700);
-      }
-      try { await page.evaluate(() => document.getElementById("consentReject")?.click()); } catch {}
-      await page.waitForTimeout(150);
-      const r = await page.evaluate(MEASURE);
-      if (!r.floor || !Number.isFinite(r.floor)) {
-        fail.push(`${width}px ${lang}: the stylesheet declares no --t-3xs, so this guard has no floor to check against`);
-      } else {
-        if (!FLOOR) FLOOR = r.floor;          // the narrowest width comes first: the clamp's bottom
-        floorSeen = FLOOR;
-        measured++;
-        for (const u of r.under) {
-          if (u.px >= FLOOR - 0.05) continue;
-          fail.push(`${width}px ${lang}: ${u.what} renders at ${u.px}px, under the ${FLOOR}px floor the scale declares -- "${u.text}"`);
-        }
-      }
-    } catch (e) {
-      fail.push(`${width}px ${lang}: ${String(e).split("\n")[0]}`);
-    }
-    await ctx.close();
+    for (const f of await render({ width, lang, broken: false })) fail.push(f);
   }
 }
+
+/* At 1024px, where the byline was under the floor and nothing noticed for as long as it shipped. */
+const control = await render({ width: 1024, lang: "en", broken: true });
+if (!mutationBit) {
+  fail.push(
+    "NEGATIVE CONTROL NEVER APPLIED: this file's copy of the byline rule no longer appears in " +
+      "styles.css, so the mutation changed nothing and proved nothing",
+  );
+} else if (!control.length) {
+  fail.push(
+    "NEGATIVE CONTROL DID NOT FIRE: with the byline put back at the 11px it shipped at, this " +
+      "check still found nothing under the floor, so it is not reading the page",
+  );
+}
+
 await browser.close();
 stop();
 
@@ -157,4 +198,4 @@ if (fail.length) {
   for (const f of [...new Set(fail)].slice(0, 25)) console.error("  - " + f);
   process.exit(1);
 }
-console.log(`check-type-floor: OK (${measured} renders across ${WIDTHS.length} widths x ${LANGS.length} languages; nothing renders below the ${floorSeen}px the scale declares)`);
+console.log(`check-type-floor: OK (${measured} renders across ${WIDTHS.length} widths x ${LANGS.length} languages; nothing renders below the ${floorSeen}px the scale declares; negative control fired with ${control.length} finding(s))`);

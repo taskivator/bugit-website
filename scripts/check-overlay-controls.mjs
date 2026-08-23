@@ -40,6 +40,32 @@ const BREAK_TO =
 const CSS_BREAK_FROM = "body.menu-open header.nav.shell{position:fixed;top:0;left:0;right:0;z-index:90}";
 const CSS_BREAK_TO = "/*NEGATIVE CONTROL: the header is no longer pinned while the menu is open.*/";
 
+/* THE SECOND LINE OF DEFENCE, AND WHY THE CONTROL ABOVE HAD TO GROW.
+   On 2026-08-23 the CSS negative control stopped firing, and the guard reported that about
+   itself rather than passing quietly -- which is the only reason this was ever noticed. The
+   mutation was still being applied and the string was still present; what had changed is that
+   the product now HEALS the injury. `open()` checks the toggle can be reached and closes the
+   overlay if it cannot, so un-pinning the header no longer strands the reader: the menu simply
+   refuses to stay open. Measured, Pixel 7 at scrollY 900:
+
+       shipped                          aria-expanded=true   toggle top 12     on screen
+       header un-pinned                 aria-expanded=FALSE  page unlocked, nobody trapped
+       header un-pinned + no self-close  aria-expanded=true   toggle top -888   off screen
+
+   So the mutation must now remove BOTH, or it reproduces a build that never shipped and proves
+   nothing. And the healing itself is a promise, so it is asserted below rather than assumed. */
+const SELFCLOSE_FROM = "requestAnimationFrame(()=>{ if(isOpen()&&!canReach(toggle))close(); });";
+const SELFCLOSE_TO = "/*NEGATIVE CONTROL: the overlay no longer closes itself when its control cannot be reached.*/";
+
+/* A mutation that matches nothing is a negative control that cannot fail, and it dies in
+   silence: `split(x).join(y)` on a string that has moved on returns the source untouched and
+   the run goes green. Every rewrite below records whether it actually bit. */
+const staleMutations = [];
+const rewrite = (body, from, to, what) => {
+  if (!body.includes(from)) { staleMutations.push(what); return body; }
+  return body.split(from).join(to);
+};
+
 const TARGETS = [
   ["chromium", chromium, "Pixel 7"],
   ["chromium", chromium, "Galaxy S9+"],
@@ -140,14 +166,24 @@ async function run(engineName, engine, deviceName, broken) {
     await ctx.route("**/app*.js", async (route) => {
       const res = await route.fetch();
       const body = await res.text();
-      route.fulfill({ response: res, body: body.split(BREAK_FROM).join(BREAK_TO) });
+      route.fulfill({ response: res, body: rewrite(body, BREAK_FROM, BREAK_TO, "the keep-live set") });
     });
   }
-  if (broken === "css") {
+  /* "css" is the shipped build of the second defect, and "css-only" is the build we ship TODAY:
+     the header un-pinned with the self-close still in place. The first must strand the reader,
+     the second must not. */
+  if (broken === "css" || broken === "css-only") {
     await ctx.route("**/styles*.css", async (route) => {
       const res = await route.fetch();
       const body = await res.text();
-      route.fulfill({ response: res, body: body.split(CSS_BREAK_FROM).join(CSS_BREAK_TO) });
+      route.fulfill({ response: res, body: rewrite(body, CSS_BREAK_FROM, CSS_BREAK_TO, "the header pin") });
+    });
+  }
+  if (broken === "css") {
+    await ctx.route("**/app*.js", async (route) => {
+      const res = await route.fetch();
+      const body = await res.text();
+      route.fulfill({ response: res, body: rewrite(body, SELFCLOSE_FROM, SELFCLOSE_TO, "the self-close") });
     });
   }
   const page = await ctx.newPage();
@@ -327,9 +363,81 @@ if (!control.length) {
 const cssControl = await run("chromium", chromium, "Pixel 7", "css");
 if (!cssControl.length) {
   failures.push(
-    "NEGATIVE CONTROL DID NOT FIRE: with the header no longer pinned while the menu is open the " +
-      "close button goes off the top of a scrolled page, and this check still passed",
+    "NEGATIVE CONTROL DID NOT FIRE: with the header un-pinned AND the overlay's self-close " +
+      "removed the close button goes off the top of a scrolled page, and this check still passed",
   );
+}
+
+/* THE HEALING IS A PROMISE, SO IT IS MEASURED.
+   The negative control above removes the self-close in order to reproduce the old build. That
+   leaves the self-close itself unasserted, and an unasserted behaviour is one that can be
+   deleted next month without anything going red -- at which point the guard would keep passing
+   and the reader would be trapped again. So the same injury is inflicted WITHOUT removing it,
+   and the product is required to do the one thing that keeps a reader free: never hold an
+   overlay open around a control they cannot reach, and hand the page back when it lets go. */
+async function selfCloseHolds(engineName, engine, deviceName) {
+  const found = [];
+  const b = await engine.launch();
+  const ctx = await b.newContext({ ...devices[deviceName] });
+  await ctx.route("**/styles*.css", async (route) => {
+    const res = await route.fetch();
+    const body = await res.text();
+    route.fulfill({ response: res, body: rewrite(body, CSS_BREAK_FROM, CSS_BREAK_TO, "the header pin") });
+  });
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(900);
+  try { await page.evaluate(() => document.getElementById("consentReject")?.click()); } catch {}
+  await page.waitForTimeout(150);
+  const where = `${engineName}/${deviceName}`;
+  for (const c of await controlsOn(page)) {
+    const loc = page.locator("#" + c.id);
+    await page.evaluate(() => {
+      const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      window.scrollTo({ top: Math.min(900, max), behavior: "instant" });
+    });
+    await page.waitForTimeout(200);
+    if ((await page.evaluate(() => Math.round(window.scrollY))) === 0) continue;
+    try { await loc.tap({ timeout: 4000 }); } catch { continue; }
+    await page.waitForTimeout(400);
+    const st = await page.evaluate((elId) => {
+      const el = document.getElementById(elId);
+      const r = el.getBoundingClientRect();
+      return {
+        expanded: el.getAttribute("aria-expanded") === "true",
+        reachable: r.top >= -1 && r.bottom <= window.innerHeight + 1 &&
+                   r.left >= -1 && r.right <= window.innerWidth + 1,
+        locked: getComputedStyle(document.body).position === "fixed",
+        top: Math.round(r.top),
+      };
+    }, c.id);
+    if (st.expanded && !st.reachable) {
+      found.push(
+        `${where}: with the header un-pinned, #${c.id} stayed OPEN around a control at top ` +
+          `${st.top}, off the screen of a locked page -- the overlay must close itself instead`,
+      );
+    }
+    if (!st.expanded && st.locked) {
+      found.push(`${where}: #${c.id} closed itself but left the page still scroll-locked`);
+    }
+  }
+  await b.close();
+  return found;
+}
+for (const [name, engine, dev] of [["chromium", chromium, "Pixel 7"], ["webkit", webkit, "iPhone SE"]]) {
+  failures = failures.concat(await selfCloseHolds(name, engine, dev));
+}
+
+/* A mutation that no longer matches its source rewrites nothing and the control goes green for
+   the wrong reason. Reported by name, because "the negative control did not fire" and "the
+   negative control was never applied" are different faults with different fixes. */
+if (staleMutations.length) {
+  for (const m of [...new Set(staleMutations)]) {
+    failures.push(
+      `NEGATIVE CONTROL NEVER APPLIED: this file's copy of ${m} no longer appears in the source ` +
+        `it rewrites, so that mutation changed nothing and proved nothing`,
+    );
+  }
 }
 
 if (failures.length) {
@@ -338,6 +446,7 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  `check-overlay-controls: OK (${TARGETS.length} device/engine pairs x {top, scrolled}, ` +
-    `negative controls fired with ${control.length} and ${cssControl.length} finding(s))`,
+  `check-overlay-controls: OK (${TARGETS.length} device/engine pairs x {top, scrolled}; ` +
+    `negative controls fired with ${control.length} and ${cssControl.length} finding(s); ` +
+    `and with the header un-pinned the overlay closes itself rather than trap the reader)`,
 );
