@@ -261,6 +261,8 @@ jobs:
         run: node scripts/check-menu-keyboard.mjs
       - name: Verify an overlay never disables the control that closes it
         run: node scripts/check-overlay-controls.mjs
+      - name: A page-locking overlay's close control is on the screen
+        run: node scripts/check-close-control.mjs
       # Chrome on Android is Blink; Chrome on iOS is WebKit. This runs both, because a
       # Chromium-only sweep has tested half of "Chrome on mobile".
       # "Does this look like two lines" is not a question source code can answer, and reading the

@@ -1452,14 +1452,16 @@ function initMobileNav(){
        the overlay, so the overlay's own first row has to start below it. Measured HERE, on the
        press, rather than written as a number: the header is 72px at one breakpoint and
        `height:auto` at another, and it grows with the reader's font size. */
-    const head=document.querySelector('header.nav.shell');
-    menu.style.paddingTop=head?`${Math.ceil(head.getBoundingClientRect().height)}px`:'';
+    fitHeader();
     toggle.setAttribute('aria-expanded','true');relabel('a11y.closeMenu');
     // The Tab trap below is correct, but a screen reader browses the document rather than
     // tabbing through it: behind this overlay the whole page stayed readable. `inert` is the
     // only thing that removes a subtree from BOTH the tab order and the accessibility tree.
     behind().forEach(el=>el.setAttribute('inert',''));
     const first=menu.querySelector('a,button');if(first)first.focus({preventScroll:true});
+    /* Checked once after opening as well: a reader can arrive already zoomed, and then the
+       overlay would lock a page whose close control was never on the screen to begin with. */
+    requestAnimationFrame(()=>{ if(isOpen()&&!canReach(toggle))close(); });
   };
   const close=()=>{
     menu.classList.remove('open');document.body.classList.remove('menu-open');
@@ -1474,7 +1476,51 @@ function initMobileNav(){
   toggle.addEventListener('click',()=>isOpen()?close():open());
   menu.addEventListener('click',e=>{if(e.target.closest('a'))close();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&isOpen())close();});
-  window.addEventListener('resize',()=>{if(window.innerWidth>1320&&isOpen())close();});
+  /* THE HEADER'S HEIGHT IS A MEASUREMENT, AND IT WAS TAKEN ONCE. open() insets the overlay by
+     the height of the pinned header so the overlay's first row starts below it. The header can
+     change height AFTER that: the row wraps as the viewport narrows (styles.css section 122),
+     and browser zoom narrows it while the menu is open, which is the reported sequence. Frozen
+     at the press, the inset was 70px for a header that had become 112px, and the overlay's own
+     title sat underneath it. */
+  const fitHeader=()=>{
+    const head=document.querySelector('header.nav.shell');
+    menu.style.paddingTop=head?`${Math.ceil(head.getBoundingClientRect().height)}px`:'';
+  };
+  /* A READER MUST NEVER BE LOCKED BEHIND A CONTROL THEY CANNOT REACH.
+     Owner, 2026-08-23: "google chrome is still crashing when the 3 lines settings is open the
+     page is zoomed in and X is pressed." It was not a crash -- Chrome's Crashpad holds no dump
+     since 2026-08-06 -- it was this page left dead. Opening the menu locks the document
+     (`body{position:fixed;top:-Y}`) and inerts everything behind the overlay, and this toggle is
+     the only control that undoes either. Below 150 CSS px the header row could not fit and did
+     not wrap, so the toggle was pushed past the right edge, and `html{overflow-x:clip}` meant
+     the reader could not scroll to it: MEASURED 85px past the edge at a 64px viewport. Escape is
+     a key a phone does not have. A reload was the only way out.
+
+     Section 122 fixes the layout. This is the guarantee that does not depend on the layout being
+     right: if the control that closes this overlay is not fully on the screen, the overlay closes
+     itself and gives the page back. It is checked on every resize, which is what a zoom is, and
+     once after opening. A menu that closes itself is a visible annoyance; a page that cannot be
+     unlocked is a reader who leaves. */
+  const canReach=el=>{
+    const r=el.getBoundingClientRect();
+    const w=window.innerWidth||document.documentElement.clientWidth||0;
+    const h=window.innerHeight||document.documentElement.clientHeight||0;
+    return r.width>0&&r.height>0&&r.left>=-1&&r.top>=-1&&r.right<=w+1&&r.bottom<=h+1;
+  };
+  const onViewportChange=()=>{
+    if(!isOpen())return;
+    if(window.innerWidth>1320){close();return;}
+    fitHeader();
+    if(!canReach(toggle))close();
+  };
+  window.addEventListener('resize',onViewportChange);
+  /* A pinch on a phone does not fire `resize`; it moves the VISUAL viewport, and a fixed header
+     can be panned off the visible part of it. Where visualViewport is unsupported this is simply
+     the resize listener above, which is what it was. */
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',onViewportChange);
+    window.visualViewport.addEventListener('scroll',onViewportChange);
+  }
   /* The trap runs over the overlay's own controls PLUS the toggle, because the toggle is the
      control that closes this overlay and it lives outside it. A trap that excluded it would
      cycle a keyboard reader round the links with no way out of the overlay but Escape. */

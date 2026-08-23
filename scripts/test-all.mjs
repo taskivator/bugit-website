@@ -149,6 +149,12 @@ const SUITES = [
   //                 control -- it rewrites app.js on the wire to restore the bug and fails
   //                 if that still passes.
   "check-overlay-controls.mjs",
+  // check-close-control  the control that CLOSES a page-locking overlay must be on the screen.
+  //                 Below 150 CSS px it was not: the header row could not fit, the controls were
+  //                 pushed past the right edge, and html{overflow-x:clip} meant the reader could
+  //                 not scroll to what left. With the page locked and everything behind it inert,
+  //                 a reload was the only way out -- which is what "Chrome is crashing" was.
+  "check-close-control.mjs",
   // check-menu-keyboard   the language menu declares role="menu", which is a PROMISE about
   //                 keyboard behaviour: arrows move, Escape closes, Home/End jump. It had none
   //                 of it. Declared ARIA is checked by operating the control, not by reading it.

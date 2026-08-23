@@ -8026,4 +8026,87 @@
     }
   }
 
+
+
+  /* =========================================================================
+     122. THE ONE CONTROL THAT CLOSES THE MENU MUST BE ON THE SCREEN
+     ========================================================================= */
+  /* Owner, 2026-08-23: "google chrome is still crashing when the 3 lines settings is open the
+     page is zoomed in and X is pressed."
+
+     It is not a crash. Chrome's own Crashpad holds no dump since 2026-08-06. It is a page left
+     DEAD, which a reader cannot tell apart from one: opening the menu locks the document with
+     `body{position:fixed;top:-<scrollY>}` and marks everything behind the overlay `inert`, and
+     the hamburger-turned-X is the single control that undoes both.
+
+     MEASURED, as a desktop window at deviceScaleFactor 1, menu closed and open, every width from
+     64px to 430px:
+
+         viewport   the X's box            inside the viewport?
+            64      [103,12,46,46]         no, 85px past the right edge
+            78      [103,12,46,46]         no, 71px past
+            98      [103,12,46,46]         no, 51px past
+           107      [103,12,46,46]         no, 42px past
+           120      [103,12,46,46]         no, 29px past
+           130      [103,12,46,46]         no, 19px past
+           140      [103,12,46,46]         no,  9px past
+           150      [103,12,46,46]         YES  <- and every width above it
+
+     Below 150px the header row does not fit and it does not wrap: the brand cannot shrink past
+     its 34px mark, `.nav-actions` is deliberately `flex:0 0 auto` (section above: a squashed
+     hamburger is worse than a clipped word), so the controls are pushed out of the viewport --
+     and `html{overflow-x:clip}` means the reader cannot scroll to what left it. With the menu
+     open the page is frozen, everything behind is inert, Escape is a key a phone does not have,
+     and the X is somewhere off the right edge. A reload is the only way out. That is the report.
+
+     150 CSS px is not exotic: Chrome zooms to 500%, and 500% of a window narrowed to look at the
+     mobile layout is exactly this. `elementFromPoint` at the X's centre returns NOTHING there --
+     not another element, nothing at all, because the point is outside the viewport. The earlier
+     sweep called that "covered by something else" and looked for a z-index bug that was never
+     there.
+
+     TWO CHANGES, and the priority between them inverts what the 320px fix decided. There, a
+     clipped tagline beat a squashed hamburger. Here there is no room for either, so a control
+     that is REACHABLE beats one that is the right size.
+
+     1. The row may wrap. When the brand and the controls cannot share a line, the controls take
+        their own line instead of leaving the page. `margin-inline-start:auto` keeps them at the
+        end of whichever line they land on, and it is the logical property so Arabic mirrors it.
+
+     2. The header's own inset stops being a fixed 16px at widths where 16px on each side is a
+        quarter of everything the reader has. `min(var(--gutter),5vw)` is identical to today at
+        every width from 320px up -- the gutter is already 16px there and 5vw is 16px or more --
+        and only tightens below that, which is precisely where the 46px control has nowhere to go.
+        No new breakpoint, and nothing to keep in step with one.
+
+     scripts/check-close-control.mjs asserts the whole claim rather than these two rules: at every
+     width from 64px up, with the menu open and closed, the control that closes the menu is inside
+     the viewport and a press at its centre reaches it. It fails on this file as it was. */
+  @media(max-width:1320px){
+    header.nav.shell{
+      padding-inline:max(calc((100% - var(--shell-w)) / 2),min(var(--gutter),5vw));
+    }
+    /* The gaps are part of the row's minimum width, so they shrink with it. Both are unchanged
+       at every width a phone has -- 4vw is 12.8px at 320 and the gaps are 12 and 10 -- and only
+       give way below that, where 22px of gap is a third of the row. */
+    .nav{gap:min(12px,4vw)}
+    .nav-actions{gap:min(10px,4vw)}
+    /* EVERYTHING EXCEPT THE CONTROL THAT CLOSES THE MENU MAY GIVE UP ITS WIDTH.
+       Wrapping the row was tried first and traded the problem rather than solving it: the header
+       is a fixed 72px, so a wrapped row overflowed it downwards and put the X at y=112 on a
+       viewport 100px tall -- off the bottom instead of off the right. On one line the header
+       keeps its height, and the brand and the language globe clip instead. The 320px fix above
+       ruled that a squashed hamburger is worse than a clipped word; that still holds, and this
+       does not touch it -- the hamburger is the one thing here that still cannot shrink. */
+    .brand{flex:1 100 auto;min-width:0;overflow:hidden}
+    .brand img{flex:0 1 auto;min-width:0}
+    .nav-actions{flex:0 1 auto;min-width:0}
+    /* The clip goes on the BUTTON, never on .lang: .lang is the positioning context for
+       .lang-list, so `overflow:hidden` there would clip the language dropdown itself out
+       of existence at every width, which is a worse bug than the one being fixed. */
+    .lang{flex:0 1 auto;min-width:0}
+    .lang>button{min-width:0;overflow:hidden}
+    .nav-toggle{flex:0 0 auto}
+  }
+
 }
