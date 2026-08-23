@@ -155,6 +155,11 @@ const SUITES = [
   //                 not scroll to what left. With the page locked and everything behind it inert,
   //                 a reload was the only way out -- which is what "Chrome is crashing" was.
   "check-close-control.mjs",
+  // check-compositor-budget  Chrome on iOS is WebKit in a WKWebView, and when the whole APP dies
+  //                 rather than one tab it is iOS jetsam. This page asked a phone for 145.6 MB of
+  //                 compositor buffers at rest and 1312 MB at 3x zoom, 53 MB of which was a
+  //                 backdrop-filter behind fully opaque backgrounds and rendered nothing.
+  "check-compositor-budget.mjs",
   // check-menu-keyboard   the language menu declares role="menu", which is a PROMISE about
   //                 keyboard behaviour: arrows move, Escape closes, Home/End jump. It had none
   //                 of it. Declared ARIA is checked by operating the control, not by reading it.

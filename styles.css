@@ -8109,4 +8109,71 @@
     .nav-toggle{flex:0 0 auto}
   }
 
+
+
+  /* =========================================================================
+     123. THE PAGE ASKED AN IPHONE FOR 145 MB OF BLUR, AND 53 MB OF IT WAS INVISIBLE
+     ========================================================================= */
+  /* Owner, 2026-08-23, after the close control was fixed: "ITS STILL CRASHING, on chrome in ios
+     double tapping a page zoom in that section and pressing X crashes the entire chrome", and
+     then: "sometime even simply pressing X when the 3 lines setting is open crashes the chrome".
+
+     CHROME ON iOS IS WEBKIT IN A WKWebView, not Blink. Everything measured before this was the
+     wrong engine, and when the WHOLE APP dies rather than one tab, the cause is iOS jetsam: the
+     process went over its memory budget.
+
+     A filter, a backdrop-filter or a blend mode forces an offscreen buffer. A blur samples about
+     three sigma beyond the box on every side, so the buffer is bigger than the element. And a
+     page-scale zoom multiplies every one of those buffers by the SQUARE of the scale. Enumerated
+     from the computed styles and the real boxes, iPhone 390pt at deviceScaleFactor 3:
+
+         zoom 1x   23 composited surfaces    145.6 MB of buffers
+         zoom 2x   23 surfaces               582.6 MB
+         zoom 3x   23 surfaces              1312.0 MB
+
+     A gigabyte of compositor buffers is not a slow page, it is a dead app, and 145 MB before any
+     zoom at all is why "simply pressing X" can do it too: the close un-fixes the body and scrolls
+     it back, which re-rasters every one of those surfaces at once.
+
+     AND THE LARGEST OF THEM RENDER NOTHING. `backdrop-filter` blurs what is BEHIND an element,
+     and it is visible only where that element's own background lets it through. Measured
+     backgrounds: .mission is rgb(12,10,21) and #ytStage is rgb(7,5,15) -- both fully opaque, no
+     alpha at all. The blur behind them cannot be seen at any zoom, on any device, and it cost:
+
+         .integrations .card   359x1369   35.9 MB at 1x, 322.9 MB at 3x   bg alpha 0.024
+         .mission              364x723    19.4 MB at 1x, 175.0 MB at 3x   bg OPAQUE
+         .video-frame          359x636    16.9 MB at 1x, 152.4 MB at 3x   bg OPAQUE
+         #ytStage              359x625    16.6 MB at 1x, 149.6 MB at 3x   bg OPAQUE
+         .aurora.a / .b        468x1012   31.8 MB at 1x, 286.8 MB at 3x   mix-blend-mode:screen
+         header.nav.shell      390x70      6.1 MB at 1x,  54.8 MB at 3x   bg alpha 0.78
+
+     So on the hamburger range -- phones and small tablets, where the memory is scarce and where
+     the report lives -- the blur comes off. The desktop look is untouched: this whole block is
+     inside the same media query the mobile layout already uses.
+
+     WHAT THE READER LOSES. Behind an opaque background, nothing whatsoever. Behind the card's
+     0.024 alpha and the header's 0.78, a 3px and an 18px blur of a dark ground: the header keeps
+     its translucency and simply stops blurring, which on a near-black page is a difference you
+     cannot photograph. The auroras keep their colour and lose the screen blend, which on a dark
+     ground is close to a straight composite anyway.
+
+     scripts/check-compositor-budget.mjs holds the line: it computes every composited surface on a
+     phone the same way this note does and fails if the page asks for more than the budget, or if
+     any single element asks for more than its share. It does not name these selectors -- a new
+     blur added next month is measured the day it is added. */
+  @media(max-width:1320px){
+    .card,.mission,.video-frame,.yt-stage,#ytStage,header.nav.shell,#consentBanner,.consent{
+      -webkit-backdrop-filter:none;
+      backdrop-filter:none;
+    }
+    /* The blend is what buys the buffer; the colour is what the reader sees, and it stays. */
+    #ambient .aurora{mix-blend-mode:normal;filter:none;opacity:.09}
+    /* A promotion hint on three offscreen videos is three more layers held for a fade that
+       happens once. The fade still runs; it is simply not pre-promoted. And a CSS filter on a
+       VIDEO is a buffer plus per-frame GPU work for every frame it decodes: those three were the
+       whole of what was left after the blurs came off, 33.1 MB each at 3x. The grade is
+       contrast(1.1) brightness(0.88) on a demo clip. It is not worth an app. */
+    .demo-stack .demo-video{will-change:auto;filter:none}
+  }
+
 }
