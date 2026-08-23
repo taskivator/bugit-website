@@ -45,6 +45,7 @@
     "test:overlay-controls": "node scripts/check-overlay-controls.mjs",
     "test:close-control": "node scripts/check-close-control.mjs",
     "test:compositor-budget": "node scripts/check-compositor-budget.mjs",
+    "test:type-floor": "node scripts/check-type-floor.mjs",
     "test:mobile-chrome": "node scripts/check-mobile-chrome.mjs",
     "test:hairlines": "node scripts/check-hairlines.mjs",
     "test:mission-box": "node scripts/check-mission-box.mjs",

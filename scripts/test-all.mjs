@@ -160,6 +160,11 @@ const SUITES = [
   //                 compositor buffers at rest and 1312 MB at 3x zoom, 53 MB of which was a
   //                 backdrop-filter behind fully opaque backgrounds and rendered nothing.
   "check-compositor-budget.mjs",
+  // check-type-floor  section 28 of styles.css says "Nothing renders below 11.5px now". Nothing
+  //                 checked it, and the brand byline had been 0.5px under it at every width from
+  //                 786px up, desktop included. Found by an Android sweep, which is where a floor
+  //                 is felt first. The floor is read from the scale's own --t-3xs, never typed.
+  "check-type-floor.mjs",
   // check-menu-keyboard   the language menu declares role="menu", which is a PROMISE about
   //                 keyboard behaviour: arrows move, Escape closes, Home/End jump. It had none
   //                 of it. Declared ARIA is checked by operating the control, not by reading it.

@@ -265,6 +265,8 @@ jobs:
         run: node scripts/check-close-control.mjs
       - name: The page stays inside a phone's compositor memory budget
         run: node scripts/check-compositor-budget.mjs
+      - name: Nothing renders below the type scale's own floor
+        run: node scripts/check-type-floor.mjs
       # Chrome on Android is Blink; Chrome on iOS is WebKit. This runs both, because a
       # Chromium-only sweep has tested half of "Chrome on mobile".
       # "Does this look like two lines" is not a question source code can answer, and reading the

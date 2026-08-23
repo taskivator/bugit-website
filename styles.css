@@ -2296,7 +2296,15 @@
   /* ---------- 28. The type scale, off the floor --------------------------- */
   /* Redeclared rather than edited in place so the old scale and the new one can be read
      against each other. Nothing renders below 11.5px now, and body copy that was 13.9px is
-     15px. The ratio between steps is unchanged, so nothing else in the page moves. */
+     15px. The ratio between steps is unchanged, so nothing else in the page moves.
+
+     ONE EXCEPTION, and the sentence above was wrong to omit it until 2026-08-23: the Mission
+     Control panel's own field captions are set in the mono stack at 9-9.5px with wide tracking,
+     on purpose, because that panel is a rendered mock of a tool's interface rather than page
+     copy -- the way a product screenshot would look. The scale governs the page's prose and its
+     chrome and never governed the simulated panel. scripts/check-type-floor.mjs enforces the
+     floor everywhere else, and found the brand byline sitting 0.5px under it at every width from
+     786px up, desktop included, which is what sent me looking. */
   :root{
     --t-3xs:clamp(11.5px,.7rem  + .07vw,12.5px);
     --t-2xs:clamp(12.5px,.76rem + .1vw, 13.5px);
@@ -4971,7 +4979,12 @@
 
   @media(min-width:761px){
     .brand strong{font-size:28px}
-    .brand em{font-size:11px;margin-top:5px}
+    /* 11.5px, not 11: section 28 raised this page's type floor off 10px and states that nothing
+       renders below 11.5px. The byline was the one thing still under it, at every width from
+       786px up, desktop included -- found by the Android sweep on 2026-08-23, which is where a
+       floor is felt first. The margin below is unchanged; it is a ratio to the wordmark's
+       descender, not to this size. */
+    .brand em{font-size:11.5px;margin-top:5px}
     .brand img.blip-logo{width:62px;height:62px;margin-block-start:-4px;margin-block-end:4px}
   }
   @media(min-width:1160px){
