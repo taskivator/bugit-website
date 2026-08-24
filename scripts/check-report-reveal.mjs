@@ -100,8 +100,34 @@ for (const view of VIEWS) {
     // THE BANNER COMES OFF FIRST, because a reader takes it off. It is pinned to the bottom of
     // the viewport and the report's control is the last thing in the panel, so with the banner
     // up the two share the same corner: every press aimed at the control lands on the banner.
-    try { await page.locator("#consentReject").click({ timeout: 2500 }); } catch {}
+    // AND ITS REMOVAL IS ASSERTED, not attempted. This used to be a bare
+    // `try { ...click({timeout:2500}) } catch {}`, so on a loaded machine the click timed out,
+    // the catch swallowed it, the banner stayed up over the corner this check presses, and the
+    // press landed on the banner. The gate then reported the PRODUCT as broken -- "the control
+    // still reports itself collapsed after a press" -- which is a true sentence about a press
+    // that never reached the control. Seen once on 2026-08-24, on webkit/iPhone 13, while
+    // sixteen pytest workers had the CPU; it passed on both re-runs.
+    //
+    // A gate that cannot tell its own unmet precondition from a product defect is worse than no
+    // gate: it costs a release its credibility in one direction and its cover in the other.
+    try {
+      await page.locator("#consentReject").click({ timeout: 8000 });
+    } catch (err) {
+      fail.push(`${label}: HARNESS -- the consent banner would not dismiss (${String(err).split("\n")[0].slice(0, 90)}); ` +
+                "it covers the corner this control lives in, so nothing below measures the product");
+      await browser.close(); continue;
+    }
     await page.waitForTimeout(300);
+    const bannerGone = await page.evaluate(() => {
+      const n = document.getElementById("consentBanner") || document.querySelector(".consent-banner, #cookieBanner");
+      if (!n) return true;
+      const cs = getComputedStyle(n);
+      return cs.display === "none" || cs.visibility === "hidden" || n.getBoundingClientRect().height === 0;
+    });
+    if (!bannerGone) {
+      fail.push(`${label}: HARNESS -- the consent banner is still laid out after being dismissed`);
+      await browser.close(); continue;
+    }
     // The instrument runs only while it is on screen, so the reader has to arrive first --
     // and the pointer is then taken off it, because the mission pauses on hover by design and
     // a pointer left where a dismissed banner used to be hovers whatever scrolls under it.
@@ -130,6 +156,22 @@ for (const view of VIEWS) {
       fail.push(`${label}: the control is not fully on screen to be pressed (${Math.round(box.top)}..${Math.round(box.bottom)} of ${box.vh})`);
       await browser.close(); continue;
     }
+    // WHAT IS ACTUALLY UNDER THE PRESS POINT. The control sits flush against the bottom edge
+    // of an iPhone 13 viewport (598..664 of 664), which is the same corner every pinned overlay
+    // on this site claims. Asking before pressing turns "the product did not open" into "X was
+    // covering the button", which is the difference between a bug report and a wild goose chase.
+    const under = await page.evaluate(({ x, y }) => {
+      const b = document.getElementById("reportMoreToggle");
+      const hit = document.elementFromPoint(x, y);
+      if (!hit) return "nothing (the point is outside the viewport)";
+      if (hit === b || b.contains(hit)) return null;
+      return hit.tagName.toLowerCase() + (hit.id ? "#" + hit.id : "") +
+             (hit.className ? "." + String(hit.className).split(/\s+/).slice(0, 2).join(".") : "");
+    }, { x: box.x, y: box.y });
+    if (under) {
+      fail.push(`${label}: HARNESS -- ${under} is under the press point, not the control`);
+      await browser.close(); continue;
+    }
     if (view.device) await page.touchscreen.tap(box.x, box.y);
     else await page.mouse.click(box.x, box.y);
     await page.waitForTimeout(800);
@@ -156,10 +198,18 @@ for (const view of VIEWS) {
 }
 
 done();
-if (!measured) { console.error("check-report-reveal: nothing was measured."); process.exit(1); }
+// THE REASONS FIRST, ALWAYS. `!measured` used to exit here before `fail` was printed, so a run
+// where every viewport bailed on a precondition reported the single word "nothing was measured"
+// and threw away the sentence saying why -- which is the one thing the operator needed. It was
+// nearly unreachable before the precondition checks above; now it is the normal shape of a
+// harness failure, and a gate that knows why it failed must say so.
 if (fail.length) {
   console.error(`\ncheck-report-reveal: FAIL (${fail.length})`);
   for (const f of fail) console.error("  - " + f);
+}
+if (!measured) {
+  console.error("check-report-reveal: nothing was measured, so this proves nothing about the product.");
   process.exit(1);
 }
+if (fail.length) process.exit(1);
 console.log(`check-report-reveal: OK (${measured} device/engine pairs)`);
