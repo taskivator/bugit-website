@@ -60,7 +60,8 @@
     "test:mission-marker": "node scripts/check-mission-marker.mjs",
     "test:dim-on-screen": "node scripts/check-dim-on-screen.mjs",
     "test:docs-chrome": "node scripts/check-docs-chrome.mjs",
-    "test:rule-pair": "node scripts/check-rule-pair.mjs"
+    "test:rule-pair": "node scripts/check-rule-pair.mjs",
+    "test:zoomed-overlay": "node scripts/check-zoomed-overlay.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

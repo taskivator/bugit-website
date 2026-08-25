@@ -155,6 +155,13 @@ const SUITES = [
   //                 not scroll to what left. With the page locked and everything behind it inert,
   //                 a reload was the only way out -- which is what "Chrome is crashing" was.
   "check-close-control.mjs",
+  // check-zoomed-overlay  a PINCH must not close what the reader just opened. In Safari, and
+  //                 so on every iPhone, window.innerWidth/innerHeight report the VISUAL
+  //                 viewport and shrink as the reader zooms in, while getBoundingClientRect
+  //                 stays in LAYOUT coordinates. The mobile menu compared the two, so any
+  //                 residual zoom made its own close control measure as off-screen and the
+  //                 overlay closed itself inside the tap that opened it.
+  "check-zoomed-overlay.mjs",
   // check-compositor-budget  Chrome on iOS is WebKit in a WKWebView, and when the whole APP dies
   //                 rather than one tab it is iOS jetsam. This page asked a phone for 145.6 MB of
   //                 compositor buffers at rest and 1312 MB at 3x zoom, 53 MB of which was a

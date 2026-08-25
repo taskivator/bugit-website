@@ -266,6 +266,8 @@ jobs:
         run: node scripts/check-overlay-controls.mjs
       - name: A page-locking overlay's close control is on the screen
         run: node scripts/check-close-control.mjs
+      - name: A pinch does not close what the reader just opened
+        run: node scripts/check-zoomed-overlay.mjs
       - name: The page stays inside a phone's compositor memory budget
         run: node scripts/check-compositor-budget.mjs
       - name: Nothing renders below the type scale's own floor

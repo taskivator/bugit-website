@@ -936,8 +936,13 @@ function docSpy(toc,heads){
        Sliding the line means each of them is current while it is the one being read, and the
        last entry is still reachable, which a fixed line can never manage. */
     const doc=document.documentElement;
-    const rest=Math.max(0,(doc.scrollHeight-window.innerHeight)-window.scrollY);
-    const tail=window.innerHeight;
+    /* clientHeight, not innerHeight: `scrollHeight`, `scrollY` and the heading rects below are
+       all LAYOUT-viewport quantities, and in Safari `innerHeight` is the VISUAL viewport, so a
+       pinch moved the reading line while nothing had scrolled. Same mismatch as the one that
+       closed the mobile menu on a zoomed reader; here it only mismarks a row. */
+    const vp=doc.clientHeight||window.innerHeight||0;
+    const rest=Math.max(0,(doc.scrollHeight-vp)-window.scrollY);
+    const tail=vp;
     const line=rest<tail?170+(tail-170)*(1-rest/tail):170;
     let i=0;
     heads.forEach((h,n)=>{if(h.getBoundingClientRect().top<=line)i=n});
@@ -1501,15 +1506,32 @@ function initMobileNav(){
      itself and gives the page back. It is checked on every resize, which is what a zoom is, and
      once after opening. A menu that closes itself is a visible annoyance; a page that cannot be
      unlocked is a reader who leaves. */
+  /* MEASURE AGAINST THE VIEWPORT THE RECT IS ACTUALLY IN.
+     `getBoundingClientRect()` is always in LAYOUT-viewport coordinates. `window.innerWidth` and
+     `innerHeight` are not the same thing everywhere: in Safari, and so in every browser on iOS,
+     they report the VISUAL viewport, which SHRINKS as the reader pinches in. This compared one
+     against the other, so a reader who had zoomed at all opened the menu and had it close again
+     inside the same tap. Owner, 2026-08-25: "the 3 lines menu on mobile view sometimes closes on
+     its own when tapped once." MEASURED at iPhone 14 size, where the toggle's right edge sits at
+     374: innerWidth read 339 at pinch scale 1.15, 279 at 1.4 and 195 at 2, while the layout width
+     stayed 390 throughout. Any zoom at all therefore failed `r.right<=w+1`.
+     A pinch is not the thing this check defends against. The reader can pan back to the control
+     or pinch out again, so nothing is unreachable. Real browser zoom, which IS the lockout this
+     exists for, changes the LAYOUT viewport and is still caught unchanged.
+     documentElement.clientWidth/clientHeight are the layout viewport in every engine, and they
+     are what the `1320px` media query that shows this toggle is evaluated against too. */
+  const vw=()=>document.documentElement.clientWidth||window.innerWidth||0;
+  const vh=()=>document.documentElement.clientHeight||window.innerHeight||0;
   const canReach=el=>{
     const r=el.getBoundingClientRect();
-    const w=window.innerWidth||document.documentElement.clientWidth||0;
-    const h=window.innerHeight||document.documentElement.clientHeight||0;
+    const w=vw(),h=vh();
     return r.width>0&&r.height>0&&r.left>=-1&&r.top>=-1&&r.right<=w+1&&r.bottom<=h+1;
   };
   const onViewportChange=()=>{
     if(!isOpen())return;
-    if(window.innerWidth>1320){close();return;}
+    /* The same layout measurement, for the same reason: this mirrors the media query that shows
+       the toggle at all, and a pinch must not be read as the reader having reached a desktop. */
+    if(vw()>1320){close();return;}
     fitHeader();
     if(!canReach(toggle))close();
   };
