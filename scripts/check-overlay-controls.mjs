@@ -110,7 +110,13 @@ const CSS_BREAK_TO = "/*NEGATIVE CONTROL: the header is no longer pinned while t
 
    So the mutation must now remove BOTH, or it reproduces a build that never shipped and proves
    nothing. And the healing itself is a promise, so it is asserted below rather than assumed. */
-const SELFCLOSE_FROM = "requestAnimationFrame(()=>{ if(isOpen()&&!canReach(toggle))close(); });";
+/* Repointed 2026-08-25, when the self-close grew a settle window and the old text stopped
+   existing. The line named here is the one that actually closes the overlay; it is matched with
+   its leading indentation because `close();return;` alone occurs elsewhere, and a mutation that
+   is a substring of another line breaks the build rather than the behaviour -- which reads as a
+   pass, since a page with no script never opens a menu to trap anyone. */
+const SELFCLOSE_FROM =
+  "    if(now-unreachableSince>=SETTLE_MS){unreachableSince=0;close();return;}";
 const SELFCLOSE_TO = "/*NEGATIVE CONTROL: the overlay no longer closes itself when its control cannot be reached.*/";
 
 /* A mutation that matches nothing is a negative control that cannot fail, and it dies in
@@ -485,7 +491,14 @@ async function selfCloseHolds(engineName, engine, deviceName) {
     await page.waitForTimeout(200);
     if ((await page.evaluate(() => Math.round(window.scrollY))) === 0) continue;
     try { await loc.tap({ timeout: 4000 }); } catch { continue; }
-    await page.waitForTimeout(400);
+    /* LONGER THAN THE PRODUCT'S SETTLE WINDOW. The self-close no longer fires on the first bad
+       measurement -- an in-app WebView produces bursts of intermediate geometry and closing on
+       any one of them shuts the menu by itself -- so it waits ~450ms for the condition to still
+       be true. This read at 400ms and therefore measured the overlay mid-decision: it reported
+       the menu "stayed OPEN", and because the page was still locked and inert at that moment the
+       NEXT control in the loop was measured through a locked page too, so one wait that was
+       50ms short produced two findings on two different controls. */
+    await page.waitForTimeout(1100);
     const st = await page.evaluate((elId) => {
       const el = document.getElementById(elId);
       const r = el.getBoundingClientRect();

@@ -1466,9 +1466,10 @@ function initMobileNav(){
     const first=menu.querySelector('a,button');if(first)first.focus({preventScroll:true});
     /* Checked once after opening as well: a reader can arrive already zoomed, and then the
        overlay would lock a page whose close control was never on the screen to begin with. */
-    requestAnimationFrame(()=>{ if(isOpen()&&!canReach(toggle))close(); });
+    requestAnimationFrame(checkReach);
   };
   const close=()=>{
+    stopWatching();
     menu.classList.remove('open');document.body.classList.remove('menu-open');
     document.body.style.top='';menu.style.paddingTop='';
     window.scrollTo({top:savedY,left:0,behavior:'instant'});
@@ -1520,20 +1521,54 @@ function initMobileNav(){
      exists for, changes the LAYOUT viewport and is still caught unchanged.
      documentElement.clientWidth/clientHeight are the layout viewport in every engine, and they
      are what the `1320px` media query that shows this toggle is evaluated against too. */
-  const vw=()=>document.documentElement.clientWidth||window.innerWidth||0;
-  const vh=()=>document.documentElement.clientHeight||window.innerHeight||0;
+  /* NO FALLBACK TO innerWidth. The first version of this fix wrote
+     `documentElement.clientWidth||window.innerWidth`, which looks defensive and is the defect
+     wearing a seatbelt: the moment the layout viewport reads 0 -- which a WebView does while it
+     is still laying out -- the expression silently returns the VISUAL viewport again and closes
+     the menu for exactly the reason above. An unusable measurement is UNKNOWN, and unknown is
+     never a reason to take the reader's menu away. */
+  const vw=()=>document.documentElement.clientWidth||0;
+  const vh=()=>document.documentElement.clientHeight||0;
   const canReach=el=>{
-    const r=el.getBoundingClientRect();
     const w=vw(),h=vh();
+    if(!(w>0&&h>0))return true;                      // cannot measure: not a lockout
+    const r=el.getBoundingClientRect();
     return r.width>0&&r.height>0&&r.left>=-1&&r.top>=-1&&r.right<=w+1&&r.bottom<=h+1;
+  };
+  /* AND ONE SAMPLE IS NOT A LOCKOUT EITHER.
+     Owner, 2026-08-25: "still happening in mobile view when the website is opened from within
+     links in app". An in-app WebView is not a phone browser -- the host app animates its own
+     toolbars, so `resize` and the visual-viewport events arrive in bursts and the document gets
+     measured part-way through each one. Closing on the first bad reading turns any of those
+     bursts into a menu that shuts by itself.
+     The guarantee this exists for is about a SETTLED page: if the only control that closes a
+     page-locking overlay is genuinely off the screen, the overlay has to give the page back. So
+     the condition now has to still be true after it has stopped moving. It is re-read every
+     frame and cleared the instant the control comes back, so a real lockout still closes within
+     half a second and a burst of intermediate geometry closes nothing. */
+  const SETTLE_MS=450;
+  let unreachableSince=0,settleFrame=0;
+  const checkReach=()=>{
+    settleFrame=0;
+    if(!isOpen()||canReach(toggle)){unreachableSince=0;return;}
+    const now=(window.performance&&performance.now)?performance.now():Date.now();
+    if(!unreachableSince)unreachableSince=now;
+    if(now-unreachableSince>=SETTLE_MS){unreachableSince=0;close();return;}
+    settleFrame=requestAnimationFrame(checkReach);
+  };
+  const stopWatching=()=>{
+    unreachableSince=0;
+    if(settleFrame)cancelAnimationFrame(settleFrame);
+    settleFrame=0;
   };
   const onViewportChange=()=>{
     if(!isOpen())return;
     /* The same layout measurement, for the same reason: this mirrors the media query that shows
-       the toggle at all, and a pinch must not be read as the reader having reached a desktop. */
+       the toggle at all, and a pinch must not be read as the reader having reached a desktop.
+       Guarded by vw() returning 0 when the layout viewport cannot be read, and 0 is not > 1320. */
     if(vw()>1320){close();return;}
     fitHeader();
-    if(!canReach(toggle))close();
+    checkReach();
   };
   window.addEventListener('resize',onViewportChange);
   /* A pinch on a phone does not fire `resize`; it moves the VISUAL viewport, and a fixed header

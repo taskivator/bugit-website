@@ -127,14 +127,34 @@ const ZOOMS = [1, 2, 3, 5];
    out together, and the run must go red. (The same trap took check-overlay-controls' own control
    out of service on 2026-08-23: it went green because the product had learned to heal the wound
    it was inflicting, and it said so instead of passing quietly.) */
+/* THE INJURY HAS TO STILL HURT. These three were the whole control until 2026-08-25, when it
+   stopped firing: the phone block at max-width:760px re-establishes `min-width:0` and hides the
+   wide account control, so removing the wider rules alone left a row that still fitted and the
+   guard passed with the product healed. An injury the product repairs proves nothing, so the
+   phone-range rules come out too, and the account control goes back into the row. */
 const CSS_BREAKS = [
   [".brand{flex:1 100 auto;min-width:0;overflow:hidden}", "the brand may no longer shrink"],
   [".nav-actions{flex:0 1 auto;min-width:0}", "the actions may no longer shrink"],
   [".lang{flex:0 1 auto;min-width:0}", "the language control may no longer shrink"],
+  [".brand{min-width:0}", "the brand may no longer shrink on a phone either"],
+  [".brand span{min-width:0}", "the wordmark may no longer shrink on a phone"],
+  [".auth-slot{display:none}", "the wide account control is back in the row"],
 ];
+/* These name the CURRENT source. On 2026-08-25 the self-close grew a settle window, so both of
+   these stopped matching and this file went red saying "NEVER APPLIED" rather than green -- which
+   is the only acceptable way for a negative control to react to the code moving under it.
+
+   AND A MUTATION MUST NOT BE A SUBSTRING OF ANOTHER LINE. The first rewrite of this was
+   `requestAnimationFrame(checkReach);`, which also occurs inside `settleFrame=requestAnimationFrame
+   (checkReach);` -- so the rewrite left `settleFrame=` with the marker comment and nothing else,
+   app.js stopped PARSING, the page ran with no script at all, no menu ever opened, and it read as
+   "the overlay closed rather than trap the reader" and passed. A control that breaks the build
+   proves nothing and looks exactly like success, so the mutated source is parsed below before it
+   is served. */
 const JS_BREAKS = [
-  ["requestAnimationFrame(()=>{ if(isOpen()&&!canReach(toggle))close(); });", "the self-close on open"],
-  ["if(!canReach(toggle))close();", "the self-close on resize"],
+  ["\n    requestAnimationFrame(checkReach);", "the self-close on open"],
+  ["    if(now-unreachableSince>=SETTLE_MS){unreachableSince=0;close();return;}",
+   "the self-close once the geometry has settled"],
 ];
 /* A mutation whose text has moved on rewrites nothing and the control goes green having changed
    not one byte, which is the quietest way for a guard to lose its eyes. Each rewrite says whether
@@ -167,7 +187,11 @@ async function one({ w, h, zoom, rtl, rotate, broken, sink }) {
     });
     await ctx.route("**/app*.js", async (route) => {
       const res = await route.fetch();
-      route.fulfill({ response: res, body: applyBreaks(await res.text(), JS_BREAKS) });
+      const body = applyBreaks(await res.text(), JS_BREAKS);
+      // The injured script must still be a script. See the note above JS_BREAKS.
+      try { new Function(body); }
+      catch (e) { staleMutations.push(`the injured app.js no longer parses (${String(e).slice(0, 60)})`); }
+      route.fulfill({ response: res, body });
     });
   }
   const page = await ctx.newPage();

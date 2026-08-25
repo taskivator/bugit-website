@@ -106,7 +106,7 @@ const disclosures = async () => {
 };
 
 /* One tap on one control, on a fresh page. Returns what the page did. */
-const tapOnce = async ({ id }, { scale = 1, mutate, scrollTo, unpinHeader } = {}) => {
+const tapOnce = async ({ id }, { scale = 1, mutate, scrollTo, unpinHeader, flickerHeader } = {}) => {
   const ctx = await browser.newContext({ ...DEVICE, hasTouch: true });
   if (mutate) {
     const src = readFileSync(join(ROOT, "app.js"), "utf8");
@@ -140,7 +140,22 @@ const tapOnce = async ({ id }, { scale = 1, mutate, scrollTo, unpinHeader } = {}
     await ctx.close();
     return { blocked: String(e).replace(/\s+/g, " ").slice(0, 140) };
   }
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(900);   // longer than the product's settle window
+
+  if (flickerHeader) {
+    /* A BURST, NOT A STATE. An in-app WebView animates the host app's toolbars, so `resize` and
+       the visual-viewport events arrive in groups and the document is measured part-way through
+       each one. Here the header loses its pin for less than the settle window and gets it back:
+       every intermediate reading says "unreachable" and none of them is true once it stops
+       moving, so the overlay must still be open at the end. */
+    const style = await page.addStyleTag({
+      content: "body.menu-open header.nav.shell{position:static!important}" });
+    await page.evaluate(() => { window.dispatchEvent(new Event("resize")); });
+    await page.waitForTimeout(160);
+    await page.evaluate((el) => el && el.remove(), style);
+    await page.evaluate(() => { window.dispatchEvent(new Event("resize")); });
+    await page.waitForTimeout(900);
+  }
 
   if (unpinHeader) {
     /* A GENUINE LAYOUT LOCKOUT, built the way the real one was: the scroll lock is
@@ -186,9 +201,15 @@ for (const [ename, engine] of [["chromium", chromium], ["webkit", webkit]]) {
   }
 
   /* ---------- 2. the negative control: put the defect back ----------------- */
-  const MUTATE = (src) => src.replace(
-    "const vw=()=>document.documentElement.clientWidth||window.innerWidth||0;",
-    "const vw=()=>window.innerWidth||document.documentElement.clientWidth||0;");
+  /* The mutation is written against the CURRENT source, deliberately: when the fix was hardened
+     the old text stopped existing and this silently stopped applying, which the guard reported
+     as "the mutation did not apply" rather than as a pass. That is the only acceptable failure
+     mode for a negative control. */
+  const MUTATE = (src) => src
+    .replace("const vw=()=>document.documentElement.clientWidth||0;",
+             "const vw=()=>window.innerWidth||0;")
+    .replace("const vh=()=>document.documentElement.clientHeight||0;",
+             "const vh=()=>window.innerHeight||0;");
   const nav = subjects.find((s) => s.id === "navToggle");
   if (!nav) fail.push(`${ename}: the mobile menu toggle (#navToggle) was not among the disclosures, so the negative control cannot run`);
   else {
@@ -198,6 +219,13 @@ for (const [ename, engine] of [["chromium", chromium], ["webkit", webkit]]) {
       fail.push(`${ename}: negative control did NOT fire -- with the visual-viewport measurement put back the ` +
         "menu stayed open at pinch scale 1.4, so this guard cannot see the defect it was written for");
     } else note(`${ename}: negative control fired (innerWidth ${neg.innerWidth}, layout width ${neg.layoutWidth})`);
+
+    /* ---------- 3b. a BURST of bad geometry closes nothing --------------- */
+    const flick = await tapOnce(nav, { scrollTo: 900, flickerHeader: true });
+    if (flick.expanded !== "true") {
+      fail.push(`${ename}: a burst of resize events with the header briefly un-pinned closed the ` +
+        "menu; an in-app WebView produces exactly that while the host app animates its toolbars");
+    } else note(`${ename}: a transient unreachable burst does not close the overlay`);
 
     /* ---------- 3. the lockout this measurement exists for still works ----- */
     const locked = await tapOnce(nav, { scrollTo: 900, unpinHeader: true });
