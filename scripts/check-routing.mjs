@@ -37,8 +37,26 @@ const server = spawn(process.execPath, ["server.js"], { cwd: ROOT, env: { ...pro
 const base = `http://127.0.0.1:${PORT}/`;
 for (let i = 0; i < 80; i++) { try { const r = await fetch(base); if (r.ok) break; } catch { await new Promise((r) => setTimeout(r, 150)); } }
 
+/* THE SPAWNED SERVER OUTLIVED THE CHECK. `server.kill()` sits at the very bottom, so any throw
+   above it -- a crashed page, a navigation that never settles -- left a node process holding a
+   port with nothing to stop it. Two were found still running an hour after the suite had been
+   abandoned. An exit hook runs on every ordinary exit path, including process.exit and an
+   uncaught throw. */
+process.on("exit", () => { try { server.kill(); } catch { /* already gone */ } });
+
+/* A NAVIGATION THAT NEVER SETTLES MUST FAIL, NOT WAIT. `waitUntil: "networkidle"` has no
+   deadline of its own here, and the whole 60-check website suite runs these in sequence: one
+   stuck page meant `npm test` simply never finished, which reads as a suite nobody runs rather
+   than as a failure anybody sees. Measured 2026-08-25: the suite sat for over an hour with no
+   output and no error. */
+const NAV_TIMEOUT_MS = 25_000;
+
 const fail = [];
-const browser = await chromium.launch();
+/* A CRASHED RENDERER TAKES THE WHOLE BROWSER WITH IT, so every language after the first
+   failure reported "Target page, context or browser has been closed" -- a cascade of
+   false results that hides which languages are actually healthy. Relaunched per language
+   when it is gone, so each of the eleven gets a real answer. */
+let browser = await chromium.launch();
 
 /* What a rendered document looks like when it worked: the docs view is showing, the homepage
    is not, the sidebar still has its document list, and there is a real heading with real
@@ -67,11 +85,20 @@ const state = (page) => page.evaluate(() => {
 const okDoc = (s) => s.docHidden === false && s.homeHidden === true && !s.notFound && s.chars > 120 && s.navLinks > 0;
 
 for (const lang of LANGS) {
+  if (!browser.isConnected()) browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   await ctx.addCookies([{ name: "bugitLang", value: lang, url: base }]);
   const page = await ctx.newPage();
+  page.setDefaultNavigationTimeout(NAV_TIMEOUT_MS);
+  page.setDefaultTimeout(NAV_TIMEOUT_MS);
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 140)));
+
+  /* ONE LANGUAGE FAILING IS ONE FINDING, NOT THE END OF THE RUN. A crashed renderer threw
+     straight out of this loop, so the remaining languages were never examined and the suite
+     reported nothing at all -- the eleventh language is exactly the one most likely to be
+     broken, and it was the one guaranteed never to be reached. */
+  try {
 
   /* --- DEEP: every route, loaded cold ---------------------------------- */
   for (const r of DOC_ROUTES) {
@@ -158,12 +185,22 @@ for (const lang of LANGS) {
   }
 
   if (errors.length) fail.push(`ERROR  [${lang}] ${[...new Set(errors)].join(" | ")}`);
-  await ctx.close();
   process.stdout.write(`  ${lang.padEnd(6)} deep+reload+nav+back+lang+dead\n`);
+
+  } catch (e) {
+    /* Reported with the language, because "Page crashed" on its own says nothing about which
+       of the eleven it was, and that is the whole question. */
+    const why = String(e && e.message ? e.message : e).split("\n")[0].slice(0, 160);
+    fail.push(`CRASH  [${lang}] the page did not survive this language: ${why}`);
+    process.stdout.write(`  ${lang.padEnd(6)} FAILED: ${why}\n`);
+  } finally {
+    await ctx.close().catch(() => { /* a crashed context cannot be closed cleanly */ });
+  }
 }
 
 /* --- the unknown route, and the server's own 404 ------------------------ */
 {
+  if (!browser.isConnected()) browser = await chromium.launch();
   const page = await browser.newPage();
   await page.goto(`${base}#/does-not-exist`, { waitUntil: "networkidle" });
   await page.waitForTimeout(300);
