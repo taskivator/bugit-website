@@ -8283,4 +8283,52 @@
     }
   }
 
+
+  /* ------------------------------------------------------------------------
+     TOUCH TARGETS ON THE DOCUMENTATION PAGES.
+
+     WHAT WENT WRONG. check-mobile-chrome.mjs has enforced a 44x44 floor since
+     it was written, and passed every time, because its three routes were PATH
+     urls on a hash router: all three served index.html and rendered the HOME
+     page. The documentation had never been measured on a phone at all. Given
+     the real routes it found 324 failures, and these are the ones that are not
+     prose:
+
+       nav.doc-toc a      29px. The in-page contents list -- the primary way a
+                          reader moves inside a long document on a phone, six
+                          rows of it, each fifteen pixels short.
+       nav.doc-crumb a    18px. Under WCAG 2.5.8's 24px AA floor, not just the
+                          44px AAA one, and it is the way back out of a doc.
+       .footer nav a      35px, and the cookie-preferences button beside them.
+
+     Raised on screens up to 1024px, which is every phone in that sweep held
+     either way round -- a landscape 932x430 iPhone does not match the 899px
+     query the rest of this file uses, and it is a phone.
+
+     min-height with the text centred, NOT extra padding: padding moves the
+     text and would re-space three layouts. And a real height rather than an
+     expanded ::after hit area, which satisfies WCAG but is invisible to
+     offsetHeight, so the guard would keep failing on a page that was fixed --
+     a fix nothing can confirm is the kind that gets reverted.
+     ---------------------------------------------------------------------- */
+  @media (max-width:1024px){
+    nav.doc-toc ol li a,
+    .docs-sidebar a,
+    .footer nav a,
+    .footer .foot-link{
+      display:flex;
+      align-items:center;
+      min-height:44px;
+    }
+    /* The crumb is a row of its own, so it centres its own content rather than
+       stretching to a flex parent it does not have. */
+    nav.doc-crumb a{
+      display:inline-flex;
+      align-items:center;
+      min-height:44px;
+    }
+    /* The footer list was spaced for 35px rows; at 44 the gap does the work
+       twice and the block grows a third taller than it needs to. */
+    .footer nav{gap:10px 18px}
+  }
 }

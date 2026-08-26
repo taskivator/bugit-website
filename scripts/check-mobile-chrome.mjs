@@ -45,6 +45,7 @@ import { chromium, webkit } from "playwright";
 import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { readFileSync } from "node:fs";
 import net from "node:net";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -68,7 +69,42 @@ const DEVICES = [
   { name: "Android 863x360 landscape", size: [863, 360], dpr: 2.625 },
   { name: "iPhone 932x430 landscape", size: [932, 430], dpr: 3 },
 ];
-const ROUTES = ["/", "/docs/user-guide", "/refund"];
+/*
+ * THE ROUTES, READ OUT OF THE ROUTER RATHER THAN REMEMBERED.
+ *
+ * WHAT WENT WRONG. This list used to be `["/", "/docs/user-guide", "/refund"]` -- PATH URLs, on
+ * a site whose router reads `location.hash`. server.js answers any path with index.html, so all
+ * three loaded, all three returned 200, and all three rendered THE HOME PAGE: 5,614 characters
+ * and 44 links, byte for byte identical. "/refund" is not even a route; the document is
+ * `#/docs/refund`.
+ *
+ * So the summary line has been saying "9 phone sizes x 3 routes x 2 engines" while measuring
+ * one page fifty-four times. No documentation page has ever been checked here for a
+ * zoom-on-focus field, an undersized control, text boosting, sideways scroll, or a notice
+ * eating the screen -- and every one of those rules passing read as coverage of the docs.
+ *
+ * Found on 2026-08-26 by an Edge sweep that computed its routes from app.js and reached pages
+ * this one never had.
+ *
+ * The list is now derived from the same `docRoutes` array the router itself dispatches on, so a
+ * route added to the product is swept the day it ships rather than the day someone remembers
+ * this file. `assertRoutesAreDistinct` below is the other half: deriving the list correctly is
+ * worth nothing if the URLs still all render one page, and that failure is invisible in a
+ * report that only ever prints how many cells it swept.
+ */
+const APP_JS = readFileSync(join(ROOT, "app.js"), "utf8");
+const DOC_ROUTES = JSON.parse(APP_JS.match(/const docRoutes=(\[.*?\]);/s)[1].replace(/'/g, '"'));
+/* The home page, plus a spread of the documents: the longest one, a legal one, and support --
+   different templates rather than three copies of the same layout. Kept short because every
+   entry costs eighteen renders. */
+const WANTED = ["docs/user-guide", "docs/refund", "support"];
+const ROUTES = ["/", ...WANTED.map((r) => {
+  if (!DOC_ROUTES.includes(r)) {
+    console.error(`check-mobile-chrome: "${r}" is not in app.js docRoutes (${DOC_ROUTES.join(", ")}).`);
+    process.exit(1);
+  }
+  return `/#/${r}`;
+})];
 
 const PORT = await new Promise((resolve, reject) => {
   const probe = net.createServer();
@@ -133,10 +169,23 @@ const PROBE = () => {
      text, and it is right to: enlarging it would break the line it sits in. Both `inline` and
      `inline-block` count, which the first version missed. */
   const inSentence = (el, cs) => {
-    const p = el.parentElement;
-    if (!p || !/^(P|LI|SMALL|SPAN|TD|LABEL|H1|H2|H3|H4)$/.test(p.tagName)) return false;
-    return cs.display === "inline" || cs.display === "inline-block";
+    if (cs.display !== "inline" && cs.display !== "inline-block") return false;
+    /* WALK UP, do not look at the parent alone. `support@bugit.dev` in the refund policy is
+       <p><strong><a>, so the one-level check saw STRONG, called it a control and demanded 44px
+       of a link inside a sentence -- which cannot be given without breaking the paragraph.
+       Emphasis is not a container: it is part of the prose, so it is walked through. */
+    for (let p = el.parentElement, hops = 0; p && hops < 4; p = p.parentElement, hops++) {
+      if (/^(STRONG|EM|B|I|U|MARK|CODE)$/.test(p.tagName)) continue;
+      return /^(P|LI|SMALL|SPAN|TD|LABEL|H1|H2|H3|H4|BLOCKQUOTE)$/.test(p.tagName);
+    }
+    return false;
   };
+  /* A SKIP LINK IS NOT A TOUCH TARGET. It is parked off-screen and appears only when the TAB
+     key reaches it, so a finger can never find it and sizing it for one is meaningless. It
+     showed up here as 143x37 on every route because it is technically in the layout. */
+  const keyboardOnly = (el) =>
+    /(^|\s)(skip-link|sr-only|visually-hidden)(\s|$)/.test(
+      typeof el.className === "string" ? el.className : "");
   /* MEASURED ON THE LAYOUT BOX, NOT THE PAINTED ONE. The first version read
      getBoundingClientRect(), which is the box AFTER every transform on every ancestor. The
      mission panel tilts three degrees on a `perspective()` as it settles, so in WebKit -- which
@@ -152,7 +201,7 @@ const PROBE = () => {
     if (el.type === "checkbox" || el.type === "radio") continue;   // the LABEL is the target
     const cs = getComputedStyle(el);
     const r = el.getBoundingClientRect();
-    if (parked(el, r) || inSentence(el, cs)) continue;
+    if (parked(el, r) || inSentence(el, cs) || keyboardOnly(el)) continue;
     const w = el.offsetWidth || r.width, h = el.offsetHeight || r.height;
     if (w < 44 || h < 44) tap.push({ el: name(el), w: Math.round(w), h: Math.round(h) });
   }
@@ -248,6 +297,7 @@ const NOTICE_PROBE = () => {
 
 async function sweep(browser, engine, inject, dom) {
   const found = [];
+  const rendered = [];
   let cells = 0, fields = 0, controls = 0;
   for (const d of DEVICES) {
     const ctx = await browser.newContext({
@@ -265,6 +315,17 @@ async function sweep(browser, engine, inject, dom) {
     for (const route of ROUTES) {
       await page.goto(base + route, { waitUntil: "load" });
       await page.waitForTimeout(250);
+      /* THE ROUTE HAS TO HAVE GONE SOMEWHERE. A hash route is applied by the router after the
+         document loads, so `goto` succeeding proves only that index.html was served. Record
+         what actually rendered; assertRoutesAreDistinct() below fails the run if the routes
+         turn out to be the same page under different names, which is the defect this list
+         carried for as long as it existed. */
+      rendered.push({
+        engine, device: d.name, route,
+        shape: await page.evaluate(() =>
+          document.body.innerText.replace(/\s+/g, " ").length + ":" +
+          document.querySelectorAll("a[href]").length + ":" + (location.hash || "")),
+      });
       const noticeSeen = await page.evaluate(NOTICE_PROBE);
       try { await page.click("#consentReject", { timeout: 1200 }); } catch {}
       await page.waitForTimeout(250);
@@ -336,7 +397,7 @@ async function sweep(browser, engine, inject, dom) {
     }
     await ctx.close();
   }
-  return { found, cells, fields, controls };
+  return { found, cells, fields, controls, rendered };
 }
 
 const results = [];
@@ -349,6 +410,46 @@ for (const [engine, launcher] of [["blink", chromium], ["webkit", webkit]]) {
 }
 note(`${results.reduce((a, r) => a + r.cells, 0)} render(s) swept: ${DEVICES.length} phone sizes x ` +
      `${ROUTES.length} routes x 2 engines (Chrome on Android is Blink, Chrome on iOS is WebKit)`);
+
+/* ---------- the routes went somewhere ------------------------------------ */
+/*
+ * THE COUNT ABOVE IS NOT COVERAGE. It says how many times a page was rendered, not how many
+ * DIFFERENT pages -- and for as long as this file existed the answer was one. Three path-style
+ * URLs on a hash router all served index.html, so the line read "3 routes" over fifty-four
+ * renders of the home page and every rule below passed on a page it had already checked.
+ *
+ * This is the assertion that could have caught it: for each device and engine, the routes must
+ * render measurably different documents. It compares what actually rendered rather than what
+ * was requested, because requesting three URLs is exactly the part that already worked.
+ */
+{
+  const shapesByRoute = new Map();
+  for (const r of results)
+    for (const row of r.rendered) {
+      const key = `${row.engine} ${row.device}`;
+      if (!shapesByRoute.has(key)) shapesByRoute.set(key, new Map());
+      shapesByRoute.get(key).set(row.route, row.shape);
+    }
+  let collapsed = 0;
+  for (const [cell, byRoute] of shapesByRoute) {
+    const distinct = new Set(byRoute.values());
+    if (distinct.size < byRoute.size) {
+      collapsed++;
+      if (collapsed <= 3) {
+        const detail = [...byRoute].map(([rt, sh]) => `${rt} -> ${sh}`).join("; ");
+        fail.push(`[${cell}] ROUTES ${byRoute.size} routes rendered only ${distinct.size} ` +
+                  `distinct document(s), so this cell measured the same page more than once. ` +
+                  `Each shape is chars:links:hash -- ${detail}`);
+      }
+    }
+  }
+  if (collapsed > 3)
+    fail.push(`ROUTES ...and ${collapsed - 3} further cell(s) with the same collapse.`);
+  note(collapsed === 0
+    ? `every one of the ${ROUTES.length} routes rendered its own document, in all ` +
+      `${shapesByRoute.size} device/engine cells`
+    : `${collapsed} device/engine cell(s) rendered fewer documents than routes`);
+}
 
 /* ---------- the negative controls ---------------------------------------- */
 /* Each rule gets a defect built for it, and each must be seen. A sweep that quietly stopped

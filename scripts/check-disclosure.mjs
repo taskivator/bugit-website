@@ -217,7 +217,28 @@ for (const view of VIEWS) {
         return null;
       } catch (e) { return String(e).split("\n")[0]; }
     };
-    const openErr = await act();
+    /* ONE RETRY, AND ONLY FOR A CONTROL THAT WENT UNAVAILABLE AGAIN.
+
+       The report disclosure is re-disabled every time the instrument starts a new report --
+       "A NEW REPORT IS A NEW DECISION", deliberately -- so a control that was available when the
+       wait above cleared can be unavailable again by the time the press lands, and the press
+       then times out on an actionability check rather than on anything being wrong. It failed
+       exactly once, on a machine that was also running CI and two other browser sweeps, which is
+       where a five-second window gets eaten.
+
+       Wait for it to come back and try once more. A control still refusing after that is a
+       finding. Anything failing for a different reason is reported on the first attempt, with no
+       second one to muddy what it says. */
+    let openErr = await act();
+    if (openErr && /Timeout|not enabled|aria-disabled/i.test(openErr)) {
+      const available = await page
+        .waitForSelector(`${c.sel}:not([aria-disabled="true"])`, { timeout: 20000 })
+        .then(() => true, () => false);
+      if (available) {
+        await page.mouse.move(0, 0);   // it also pauses under the pointer, deliberately
+        openErr = await act();
+      }
+    }
     if (openErr) {
       fail.push(`[${where}] "${c.label}" (${c.sel}) could not be activated at all: ${openErr}`);
       await ctx.close();
