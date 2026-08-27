@@ -2,7 +2,13 @@ import { chromium } from "playwright";
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import net from "node:net";
-const ROOT = "c:/Users/Ppedr/Desktop/BugIt/01-repos-live-code/bugit-website";
+// NOT a literal path. This read `c:/Users/Ppedr/Desktop/BugIt/...` until 2026-08-28, which
+// meant the script ran on exactly one machine in exactly one folder and silently measured
+// nothing anywhere else. Every other guard in this directory derives ROOT from its own
+// location; check-ci-coverage.mjs now fails any that does not.
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const app = readFileSync(ROOT + "/app.js", "utf8");
 const LANGS = JSON.parse(app.match(/const languages=(\[\[.*?\]\]);/s)[1].replace(/'/g, '"')).map(([c]) => c);
 const PORT = await new Promise((res, rej) => { const p = net.createServer(); p.on("error", rej); p.listen(0, "127.0.0.1", () => { const { port } = p.address(); p.close(() => res(port)); }); });

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node server.js",
+    "verify:live": "node scripts/check-live-delivery.mjs",
     "test": "node scripts/test-all.mjs",
     "build": "node build.js",
     "preview": "node server.js",

@@ -87,7 +87,14 @@ const dist = path.join(root,'dist');
 }
 
 fs.rmSync(dist,{recursive:true,force:true}); fs.mkdirSync(dist,{recursive:true});
-for (const item of ['index.html','styles.css','app.js','consent.js','server.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','.well-known']) {
+// EVERYTHING BELOW IS PUBLISHED TO bugit.dev VERBATIM, so this list is a decision about what
+// the public gets, not a convenience. `server.js` was on it and should never have been: it is
+// the LOCAL PREVIEW SERVER, every rendering guard spawns it from the repo root rather than
+// from dist, and nothing in dist ever loaded it -- yet `https://bugit.dev/server.js` answered
+// 200 with its source for as long as the build has existed. check-assets.mjs now computes the
+// set of scripts in dist and fails any that import a node: builtin, so the next one cannot
+// arrive quietly under a different name.
+for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','.well-known']) {
   const src = path.join(root,item); if (fs.existsSync(src)) fs.cpSync(src,path.join(dist,item),{recursive:true});
 }
 
