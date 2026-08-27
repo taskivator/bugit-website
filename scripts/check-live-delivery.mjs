@@ -75,6 +75,37 @@ async function probe(url) {
   }
 }
 
+/* CLOUDFLARE PAGES CANONICALISES, AND THAT IS NOT A DELIVERY FAILURE.
+ *
+ * Pages answers `/index.html` with `308 -> /` and `/404.html` with `308 -> /404`: the file is
+ * delivered, at the URL it has decided is canonical. The first run of this check called both
+ * WRONG STATUS, which is the mirror image of the mistake it was written to prevent -- reading
+ * the status and then not thinking about what it means.
+ *
+ * So follow exactly one same-origin hop, the way a visitor's browser does, and judge the
+ * response that actually arrives. One hop, not `redirect: "follow"`: a redirect CHAIN, or one
+ * that leaves the origin, is a finding and has to stay visible. */
+async function probeFollowingOneHop(url) {
+  const first = await probe(url);
+  if (!first.ok || ![301, 302, 307, 308].includes(first.status) || !first.location) return first;
+
+  let next;
+  try {
+    next = new URL(first.location, url);
+  } catch {
+    return { ...first, redirectNote: `unparseable Location: ${first.location}` };
+  }
+  if (next.origin !== new URL(url).origin) {
+    return { ...first, redirectNote: `redirects OFF-ORIGIN to ${next.href}` };
+  }
+
+  const second = await probe(next.href);
+  if (second.ok && [301, 302, 307, 308].includes(second.status)) {
+    return { ...second, redirectNote: `redirect chain: ${url} -> ${next.href} -> ${second.location}` };
+  }
+  return { ...second, redirectedFrom: url, finalUrl: next.href };
+}
+
 async function inBatches(items, size, fn) {
   const out = [];
   for (let i = 0; i < items.length; i += size) {
@@ -102,15 +133,18 @@ if (indexFile) targets.unshift({ ...indexFile, url: BASE + "/", label: "/  (bare
 
 console.log(`${targets.length} target(s) against ${BASE}  (${skipped.length} not served: ${skipped.map((s) => s.rel).join(", ") || "none"})`);
 
-const results = await inBatches(targets, 6, async (t) => ({ t, r: await probe(t.url) }));
+const results = await inBatches(targets, 6, async (t) => ({ t, r: await probeFollowingOneHop(t.url) }));
 
 const dead = [];
 const badStatus = [];
 const mismatch = [];
 const wrongType = [];
+const redirected = [];
 
 for (const { t, r } of results) {
   if (!r.ok) { dead.push({ t, r }); continue; }
+  if (r.redirectNote) { badStatus.push({ t, r }); continue; }
+  if (r.redirectedFrom) redirected.push({ t, r });
 
   // STATUS FIRST. A 404 body hashes like any other body; a 30x hands back a redirect stub.
   if (r.status !== 200) { badStatus.push({ t, r }); continue; }
@@ -128,6 +162,46 @@ for (const { t, r } of results) {
   if (want && !want.test(r.type)) wrongType.push({ t, r });
 }
 
+/* ------------------------------------------- THE HALF THAT LOOKS FOR WHAT SHOULD BE ABSENT
+ *
+ * Everything above is driven by what dist CONTAINS, and is blind by construction to a file
+ * that should no longer be there. That blindness had teeth within minutes of this check being
+ * written: `server.js` was removed from the build in the same commit, the deploy succeeded,
+ * every one of the 176 files verified byte-identical -- and `https://bugit.dev/server.js` went
+ * on answering 200 from a four-hour edge cache entry. A green run said nothing about it,
+ * because a check whose subject is the file list can only ever confirm the file list.
+ *
+ * So the subject here is the COMPLEMENT: the repository's own top-level files, minus the ones
+ * the build publishes. Those are the files somebody decided NOT to give the public, and each
+ * one is a URL that must not answer 200. Naming `server.js` alone would have passed the day
+ * `build.js` or a `.env` file joined it. */
+const publishedNames = new Set(local.map((f) => f.rel.split("/")[0]));
+const REPO_ONLY_SKIP = new Set([".git", "node_modules", "dist", ".github", "scratchpad"]);
+const unpublished = readdirSync(ROOT)
+  .filter((n) => !publishedNames.has(n) && !REPO_ONLY_SKIP.has(n))
+  .filter((n) => { try { return statSync(join(ROOT, n)).isFile(); } catch { return false; } });
+
+// A handful of paths that are not repo-root files but are the first things an opportunist asks
+// for. Cheap, and their absence is worth asserting explicitly rather than assuming.
+const ALWAYS_PROBE = [".git/config", "package.json", "package-lock.json", ".env"];
+const absentTargets = [...new Set([...unpublished, ...ALWAYS_PROBE])];
+
+const PROBE_CAP = 60;
+const probing = absentTargets.slice(0, PROBE_CAP);
+if (absentTargets.length > PROBE_CAP) {
+  // NO SILENT CAPS. A sweep that stops at the fold prints the same green as one that finished.
+  console.log(`\nNOTE: ${absentTargets.length} unpublished paths, probing the first ${PROBE_CAP}; ` +
+    `${absentTargets.length - PROBE_CAP} NOT checked: ${absentTargets.slice(PROBE_CAP).join(", ")}`);
+}
+
+const leaked = [];
+const leakResults = await inBatches(probing, 6, async (rel) => ({ rel, r: await probe(BASE + "/" + rel) }));
+for (const { rel, r } of leakResults) {
+  // 404 and 410 are the right answers. A 30x to the SPA shell is also fine: the path is not a
+  // file, it is a route the app will not resolve. Only a 200 means the bytes are being handed out.
+  if (r.ok && r.status === 200) leaked.push({ rel, r });
+}
+
 const say = (title, rows, fmt) => {
   if (!rows.length) return;
   console.log(`\n${title} -- ${rows.length}`);
@@ -137,13 +211,28 @@ const say = (title, rows, fmt) => {
 
 say("UNREACHABLE", dead, ({ t, r }) => `${t.label}  ${r.error}`);
 say("WRONG STATUS  (the status is the finding; the bytes were not compared)", badStatus,
-  ({ t, r }) => `${t.label}  answered HTTP ${r.status}${r.location ? " -> " + r.location : ""}  cf-cache:${r.cache}`);
+  ({ t, r }) => r.redirectNote
+    ? `${t.label}  ${r.redirectNote}`
+    : `${t.label}  answered HTTP ${r.status}${r.location ? " -> " + r.location : ""}  cf-cache:${r.cache}`);
 say("CONTENT DIFFERS", mismatch, ({ t, r }) =>
   `${t.label}  local ${sha(t.bytes).slice(0, 12)} vs live ${r.hash.slice(0, 12)}  cf-cache:${r.cache}` +
   (r.cache === "HIT" ? "   <- STALE AT THE EDGE, not a bad upload" : ""));
 say("WRONG CONTENT-TYPE", wrongType, ({ t, r }) => `${t.label}  served as ${r.type}`);
+say("SERVED BUT NOT PUBLISHED  (in the repo, not in dist, yet the origin hands it out)", leaked,
+  ({ rel, r }) => `/${rel}  HTTP 200  ${r.body.length} bytes  cf-cache:${r.cache}` +
+    (r.cache === "HIT" || r.cache === "REVALIDATED"
+      ? "   <- EDGE CACHE, not the deployment: re-check with ?cachebust, then purge"
+      : ""));
 
-const findings = dead.length + badStatus.length + mismatch.length + wrongType.length;
+// Not a finding: the origin canonicalised the URL and delivered the right bytes there. Printed
+// so a redirect that appears for a NEW reason is visible rather than absorbed in silence.
+if (redirected.length) {
+  console.log(`
+CANONICALISED (delivered, at the origin's own URL) -- ${redirected.length}`);
+  for (const { t, r } of redirected) console.log(`  · ${t.label}  -> ${new URL(r.finalUrl).pathname}`);
+}
+
+const findings = dead.length + badStatus.length + mismatch.length + wrongType.length + leaked.length;
 
 /* -------------------------------------------------- negative controls
  * Three ways this check could be quietly useless, each proven wrong against the live origin. */
@@ -153,13 +242,13 @@ if (SELF_TEST) {
 
   // 1. A path that cannot exist must be caught by STATUS, and its body must not be mistaken
   //    for content. This is the exact failure the header comment describes.
-  const ghost = await probe(BASE + "/__delivery_probe_that_cannot_exist__.txt");
+  const ghost = await probeFollowingOneHop(BASE + "/__delivery_probe_that_cannot_exist__.txt");
   if (ghost.status === 200) fails.push("an absent path answered 200; this origin cannot be verified by status");
   else console.log(`  absent path answered HTTP ${ghost.status} (${ghost.body.length} bytes of page body) — caught by status, never hashed`);
 
   // 2. A byte that differs must be seen. Mutate a real local file's expected hash.
   const sample = served.find((f) => f.rel === "index.html") || served[0];
-  const live = await probe(BASE + "/" + sample.rel);
+  const live = await probeFollowingOneHop(BASE + "/" + sample.rel);
   if (live.status === 200) {
     const mutated = sha(Buffer.concat([sample.bytes, Buffer.from("x")]));
     if (mutated === live.hash) fails.push("a mutated file hashed identically; the comparison is not comparing");
@@ -181,4 +270,5 @@ if (findings) {
   console.log(`\n${findings} DELIVERY FINDING(S) — ${BASE} is not serving what dist holds`);
   process.exit(1);
 }
-console.log(`\ncheck-live-delivery OK: all ${targets.length} files in dist arrive from ${BASE} with HTTP 200, byte-identical, correctly typed.`);
+console.log(`\ncheck-live-delivery OK: all ${targets.length} files in dist arrive from ${BASE} with HTTP 200, ` +
+  `byte-identical and correctly typed; none of the ${probing.length} unpublished repo paths is served.`);

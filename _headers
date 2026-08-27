@@ -68,6 +68,18 @@
 
 # Static media + brand assets change rarely and are not render-blocking — cache
 # them for a week instead of the 4h default to cut repeat-visit bandwidth.
+# /404.js is UNHASHED, unlike /app.<hash>.js, because 404.html is a static page that has to name
+# it at a fixed path. So it inherits Cloudflare Pages' four-hour default for scripts while the
+# page that loads it is revalidated on every request (max-age=0) -- meaning a corrected 404
+# string reaches readers up to four hours after the page that asks for it does.
+#
+# Four hours is also exactly how long a REMOVED root script stays reachable. On 2026-08-28 the
+# deploy that dropped /server.js from the build succeeded, the new deployment returned 404 for
+# it, and https://bugit.dev/server.js went on answering 200 with `cf-cache-status: REVALIDATED`
+# from this default. check-live-delivery.mjs now probes for exactly that.
+/404.js
+  Cache-Control: public, max-age=0, must-revalidate
+
 /public/media/*
   Cache-Control: public, max-age=604800
 /public/brand/*
