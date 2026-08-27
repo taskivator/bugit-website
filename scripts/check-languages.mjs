@@ -122,14 +122,35 @@ if (!/const langTag=c=>i18n\[c\]\.name;/.test(app))
 
 // --- Localized homepage metadata + not-found present + English fallback --------
 if (!/i18n\.en\.meta=\{title:/.test(app)) fail.push("English homepage meta (title/description) missing");
-if (!/i18n\.en\.notFound=\{/.test(app)) fail.push("English not-found strings missing");
 if (!/\(i18n\[lang\]\.meta\)\|\|i18n\.en\.meta/.test(app)) fail.push("homepage meta lacks explicit English fallback");
-// Two spellings of the same guarantee: the spread form, or notFoundText()'s own
-// `t[lang]||t.en`. Either is an explicit English fallback; what must never happen is a
-// locale rendering an undefined string. check-chrome-a11y asserts the rendered result.
-if (!/\{\.\.\.i18n\.en\.notFound,\.\.\.\(i18n\[lang\]\.notFound\|\|\{\}\)\}/.test(app)
-    && !/return t\[lang\]\|\|t\.en;/.test(app))
-  fail.push("not-found render lacks explicit English fallback");
+
+// THE NOT-FOUND STRINGS, AND WHY THIS ASKS FOR A PROPERTY RATHER THAN A SPELLING.
+//
+// This used to require the literal `i18n.en.notFound={`, and then one of two exact fallback
+// expressions. On 2026-08-28 all three not-found copies were consolidated into a single
+// NOT_FOUND table -- `i18n[c].notFound` turned out to be written for nine locales and READ BY
+// NOTHING, while the live view rendered a separate, terser table and 404.html rendered a third
+// in English only. The consolidation is strictly better and this guard failed it, because what
+// it was matching was the shape of the arrangement it was written from, not the guarantee.
+//
+// The guarantee is: English strings exist, and a locale that has none falls back to them
+// rather than rendering undefined. Any of the spellings below satisfies it.
+const englishNotFound =
+  /i18n\.en\.notFound=\{/.test(app) ||           // the pre-2026-08-28 arrangement
+  /const NOT_FOUND\s*=\s*\{[\s\S]{0,400}?\ben:\s*\{/.test(app);  // the table
+if (!englishNotFound) fail.push("English not-found strings missing");
+
+const notFoundFallback =
+  /\{\.\.\.i18n\.en\.notFound,\.\.\.\(i18n\[lang\]\.notFound\|\|\{\}\)\}/.test(app) ||
+  /return t\[lang\]\|\|t\.en;/.test(app) ||
+  /return NOT_FOUND\[lang\]\|\|NOT_FOUND\.en;/.test(app);
+if (!notFoundFallback) fail.push("not-found render lacks explicit English fallback");
+
+// AND THE PART A SOURCE SCAN CANNOT SEE. Every language must actually reach the reader on the
+// hard 404 page too, which is generated at build time from the same table.
+// `scripts/check-not-found.mjs` renders it in all eleven and with JavaScript off;
+// check-chrome-a11y asserts the in-app result. This line exists so that whoever changes the
+// arrangement again knows where the behavioural half lives.
 // Unknown route-style hash renders the not-found page (not the homepage).
 if (!/\/\^#\\\/\.\+\/\.test\(location\.hash\)/.test(app))
   fail.push("unknown route-style hash (#/…) does not route to the not-found page");
