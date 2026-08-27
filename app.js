@@ -497,7 +497,6 @@ const BASE_TITLE='BugIt | QA Bug-Filing Agent for VS Code';
 // English is the explicit fallback: every locale inherits i18n.en.meta unless it
 // overrides below, and renderDocRoute() reads i18n[lang].meta||i18n.en.meta.
 i18n.en.meta={title:BASE_TITLE,description:'BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval.'};
-i18n.en.notFound={eyebrow:'404',title:'Page not found',body:'That page doesn’t exist. The link may be mistyped, or the page may have moved.',docs:'Browse documentation',home:'Back to home'};
 const _siteMeta={
   ar:{title:"BugIt | وكيل ضمان الجودة المدعوم بالذكاء الاصطناعي لـ VS Code",description:"يحوّل BugIt الملاحظات الأولية إلى تقارير خلل مراجَعة ومدقَّقة يتم تسجيلها في نظام التتبع الخاص بك بعد موافقتك."},
   ja:{title:'BugIt | VS Code 向け QA バグ起票エージェント',description:'BugItはラフなテストメモを、確認済みのきれいなバグチケットに変換し、あなたの承認後にトラッカーへ登録します。'},
@@ -526,7 +525,8 @@ const _siteNotFound={
 // these). Every locale still keeps i18n.en.meta/notFound as its explicit fallback.
 function applyLocalizedSiteMeta(){
   for(const c in _siteMeta){if(i18n[c])i18n[c].meta=_siteMeta[c];}
-  for(const c in _siteNotFound){if(i18n[c])i18n[c].notFound={eyebrow:'404',...(_siteNotFound[c])};}
+  // `i18n[c].notFound` used to be written here and read by nothing. The strings themselves are
+  // kept and are now the ONE source the not-found view and 404.html both use; see NOT_FOUND.
 }
 // --- Language catalogue (WEB Phase I, BQA-023) --------------------------------
 // TWO DISTINCT axes kept deliberately separate so the catalogue claim stays truthful:
@@ -577,21 +577,26 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 // A localized not-found view for unknown SPA routes (AUD-1.1.0-009): an unknown `#/...` route must
 // NOT silently render the homepage. Rendered into the docView container with a recovery link home.
+// THE NOT-FOUND STRINGS LIVED IN THREE PLACES AND ONLY ONE OF THEM WAS READ.
+//
+// `_siteNotFound` above carried nine locales of richer copy -- it names the two likely causes
+// and offers a documentation link as well as a way home -- and `applyLocalizedSiteMeta` copied
+// it into `i18n[c].notFound`. NOTHING EVER READ `i18n[...].notFound`. It was written and never
+// used: nine translations maintained for a view that did not exist, while the view that does
+// exist rendered its own terser second copy from here, and `404.html` served an English-only
+// third copy to anyone who mistyped a real URL rather than a hash route.
+//
+// So: ONE table, the richer wording, all eleven languages. `_siteNotFound` supplies nine of
+// them and is the reviewed copy; Arabic and the English base are here, and `build.js` reads
+// this same table to localise `404.html`, so the hard 404 and the in-app one cannot drift.
+const NOT_FOUND = {
+  en:{title:'Page not found',body:'That page doesn’t exist. The link may be mistyped, or the page may have moved.',home:'Back to home'},
+  ar:{title:'الصفحة غير موجودة',body:'هذه الصفحة غير موجودة. قد يكون الرابط خاطئًا أو ربما تم نقل الصفحة.',home:'العودة إلى الصفحة الرئيسية'}
+};
+for(const c in _siteNotFound){NOT_FOUND[c]={title:_siteNotFound[c].title,body:_siteNotFound[c].body,home:_siteNotFound[c].home};}
+
 function notFoundText(lang){
-  const t={
-    en:{title:'Page not found',body:'That page does not exist.',home:'Go to the homepage'},
-    ja:{title:'ページが見つかりません',body:'そのページは存在しません。',home:'ホームページへ'},
-    fr:{title:'Page introuvable',body:"Cette page n'existe pas.",home:"Aller à l'accueil"},
-    de:{title:'Seite nicht gefunden',body:'Diese Seite existiert nicht.',home:'Zur Startseite'},
-    es:{title:'Página no encontrada',body:'Esa página no existe.',home:'Ir a la página de inicio'},
-    'pt-br':{title:'Página não encontrada',body:'Essa página não existe.',home:'Ir para a página inicial'},
-    it:{title:'Pagina non trovata',body:'Questa pagina non esiste.',home:'Vai alla home'},
-    ko:{title:'페이지를 찾을 수 없습니다',body:'해당 페이지가 존재하지 않습니다.',home:'홈페이지로 이동'},
-    zh:{title:'页面未找到',body:'该页面不存在。',home:'返回首页'},
-    ru:{title:'Страница не найдена',body:'Такой страницы не существует.',home:'На главную'},
-    ar:{title:'الصفحة غير موجودة',body:'هذه الصفحة غير موجودة.',home:'الذهاب إلى الصفحة الرئيسية'}
-  };
-  return t[lang]||t.en;
+  return NOT_FOUND[lang]||NOT_FOUND.en;
 }
 function renderNotFound(){
   const home=document.getElementById('homeView'),doc=document.getElementById('docView');

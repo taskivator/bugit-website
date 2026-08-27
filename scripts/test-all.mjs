@@ -64,7 +64,16 @@ const SUITES = [
   // because the site shipped with no Cross-Origin-Opener-Policy at all, and an absence is
   // invisible to a guard that only inspects what is written.
   "check-security-headers.mjs",
-  "check-billing-copy.mjs", "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
+  "check-billing-copy.mjs",
+  // check-billing-copy asserts the four prices somebody typed into it are still present in
+  // this repository. This asks the question that one cannot: is each of them a price the
+  // CHECKOUT offers? The authority is Stripe, read live by the portal's /pricing page.
+  "check-price-matches-checkout.mjs",
+  // ...and this one reads the page a mistyped URL actually lands on, which had never been
+  // rendered by anything: the dev server answers 200 with index.html for an unknown path, so
+  // every guard that sweeps "every route" swept past 404.html without ever loading it.
+  "check-not-found.mjs",
+  "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
   "check-legal-dataflow.mjs", "check-a11y.mjs", "check-languages.mjs", "check-doc-hygiene.mjs", "check-doc-duplicates.mjs", "check-spa-routing.mjs",
   // check-languages proves each locale HAS its keys; this proves the values are not
   // another locale's language. The Spanish integrations paragraph shipped in Brazilian

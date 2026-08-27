@@ -27,8 +27,18 @@
   <div class="box">
     <img src="/public/brand/blip-logo.svg" alt="" width="72" height="72" />
     <h1>404</h1>
-    <p>That page doesn't exist. It may have moved, or the link was mistyped.</p>
-    <a href="/">Back to bugit.dev</a>
+    <p id="nf-body">That page doesn’t exist. The link may be mistyped, or the page may have moved.</p>
+    <a id="nf-home" href="/">Back to home</a>
   </div>
+  <!--
+    English is in the markup, so this page is correct with no JavaScript at all. /404.js only
+    swaps the two strings for the reader's saved language, and it is an EXTERNAL file because
+    the site's CSP is `script-src 'self'` with no unsafe-inline and no nonce: an inline script
+    here would be blocked, silently, on the one page nobody tests.
+
+    Its strings are generated at build time from the same table app.js renders the in-app
+    not-found view from, so the two cannot drift.
+  -->
+  <script src="/404.js" defer></script>
 </body>
 </html>
