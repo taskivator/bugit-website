@@ -220,6 +220,24 @@ try {
     const b = await engine.launch();
     const ctx = await b.newContext({ ...devices[dev] });
     const page = await ctx.newPage();
+    /* WHY THESE LISTENERS. A film that does not start looks identical from the outside whether
+       the page built the wrong frame or the platform refused to play a correct one. On this
+       machine both engines reach "playing with sound" in seconds; the first CI run to ever
+       reach this step failed on both, which is the shape of an environment that cannot play a
+       film rather than a page that cannot ask for one. Neither reading may be assumed, so the
+       failure now carries what was actually observed and a human can tell them apart in one
+       read. It stays a FAILURE either way: a check that cannot make its assertion must say so
+       loudly, not pass quietly. */
+    const netFailures = [];
+    const consoleErrors = [];
+    page.on("requestfailed", (r) => {
+      if (r.url().includes("youtube") && netFailures.length < 6) {
+        netFailures.push(`${r.failure()?.errorText ?? "failed"} ${new URL(r.url()).host}`);
+      }
+    });
+    page.on("console", (m) => {
+      if (m.type() === "error" && consoleErrors.length < 6) consoleErrors.push(m.text().slice(0, 160));
+    });
     await page.goto(BASE, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1200);
     await page.evaluate(() => document.getElementById("consentBanner")?.remove());
@@ -227,21 +245,50 @@ try {
     await tile.scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     await tile.tap();
+    /* A cold shared runner fetching YouTube's player is not this laptop. The budget is generous
+       because a deadline that is merely too short reports a working film as a dead one, and a
+       generous budget costs nothing on the runs that pass. It is stated once and printed, so the
+       number in the message can never drift from the number in the loop. */
+    const BUDGET_MS = 45000;
+    const STEP_MS = 500;
     let state = null;
-    for (let i = 0; i < 32; i++) {
+    for (let i = 0; i < BUDGET_MS / STEP_MS; i++) {
       state = await page.evaluate(() => {
         const s = document.getElementById("ytStage");
         return { live: s.classList.contains("is-live"), ring: s.classList.contains("is-timed"),
                  muted: s.classList.contains("is-muted") };
       });
       if (state.live) break;
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(STEP_MS);
     }
     if (!state.live) {
+      const seen = await page.evaluate(() => {
+        const s = document.getElementById("ytStage");
+        const f = s?.querySelector("iframe");
+        /* Never throw from inside the diagnostic: an empty or relative src would reject the
+           evaluate and replace the finding with a crash. */
+        let frame = "NO iframe in the stage";
+        if (f) {
+          try {
+            const u = new URL(f.src, location.href);
+            frame = u.host + u.pathname;
+          } catch {
+            frame = `iframe with an unusable src: ${String(f.getAttribute("src")).slice(0, 80)}`;
+          }
+        }
+        return { stage: s ? s.className : "NO #ytStage", frame };
+      });
       failures.push(
         `${name}/${dev}: a film was tapped with the player reachable and it never reported ` +
-          "playing within 16s. The frame is built and the poster is gone, so the reader is " +
-          "looking at a still picture where a film should be running.",
+          `playing within ${BUDGET_MS / 1000}s. The frame is built and the poster is gone, so ` +
+          "the reader is looking at a still picture where a film should be running.\n" +
+          `      stage classes: ${seen.stage}\n` +
+          `      embed: ${seen.frame}\n` +
+          `      failed requests to youtube: ${netFailures.length ? netFailures.join("; ") : "none"}\n` +
+          `      console errors: ${consoleErrors.length ? consoleErrors.join(" | ") : "none"}\n` +
+          "      READ IT THIS WAY: a correct embed on the privacy host with no failed request " +
+          "means the page did its job and this environment would not play the film, which is " +
+          "not a defect in the site. A missing or wrong embed is.",
       );
     } else if (!state.ring) {
       failures.push(`${name}/${dev}: the film is playing and the countdown ring is not running`);
