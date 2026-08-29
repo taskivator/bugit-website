@@ -207,11 +207,63 @@ for (const view of VIEWS) {
           only way to put focus on the opener is to click it. */
     await page.evaluate(() => document.activeElement?.blur?.());
     let tabs = 0, reached = false;
+    // THE TRAIL IS RECORDED WHILE WALKING, not reconstructed afterwards. This assertion failed on
+    // Linux WebKit in CI for six days and passed on Windows WebKit on the machine where it was
+    // being read, and all it ever said was that 80 stops were not enough. "Not reachable" has at
+    // least four causes -- the control is not in the sequential order, focus is trapped, focus
+    // left the document, or the page really is that deep -- and they are told apart by where the
+    // focus actually went, which nothing was keeping.
+    const trail = [];
     for (; tabs < 80; tabs++) {
       await page.keyboard.press("Tab");
-      if (await page.evaluate((b) => document.activeElement === document.querySelector(b), btn)) { reached = true; break; }
+      const here = await page.evaluate((b) => {
+        const a = document.activeElement;
+        const name = (el) => !el ? "(none)"
+          : (el === document.body ? "body"
+            : el.tagName.toLowerCase() + (el.id ? "#" + el.id : "")
+              + (el.className && typeof el.className === "string"
+                 ? "." + el.className.trim().split(/\s+/).slice(0, 2).join(".") : ""));
+        return { at: name(a), hit: a === document.querySelector(b) };
+      }, btn);
+      trail.push(here.at);
+      if (here.hit) { reached = true; break; }
     }
-    if (!reached) fail.push(`${K} is not reachable by Tab within 80 stops, so its keyboard contract is unreachable too.`);
+    if (!reached) {
+      // What the browser thinks of the control itself, asked once, at the moment it was missed.
+      const why = await page.evaluate((b) => {
+        const el = document.querySelector(b);
+        if (!el) return { missing: true };
+        const cs = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        let hidden = null, inert = null;
+        for (let n = el; n; n = n.parentElement) {
+          if (!hidden && n.getAttribute && n.getAttribute("aria-hidden") === "true") hidden = n.tagName.toLowerCase() + (n.id ? "#" + n.id : "");
+          if (!inert && n.hasAttribute && n.hasAttribute("inert")) inert = n.tagName.toLowerCase() + (n.id ? "#" + n.id : "");
+        }
+        return {
+          tabindex: el.getAttribute("tabindex"), disabled: !!el.disabled,
+          display: cs.display, visibility: cs.visibility, pointerEvents: cs.pointerEvents,
+          rect: `${Math.round(r.width)}x${Math.round(r.height)} at ${Math.round(r.x)},${Math.round(r.y)}`,
+          offsetParent: el.offsetParent ? "yes" : "null",
+          ariaHiddenAncestor: hidden, inertAncestor: inert,
+          focusables: document.querySelectorAll(
+            'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])').length,
+        };
+      }, btn);
+      // Repeats are what a focus trap or an exhausted order looks like, so the trail is printed
+      // as runs rather than as eighty lines.
+      const runs = [];
+      for (const step of trail) {
+        const last = runs[runs.length - 1];
+        if (last && last.at === step) last.n += 1; else runs.push({ at: step, n: 1 });
+      }
+      fail.push(
+        `${K} is not reachable by Tab within 80 stops, so its keyboard contract is unreachable too.\n` +
+        `      the control: ${JSON.stringify(why)}\n` +
+        `      where Tab went: ${runs.slice(0, 14).map((r) => r.n > 1 ? `${r.at} x${r.n}` : r.at).join(" -> ")}` +
+        (runs.length > 14 ? ` -> ... ${runs.length - 14} more distinct stop(s)` : ""),
+      );
+    }
     await page.evaluate((b) => document.querySelector(b).focus(), btn);
 
     /* 2. ENTER OPENS, AND FOCUS GOES INTO THE MENU. */
