@@ -39,10 +39,13 @@ jobs:
       - name: Install build tooling
         run: npm ci
       - name: Build static site
+        id: build
         run: node build.js
       - name: Verify referenced assets resolve
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-assets.mjs
       - name: Verify documentation links resolve
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-doc-links.mjs
       # GitHub Pages had been publishing this repository's ROOT since 2026-07-06, five days
       # before bugit.dev's DNS existed, on every push to main: a second public copy of the site
@@ -52,10 +55,13 @@ jobs:
       # An external audit listed the Pages URL on 2026-08-03 and nobody read three origins as
       # meaning three origins, so this asks the URL rather than trusting anyone to notice.
       - name: Verify this site has only one public origin
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-single-publication.mjs
       - name: Verify localized highlights and full PDF guides are complete
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-docs.mjs
       - name: Verify responsive pages do not overflow
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-overflow.mjs
       # Mission Control pauses so visitors can read the report. Both pause sources were
       # edge-triggered pairs, and a finger only ever produces the first half of each, so
@@ -63,8 +69,10 @@ jobs:
       # it running AND that hover/keyboard still pause it, so the freeze cannot be
       # "fixed" by deleting the feature.
       - name: Verify Mission Control cannot latch paused
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-mission-pause.mjs
       - name: Verify BugIt logo highlight is clipped (upper-corner artifact guard)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-logo.mjs
       # The brand source of truth lives outside this repo and outside git, so CI
       # here cannot regenerate the assets to compare against them — which is why
@@ -74,33 +82,44 @@ jobs:
       # in the tree being built. check-brand-sync.mjs is itself generated and
       # covered by that receipt, so editing the detector fails the detector.
       - name: Verify brand assets match the brand pipeline
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-brand-sync.mjs
       - name: Verify trust cards have no retired glyphs beside their SVG icons
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-trust-icons.mjs
       # The 2026-08-12 audit (F-08) found five directly-filed trackers advertised as
       # needing an MCP server, because the localized lede was corrected and the grouping
       # beside it was not. This asserts the site matches tracker_routing.FILEABLE.
       - name: Verify tracker capability claims match what BugIt files to
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-tracker-claims.mjs
 
       - name: Attachment claim is stated in every language
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-attachment-claim.mjs
       - name: Verify Google Ads tag shape (single load, consent-first, CSP hosts)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-ads-tag.mjs
       - name: Verify immutable caching is confined to content-hashed filenames
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-cache-headers.mjs
       # Its complement: cache-headers asks what may be cached, this asks what protects the
       # response. The site shipped without any Cross-Origin-Opener-Policy because no list said
       # which security headers it sends, so nothing could notice one missing.
       - name: Verify every required security header is sent on /*
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-security-headers.mjs
       - name: Verify the CSP grants no unused or undisclosed telemetry destination
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-csp-telemetry.mjs
       - name: Verify billing copy states a one-time payment in every locale
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-billing-copy.mjs
       - name: Verify every advertised price is one the checkout actually offers
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-price-matches-checkout.mjs
       - name: Verify build output exists
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           test -f dist/index.html
           # build.js content-hashes the CSS/JS bundles and DELETES the unhashed
@@ -115,12 +134,14 @@ jobs:
       # before consent and after Reject; the tag loads only after Accept. One lean job,
       # single Chromium, no matrix.
       - name: Install Chromium for the consent network test
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         # WebKit as well as Chromium. check-disclosure.mjs runs the interaction contracts in
         # both, because the language menu shipped a defect that only Safari has: it does not
         # focus a button on tap, so the menu closed and reopened within one gesture and would
         # not collapse. Every other guard in this repo is Chromium-only and all of them passed.
         run: npx playwright install --with-deps chromium webkit
       - name: Prove strict prior-consent tag gating (browser network capture)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           PORT=3123 node server.js &
           for i in $(seq 1 20); do curl -sf http://localhost:3123/ >/dev/null && break; sleep 0.5; done
@@ -131,6 +152,7 @@ jobs:
       # other one, and fixing only the server would have turned "server never came up" into
       # "Executable doesn't exist" on the next run.
       - name: Verify the not-found page is localized in every language
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-not-found.mjs
       # Eight guards below were declared in scripts/test-all.mjs but had never been run by CI,
       # so `npm test` failed locally while every push showed green. check-legal-dataflow was
@@ -140,6 +162,7 @@ jobs:
       # this from recurring: adding a scripts/check-*.mjs and forgetting to wire it is now a
       # build failure rather than a silent gap.
       - name: Verify copy that must not drift (Team, activation, legal, docs, languages)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           node scripts/check-team-paused.mjs
           node scripts/check-activation-copy.mjs
@@ -151,6 +174,7 @@ jobs:
           node scripts/check-doc-duplicates.mjs
           node scripts/check-doc-rendering.mjs
       - name: Verify accessibility, routing and rendered a11y against the served site
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           PORT=3124 node server.js &
           for i in $(seq 1 20); do curl -sf http://localhost:3124/ >/dev/null && break; sleep 0.5; done
@@ -162,35 +186,41 @@ jobs:
       # could see it: the text is correct until the stylesheet is applied. This reads the
       # rendered page instead, and proves it can see the defect before it reports a pass.
       - name: Verify the product name is never rendered in the wrong casing
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-brand-casing.mjs
       # styles.css is three cascade layers and UNLAYERED rules outrank all of them, so one
       # stray brace silently promotes the old sheet above the redesign with no parse error
       # from anything. This asserts the layering and then measures the outcome it exists
       # for: every section on the page beginning on the same edge, in both directions.
       - name: Verify the stylesheet is fully layered and the page has one content edge
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-alignment.mjs
       # A reveal-on-scroll page fails by leaving text invisible, with no error anywhere.
       # This drives the whole page, section by section, and asserts that what a visitor is
       # looking at is readable, including under prefers-reduced-motion.
       - name: Verify no animation leaves content unreadable
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-motion.mjs
       # Every film on the channel exists as a 1920x1080 upload and as a 1080x1920 Short.
       # The page shipped pointing ten of twelve tiles at the Short, so a desktop played a
       # vertical video with black pillars over half the frame. Nothing could see it from the
       # source: the ids were real and the posters loaded. This presses play at both widths.
       - name: Verify the channel plays the cut that matches the screen
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-channel.mjs
       # sRGB has 256 levels and the ground crosses about 25 of them down a 4K screen, so
       # without a dither each level holds for ~90px and its edge reads as a band. This
       # measures the width of the plateaus at 3840x2160, and proves itself by putting the
       # old ground back and requiring a failure.
       - name: Verify the background has no contours at 4K
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-ground.mjs
       # Every heading on every documentation route once rendered at 18px, because a clamp()
       # written `1.35rem+ 2.1vw` is invalid and every font-size using it silently inherited.
       # This resolves every calculated token, then checks hierarchy, reading measure, the
       # contents list and the loading state on all nine routes.
       - name: Verify the documentation reads like a document
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-reading.mjs
       # THE 2026-08-21 AUDIT, KEPT AS THREE GUARDS.
       # Every check above reads one property of the page. These read the page the way a reader
@@ -204,10 +234,13 @@ jobs:
       # site -- which is exactly how it presented: ERR_CONNECTION_REFUSED on job 3 of 55. One
       # malformed percent-escape threw inside the request handler and ended the process.
       - name: Verify one bad URL cannot kill the preview server
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-dev-server.mjs
       - name: Verify every language has room, on every screen, on every route
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-space.mjs
       - name: Verify every route in every language, entered cold, by click, by reload, by history
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-routing.mjs
       # Owner rule: the instrument may not change size when the report opens, or on its own.
       # The progress label CYCLES through every stage over 25 seconds, so whether a clip is on
@@ -216,8 +249,10 @@ jobs:
       # measures every string the loop can write, and demands real headroom rather than a fit,
       # because the version that shipped had 4px to spare on the machine it was tuned on.
       - name: Verify the progress label fits every language it can show
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-progress-label.mjs
       - name: Verify Mission Control keeps its size
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-instrument-size.mjs
       # Reads the rendered page and asks the reader's question rather than the maintainer's:
       # on the Japanese page, is this sentence in Japanese? The film wall shipped twenty-four
@@ -229,13 +264,16 @@ jobs:
       # one printed the markers. No source scan and no parity check can see it. Only reading
       # the rendered page can.
       - name: Verify no document shows its own markup
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-doc-markup.mjs
       - name: Verify nothing renders in English on a translated page
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-untranslated.mjs
       # The header lockup, the language menu, the social labels and the footer links: present on
       # every route, and each of their defects is a property of an interaction or of one narrow
       # width, which is exactly what a page-level sweep steps over.
       - name: Verify the page chrome in every language
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-chrome.mjs
       # A reveal that never finishes leaves a card greyed out for ever, and the cause has no
       # visible connection to it: `overflow:hidden` on a grid makes that grid the scroll
@@ -244,6 +282,7 @@ jobs:
       # 0.57 and 0.71 opacity, and check-motion -- which asserts that reveals settle -- passed,
       # because it renders one viewport and reads only what is on screen.
       - name: Verify every scroll-driven reveal reaches the reader
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-reveal.mjs
       # The report's pinned action bar had a 46px gradient band above it AND a see-through top
       # to its own background, so the report faded out into a smear that travelled with it.
@@ -251,6 +290,7 @@ jobs:
       # applied: an identical-specificity rule later in the same layer restored the gradient.
       # Reading the source said the bar was solid; only the rendered page said otherwise.
       - name: Verify nothing is painted over the report
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-report-bar.mjs
       # THE ONLY STEP HERE THAT RUNS A SECOND ENGINE. A control that declares aria-expanded must
       # open and close again, by tap and by click, in WebKit as well as Chromium. Owner,
@@ -260,6 +300,7 @@ jobs:
       # blurred with relatedTarget=null, the "focus has left" handler closed the menu during
       # pointerdown, and the click that followed reopened it.
       - name: Verify every disclosure closes again, in both engines
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-disclosure.mjs
       # A CONTROL THAT OPENS AN OVERLAY MUST STILL WORK WHILE THE OVERLAY IS OPEN. Owner,
       # 2026-08-21: "pressing the 3 lines in mobile app to open the settings and then tapping it
@@ -279,16 +320,22 @@ jobs:
       # place, and the website deploys by wrangler rather than from CI, so a red step here does
       # not block a release.
       - name: Verify every declared menu answers the keyboard, in both engines
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-menu-keyboard.mjs
       - name: Verify an overlay never disables the control that closes it
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-overlay-controls.mjs
       - name: A page-locking overlay's close control is on the screen
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-close-control.mjs
       - name: A pinch does not close what the reader just opened
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-zoomed-overlay.mjs
       - name: The page stays inside a phone's compositor memory budget
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-compositor-budget.mjs
       - name: Nothing renders below the type scale's own floor
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-type-floor.mjs
       # Chrome on Android is Blink; Chrome on iOS is WebKit. This runs both, because a
       # Chromium-only sweep has tested half of "Chrome on mobile".
@@ -296,47 +343,60 @@ jobs:
       # stylesheet got it wrong twice. This one measures pixels, at rest and mid-reveal.
       # The one-box instrument was designed in English, which is the shortest language here.
       - name: Verify Mission Control is one box in every language on a phone
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-mission-box.mjs
       - name: Verify every hairline separator is a single painted line
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-hairlines.mjs
       - name: Verify the phone browsers get a page they can use
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-mobile-chrome.mjs
       # The channel picker and the stage are one column, and a hover paints inside it. Measured
       # from photographs: the highlight the owner saw leaving the box was a background and a
       # shadow, and its replacement is a 2px mark drawn on the seam the two halves share.
       - name: Verify nothing the demo stage paints leaves the instrument
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-demo-stage.mjs
       # An overlay's CONTENTS, not just the control that opened it. The mobile menu inerted its
       # own links and its own close button: visible, opaque and completely dead to a finger.
       - name: Verify everything inside an open overlay can actually be used
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-overlay-contents.mjs
       # A tap on a film plays it on this page. It briefly opened the YouTube app instead.
       - name: Verify tapping a film plays it here and does not leave the site
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-watch-inline.mjs
       # The collapsed status panel's one line, sampled across a whole cycle rather than
       # photographed once: it must be the row the run has reached, never the approval row.
       - name: Verify the collapsed Mission Control shows the row the run has reached
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-mission-live-row.mjs
       # Nothing pinned over a small screen: the docs contents rail, and the header in landscape.
       - name: Verify nothing sits on a phone screen uninvited
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-phone-height.mjs
       # A disclosure that opens something has to show it. The instrument does not grow, so the
       # report opens into a scroller whose top is what was already on the screen.
       - name: Verify pressing "Show full report" puts the report in front of the reader
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-report-reveal.mjs
       # Two of the step marker's three states are animated in `transform`, which is also where
       # its centring was written, and an animation replaces the property it animates.
       - name: Verify the Mission Control marker stays centred in its row while it animates
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-mission-marker.mjs
       # The reveal's fade is measured against the scrollport; a phone held sideways has 390px.
       - name: Verify nothing is still faded while it sits on a landscape phone screen
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-dim-on-screen.mjs
       # Support is the one documentation route short enough to fit a screen, which took the
       # scrollbar away under the reader and left the progress line reading 100%.
       - name: Verify the documentation chrome neither lies nor moves
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-docs-chrome.mjs
       # The two hairlines beside a section eyebrow, photographed at four display scalings.
       - name: Verify the rules either side of a label are the same line
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-rule-pair.mjs
       # WINDOWS HIGH CONTRAST, and the only step here that runs GECKO. `forced-colors: active`
       # is what a Windows reader with High Contrast on gets: the UA replaces colour, and it
@@ -346,8 +406,11 @@ jobs:
       # Firefox is installed for it because Gecko had never rendered this site at any width,
       # and because the two engines disagree about what survives the forcing.
       - name: Install Firefox for the forced-colours sweep
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: npx playwright install --with-deps firefox
       - name: Verify Windows High Contrast still shows focus and every control's edge
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-forced-colors.mjs
       - name: Verify every guard in scripts/ is actually wired into CI
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-ci-coverage.mjs

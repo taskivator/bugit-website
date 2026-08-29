@@ -32,12 +32,31 @@
  * builds and where it points. AND THEN one film per engine is played for real, over the real
  * network, and the player is asked whether it started -- because "the frame is correct" and
  * "the film is running" turned out to be two different things.
+ *
+ * WHERE THAT LAST PART STOPS BEING THIS SITE'S BUSINESS. On this machine both engines reach
+ * "playing" in seconds. On a GitHub runner neither ever does, and the diagnostics say why in
+ * one read: the embed is the right film on the privacy host, the poster is gone, the ring is
+ * correctly still, and the stage carries `is-muted` -- which app.js adds in exactly one place,
+ * inside a recovery that returns early unless the player has already talked to the page. So the
+ * handshake completed, the player answered, the page muted it and asked again, and YouTube
+ * still would not start a video for a headless browser on a shared datacentre address. Every
+ * part the page owns worked.
+ *
+ * So the verdict is split. Anything the page builds wrongly is a FAILURE, including the ring
+ * running while the player has said it is not playing, which is the owner's original complaint
+ * and needs no video at all to detect. Playback that simply never starts, with every one of
+ * those assertions passing, is reported loudly as NOT CONFIRMED and does not fail: a check that
+ * can never be green teaches everyone to stop reading CI, and this one was skipping the ten
+ * guards that ran after it. WATCH_REQUIRE_PLAYBACK=1 makes it a failure again wherever a film
+ * is genuinely expected to play.
  */
 import { chromium, webkit, devices } from "playwright";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import net from "node:net";
+
+import { quietLaunch, hush, AUDIBLE } from "./lib/quiet.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const EMBED_HOST = "https://www.youtube-nocookie.com";
@@ -103,8 +122,9 @@ const SEEN = () => {
 async function run(engineName, engine, deviceName, broken) {
   const failures = [];
   let taps = 0;
-  const b = await engine.launch();
+  const b = await engine.launch(quietLaunch(engineName));
   const ctx = await b.newContext({ ...devices[deviceName] });
+  await hush(ctx);
   await ctx.route(EMBED_HOST + "/**", (route) => route.abort());
   let patched = !broken;
   if (broken) {
@@ -216,9 +236,12 @@ try {
      rather than leaving a still frame, and YouTube's own controls carry the way back to sound.
      Headless Chromium refuses unmuted autoplay for the same reason a phone does, so that
      recovery is exercised here rather than assumed. */
+  const unconfirmed = [];
   for (const [name, engine, dev] of [["chromium", chromium, "Pixel 7"], ["webkit", webkit, "iPhone 14"]]) {
-    const b = await engine.launch();
+    const b = await engine.launch(quietLaunch(name));
     const ctx = await b.newContext({ ...devices[dev] });
+    /* Before the first navigation, or the init script never runs in the frames that matter. */
+    await hush(ctx);
     const page = await ctx.newPage();
     /* WHY THESE LISTENERS. A film that does not start looks identical from the outside whether
        the page built the wrong frame or the platform refused to play a correct one. On this
@@ -242,6 +265,15 @@ try {
     await page.waitForTimeout(1200);
     await page.evaluate(() => document.getElementById("consentBanner")?.remove());
     const tile = page.locator(".yt-item").nth(1);
+    /* WHICH FILM THIS TILE ASKS FOR, read from the tile. The section used to tap nth(1) and
+       then assert nothing at all about what it embedded, which left the strongest site-side
+       assertion available here unmade. Either cut is accepted: which one a phone gets is
+       cutOf()'s decision and not this check's subject. */
+    const wants = await tile.evaluate((el) => ({
+      tall: el.dataset.tall || "",
+      wide: el.dataset.wide || "",
+      label: (el.querySelector(".yt-t") || {}).textContent || "(unlabelled)",
+    }));
     await tile.scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     await tile.tap();
@@ -268,33 +300,100 @@ try {
         /* Never throw from inside the diagnostic: an empty or relative src would reject the
            evaluate and replace the finding with a crash. */
         let frame = "NO iframe in the stage";
+        let host = "";
+        let id = "";
         if (f) {
           try {
             const u = new URL(f.src, location.href);
             frame = u.host + u.pathname;
+            host = u.host;
+            id = decodeURIComponent(u.pathname.replace(/^\/embed\//, ""));
           } catch {
             frame = `iframe with an unusable src: ${String(f.getAttribute("src")).slice(0, 80)}`;
           }
         }
-        return { stage: s ? s.className : "NO #ytStage", frame };
+        /* THE ELEMENT THE PAGE ACTUALLY HIDES. app.js hides
+           getElementById('ytPoster').parentNode, and that parent IS <picture class="yt-poster">.
+           The first version read .parentNode here as well, which climbs one level further to
+           #ytStage -- never hidden by anything -- so it reported the poster as covering the
+           player on every single run, and would have turned an unconfirmed playback back into a
+           hard failure for a reason that was never true. Caught by the mutation test, not by
+           reading it back. */
+        const poster = document.querySelector("#ytStage .yt-poster");
+        return {
+          stage: s ? s.className : "NO #ytStage",
+          exists: !!s,
+          frame, host, id,
+          hasFrame: !!f,
+          posterShowing: !!(poster && !poster.hidden),
+        };
       });
-      failures.push(
-        `${name}/${dev}: a film was tapped with the player reachable and it never reported ` +
-          `playing within ${BUDGET_MS / 1000}s. The frame is built and the poster is gone, so ` +
-          "the reader is looking at a still picture where a film should be running.\n" +
-          `      stage classes: ${seen.stage}\n` +
-          `      embed: ${seen.frame}\n` +
-          `      failed requests to youtube: ${netFailures.length ? netFailures.join("; ") : "none"}\n` +
-          `      console errors: ${consoleErrors.length ? consoleErrors.join(" | ") : "none"}\n` +
-          "      READ IT THIS WAY: a correct embed on the privacy host with no failed request " +
-          "means the page did its job and this environment would not play the film, which is " +
-          "not a defect in the site. A missing or wrong embed is.",
-      );
+
+      /* SPLIT THE VERDICT. Everything up to here is the page's job and is decided here.
+         Whether YouTube then plays a film for a headless browser on a shared datacentre
+         runner is not the page's job and cannot be made into one. The old code printed
+         exactly this distinction in its own failure message and then failed regardless,
+         which made the message advice nobody could act on. */
+      const site = [];
+      if (!seen.exists) site.push("there is no player stage on the page at all");
+      if (!seen.hasFrame) site.push("the tap built no player frame");
+      else if (!/(^|\.)youtube-nocookie\.com$/.test(seen.host)) {
+        site.push(`the frame points at ${seen.host || "an unreadable src"}, not the privacy host`);
+      } else if (seen.id !== wants.tall && seen.id !== wants.wide) {
+        site.push(
+          `the frame carries ${seen.id} and the tile asks for ${wants.tall || "(none)"} or ` +
+            `${wants.wide || "(none)"}`,
+        );
+      }
+      if (seen.posterShowing) site.push("the poster is still covering the player");
+      /* THE OWNER'S ACTUAL COMPLAINT, 2026-08-22: "the video DOES NOT play but the highlight
+         around it starts moving". Checkable without a single frame of video, so it keeps its
+         teeth here. Only when the player HAS spoken: is-muted is added solely by recover(),
+         which returns early unless the player has already talked to the page, so its presence
+         is proof the handshake completed and the player said it was not playing. If the player
+         never answered at all, app.js runs the ring on purpose and says why -- silence means
+         the film is probably running, and a ring stopped by silence is the same lie the other
+         way round. */
+      if (state.ring && state.muted && !state.live) {
+        site.push(
+          "the countdown ring is running while the player has told the page it is NOT playing",
+        );
+      }
+
+      const observed =
+        `      stage classes: ${seen.stage}\n` +
+        `      embed: ${seen.frame}\n` +
+        `      tile asks for: ${wants.tall || "(none)"} / ${wants.wide || "(none)"}\n` +
+        `      failed requests to youtube: ${netFailures.length ? netFailures.join("; ") : "none"}\n` +
+        `      console errors: ${consoleErrors.length ? consoleErrors.join(" | ") : "none"}`;
+
+      if (site.length) {
+        failures.push(
+          `${name}/${dev}: a film was tapped with the player reachable and it never reported ` +
+            `playing within ${BUDGET_MS / 1000}s, AND the page itself is wrong: ` +
+            `${site.join("; ")}.\n${observed}`,
+        );
+      } else {
+        unconfirmed.push(
+          `${name}/${dev}: every part the page controls is correct -- the right film on the ` +
+            `privacy host, the poster gone, no ring over a still frame` +
+            `${state.muted ? ", and the player answered and was muted and restarted by the " +
+              "recovery path, so the handshake worked and the platform still refused" : ""}` +
+            ` -- but the player never reported playing within ${BUDGET_MS / 1000}s.\n${observed}`,
+        );
+      }
     } else if (!state.ring) {
       failures.push(`${name}/${dev}: the film is playing and the countdown ring is not running`);
     } else {
-      console.log(`  ${name}/${dev}: the film really plays${state.muted ? " (muted: the platform " +
-        "refused to start it with sound, and the page recovered)" : " with sound"}`);
+      /* "with sound" was about the PLAYER, never about the room, and with the output silenced
+         that had to stop reading as a claim about what you can hear. */
+      console.log(
+        `  ${name}/${dev}: the film really plays` +
+          (state.muted
+            ? " (the platform refused to start it with sound, and the page's mute recovery worked)"
+            : " and the page never had to mute it") +
+          (AUDIBLE ? "" : " [audio output silenced]"),
+      );
     }
     await b.close();
   }
@@ -313,6 +412,28 @@ try {
   }
   if (!taps) failures.push("no film was tapped, so a clean result here means nothing");
 
+  /* PLAYBACK THAT COULD NOT BE CONFIRMED. Printed at the top of the output, in both the passing
+     and the failing case, because the one thing that must not happen is this going quiet.
+     WATCH_REQUIRE_PLAYBACK=1 turns it back into a failure, for any environment that can reach
+     YouTube properly -- this laptop does, and both engines get to "playing" in seconds there. */
+  const REQUIRE_PLAYBACK = process.env.WATCH_REQUIRE_PLAYBACK === "1";
+  if (unconfirmed.length) {
+    const banner =
+      "check-watch-inline: PLAYBACK NOT CONFIRMED on " +
+      `${unconfirmed.length} engine${unconfirmed.length === 1 ? "" : "s"}`;
+    if (REQUIRE_PLAYBACK) {
+      for (const u of unconfirmed) failures.push(u);
+    } else {
+      console.error(banner);
+      for (const u of unconfirmed) console.error("  ~ " + u);
+      console.error(
+        "  Not a failure: every assertion about what this page builds passed on those engines, " +
+          "and whether YouTube plays a film for a headless browser on a shared runner is not " +
+          "something this site controls. Run with WATCH_REQUIRE_PLAYBACK=1 where it should play.",
+      );
+    }
+  }
+
   if (failures.length) {
     console.error("check-watch-inline: FAIL");
     for (const f of failures) console.error("  - " + f);
@@ -320,8 +441,11 @@ try {
   }
   console.log(
     `check-watch-inline: OK (${taps} films tapped across ${TARGETS.length} device/engine pairs, ` +
-      `every one played here and brought the player on screen; one film per engine watched all ` +
-      `the way to playing over the real network; negative controls fired ${fired.join(", ")})`,
+      `every one played here and brought the player on screen; ` +
+      (unconfirmed.length
+        ? `playback itself was NOT confirmed on ${unconfirmed.length} of 2 engines, see above; `
+        : "one film per engine watched all the way to playing over the real network; ") +
+      `negative controls fired ${fired.join(", ")})`,
   );
 } finally {
   try { server.kill(); } catch {}

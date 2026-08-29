@@ -31,6 +31,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import net from "node:net";
 
+import { quietLaunch, hush } from "./lib/quiet.mjs";
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const fail = [];
 const note = (m) => console.log("  " + m);
@@ -66,10 +68,11 @@ try {
     if (serverExit) throw new Error(`the site server exited before serving (${serverExit})`);
     try { await fetch(base); break; } catch { await new Promise((r) => setTimeout(r, 250)); }
   }
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(quietLaunch("chromium"));
 
   // ---- 1. the markup and the catalogue agree ------------------------------
   const desk = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await hush(desk);
   const page = await desk.newPage();
   await page.goto(base, { waitUntil: "networkidle" });
   await page.evaluate(() => document.querySelector(".yt-list").scrollIntoView({ block: "center" }));
@@ -160,6 +163,7 @@ try {
 
   // ---- 4. the phone stage --------------------------------------------------
   const ph = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await hush(ph);
   const mob = await ph.newPage();
   await mob.goto(base, { waitUntil: "networkidle" });
   await mob.evaluate(() => document.querySelector(".yt-list").scrollIntoView({ block: "center" }));
