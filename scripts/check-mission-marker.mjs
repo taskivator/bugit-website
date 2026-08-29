@@ -117,18 +117,35 @@ for (const view of VIEWS) {
     // The instrument runs only while it is on screen, and it pauses under a pointer by design.
     await page.evaluate(() => document.querySelector(".mission").scrollIntoView({ block: "start", behavior: "instant" }));
     await page.mouse.move(4, 4);
-    let worst = 0, where = "";
+    let worst = 0, where = "", seen = 0;
     for (let i = 0; i < SAMPLES; i++) {
       for (const r of await page.evaluate(PROBE)) {
         samples++;
+        seen++;
         if (r.off > worst) { worst = r.off; where = `${r.state} "${r.step}"`; }
       }
       await page.waitForTimeout(45);
     }
+    /* A GLOBAL FLOOR IS NOT A PER-ENGINE FLOOR, and this file had only the global one.
+       `worst` starts at 0 and only ever rises, so a view that measured NOTHING reports
+       `worst 0.0px off centre` -- which is also what a perfect view reports. One engine could
+       stop rendering the marker entirely and the run would stay green on the strength of the
+       other four, printing the best possible number for the broken one.
+       This is the same defect that made check-dim-on-screen pass vacuously in any engine
+       without `animation-timeline: view()`, fixed there on 2026-08-29 with a per-engine census.
+       The rule is the same: silence only counts as a result once this view has been shown to
+       have something to measure. */
+    if (seen === 0) {
+      fail.push(`${label}: not one marker was measured here, so the 0px below is the absence ` +
+        "of a measurement rather than a centred marker. Either this engine does not render " +
+        "#mcStepList, or the instrument never ran in this view.");
+      await browser.close();
+      continue;
+    }
     if (worst > TOLERANCE) {
       fail.push(`${label}: the marker is ${worst}px off the centre of its row (${where})`);
     }
-    console.log(`  ${label}: worst ${worst.toFixed(1)}px off centre`);
+    console.log(`  ${label}: worst ${worst.toFixed(1)}px off centre over ${seen} samples`);
     await browser.close();
   } catch (e) {
     fail.push(`${label}: ${String(e).split("\n")[0]}`);
