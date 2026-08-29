@@ -205,7 +205,24 @@ for (const view of VIEWS) {
 
     /* 1. IT MUST BE REACHABLE WITHOUT A POINTER AT ALL. Everything below is worthless if the
           only way to put focus on the opener is to click it. */
-    await page.evaluate(() => document.activeElement?.blur?.());
+    // START FROM THE TOP OF THE DOCUMENT, AND MAKE SURE THE DOCUMENT HAS THE KEYBOARD.
+    //
+    // `blur()` alone was not enough, and the way it failed is worth keeping. In headless Linux
+    // WebKit -- and ONLY there; Windows WebKit and both Chromiums were fine -- eighty Tab presses
+    // after a blur left `activeElement` on `body` every single time. The trail read `body x80`.
+    // Sequential navigation had nothing to start from, so the keypresses went nowhere and the
+    // guard reported the Language menu as unreachable for six days. The control was never the
+    // problem: it was visible, enabled, un-inert, with no tabindex, at 1057,16.
+    //
+    // Focusing body gives the walk a real starting point in both engines and asks the question
+    // the guard means: from the start of the document, does Tab reach this opener? The attribute
+    // is removed afterwards so nothing below measures a page this file has altered.
+    await page.evaluate(() => {
+      document.activeElement?.blur?.();
+      document.body.setAttribute("data-kb-probe", "1");
+      document.body.setAttribute("tabindex", "-1");
+      document.body.focus();
+    });
     let tabs = 0, reached = false;
     // THE TRAIL IS RECORDED WHILE WALKING, not reconstructed afterwards. This assertion failed on
     // Linux WebKit in CI for six days and passed on Windows WebKit on the machine where it was
@@ -228,7 +245,21 @@ for (const view of VIEWS) {
       trail.push(here.at);
       if (here.hit) { reached = true; break; }
     }
-    if (!reached) {
+    await page.evaluate(() => {
+      if (document.body.getAttribute("data-kb-probe") === "1") {
+        document.body.removeAttribute("tabindex");
+        document.body.removeAttribute("data-kb-probe");
+      }
+    });
+    // A DEAD HARNESS MUST NOT READ AS A DEAD CONTROL. If the walk never left `body`, the keyboard
+    // never reached the page and this measurement did not happen -- which is a different sentence
+    // from "the reader cannot get to your language menu", and the wrong one was believed for six
+    // days. Still a failure, never a skip: the contract below is unverified either way.
+    if (!reached && trail.every((t) => t === "body")) {
+      fail.push(`${K}: the keyboard never reached the page -- all ${tabs} Tab presses left focus ` +
+                `on <body>, so nothing about this menu was measured. This is the harness, not the ` +
+                `site. Check that the document is focused before the walk.`);
+    } else if (!reached) {
       // What the browser thinks of the control itself, asked once, at the moment it was missed.
       const why = await page.evaluate((b) => {
         const el = document.querySelector(b);
