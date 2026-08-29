@@ -73,6 +73,9 @@ const SUITES = [
   // rendered by anything: the dev server answers 200 with index.html for an unknown path, so
   // every guard that sweeps "every route" swept past 404.html without ever loading it.
   "check-not-found.mjs",
+  // Asks whether anything OTHER than bugit.dev is publishing this repo. GitHub Pages was,
+  // from the repo root, on every push, for 97 builds before anyone noticed.
+  "check-single-publication.mjs",
   "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
   "check-legal-dataflow.mjs", "check-a11y.mjs", "check-languages.mjs", "check-doc-hygiene.mjs", "check-doc-duplicates.mjs", "check-spa-routing.mjs",
   // check-languages proves each locale HAS its keys; this proves the values are not

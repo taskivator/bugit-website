@@ -52,11 +52,49 @@ const worker = async () => {
     await page.goto(base, { waitUntil: "networkidle" });
     await page.evaluate(() => document.getElementById("consentBanner")?.remove());
     await page.evaluate(() => document.querySelector(".mission")?.scrollIntoView({ block: "center" }));
+    /* WAITING FOR THE INSTRUMENT IS A PRECONDITION, NOT THE ASSERTION.
+     *
+     * This wait exists only to reach the state the size checks below are about. When it timed
+     * out it said "the report never became readable", which reads as a finding about the site,
+     * and on 2026-08-29 that sentence was CI's entire account of a run: [fr@1920], one cell of
+     * 66, while French passed at the five other widths and every other language passed at 1920.
+     * Measured directly afterwards, that exact cell armed in 3.0 seconds. Nothing was wrong
+     * with the page. Six animated contexts on a two-core runner had starved one of them.
+     *
+     * Two changes, both about the harness rather than the subject. Interval polling instead of
+     * the default requestAnimationFrame, because rAF is the first thing a starved renderer
+     * stops delivering, so the old wait could miss a control that HAD armed. And on timeout,
+     * say which of the two things happened -- the instrument never armed, which is a real
+     * defect, or it armed and the run did not finish in time, which is a slow machine. A
+     * harness that cannot tell those apart reports the second as the first. */
     const ready = await page.waitForFunction(() => {
       const b = document.getElementById("reportMoreToggle");
       return b && b.getAttribute("aria-disabled") !== "true";
-    }, null, { timeout: 30000 }).then(() => true).catch(() => false);
-    if (!ready) { fail.push(`[${lang}@${w}] the report never became readable`); await ctx.close(); continue; }
+    }, null, { timeout: 60000, polling: 250 }).then(() => true).catch(() => false);
+    if (!ready) {
+      const why = await page.evaluate(() => {
+        const m = document.querySelector(".mission");
+        const b = document.getElementById("reportMoreToggle");
+        return {
+          mission: !!m,
+          armed: m ? m.classList.contains("mc-armed") : null,
+          button: !!b,
+          display: b ? getComputedStyle(b).display : null,
+          aria: b ? b.getAttribute("aria-disabled") : null,
+          everReady: !!window.__reportIsReady,
+        };
+      }).catch((e) => ({ error: String(e.message || e) }));
+      fail.push(`[${lang}@${w}] the report never became readable in 60s — ` +
+        (why.error ? `the page stopped answering: ${why.error}`
+         : !why.mission ? "there is no .mission on the page at all"
+         : !why.button ? "#reportMoreToggle does not exist"
+         : why.armed === false ? "the instrument was never armed (mc-armed absent), so nothing was going to run"
+         : why.display === "none" ? "the control is display:none at this width"
+         : `armed and present but still aria-disabled=${why.aria} after 60s (everReady=${why.everReady}) — ` +
+           "a starved renderer looks exactly like this; check the runner before the site"));
+      await ctx.close();
+      continue;
+    }
 
     const box = () => page.evaluate(() => {
       const m = document.querySelector(".mission").getBoundingClientRect();

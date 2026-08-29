@@ -44,6 +44,15 @@ jobs:
         run: node scripts/check-assets.mjs
       - name: Verify documentation links resolve
         run: node scripts/check-doc-links.mjs
+      # GitHub Pages had been publishing this repository's ROOT since 2026-07-06, five days
+      # before bugit.dev's DNS existed, on every push to main: a second public copy of the site
+      # plus server.js, build.js and every guard script, all answering 200. The problem was not
+      # disclosure, this repo being public, but that the manual `wrangler pages deploy` gate --
+      # the step that lets copy be reviewed before customers read it -- did not apply to it.
+      # An external audit listed the Pages URL on 2026-08-03 and nobody read three origins as
+      # meaning three origins, so this asks the URL rather than trusting anyone to notice.
+      - name: Verify this site has only one public origin
+        run: node scripts/check-single-publication.mjs
       - name: Verify localized highlights and full PDF guides are complete
         run: node scripts/check-docs.mjs
       - name: Verify responsive pages do not overflow
