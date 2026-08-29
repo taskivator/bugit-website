@@ -91,8 +91,6 @@ jobs:
         run: node scripts/check-billing-copy.mjs
       - name: Verify every advertised price is one the checkout actually offers
         run: node scripts/check-price-matches-checkout.mjs
-      - name: Verify the not-found page is localized in every language
-        run: node scripts/check-not-found.mjs
       - name: Verify build output exists
         run: |
           test -f dist/index.html
@@ -118,6 +116,13 @@ jobs:
           PORT=3123 node server.js &
           for i in $(seq 1 20); do curl -sf http://localhost:3123/ >/dev/null && break; sleep 0.5; done
           CONSENT_TEST_URL=http://localhost:3123 node scripts/check-consent-network.mjs
+      # MOVED DOWN, and the move is the point: this guard launches Chromium and was wired eight
+      # steps ABOVE the `playwright install` that provides one. It never got that far -- it died
+      # first on a server it could not start -- so the ordering defect was invisible behind the
+      # other one, and fixing only the server would have turned "server never came up" into
+      # "Executable doesn't exist" on the next run.
+      - name: Verify the not-found page is localized in every language
+        run: node scripts/check-not-found.mjs
       # Eight guards below were declared in scripts/test-all.mjs but had never been run by CI,
       # so `npm test` failed locally while every push showed green. check-legal-dataflow was
       # among them: the published privacy policy had stopped disclosing the entitlement fields

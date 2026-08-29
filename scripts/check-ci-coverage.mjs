@@ -114,6 +114,40 @@ for (const f of fs.readdirSync(path.join(ROOT, "scripts")).filter((f) => /\.mjs$
   }
 }
 
+/* AND A GUARD THAT DRIVES A BROWSER MUST BE WIRED AFTER THE BROWSER IS INSTALLED.
+ *
+ * `check-not-found.mjs` launches Chromium through Playwright and sat eight steps ABOVE the
+ * `npx playwright install` that provides one. Nobody noticed, because it never got that far: it
+ * died first on a preview server it could not start, so one defect hid the other and fixing the
+ * server alone would have turned "server never came up" into "Executable doesn't exist" on the
+ * next run.
+ *
+ * The subject is computed: every guard whose SOURCE imports playwright, not a list of the ones
+ * known to need it today. Anchored on the FIRST install step, because a guard placed before it
+ * is broken whichever browser it wanted. */
+// BOTH ANCHORS ARE COMMANDS, NOT MENTIONS. The first draft searched for the guard's NAME and
+// for the words "playwright install", and reported check-disclosure.mjs -- which runs at the
+// very bottom of the file -- because ci.yml explains beside the install step why that guard
+// needs WebKit. The comment is above the command it explains, so the mention came first. That
+// is this repo's own "do not trust a substring for an absence", found by the guard being
+// written rather than in production, which is the only cheap place to find it.
+const playwrightInstalledAt = ci.search(/^\s*run:\s*npx\s+playwright\s+install/m);
+if (playwrightInstalledAt < 0) {
+  failures.push("ci.yml never runs `playwright install`, yet guards in this repo drive Playwright browsers");
+} else {
+  for (const g of guards) {
+    const src = fs.readFileSync(path.join(ROOT, "scripts", g), "utf8");
+    if (!/^\s*import[^\n]*from\s+["']playwright["']/m.test(src)) continue;
+    const at = ci.search(new RegExp("node\\s+scripts/" + g.replace(/\./g, "\\.")));
+    if (at >= 0 && at < playwrightInstalledAt) {
+      failures.push(
+        `${g} launches a Playwright browser but ci.yml runs it BEFORE \`playwright install\`. ` +
+          `Move the step below the install, or it fails on a runner with no browser.`,
+      );
+    }
+  }
+}
+
 if (failures.length) {
   for (const f of failures) console.error(`FAIL: ${f}`);
   console.error(
