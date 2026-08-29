@@ -68,10 +68,15 @@ async function probe(url) {
       hash: sha(body),
       type: r.headers.get("content-type") || "",
       cache: r.headers.get("cf-cache-status") || "-",
+      // Age matters only in company with cf-cache-status, and then it is decisive: a MISS that
+      // arrives ALREADY OLD means the edge had nothing and fetched from a layer above the zone
+      // -- the layer `purge_cache` cannot clear. Without Age, that case is indistinguishable
+      // from an ordinary miss, and a purge that will never work looks like one worth retrying.
+      age: r.headers.get("age"),
       location: r.headers.get("location") || "",
     };
   } catch (e) {
-    return { ok: false, status: 0, body: Buffer.alloc(0), hash: "", type: "", cache: "-", error: String(e.message || e) };
+    return { ok: false, status: 0, body: Buffer.alloc(0), hash: "", type: "", cache: "-", age: null, error: String(e.message || e) };
   }
 }
 
@@ -218,11 +223,26 @@ say("CONTENT DIFFERS", mismatch, ({ t, r }) =>
   `${t.label}  local ${sha(t.bytes).slice(0, 12)} vs live ${r.hash.slice(0, 12)}  cf-cache:${r.cache}` +
   (r.cache === "HIT" ? "   <- STALE AT THE EDGE, not a bad upload" : ""));
 say("WRONG CONTENT-TYPE", wrongType, ({ t, r }) => `${t.label}  served as ${r.type}`);
+/* Naming the remedy is half the value of the finding. This used to end at "then purge", written
+ * when nothing here could purge; the estate's API token can, and `npm run purge` verifies the
+ * eviction rather than trusting the API's 200. The one case it cannot fix is called out by name,
+ * because "retry the purge" is bad advice for an object the purge cannot reach. */
+const cacheNote = (r) => {
+  const age = r.age === null || r.age === undefined ? null : Number(r.age);
+  if (r.cache === "MISS" && age !== null && age > 60) {
+    return `   <- age ${age}s on a MISS: served from ABOVE the zone cache. purge_cache CANNOT ` +
+      `evict this; it expires on its own. Do not keep purging.`;
+  }
+  if (r.cache === "HIT" || r.cache === "REVALIDATED" || r.cache === "EXPIRED") {
+    return `   <- EDGE CACHE, not the deployment: confirm with ?cachebust, then ` +
+      `npm run purge -- ${BASE}/${r.rel}`;
+  }
+  return "";
+};
+
 say("SERVED BUT NOT PUBLISHED  (in the repo, not in dist, yet the origin hands it out)", leaked,
   ({ rel, r }) => `/${rel}  HTTP 200  ${r.body.length} bytes  cf-cache:${r.cache}` +
-    (r.cache === "HIT" || r.cache === "REVALIDATED"
-      ? "   <- EDGE CACHE, not the deployment: re-check with ?cachebust, then purge"
-      : ""));
+    cacheNote({ ...r, rel }));
 
 // Not a finding: the origin canonicalised the URL and delivered the right bytes there. Printed
 // so a redirect that appears for a NEW reason is visible rather than absorbed in silence.
