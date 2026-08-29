@@ -2738,16 +2738,23 @@
     grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
     gap:var(--s2);
   }
+  /* The logo and the name sit as ONE object in the middle of the chip. The cells are stretched
+     to a common width by the auto-fit row, so left aligned contents put every name at a
+     different distance from its own box's centre and the wall reads as a ragged column of
+     labels rather than a grid of tiles. Centred, the pair is symmetrical in every cell at
+     every column count. The padding is symmetrical for the same reason: an inset that differs
+     left from right moves the centred pair off the centre it was aligned to. */
   .tool{
     width:auto;height:auto;min-width:0;
-    flex-direction:row;align-items:center;justify-content:flex-start;gap:9px;
-    padding:9px 13px 9px 9px;
+    flex-direction:row;align-items:center;justify-content:center;gap:9px;
+    padding:9px 13px;
     border:1px solid var(--rule);border-radius:var(--r-sm);background:var(--raise-1);
     transition:border-color .22s ease,background .22s ease,transform .22s var(--ease);
   }
   /* Wraps rather than ellipsises. A truncated tool name is worse than a two-line one, and the
-     row's cells stretch to match so a wrap costs nothing but that row's height. */
-  .tool span{text-align:start;white-space:normal;overflow-wrap:break-word;min-width:0}
+     row's cells stretch to match so a wrap costs nothing but that row's height. A wrapped name
+     centres both of its lines, so the second line stays under the middle of the first. */
+  .tool span{text-align:center;white-space:normal;overflow-wrap:break-word;min-width:0}
   .logo-wrap{width:28px;height:28px;flex:0 0 28px}
   .tool .logo-svg,.tool svg,.tool img.brand-logo{width:22px;height:22px}
   .integrations.card h2{font-size:var(--t-xl);margin:var(--s4) 0}
