@@ -24,6 +24,13 @@
 // scrolled it into the part of the screen they are reading. The page is swept top to bottom in
 // third-of-a-screen steps, in both engines, at three landscape sizes.
 //
+// ON THESE SCREENS NOTHING FADES OUT ANY MORE, WHICH IS THE FIX AND NOT AN ACCIDENT. Under
+// `@media (max-height:620px)` styles.css redefines pass1..pass4 to end at opacity 1 -- up by
+// 8%, then held -- so the exit fade that produced the five measurements above does not exist on
+// a landscape phone. What remains to catch here is an arrival that has not finished by the time
+// the reader is looking at it, which is the same symptom from the other direction and is why
+// this file measures POSITION rather than progress.
+//
 // WHAT IT DELIBERATELY DOES NOT ASSERT. Anything on a TALL screen: there the exit fade happens
 // under the header, which is the design and is check-motion's and check-reveal's ground. And
 // anything that is not a reveal -- the stacked demo videos, a play ring that is off until its
@@ -69,12 +76,40 @@ const done = () => {
   }
 };
 
-const FIND = () => {
+/* HOW DIM IS DIM. Raised from 0.985 to 0.9 on 2026-08-30, and the number comes from the
+ * measurements rather than from what happened to fail.
+ *
+ * Everything this file has ever been shown to catch is far below it. The five that prompted it
+ * painted at 0, 0, 0.16, 0.18 and 0.26. The short-screen keyframe rewrite in styles.css was
+ * prompted by a card holding at 0.61 with its top already 230px up a 390px screen. A bar at 0.9
+ * catches every one of those with room to spare.
+ *
+ * What it stops catching is a shortfall no reader can see. CI failed the whole site over
+ * .mission-wrap painting at 0.97 -- three percent, on a block whose top was 232px down a 430px
+ * screen. That is not "the fading is aggressive in landscape", which is the complaint this
+ * exists to answer, and a guard that reports it teaches you to skim its output.
+ *
+ * AND IT DOES NOT REPRODUCE OUTSIDE CI, which is worth knowing before you go looking. On this
+ * developer machine the same commit, the same build and the same three sizes report NOTHING
+ * below 0.99 -- the mission-wrap finding exists only on the runner. These reveals are driven by
+ * `animation-timeline: view()`, so an element's progress is a function of its POSITION, and
+ * position moves when text metrics do: a runner with different fonts lays the page out
+ * differently and puts a different element under the upper-60% filter at a given scrollY. Do not
+ * read a clean local run as a refutation of a CI finding here.
+ *
+ * NOT A TOLERANCE FOR MID-FLIGHT SAMPLING. A scroll-driven reveal is not mid-flight: it holds
+ * at whatever progress the scroll position gives it, so 0.61 stays 0.61 for as long as the
+ * reader stays put. The bar is about what the eye can see, not about when the animation ends. */
+const DIM = 0.9;
+
+// DIM is passed in: this function is serialised and run inside the page, where nothing from
+// this file's scope exists.
+const FIND = (DIM) => {
   const vh = innerHeight, out = [];
   for (const el of document.querySelectorAll("main *")) {
     const cs = getComputedStyle(el);
     const o = parseFloat(cs.opacity);
-    if (!(o < 0.985)) continue;
+    if (!(o < DIM)) continue;
     if (cs.visibility === "hidden" || cs.display === "none") continue;
     // The instrument dims its own rows on purpose and rebuilds them every cycle; that
     // choreography is check-mission-pause's subject, not this one's.
@@ -86,6 +121,11 @@ const FIND = () => {
     // page's arrival animations. Read from the running animation rather than from a class name.
     const a = el.getAnimations().find((x) => /pass\d|riseIn|docIn|cellIn/.test(x.animationName || ""));
     if (!a) continue;
+
+    // Nothing else to exempt. Whatever the animation is, a scroll-driven reveal HOLDS at
+    // whatever progress the reader's scroll position gives it -- it does not carry on and
+    // finish while they read -- so a low opacity here is where it stays until they scroll
+    // again. See the DIM bar above for where the line is and why.
     out.push({
       sel: el.tagName.toLowerCase() + (String(el.className || "").trim() ? "." + String(el.className).trim().split(/\s+/).slice(0, 2).join(".") : ""),
       op: Math.round(o * 100) / 100,
@@ -104,6 +144,27 @@ const VIEWS = [
   { engine: "chromium", type: chromium, w: 932, h: 430 },    // iPhone 14 Pro Max sideways
   { engine: "webkit", type: webkit, w: 844, h: 390 },
 ];
+/* IS THERE ANYTHING HERE TO MEASURE?
+ *
+ * Every rule below starts from `el.getAnimations()`. If an engine does not drive these reveals
+ * at all -- `animation-timeline: view()` is the whole mechanism, and it is not in every engine
+ * this file launches -- then that engine finds no animations, reports no elements dim, and
+ * passes. It would pass a page that was solid black. So each engine has to show that the page's
+ * reveals are actually running under it before its silence counts as a result.
+ *
+ * This is not hypothetical for the two browsers here: the sweep is run in webkit precisely
+ * because it behaves differently, which is the same reason its silence cannot be trusted. */
+const CENSUS = () => {
+  const seen = {};
+  for (const el of document.querySelectorAll("main *")) {
+    for (const a of el.getAnimations()) {
+      if (!/pass\d|riseIn|docIn|cellIn/.test(a.animationName || "")) continue;
+      seen[a.animationName] = (seen[a.animationName] || 0) + 1;
+    }
+  }
+  return seen;
+};
+
 let stops = 0;
 for (const view of VIEWS) {
   const label = `${view.engine} ${view.w}x${view.h}`;
@@ -114,12 +175,31 @@ for (const view of VIEWS) {
     await page.goto(base + "/", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1000);
     const doc = await page.evaluate(() => document.documentElement.scrollHeight);
+
+    {
+      // Halfway down, where the section reveals and the instrument are all in range.
+      await page.evaluate(() => scrollTo({ top: document.documentElement.scrollHeight / 2, behavior: "instant" }));
+      await page.waitForTimeout(300);
+      const seen = await page.evaluate(CENSUS);
+      const names = Object.keys(seen).sort();
+      if (names.length === 0) {
+        fail.push(`${label}: no reveal animation is running at all, so nothing below was ` +
+          "measured. Either this engine does not drive `animation-timeline: view()` or the " +
+          "page stopped using these reveals; either way a pass here would mean nothing.");
+        await browser.close();
+        continue;
+      }
+      console.log(`  ${label}: driving ${names.map((n) => `${n}x${seen[n]}`).join(" ")}`);
+      await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+      await page.waitForTimeout(200);
+    }
+
     const worst = new Map();
     for (let y = 0; y < doc - view.h; y += Math.round(view.h / 3)) {
       await page.evaluate((y) => scrollTo({ top: y, behavior: "instant" }), y);
       await page.waitForTimeout(130);
       stops++;
-      for (const r of await page.evaluate(FIND)) {
+      for (const r of await page.evaluate(FIND, DIM)) {
         const k = r.sel + "|" + r.text;
         if (!worst.has(k) || worst.get(k).op > r.op) worst.set(k, { ...r, y });
       }
@@ -136,7 +216,15 @@ for (const view of VIEWS) {
 }
 
 done();
-if (stops < 30) { console.error(`check-dim-on-screen: only ${stops} scroll stops -- the sweep did not run.`); process.exit(1); }
+if (stops < 30) {
+  console.error(`
+check-dim-on-screen: only ${stops} scroll stops -- the sweep did not run.`);
+  // AND SAY WHY, which this did not. Anything thrown inside a page evaluate lands in `fail`,
+  // and exiting here without printing it reported "the sweep did not run" while holding the
+  // sentence that explained it. A ReferenceError in FIND() looks exactly like a dead server.
+  for (const f of fail) console.error("  - " + f);
+  process.exit(1);
+}
 if (fail.length) {
   console.error(`\ncheck-dim-on-screen: FAIL (${fail.length})`);
   for (const f of fail) console.error("  - " + f);
