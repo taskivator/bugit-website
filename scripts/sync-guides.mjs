@@ -134,7 +134,22 @@ records.sort((a, b) => a.file.localeCompare(b.file));
 writeFileSync(
   MANIFEST,
   JSON.stringify(
-    { schema: "bugit-site-guides/1", count: records.length, agent_generator: agent.generator, guides: records },
+    {
+      schema: "bugit-site-guides/1",
+      count: records.length,
+      // WHAT PRINTED THESE, carried across rather than restated. "weasyprint" alone is the half
+      // of the answer that never changes, which is the half that cannot explain a change: on
+      // 2026-09-01 all 22 of these files came back with new bytes from unedited sources, and
+      // there was nothing recorded on either side to say why. The agent now records the four
+      // versions and the SOURCE_DATE_EPOCH its build is pinned to -- pinned because the cause
+      // turned out to be the wall clock landing in a font subset. Copied verbatim, and undefined
+      // if an older agent manifest has neither, because inventing a value here is how the two
+      // sides start disagreeing about the same bytes.
+      agent_generator: agent.generator,
+      agent_toolchain: agent.toolchain,
+      agent_source_date_epoch: agent.source_date_epoch,
+      guides: records,
+    },
     null,
     2,
   ) + "\n",
