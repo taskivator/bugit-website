@@ -19,7 +19,7 @@ BugIt convierte notas de prueba preliminares en informes de errores revisados de
 - Elige la titularidad Solo o Team para este equipo y luego revisa y aprueba este dispositivo.
 - Vuelve a VS Code. BugIt completa la autorización automáticamente: no hay ninguna clave de licencia que copiar, pegar ni mostrar.
 - Escribe `Begin setup` y elige solo las integraciones que usa tu equipo.
-- Conecta tu sistema de seguimiento una sola vez con `python tools/connect.py jira` (también `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). El token lo creas en tu propia cuenta y lo pegas en un campo local enmascarado; se guarda en el almacén de credenciales de tu sistema operativo, nunca en un archivo.
+- Conecta tu sistema de seguimiento una sola vez con `python tools/connect.py jira` (también `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). El token lo creas en tu propia cuenta y lo pegas en un campo local enmascarado; se guarda en el almacén de credenciales de tu sistema operativo y nunca es legible en el disco: en Windows es un registro cifrado que solo tu cuenta de Windows puede abrir, y en macOS y Linux el secreto reside en el Llavero o en libsecret.
 - Deja que BugIt verifique el servicio y el proyecto seleccionados antes de registrar un ticket.
 
 ## Gestiona tu acceso

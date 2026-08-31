@@ -19,7 +19,7 @@ BugIt는 대략적인 테스트 메모를 VS Code 안에서 검토된 버그 리
 - 이 컴퓨터에서 사용할 Solo 또는 Team 권한을 선택한 다음 이 기기를 검토하고 승인합니다.
 - VS Code로 돌아옵니다. BugIt가 자동으로 인증을 완료합니다. 복사, 붙여넣기, 표시할 라이선스 키가 없습니다.
 - `Begin setup`을 입력하고 팀이 사용하는 통합만 선택합니다.
-- 버그 추적 시스템을 한 번 연결합니다: `python tools/connect.py jira` (`ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`도 가능). 토큰은 본인 계정에서 만들어 가려진 로컬 입력창에 붙여 넣습니다. 토큰은 운영체제의 자격 증명 저장소에 저장되며 파일에는 남지 않습니다.
+- 버그 추적 시스템을 한 번 연결합니다: `python tools/connect.py jira` (`ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`도 가능). 토큰은 본인 계정에서 만들어 가려진 로컬 입력창에 붙여 넣습니다. 토큰은 운영체제의 자격 증명 저장소에 저장되며 디스크에서 읽힐 수 있는 형태로는 남지 않습니다. Windows에서는 사용자 계정만 열 수 있는 암호화된 기록이고, macOS와 Linux에서는 키체인이나 libsecret에 보관됩니다.
 - 티켓을 생성하기 전에 BugIt가 선택한 서비스와 프로젝트를 검증하도록 합니다.
 
 ## 액세스 관리

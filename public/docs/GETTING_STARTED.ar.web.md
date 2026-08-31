@@ -19,7 +19,7 @@
 - اختر استحقاق ترخيص <bdi dir="ltr">Solo</bdi> أو <bdi dir="ltr">Team</bdi> لهذا الجهاز، ثم راجع هذا الجهاز ووافق عليه.
 - عُد إلى <bdi dir="ltr">VS Code</bdi>. يُنهي <bdi dir="ltr">BugIt</bdi> التفويض تلقائيًا؛ لا يوجد مفتاح ترخيص للنسخ أو اللصق أو الكشف عنه.
 - اكتب <bdi dir="ltr">`Begin setup`</bdi> واختر فقط التكاملات التي يستخدمها فريقك.
-- صِل نظام التتبع مرة واحدة: <bdi dir="ltr">`python tools/connect.py jira`</bdi> (وكذلك <bdi dir="ltr">`ado`</bdi> و<bdi dir="ltr">`github`</bdi> و<bdi dir="ltr">`gitlab`</bdi> و<bdi dir="ltr">`linear`</bdi> و<bdi dir="ltr">`clickup`</bdi> و<bdi dir="ltr">`asana`</bdi> و<bdi dir="ltr">`trello`</bdi> و<bdi dir="ltr">`shortcut`</bdi> و<bdi dir="ltr">`youtrack`</bdi> و<bdi dir="ltr">`bugzilla`</bdi>). تنشئ الرمز في حسابك أنت وتلصقه في مطالبة محلية مخفية؛ ويُحفظ في مخزن بيانات الاعتماد بنظام التشغيل، لا في ملف.
+- صِل نظام التتبع مرة واحدة: <bdi dir="ltr">`python tools/connect.py jira`</bdi> (وكذلك <bdi dir="ltr">`ado`</bdi> و<bdi dir="ltr">`github`</bdi> و<bdi dir="ltr">`gitlab`</bdi> و<bdi dir="ltr">`linear`</bdi> و<bdi dir="ltr">`clickup`</bdi> و<bdi dir="ltr">`asana`</bdi> و<bdi dir="ltr">`trello`</bdi> و<bdi dir="ltr">`shortcut`</bdi> و<bdi dir="ltr">`youtrack`</bdi> و<bdi dir="ltr">`bugzilla`</bdi>). تنشئ الرمز في حسابك أنت وتلصقه في مطالبة محلية مخفية؛ ويُحفظ في مخزن بيانات الاعتماد بنظام التشغيل ولا يكون قابلاً للقراءة على القرص أبدًا: فعلى Windows يكون سجلاً مشفّراً لا يفتحه إلا حسابك، وعلى macOS وLinux يوجد السر نفسه في سلسلة المفاتيح أو في libsecret.
 - دع <bdi dir="ltr">BugIt</bdi> يتحقق من الخدمة والمشروع المحددَين قبل إنشاء أي تذكرة وإرسالها.
 
 ## إدارة وصولك

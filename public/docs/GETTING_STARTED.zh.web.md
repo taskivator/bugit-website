@@ -19,7 +19,7 @@ BugIt 可在 VS Code 内将粗略的测试记录转化为经过审阅的缺陷�
 - 为这台机器选择 Solo 或 Team 权益，然后查看并批准此设备。
 - 返回 VS Code。BugIt 会自动完成授权：没有任何许可密钥需要复制、粘贴或显示。
 - 输入 `Begin setup`，并仅选择你的团队实际使用的集成。
-- 连接你的缺陷跟踪系统（只需一次）：`python tools/connect.py jira`（也支持 `ado`、`github`、`gitlab`、`linear`、`clickup`、`asana`、`trello`、`shortcut`、`youtrack`、`bugzilla`）。令牌在你自己的账户中创建，粘贴到本地的掩码输入框；它保存在操作系统的凭据存储中，不会写入文件。
+- 连接你的缺陷跟踪系统（只需一次）：`python tools/connect.py jira`（也支持 `ado`、`github`、`gitlab`、`linear`、`clickup`、`asana`、`trello`、`shortcut`、`youtrack`、`bugzilla`）。令牌在你自己的账户中创建，粘贴到本地的掩码输入框；它保存在操作系统的凭据库中，在磁盘上永远不可读：在 Windows 上是只有你的账户才能打开的加密记录，在 macOS 和 Linux 上则存放在钥匙串或 libsecret 中。
 - 在创建工单之前，让 BugIt 完成对所选服务和项目的验证。
 
 ## 管理你的访问

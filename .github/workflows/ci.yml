@@ -60,6 +60,14 @@ jobs:
       - name: Verify localized highlights and full PDF guides are complete
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-docs.mjs
+      # The agent repo is not checked out here, so freshness cannot be answered in CI. The
+      # guard says so loudly rather than reporting clean over a question it never asked; the
+      # local suite and the deploy path DO have the agent beside them and must not set this.
+      - name: Verify the served guides are the agent's current publication
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        env:
+          BUGIT_GUIDES_FRESHNESS_UNVERIFIABLE: "1"
+        run: node scripts/check-guides-fresh.mjs
       - name: Verify responsive pages do not overflow
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-overflow.mjs

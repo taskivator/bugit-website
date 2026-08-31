@@ -55,6 +55,12 @@ const SUITES = [
   // each other by scripts/check-ci-coverage.mjs.
   "check-assets.mjs", "check-chrome-a11y.mjs",
   "check-doc-links.mjs", "check-docs.mjs", "check-overflow.mjs", "check-mission-pause.mjs", "check-logo.mjs",
+  // check-docs proves the served guides match guides-manifest.json. check-guides-fresh proves
+  // that manifest is the agent's CURRENT publication -- a different question, and a stale sync
+  // is perfectly self-consistent. On 2026-08-31 the site served the pre-fix guides all day with
+  // check-docs green, because sync-guides.mjs was wired into nothing and its name kept it
+  // outside check-ci-coverage's `check-*` sweep.
+  "check-guides-fresh.mjs",
   // check-logo.mjs proves the rendered logo has no clipping artifact; this proves
   // the asset it renders is the one the brand pipeline produced and was not
   // hand-edited afterwards. The two are complements, not duplicates.

@@ -19,7 +19,7 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 - Wählen Sie die Solo- oder Team-Berechtigung für diesen Rechner und prüfen und bestätigen Sie dieses Gerät.
 - Kehren Sie zu VS Code zurück. BugIt schließt die Autorisierung automatisch ab. Es gibt keinen Lizenzschlüssel zum Kopieren, Einfügen oder Anzeigen.
 - Geben Sie `Begin setup` ein und wählen Sie nur die Integrationen aus, die Ihr Team nutzt.
-- Verbinden Sie Ihren Tracker einmalig mit `python tools/connect.py jira` (auch `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). Das Token erstellen Sie in Ihrem eigenen Konto und geben es in eine maskierte lokale Eingabe ein; gespeichert wird es im Anmeldeinformationsspeicher Ihres Betriebssystems, nie in einer Datei.
+- Verbinden Sie Ihren Tracker einmalig mit `python tools/connect.py jira` (auch `ado`, `github`, `gitlab`, `linear`, `clickup`, `asana`, `trello`, `shortcut`, `youtrack`, `bugzilla`). Das Token erstellen Sie in Ihrem eigenen Konto und geben es in eine maskierte lokale Eingabe ein; gespeichert wird es im Zugangsdatenspeicher Ihres Betriebssystems und ist auf der Festplatte nie lesbar: unter Windows als Eintrag, den nur Ihr Windows-Konto entschlüsseln kann, unter macOS und Linux liegt das Geheimnis im Schlüsselbund bzw. in libsecret.
 - Lassen Sie BugIt den ausgewählten Dienst und das Projekt überprüfen, bevor ein Ticket erstellt wird.
 
 ## Zugang verwalten

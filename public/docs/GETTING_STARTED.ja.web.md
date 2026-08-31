@@ -19,7 +19,7 @@ BugItは、大まかなテストメモをVS Code内でレビュー済みのバ�
 - このマシンで使うSoloまたはTeamの権利を選び、このデバイスを確認して承認します。
 - VS Codeに戻ります。BugItが自動的に認証を完了します。コピー・貼り付け・表示するライセンスキーはありません。
 - `Begin setup`と入力し、チームが利用する連携のみを選択します。
-- トラッカーを一度だけ接続します： `python tools/connect.py jira`（`ado`、`github`、`gitlab`、`linear`、`clickup`、`asana`、`trello`、`shortcut`、`youtrack`、`bugzilla` も同様）。トークンはお客様自身のアカウントで作成し、マスクされたローカル入力欄に貼り付けます。保存先は OS の資格情報ストアで、ファイルには残りません。
+- トラッカーを一度だけ接続します： `python tools/connect.py jira`（`ado`、`github`、`gitlab`、`linear`、`clickup`、`asana`、`trello`、`shortcut`、`youtrack`、`bugzilla` も同様）。トークンはお客様自身のアカウントで作成し、マスクされたローカル入力欄に貼り付けます。保存先は OS の資格情報ストアで、ディスク上で読めることはありません。Windows ではあなたのアカウントだけが開ける暗号化された記録となり、macOS と Linux ではキーチェーンまたは libsecret に保管されます。
 - チケットを起票する前に、選択したサービスとプロジェクトをBugItに検証させます。
 
 ## アクセスの管理
