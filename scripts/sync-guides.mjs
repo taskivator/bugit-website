@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 /**
- * Copy the twenty customer PDFs from the agent repo into public/docs/guides, and record what was
- * copied.
+ * Copy the customer PDFs from the agent repo into public/docs/guides, and record what was copied.
+ *
+ * HOW MANY THERE ARE IS NOT WRITTEN HERE. This line said "the twenty customer PDFs" until
+ * 2026-08-31; there have been 22 since Arabic joined on 2026-08-08, and the same stale count was
+ * sitting in two seller docs and in the source tree's own README. The count belongs to
+ * build_pdfs.py EXPECTED_TOTAL, and this script does not need it anyway: it copies whatever
+ * docs/pdf-manifest.json lists, so a twelfth language is carried on the day it is printed.
  *
  * WHY THIS EXISTS. The site shipped its own copies of these guides and nothing tied them to the
  * originals, so when the agent's PDFs were regenerated for a release the site kept serving the
