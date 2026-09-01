@@ -56,9 +56,17 @@ const RETIRED = {
       "LQA-0057: verifica contra o seu destino preserves English syntax"],
   ],
   ja: [[/重要度/gu, "重大度", "LQA-0047, LQA-0048: 重大度 is the product's term for severity"]],
-  ko: [[/리포트/gu, "보고서", "LQA-0049: the product standardised on 보고서"]],
+  ko: [
+    [/리포트/gu, "보고서", "LQA-0049: the product standardised on 보고서"],
+    // The spaced form reads as the verb phrase "to look in advance"; the unspaced one is the
+    // lexicalised UI noun. Japanese and Chinese each use ONE word for both the UI preview and
+    // the release stage, so Korean does too -- including "미리보기 상태" for "in Preview".
+    [/미리 보기/gu, "미리보기", "LQA-0050: standardise the preview noun on 미리보기"],
+  ],
   ru: [[/важност/gu, "серьёзност", "LQA-0062: важность is a third label for the severity field"]],
   zh: [[/您/gu, "你", "LQA-0001..: the Chinese product copy uses the direct register"]],
+  ar: [[/إيداع/gu, "إنشاء التذكرة وإرسالها",
+    "LQA-0066..0069: إيداع reads as depositing or lodging, not filing a ticket"]],
 };
 
 const isLegal = (name) => LEGAL.some((stem) => name.toUpperCase().startsWith(stem));
