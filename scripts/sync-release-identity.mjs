@@ -85,13 +85,17 @@ const identity = {
   files: manifest.files ? Object.keys(manifest.files).length : undefined,
 };
 
-const out = join(root, "public", "verify.json");
+// AT THE SITE ROOT, not under public/. build.js copies `public` as a directory, so a file
+// written there is served at /public/verify.json -- and the shipped verifier and the audit
+// note both name https://bugit.dev/verify.json. The first version of this wrote to public/
+// and the URL 404ed; the CDN purge caught it because it checks the STATUS CODE first.
+const out = join(root, "verify.json");
 const next = JSON.stringify(identity, null, 2) + "\n";
 const current = existsSync(out) ? readFileSync(out, "utf8") : "";
 
 if (check) {
   if (current !== next) {
-    console.error("FAIL: public/verify.json does not describe the current release.\n" +
+    console.error("FAIL: verify.json does not describe the current release.\n" +
       `  published: ${JSON.parse(current || "{}").version ?? "(none)"} / ` +
       `${(JSON.parse(current || "{}").archive_sha256 ?? "").slice(0, 16)}\n` +
       `  artifact : ${identity.version} / ${identity.archive_sha256.slice(0, 16)}\n` +
@@ -106,6 +110,6 @@ if (check) {
 }
 
 writeFileSync(out, next, "utf8");
-console.log(`wrote public/verify.json  version=${identity.version} ` +
+console.log(`wrote verify.json  version=${identity.version} ` +
   `sha256=${identity.archive_sha256.slice(0, 16)}... key=${identity.release_key_id}`);
 console.log(`  read from ${manifestPath}`);

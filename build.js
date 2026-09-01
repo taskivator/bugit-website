@@ -94,7 +94,7 @@ fs.rmSync(dist,{recursive:true,force:true}); fs.mkdirSync(dist,{recursive:true})
 // 200 with its source for as long as the build has existed. check-assets.mjs now computes the
 // set of scripts in dist and fails any that import a node: builtin, so the next one cannot
 // arrive quietly under a different name.
-for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','.well-known']) {
+for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','.well-known','verify.json']) {
   const src = path.join(root,item); if (fs.existsSync(src)) fs.cpSync(src,path.join(dist,item),{recursive:true});
 }
 
