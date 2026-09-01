@@ -308,8 +308,26 @@ async function sweep(browser, engine, inject, dom) {
     if (dom) await page.addInitScript(dom);
     if (inject) {
       await page.route("**/styles.css", async (route) => {
-        const res = await route.fetch();
-        route.fulfill({ response: res, body: (await res.text()) + "\n" + inject });
+        /* A ROUTE HANDLER'S REJECTION IS UNHANDLED, AND IT KILLS THE RUN AFTER IT HAS PASSED.
+         *
+         * `route.fetch()` is in flight whenever a context closes underneath it, and it then
+         * rejects with "socket hang up". Nothing awaits this handler, so that became an
+         * unhandled promise rejection and node exited 1 -- in CI, on run 33504397079, AFTER the
+         * sweep had already printed "72 render(s) swept ... every one of the 4 routes rendered
+         * its own document" and both negative controls. A green run reported as a failure is
+         * worse than a red one: it gets diagnosed as flakiness and then ignored.
+         *
+         * Falling back to `continue()` serves the real stylesheet without the injection. That
+         * weakens only the injected variant of the sweep, for one request, and it is recorded
+         * rather than silent. */
+        try {
+          const res = await route.fetch();
+          await route.fulfill({ response: res, body: (await res.text()) + "\n" + inject });
+        } catch (e) {
+          process.stdout.write(
+            `    note: styles.css injection skipped for this request (${String(e).slice(0, 60)})\n`);
+          try { await route.continue(); } catch { /* the context is gone; nothing to serve */ }
+        }
       });
     }
     for (const route of ROUTES) {

@@ -4,9 +4,42 @@
 // browser server, or CONSENT_TEST_URL required. Run with: npm test
 import { spawn, spawnSync } from "node:child_process";
 
+/* A SUITE THAT WEDGES MUST BECOME A RECORDED FAILURE, NOT AN INFINITE WAIT.
+ *
+ * `check-routing.mjs` crashes a Chromium renderer and then blocks forever: `browser.isConnected()`
+ * stays true for a browser whose renderer has died, so it does not relaunch, and the next
+ * `browser.newContext()` waits with no deadline. With no timeout here, `npm test` never returned
+ * on this machine and the 28 suites listed after check-routing never ran at all -- while the
+ * command still looked like it was working. An external `timeout` around the whole run turns that
+ * into exit 124 for everything, which is the least useful signal available.
+ *
+ * THIRTY MINUTES, AND THE NUMBER IS MEASURED RATHER THAN ROUND. check-routing takes about two
+ * minutes per language on this machine -- five languages in under ten minutes, timed -- so a
+ * healthy eleven-language sweep needs roughly twenty-two. A ten-minute cap, which was the first
+ * value here, would have killed a passing run and reported it as a wedge: the same defect as the
+ * wedge itself, pointed the other way. Thirty is comfortably above the slowest legitimate suite
+ * and far below "someone gave up and went home".
+ */
+const STEP_TIMEOUT_MS = 30 * 60 * 1000;
+
 function step(label, cmd, args, env) {
   process.stdout.write(`\n=== ${label} ===\n`);
-  const r = spawnSync(cmd, args, { stdio: "inherit", env: { ...process.env, ...(env || {}) }, shell: process.platform === "win32" });
+  const r = spawnSync(cmd, args, {
+    stdio: "inherit",
+    env: { ...process.env, ...(env || {}) },
+    shell: process.platform === "win32",
+    timeout: STEP_TIMEOUT_MS,
+    killSignal: "SIGKILL",
+  });
+  // CHECK THE SIGNAL, NOT ONLY THE STATUS. A killed process reports status === null, and
+  // `null === 0` is false, so this would already be a failure -- but silently, with no
+  // explanation, which is how a wedge gets diagnosed as a flaky assertion.
+  if (r.error?.code === "ETIMEDOUT" || r.signal === "SIGKILL") {
+    process.stdout.write(
+      `\n!!! ${label} was killed after ${STEP_TIMEOUT_MS / 1000}s without finishing.\n` +
+      `    This is a WEDGE, not a failed assertion. The suite produced no verdict.\n`);
+    return false;
+  }
   return r.status === 0;
 }
 

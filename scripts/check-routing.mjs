@@ -84,11 +84,43 @@ const state = (page) => page.evaluate(() => {
 
 const okDoc = (s) => s.docHidden === false && s.homeHidden === true && !s.notFound && s.chars > 120 && s.navLinks > 0;
 
+/** Opening a context can hang forever against a browser whose renderer died. Give it a clock. */
+const CONTEXT_TIMEOUT_MS = 30_000;
+const newSession = (b) => b.newContext({ viewport: { width: 1280, height: 900 } });
+const withDeadline = (p, ms, what) => Promise.race([
+  p,
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error(`${what} did not return within ${ms}ms`)), ms).unref?.()),
+]);
+
 for (const lang of LANGS) {
-  if (!browser.isConnected()) browser = await chromium.launch();
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  /* SETTING UP THE BROWSER IS PART OF THE ATTEMPT, AND IT USED NOT TO BE.
+   *
+   * `newContext`, `addCookies` and `newPage` sat above the try below, so a failure in any of
+   * them escaped the per-language handler that exists precisely so one bad language is one
+   * finding. Worse, `browser.isConnected()` stays TRUE for a browser whose renderer has died,
+   * so after `it` crashed its renderer this did not relaunch; `ko` then failed with "Target
+   * page, context or browser has been closed", and the NEXT `newContext()` blocked with no
+   * deadline and nothing to catch it. zh, ru and ar never ran, no verdict line was ever
+   * printed, and the process had to be killed from outside.
+   *
+   * So: create the context under a deadline, treat a failure as a crashed browser, relaunch
+   * once, and record the language as failed if even that does not work. */
+  let ctx, page;
+  try {
+    ctx = await withDeadline(newSession(browser), CONTEXT_TIMEOUT_MS, "newContext");
+  } catch (e) {
+    try { await browser.close(); } catch { /* already gone; that is the case we are handling */ }
+    browser = await chromium.launch();
+    try {
+      ctx = await withDeadline(newSession(browser), CONTEXT_TIMEOUT_MS, "newContext after relaunch");
+    } catch (e2) {
+      fail.push(`SETUP  [${lang}] could not open a browser context: ${String(e2).slice(0, 120)}`);
+      continue;
+    }
+  }
   await ctx.addCookies([{ name: "bugitLang", value: lang, url: base }]);
-  const page = await ctx.newPage();
+  page = await ctx.newPage();
   page.setDefaultNavigationTimeout(NAV_TIMEOUT_MS);
   page.setDefaultTimeout(NAV_TIMEOUT_MS);
   const errors = [];
