@@ -99,6 +99,7 @@ const SUITES = [
   // and nothing compared their wording with either until a term corrected in both stayed live
   // here. See the header of check-retired-vocabulary.mjs.
   "check-retired-vocabulary.mjs",
+  "check-release-identity.mjs",
   // check-logo.mjs proves the rendered logo has no clipping artifact; this proves
   // the asset it renders is the one the brand pipeline produced and was not
   // hand-edited afterwards. The two are complements, not duplicates.
