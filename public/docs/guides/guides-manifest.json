@@ -172,13 +172,13 @@
     },
     {
       "file": "pt-br/overview.pdf",
-      "sha256": "afa9f6ef200287f8e1b45fba904796dc3012c728478fb8766f604d054d245c46",
-      "bytes": 123946,
+      "sha256": "fef82f60ab3d5b807f8e3c299e7bd0bb0850ccae60332868a8d24b66343fa7a4",
+      "bytes": 123947,
       "pages": 9,
       "language": "pt-br",
       "agent_pdf": "docs/translations/pt-br/BugIt-QA-Agent-Visao-geral.pt-br.pdf",
       "source": "pt-br/overview.html",
-      "source_sha256": "cad129b724ed92b095fe087900791400cd9167681713cc9a80fdc23748650f41"
+      "source_sha256": "dc70abd09571505787406afa1ed5a2bf92d6cdaead2cc37858e3c2374b32b65c"
     },
     {
       "file": "pt-br/user-guide.pdf",
