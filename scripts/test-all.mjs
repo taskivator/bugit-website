@@ -61,6 +61,11 @@ const SUITES = [
   // check-docs green, because sync-guides.mjs was wired into nothing and its name kept it
   // outside check-ci-coverage's `check-*` sweep.
   "check-guides-fresh.mjs",
+  // check-docs and check-guides-fresh both ask whether the right FILES are served. This asks
+  // what the online guide PAGES say: they are a third copy of the package guides and the PDFs,
+  // and nothing compared their wording with either until a term corrected in both stayed live
+  // here. See the header of check-retired-vocabulary.mjs.
+  "check-retired-vocabulary.mjs",
   // check-logo.mjs proves the rendered logo has no clipping artifact; this proves
   // the asset it renders is the one the brand pipeline produced and was not
   // hand-edited afterwards. The two are complements, not duplicates.

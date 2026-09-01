@@ -68,6 +68,12 @@ jobs:
         env:
           BUGIT_GUIDES_FRESHNESS_UNVERIFIABLE: "1"
         run: node scripts/check-guides-fresh.mjs
+      # The online guide PAGES are a third copy of the package guides and the printed PDFs.
+      # Nothing compared their wording with either until a term the round corrected in both
+      # stayed live here in Spanish, Korean and Portuguese.
+      - name: Verify the online guides carry no retired product vocabulary
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-retired-vocabulary.mjs
       - name: Verify responsive pages do not overflow
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-overflow.mjs
