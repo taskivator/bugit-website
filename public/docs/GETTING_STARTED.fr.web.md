@@ -7,7 +7,7 @@ BugIt transforme des notes de test sommaires en rapports de bogues révisés au 
 ## Avant de commencer
 
 - Installez la dernière version de VS Code et connectez-vous à GitHub Copilot.
-- Installez un interpréteur Python 3.10 à 3.13 qualifié pour la version.
+- Installez un interpréteur Python 3.10 à 3.14 qualifié pour la version.
 - Téléchargez BugIt depuis le tableau de bord de votre compte et décompressez-le dans un dossier local.
 - Ne laissez pas de jetons, de données client ni de code source privé dans les conversations et les fichiers de configuration.
 

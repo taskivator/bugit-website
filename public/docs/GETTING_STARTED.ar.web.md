@@ -7,7 +7,7 @@
 ## قبل أن تبدأ
 
 - ثبّت أحدث إصدار من <bdi dir="ltr">VS Code</bdi> وسجّل الدخول إلى <bdi dir="ltr">GitHub Copilot</bdi>.
-- ثبّت مفسّر <bdi dir="ltr">Python</bdi> معتمدًا من الإصدارات <bdi dir="ltr">3.10</bdi> إلى <bdi dir="ltr">3.13</bdi>.
+- ثبّت مفسّر <bdi dir="ltr">Python</bdi> معتمدًا من الإصدارات <bdi dir="ltr">3.10</bdi> إلى <bdi dir="ltr">3.14</bdi>.
 - نزّل <bdi dir="ltr">BugIt</bdi> من لوحة تحكم حسابك وفك ضغطه في مجلد محلي.
 - لا تضع الرموز المميزة أو بيانات العملاء أو الشفرة المصدرية الخاصة في الدردشة أو ملفات الإعداد.
 

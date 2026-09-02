@@ -7,7 +7,7 @@ O BugIt transforma anotações informais de teste em relatórios de bug revisado
 ## Antes de começar
 
 - Instale a versão mais recente do VS Code e faça login no GitHub Copilot.
-- Instale um interpretador Python 3.10 a 3.13 qualificado para a versão.
+- Instale um interpretador Python 3.10 a 3.14 qualificado para a versão.
 - Baixe o BugIt no painel da sua conta e descompacte-o em uma pasta local.
 - Mantenha tokens, dados de clientes e código-fonte privado fora do chat e dos arquivos de configuração.
 

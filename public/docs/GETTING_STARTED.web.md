@@ -5,7 +5,7 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. Window
 ## Before you begin
 
 - Install the latest VS Code and sign in to GitHub Copilot.
-- Install a release-qualified Python 3.10 through 3.13 interpreter.
+- Install a release-qualified Python 3.10 through 3.14 interpreter.
 - Download BugIt from your account dashboard and unzip it to a local folder.
 - Keep tokens, customer data, and private source code out of chat and configuration files.
 

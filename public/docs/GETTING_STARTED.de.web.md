@@ -7,7 +7,7 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 ## Bevor Sie beginnen
 
 - Installieren Sie das aktuelle VS Code und melden Sie sich bei GitHub Copilot an.
-- Installieren Sie einen für die Veröffentlichung qualifizierten Python-Interpreter (3.10 bis 3.13).
+- Installieren Sie einen für die Veröffentlichung qualifizierten Python-Interpreter (3.10 bis 3.14).
 - Laden Sie BugIt aus Ihrem Konto-Dashboard herunter und entpacken Sie es in einen lokalen Ordner.
 - Halten Sie Tokens, Kundendaten und privaten Quellcode aus Chat- und Konfigurationsdateien heraus.
 
