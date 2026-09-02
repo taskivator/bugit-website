@@ -68,22 +68,74 @@ const EXE = process.env.CHROME_EXE || undefined;
 let fails = 0;
 const ok = (cond, label, extra) => { if (cond) { console.log(`  ok   ${label}`); } else { fails++; console.error(`  FAIL ${label}${extra ? ` — ${extra}` : ""}`); } };
 
+// EVERY THIRD PARTY, NOT ONLY GOOGLE.
+//
+// Checks 1-7 all ask "did GOOGLE load", and they pass cleanly. The 2026-09-02 audit (round 2,
+// F-04) pointed out that this is not the question the site's own consent dialog implies an
+// answer to: it splits the world into essential cookies and Google cookies, and the
+// Cloudflare Web Analytics beacon that loads before any choice is in neither bucket. A guard
+// keyed to "no Google" cannot see a fourth party at all, so the day one is added it stays
+// green. Keyed to an ALLOWLIST, an unexpected host fails on the day it appears.
+//
+// This asserts what is DISCLOSED, not what is forbidden: the Cloudflare beacon is expected
+// here because the site names it in the consent dialog and in the "No Agent Telemetry" card.
+// Adding a host to this list means committing to disclosing it too.
+// EVERY ENTRY IS A HOLE, so each one states why it is not a third party in the consent sense
+// and where it is disclosed. Nothing speculative belongs here: a first draft also listed
+// fonts.googleapis.com and fonts.gstatic.com "in case", and the fonts are in fact entirely
+// self-hosted from /public/fonts, so those two entries would have silently pre-authorised a
+// real future regression.
+const ALLOWED_BEFORE_CONSENT = [
+  // Cookieless page-performance measurement, injected at the edge by Cloudflare Pages. It sets
+  // no cookie and fingerprints nobody. Disclosed in consent.body, in trust.telemetry and in the
+  // privacy section, in all eleven locales. Cloudflare already terminates TLS for this site, so
+  // the marginal disclosure is the visitor's IP and page URL to a party that necessarily has
+  // both. Absent from a local build, because the edge is what injects it.
+  "static.cloudflareinsights.com",
+  // The site's OWN Portal, same controller, not a third party. A read-only, CORS-restricted
+  // status endpoint returning { authenticated, name, dashboardUrl } and no token, so the header
+  // can render "Sign in" or the account menu. It has to run before a consent choice because it
+  // decides what the header shows on first paint.
+  "portal.bugit.dev",
+];
+
+function hostOf(url) {
+  try { return new URL(url).hostname; } catch { return ""; }
+}
+
 async function trackedContext(browser) {
   const ctx = await browser.newContext();
   const reqs = [];
-  ctx.on("request", (r) => { if (GOOGLE.test(r.url())) reqs.push(r.url()); });
-  return { ctx, reqs };
+  const thirdParty = new Set();
+  const ownHost = hostOf(BASE);
+  ctx.on("request", (r) => {
+    const url = r.url();
+    if (GOOGLE.test(url)) reqs.push(url);
+    const host = hostOf(url);
+    // data:, blob: and about: have no host; same-origin is not third party.
+    if (host && host !== ownHost && host !== "localhost" && host !== "127.0.0.1") {
+      thirdParty.add(host);
+    }
+  });
+  return { ctx, reqs, thirdParty };
 }
 const settle = (p, ms = 2500) => p.waitForTimeout(ms);
 
 const browser = await chromium.launch({ headless: true, executablePath: EXE });
 try {
-  // ---- 1 + 6 + 7: fresh load, no choice ----
-  let { ctx, reqs } = await trackedContext(browser);
+  // ---- 1 + 6 + 7 + 8: fresh load, no choice ----
+  let { ctx, reqs, thirdParty } = await trackedContext(browser);
   let page = await ctx.newPage();
   await page.goto(BASE, { waitUntil: "networkidle", timeout: 45000 }).catch(() => {});
   await settle(page, 3000);
   ok(reqs.length === 0, "1. fresh context before choice: zero Google requests", reqs.join(", "));
+  const unexpected = [...thirdParty].filter((h) => !ALLOWED_BEFORE_CONSENT.includes(h)).sort();
+  ok(unexpected.length === 0,
+     "8. before choice: every third-party host is one the site discloses",
+     unexpected.length
+       ? `${unexpected.join(", ")} — either gate it behind consent or disclose it in ` +
+         `consent.body (all eleven locales) and add it to ALLOWED_BEFORE_CONSENT here`
+       : "");
   const adCookiesBefore = (await ctx.cookies()).filter((c) => AD_COOKIE.test(c.name));
   ok(adCookiesBefore.length === 0, "7. no Google advertising cookie before acceptance", adCookiesBefore.map((c) => c.name).join(", "));
   const bannerVisible = await page.isVisible("#consentBanner").catch(() => false);

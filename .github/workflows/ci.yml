@@ -111,6 +111,13 @@ jobs:
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-tracker-claims.mjs
 
+      # The 2026-09-02 audit (round 2, F-01) found the "Runs in VS Code" card requiring
+      # GitHub Copilot in Arabic, and requiring it in French one sentence after saying the
+      # Claude extension works. A false purchase requirement, above the pricing block.
+      - name: No locale states GitHub Copilot as a requirement
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-capability-claims.mjs
+
       - name: Attachment claim is stated in every language
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-attachment-claim.mjs

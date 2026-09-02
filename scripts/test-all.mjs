@@ -105,6 +105,10 @@ const SUITES = [
   // hand-edited afterwards. The two are complements, not duplicates.
   "check-brand-sync.mjs",
   "check-trust-icons.mjs", "check-tracker-claims.mjs", "check-attachment-claim.mjs", "check-ads-tag.mjs", "check-cache-headers.mjs", "check-csp-telemetry.mjs",
+  // check-tracker-claims asks whether the site names the right trackers. This asks whether any
+  // locale states a REQUIREMENT that is not real: Arabic required GitHub Copilot, and French
+  // required it one sentence after saying the Claude extension works.
+  "check-capability-claims.mjs",
   // check-cache-headers asks what may be cached; this asks what protects the response. Split
   // because the site shipped with no Cross-Origin-Opener-Policy at all, and an absence is
   // invisible to a guard that only inspects what is written.
