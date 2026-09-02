@@ -21,6 +21,7 @@
  * meet in renderDocRoute() and a route can render in English and not in Japanese.
  */
 import { chromium } from "playwright";
+import { browserSession, withDeadline } from "./lib/browser-session.mjs";
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import net from "node:net";
@@ -56,7 +57,7 @@ const fail = [];
    failure reported "Target page, context or browser has been closed" -- a cascade of
    false results that hides which languages are actually healthy. Relaunched per language
    when it is gone, so each of the eleven gets a real answer. */
-let browser = await chromium.launch();
+const firstBrowser = await chromium.launch();
 
 /* What a rendered document looks like when it worked: the docs view is showing, the homepage
    is not, the sidebar still has its document list, and there is a real heading with real
@@ -84,14 +85,29 @@ const state = (page) => page.evaluate(() => {
 
 const okDoc = (s) => s.docHidden === false && s.homeHidden === true && !s.notFound && s.chars > 120 && s.navLinks > 0;
 
-/** Opening a context can hang forever against a browser whose renderer died. Give it a clock. */
+/* ASKING THE BROWSER IS THE ONLY LIVENESS TEST THERE IS.
+ *
+ * `browser.isConnected()` reports the state of the CDP pipe, and the pipe survives the
+ * renderer dying. It returns true for a browser that can no longer open anything, which is
+ * why the 404 block below used to guard with it, decide no relaunch was needed, and then
+ * block forever inside `newPage()` -- exactly the wedge documented at the top of this file,
+ * still present in the one place the per-language loop did not cover.
+ *
+ * So there is no liveness predicate at all. Every session is opened under a clock, and a
+ * timeout IS the diagnosis: close, relaunch once, try again.
+ *
+ * The mechanism lives in scripts/lib/browser-session.mjs so it can be PROVED. It survived
+ * three fixes here because nothing can ask Chromium to die on cue; behind that seam a fake
+ * that never answers reproduces it in milliseconds (scripts/check-browser-session.mjs). */
 const CONTEXT_TIMEOUT_MS = 30_000;
 const newSession = (b) => b.newContext({ viewport: { width: 1280, height: 900 } });
-const withDeadline = (p, ms, what) => Promise.race([
-  p,
-  new Promise((_, reject) =>
-    setTimeout(() => reject(new Error(`${what} did not return within ${ms}ms`)), ms).unref?.()),
-]);
+const session = browserSession({
+  browser: firstBrowser,
+  timeoutMs: CONTEXT_TIMEOUT_MS,
+  launch: () => chromium.launch(),
+  open: newSession,
+});
+const freshContext = (what) => session.context(what);
 
 for (const lang of LANGS) {
   /* SETTING UP THE BROWSER IS PART OF THE ATTEMPT, AND IT USED NOT TO BE.
@@ -108,19 +124,24 @@ for (const lang of LANGS) {
    * once, and record the language as failed if even that does not work. */
   let ctx, page;
   try {
-    ctx = await withDeadline(newSession(browser), CONTEXT_TIMEOUT_MS, "newContext");
-  } catch (e) {
-    try { await browser.close(); } catch { /* already gone; that is the case we are handling */ }
-    browser = await chromium.launch();
-    try {
-      ctx = await withDeadline(newSession(browser), CONTEXT_TIMEOUT_MS, "newContext after relaunch");
-    } catch (e2) {
-      fail.push(`SETUP  [${lang}] could not open a browser context: ${String(e2).slice(0, 120)}`);
-      continue;
-    }
+    ctx = await freshContext(`newContext [${lang}]`);
+  } catch (e2) {
+    fail.push(`SETUP  [${lang}] could not open a browser context: ${String(e2).slice(0, 120)}`);
+    continue;
   }
-  await ctx.addCookies([{ name: "bugitLang", value: lang, url: base }]);
-  page = await ctx.newPage();
+  /* THE COOKIE AND THE PAGE ARE PART OF THE SETUP TOO. A context can open against a browser
+     that then dies before either of these, and both were outside every deadline: the run
+     stopped here with no verdict for this language or any after it. */
+  try {
+    await withDeadline(
+      ctx.addCookies([{ name: "bugitLang", value: lang, url: base }]),
+      CONTEXT_TIMEOUT_MS, `addCookies [${lang}]`);
+    page = await withDeadline(ctx.newPage(), CONTEXT_TIMEOUT_MS, `newPage [${lang}]`);
+  } catch (e3) {
+    fail.push(`SETUP  [${lang}] could not open a page: ${String(e3).slice(0, 120)}`);
+    await ctx.close().catch(() => { /* a crashed context cannot be closed cleanly */ });
+    continue;
+  }
   page.setDefaultNavigationTimeout(NAV_TIMEOUT_MS);
   page.setDefaultTimeout(NAV_TIMEOUT_MS);
   const errors = [];
@@ -231,9 +252,14 @@ for (const lang of LANGS) {
 }
 
 /* --- the unknown route, and the server's own 404 ------------------------ */
-{
-  if (!browser.isConnected()) browser = await chromium.launch();
-  const page = await browser.newPage();
+try {
+  /* This block runs straight after the eleven-language loop, so it inherits whatever state
+     the last language left behind -- including a browser whose renderer has just died. It
+     guarded with `isConnected()`, which is precisely the lie this file was written about. */
+  const ctx404 = await freshContext("newContext [404 route]");
+  const page = await withDeadline(ctx404.newPage(), CONTEXT_TIMEOUT_MS, "newPage [404 route]");
+  page.setDefaultNavigationTimeout(NAV_TIMEOUT_MS);
+  page.setDefaultTimeout(NAV_TIMEOUT_MS);
   await page.goto(`${base}#/does-not-exist`, { waitUntil: "networkidle" });
   await page.waitForTimeout(300);
   const s = await state(page);
@@ -262,9 +288,17 @@ for (const lang of LANGS) {
     console.log("  (skipped the HTTP-404 check: set LIVE_ORIGIN to ask the deployed host)");
   }
   await page.close();
+  await ctx404.close().catch(() => { /* a crashed context cannot be closed cleanly */ });
+} catch (e) {
+  /* This block had no handler at all, so anything thrown here skipped the verdict entirely
+     and the run ended with a stack trace instead of a list of findings. It is a finding like
+     any other: record it and let the summary below report every language's result. */
+  fail.push(`404    the unknown-route check did not complete: ${String(e && e.message ? e.message : e).slice(0, 160)}`);
 }
 
-await browser.close();
+/* CLOSE THE BROWSER WE ARE ACTUALLY HOLDING. After a relaunch the original handle is
+   stale, and closing that one leaks the live Chromium and its temp profile. */
+await session.current().close().catch(() => { /* nothing left to close is the success case */ });
 server.kill();
 
 if (fail.length) { console.error(`\ncheck-routing FAILED (${fail.length}):\n - ` + fail.join("\n - ")); process.exit(1); }

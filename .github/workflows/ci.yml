@@ -263,6 +263,13 @@ jobs:
       - name: Verify every language has room, on every screen, on every route
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-space.mjs
+      # Before check-routing, and it takes a second: this is the guard for the wedge that
+      # stopped the whole list. A crashed renderer left isConnected() reporting true, nothing
+      # relaunched, the next newContext() waited with no deadline, and the 28 suites after
+      # check-routing never ran while the command still looked busy.
+      - name: Verify a dead browser is replaced under a clock, never waited on
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-browser-session.mjs
       - name: Verify every route in every language, entered cold, by click, by reload, by history
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-routing.mjs

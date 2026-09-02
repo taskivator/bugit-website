@@ -168,6 +168,11 @@ const SUITES = [
   //                 report opens, or on its own while it runs.
   "check-dev-server.mjs",
   "check-space.mjs",
+  // Runs BEFORE check-routing, and in a second, because it is the guard for the wedge that
+  // stopped this list dead. check-routing crashed a renderer and blocked forever, so the 28
+  // suites after it never ran while the command still looked busy. It survived three fixes
+  // because nothing can ask Chromium to die on cue; this drives a fake that never answers.
+  "check-browser-session.mjs",
   "check-routing.mjs",
   "check-progress-label.mjs",
   "check-instrument-size.mjs",
