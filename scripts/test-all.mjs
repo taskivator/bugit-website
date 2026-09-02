@@ -256,9 +256,16 @@ const SUITES = [
   //                 escaping the box was a background and a shadow, and what replaced it is a
   //                 2px mark on the seam the rail and the stage share -- neither of which is
   //                 the button's own rectangle.
+  // check-notice-fits     the consent notice in EVERY state it can be put into, not only the
+  //                 one it arrives in. Every other rule about that bar dismisses it first, so
+  //                 nothing had ever rendered the state behind "Manage preferences": 869px of
+  //                 a 640px phone, growing off the TOP of the screen because the bar is fixed
+  //                 to the bottom, with the title, the explanation and the first toggle where
+  //                 no gesture could reach them. Fifteen viewports, 320x568 to 1920x1080.
   "check-menu-keyboard.mjs",
   "check-mission-box.mjs",
   "check-mobile-chrome.mjs",
+  "check-notice-fits.mjs",
   "check-hairlines.mjs",
   // check-overlay-contents  what an overlay CONTAINS has to work, not just the control that
   //                 opened it. The mobile menu inerted its own links, its account rows and its

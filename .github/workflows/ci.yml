@@ -382,6 +382,13 @@ jobs:
       - name: Verify the phone browsers get a page they can use
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-mobile-chrome.mjs
+      # Every other rule about the consent bar measures the state it ARRIVES in and then presses
+      # a button to get rid of it, so the state behind "Manage preferences" had never been
+      # rendered: 869px of a 640px phone, and because the bar is fixed to the bottom the extra
+      # grows off the TOP of the screen where nothing can scroll to it.
+      - name: Verify the consent notice fits the screen in every state it can reach
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-notice-fits.mjs
       # The channel picker and the stage are one column, and a hover paints inside it. Measured
       # from photographs: the highlight the owner saw leaving the box was a background and a
       # shadow, and its replacement is a 2px mark drawn on the seam the two halves share.

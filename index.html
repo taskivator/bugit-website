@@ -348,6 +348,18 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
        never grants advertising. -->
   <div id="consentBanner" class="consent" role="dialog" aria-modal="false" aria-labelledby="consentTitle" aria-describedby="consentBody" tabindex="-1" hidden>
     <div class="consent-inner shell">
+     <!-- ONE SCROLLPORT, AND THE BUTTONS OUTSIDE IT. On a phone this notice is taller than the
+          screen it is fixed to (869px of a 640px screen once the preferences are open), and a
+          fixed element grows UPWARDS off the top where nothing can scroll to it. styles.css
+          section 118 caps it in `dvh` and scrolls this wrapper instead. The copy and the
+          preferences share ONE scrollport so a reader is not dragging a paragraph to reach a
+          checkbox, and `.consent-actions` stays outside it so the controls that answer the
+          notice can never be scrolled away from -- or covered. Making the actions
+          `position:sticky` inside the scrollport instead needs no wrapper and was tried first:
+          it puts the privacy-policy link and both toggles UNDER the button bar at every size
+          from 320 to 932, which check-notice-fits reports as a press landing on the wrong
+          control. -->
+     <div class="consent-scroll">
       <div class="consent-copy">
         <strong id="consentTitle" data-t="consent.title">Cookies and measurement</strong>
         <p id="consentBody" data-t="consent.body">We use essential cookies to run this site. With your permission we also use Google cookies to measure our advertising and understand site usage. You can change your choice at any time.</p>
@@ -375,6 +387,7 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
           </dl>
         </div>
       </div>
+     </div>
       <div class="consent-actions">
         <button type="button" id="consentManage" class="consent-btn ghost" data-t="consent.manage">Manage preferences</button>
         <button type="button" id="consentSave" class="consent-btn ghost" data-t="consent.save" hidden>Save preferences</button>

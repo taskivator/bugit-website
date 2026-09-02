@@ -482,14 +482,23 @@ const CONTROLS = [
   ["ZOOM", null, "ZOOM ", ZOOM_DOM],
   ["TAP", ".nav-toggle,.mm-cta,.footer nav a{width:20px !important;height:20px !important;min-height:0 !important;min-width:0 !important;padding:0 !important;overflow:hidden}", "TAP "],
   ["BOOST", "html{-webkit-text-size-adjust:200% !important;text-size-adjust:200% !important}", "BOOST "],
-  /* THE BANNER AS IT SHIPPED, not a caricature of it. Undoing the two short-screen rules in
-     @layer fixes puts the consent bar back to a flex COLUMN with 18px of padding and no cap on
-     its copy, which is what measured 230px of a 340px screen. If this control ever stops firing,
-     the rule above has stopped being able to see the thing it was written for. */
+  /* THE BANNER AS IT SHIPPED, not a caricature of it. The injury undoes every rule that keeps
+     the bar small, and it has to undo ALL of them: on 2026-09-03 this control stopped firing,
+     and the reason was that the fix being made that day HEALED THE INJURY. Section 118 gave the
+     bar a `max-height` ceiling in dvh, so restoring the flex COLUMN and the 18px padding no
+     longer made it grow -- the clamp held it under half the screen and the rule correctly saw
+     nothing. A negative control that the product can heal is a control that reports the fix as
+     an absence of the defect, which is the one answer it must never be able to give.
+     So the injury now also removes the ceiling and the scrollport, which IS the defect: what is
+     left is the bar exactly as it measured 362px of a 360x640 phone and 230px of a 340px one.
+     Not scoped to a media query, because the defect was never only a landscape one. */
   ["NOTICE",
-   "@media (max-height:520px){.consent{padding:18px 0 calc(18px + env(safe-area-inset-bottom)) !important}" +
-   ".consent-inner{flex-direction:column !important;gap:14px !important}" +
-   ".consent-copy{max-height:none !important;overflow:visible !important}}",
+   ".consent{padding:18px 0 calc(18px + env(safe-area-inset-bottom)) !important;" +
+   "max-height:none !important;display:block !important}" +
+   ".consent-inner{flex-direction:column !important;gap:14px !important;align-items:stretch !important}" +
+   ".consent-scroll{overflow:visible !important;min-height:auto !important;display:block !important}" +
+   ".consent-copy{max-height:none !important;overflow:visible !important}" +
+   ".consent-copy strong{font-size:16px !important}.consent-copy p{font-size:14px !important;line-height:1.5 !important}",
    "NOTICE "],
 ];
 const ctlBrowser = await chromium.launch();

@@ -2024,8 +2024,18 @@ function initConsent(){
   let lastReserve=-1;
   function reserve(){
     const on=!banner.hidden;
-    const h=on?Math.ceil(banner.getBoundingClientRect().height):0;
     document.documentElement.classList.toggle('consent-open',on);
+    /* THE CEILING NEEDS TO KNOW WHICH STATE THIS IS. Opened, the banner is about 490px
+       taller, which on a 640px phone put its title, its explanation, its privacy link and
+       its first toggle ABOVE the top of the screen -- and it is fixed, so nothing could
+       scroll them back. styles.css section 118 lifts the ceiling to 82dvh while the
+       preferences are open and folds the sideways row back to a column. DERIVED from the
+       panel rather than assigned by the three handlers that can open or shut it: a state
+       written in three places is a state that drifts in one of them. */
+    document.documentElement.classList.toggle('consent-managing',on&&!!prefs&&!prefs.hidden);
+    /* MEASURED AFTER THE CLASSES, because the classes are what cap the height. Reading
+       first reserved the uncapped 869px for one frame. */
+    const h=on?Math.ceil(banner.getBoundingClientRect().height):0;
     if(h===lastReserve) return;   /* writing it back unchanged can re-trigger the observer */
     lastReserve=h;
     document.documentElement.style.setProperty('--consent-h',h+'px');

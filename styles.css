@@ -8247,6 +8247,96 @@
     .consent-actions{flex:0 0 auto}
   }
 
+  /* ===== A notice fixed to the bottom of a screen it is taller than
+           ==============================================================
+     MEASURED 2026-09-03 on the home page, Blink and WebKit agreeing to the pixel:
+
+                                 on arrival        after "Manage preferences"
+         Android 360x640          362px   57%        869px   136%
+         iPhone SE 375x667        363px   54%        852px   128%
+         iPhone 390x844           343px   41%        832px    99%
+         iPhone 430x932           343px   37%        816px    88%
+         iPhone 750x340 sideways  109px   32%        782px   230%
+         Desktop 1280x800         211px   26%        621px    78%
+
+     The left column is what check-mobile-chrome reported and what the owner saw: on the
+     two smallest phones the notice is most of the arriving screen. The right column is
+     worse and nothing had ever measured it, because every rule about this banner runs on
+     the state it arrives in and then dismisses it.
+
+     THE BANNER IS `position:fixed;bottom:0`, SO IT GROWS UPWARDS. At 136% of a 640px
+     phone the title, the whole explanation, the privacy-policy link and the first
+     preference toggle are above the top of the viewport, and a fixed element cannot be
+     scrolled to. A reader who taps Manage preferences on a phone cannot read what they
+     are consenting to; sideways, at 230%, they cannot reach two of the three toggles
+     either. That is a consent surface asking for a decision it has hidden.
+
+     ONE STRUCTURE FIXES BOTH, and it is the SHAPE, not the wording: give the banner a
+     ceiling in `dvh` and let it scroll inside that ceiling with the buttons stuck to the
+     bottom of the scrollport.
+
+       * `dvh`, never `vh`. The address bar makes a phone viewport two different heights
+         during one visit and `vh` is the taller of them.
+       * The scrollport is `.consent-scroll`, a wrapper around the copy AND the
+         preferences, so the two scroll as ONE region. Two stacked scrollports would leave
+         a reader dragging a four-line paragraph to reach a checkbox.
+       * `.consent-actions` is OUTSIDE that scrollport, which is what keeps section 109's
+         rule true: the controls that answer the notice are never scrolled to. Making them
+         `position:sticky` INSIDE the scrollport instead needs no wrapper and was tried
+         first. It is wrong: a sticky bar overlaps what scrolls under it, and
+         check-notice-fits reported the privacy-policy link and both toggles taking a
+         press that landed on a button, at every size from 320 to 932 in both engines.
+       * The reader who OPENED the preferences asked for the detail, so the ceiling lifts
+         to 82dvh while they are open, and the sideways row layout folds back to a column
+         there: a row is the right shape for two lines of copy and the wrong one for three
+         toggles and a definition list.
+       * THE 88dvh CEILING HAS NO MEDIA QUERY ON IT. 136% was a phone number, but the
+         reason -- a fixed element growing past the top of the screen -- has nothing to do
+         with width, and a desktop window 500px tall reproduces it exactly.
+
+     `html.consent-managing` is set in app.js by the same `reserve()` that already sets
+     `consent-open`, derived from `#consentPrefs.hidden` rather than assigned by the three
+     handlers that can change it, because a state written in three places drifts in one.
+
+     WHAT DELIBERATELY DOES NOT CHANGE: not one word of the notice, and not one control's
+     size. The 44px touch floor and the 44px `.consent-link` of section 101 both stand.
+     scripts/check-notice-fits.mjs is the guard, and it measures the OPENED state at
+     fifteen viewport sizes from 320x568 to 1920x1080 in both engines. */
+  .consent{display:flex;flex-direction:column;max-height:88dvh}
+  .consent-inner{min-height:0}
+  .consent-scroll{
+    display:flex;flex-direction:column;gap:inherit;
+    min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  }
+  .consent-actions{flex:0 0 auto}
+  /* THE ARRIVAL CEILING IS ABOUT THE SCREEN, NOT THE DEVICE. A phone is narrow; a browser
+     window dragged short is not, and it has exactly the same 340 pixels to give. Both get the
+     tighter ceiling, and section 109's separate 26dvh cap on the copy comes off with them --
+     one region that scrolls, not one inside another. */
+  @media (max-width:760px), (max-height:640px){
+    .consent{max-height:44dvh}
+    .consent-copy{max-height:none;overflow:visible}
+  }
+  @media (max-width:760px){
+    .consent{padding:12px 0 calc(12px + env(safe-area-inset-bottom))}
+    .consent-inner{gap:10px}
+    .consent-copy strong{font-size:14px;margin-bottom:2px}
+    .consent-copy p{font-size:13px;line-height:1.45}
+  }
+  /* The sideways row of section 109 puts the SCROLLPORT beside the actions rather than the
+     copy, because the copy is no longer `.consent-inner`'s own child. `align-items:center`
+     goes with it: a centred flex item does not stretch, so the scrollport took its CONTENT
+     height and spilled 212px of it out of the bottom of a 340px screen -- the privacy link
+     measured at y=352 on a viewport 340 tall. The scrollport stretches and scrolls; the
+     buttons keep the centring, which is where it was wanted. */
+  @media (max-height:520px) and (min-width:640px){
+    .consent-inner{align-items:stretch}
+    .consent-scroll{flex:1 1 auto;min-width:0}
+    .consent-actions{align-self:center}
+  }
+  html.consent-managing .consent{max-height:82dvh}
+  html.consent-managing .consent-inner{flex-direction:column;align-items:stretch;gap:12px}
+
   /* ===== Windows High Contrast: the focus ring is a shadow, and forced colours
            delete every shadow ==============================================
      MEASURED, 2026-08-24, on 13 consecutive Tab presses across the home page with

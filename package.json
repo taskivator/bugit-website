@@ -51,6 +51,7 @@
     "test:compositor-budget": "node scripts/check-compositor-budget.mjs",
     "test:type-floor": "node scripts/check-type-floor.mjs",
     "test:mobile-chrome": "node scripts/check-mobile-chrome.mjs",
+    "test:notice-fits": "node scripts/check-notice-fits.mjs",
     "test:hairlines": "node scripts/check-hairlines.mjs",
     "test:mission-box": "node scripts/check-mission-box.mjs",
     "test:demo-stage": "node scripts/check-demo-stage.mjs",
