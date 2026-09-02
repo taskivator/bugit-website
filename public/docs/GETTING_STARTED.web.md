@@ -39,7 +39,7 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. Window
 - Describe the problem in plain language, including where it happened and how often.
 - Answer any questions needed to make the reproduction steps complete.
 - Review the preview, especially private data, severity, project, and attachments.
-- Nothing reaches your tracker until you reply with exactly `FILE IT`. "Yes" and "go ahead" are not confirmation.
+- Nothing is created or changed in your tracker until you reply with exactly `FILE IT`. "Yes" and "go ahead" are not confirmation. BugIt may ask your tracker read-only questions before that, using your saved token, to check for duplicates and to learn which fields the project accepts.
 
 ## Get help
 

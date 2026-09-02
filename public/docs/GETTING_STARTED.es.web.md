@@ -41,7 +41,7 @@ BugIt convierte notas de prueba preliminares en informes de errores revisados de
 - Describe el problema en lenguaje sencillo, indicando dónde ocurrió y con qué frecuencia.
 - Responde a las preguntas necesarias para completar los pasos de reproducción.
 - Revisa la vista previa, especialmente los datos privados, la gravedad, el proyecto y los archivos adjuntos.
-- Nada llega a tu sistema de seguimiento hasta que respondas exactamente `FILE IT`. «Sí» o «adelante» no son una confirmación.
+- No se crea ni se modifica nada en tu sistema de seguimiento hasta que respondas exactamente `FILE IT`. «Sí» o «adelante» no son una confirmación. BugIt sí puede hacerle antes consultas de solo lectura, con tu token guardado, para buscar duplicados y saber qué campos acepta el proyecto.
 
 ## Obtén ayuda
 

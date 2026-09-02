@@ -41,7 +41,7 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 - Descrivi il problema in linguaggio semplice, indicando dove si è verificato e con quale frequenza.
 - Rispondi alle eventuali domande necessarie per rendere completi i passaggi di riproduzione.
 - Esamina l'anteprima, in particolare i dati privati, la gravità, il progetto e gli allegati.
-- Nulla raggiunge il tuo tracker finché non rispondi esattamente `FILE IT`. «Sì» o «vai» non sono una conferma.
+- Nel tuo tracker non viene creato né modificato nulla finché non rispondi esattamente `FILE IT`. «Sì» o «vai» non sono una conferma. BugIt può però porgli prima domande di sola lettura, con il tuo token salvato, per cercare duplicati e sapere quali campi accetta il progetto.
 
 ## Ottenere assistenza
 

@@ -41,7 +41,7 @@ BugIt transforme des notes de test sommaires en rapports de bogues révisés au 
 - Décrivez le problème en langage clair, en précisant où il s'est produit et à quelle fréquence.
 - Répondez aux questions nécessaires pour compléter les étapes de reproduction.
 - Examinez l'aperçu, en particulier les données privées, la gravité, le projet et les pièces jointes.
-- Rien n'atteint votre outil de suivi tant que vous n'avez pas répondu exactement `FILE IT`. « Oui » ou « allez-y » ne valent pas confirmation.
+- Rien n'est créé ni modifié dans votre outil de suivi tant que vous n'avez pas répondu exactement `FILE IT`. « Oui » ou « allez-y » ne valent pas confirmation. BugIt peut toutefois lui poser avant des questions en lecture seule, avec votre jeton enregistré, pour rechercher les doublons et connaître les champs acceptés par le projet.
 
 ## Obtenir de l'aide
 

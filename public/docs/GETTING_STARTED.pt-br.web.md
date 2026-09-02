@@ -41,7 +41,7 @@ O BugIt transforma anotações informais de teste em relatórios de bug revisado
 - Descreva o problema em linguagem simples, incluindo onde ele ocorreu e com que frequência.
 - Responda a quaisquer perguntas necessárias para completar os passos de reprodução.
 - Revise a pré-visualização, especialmente dados privados, severidade, projeto e anexos.
-- Nada chega ao seu rastreador até você responder exatamente `FILE IT`. "Sim" ou "pode ir" não são confirmação.
+- Nada é criado nem alterado no seu rastreador até você responder exatamente `FILE IT`. "Sim" ou "pode ir" não são confirmação. O BugIt pode, antes disso, fazer consultas somente leitura a ele, com o seu token salvo, para procurar duplicatas e saber quais campos o projeto aceita.
 
 ## Obtenha ajuda
 

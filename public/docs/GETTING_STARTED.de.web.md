@@ -41,7 +41,7 @@ BugIt verwandelt grobe Testnotizen in geprüfte Fehlerberichte direkt in VS Code
 - Beschreiben Sie das Problem in einfachen Worten, einschließlich wo es aufgetreten ist und wie oft.
 - Beantworten Sie alle Fragen, die nötig sind, um die Reproduktionsschritte vollständig zu machen.
 - Prüfen Sie die Vorschau, insbesondere private Daten, Schweregrad, Projekt und Anhänge.
-- Nichts erreicht Ihren Tracker, bevor Sie mit genau `FILE IT` antworten. „Ja“ oder „los“ sind keine Bestätigung.
+- In Ihrem Tracker wird nichts angelegt und nichts geändert, bevor Sie mit genau `FILE IT` antworten. „Ja“ oder „los“ sind keine Bestätigung. BugIt kann ihm vorher lesende Fragen stellen, mit Ihrem gespeicherten Token, um auf Duplikate zu prüfen und zu erfahren, welche Felder das Projekt akzeptiert.
 
 ## Hilfe erhalten
 
