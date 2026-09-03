@@ -30,7 +30,7 @@ const SITE = process.env.BUGIT_SITE_URL || "https://bugit.dev";
 const PORTAL = process.env.BUGIT_PORTAL_URL || "https://portal.bugit.dev";
 const OUT =
   process.env.BUGIT_AUDIT_CAPTURE_DIR ||
-  "F:\\My Drive\\BugIt Google Drive\\02-AUDIT-REPORTS\\v1.3.3";
+  "F:\\My Drive\\1-BugIt Google Drive\\02-AUDIT-REPORTS\\v1.3.3";
 
 /** The eleven locales, in the order `app.js` lists them. */
 const LOCALES = ["en", "ja", "fr", "de", "es", "pt-br", "it", "ko", "zh", "ru", "ar"];
