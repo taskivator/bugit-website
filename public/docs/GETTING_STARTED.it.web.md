@@ -7,7 +7,7 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 ## Prima di iniziare
 
 - Installa l'ultima versione di VS Code e accedi a GitHub Copilot.
-- Installa un interprete Python qualificato per la release.
+- Installa un interprete Python dalla 3.10 alla 3.14, qualificato per la release.
 - Scarica BugIt dalla dashboard del tuo account ed estrailo in una cartella locale.
 - Tieni token, dati dei clienti e codice sorgente privato fuori dalla chat e dai file di configurazione.
 
