@@ -30,6 +30,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { waitForDevTools } from './lib/chrome-devtools.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = 3216;
@@ -71,7 +72,8 @@ const chrome = spawn(CHROME, [
   '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
   '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage',
   '--force-device-scale-factor=1', `--remote-debugging-port=${DBG}`, `--user-data-dir=${udir}`, 'about:blank',
-], { stdio: 'ignore' });
+], { stdio: ['ignore', 'ignore', 'pipe'] });  // stderr PIPED: it is the only evidence
+                                              // when Chrome dies before its DevTools port opens
 
 const watchdog = setTimeout(() => {
   console.error('check-mission-pause: timed out before completing assertions.');
@@ -88,9 +90,15 @@ function cleanup(code) {
 }
 
 const getJSON = async (u) => (await fetch(u)).json();
+// cleanup() is what kills Chrome, closes the fixture server and removes the profile dir,
+// and it is reached by CALLING it -- an uncaught throw here would leave all three behind.
 let version;
-for (let i = 0; i < 80; i++) { try { version = await getJSON(`http://127.0.0.1:${DBG}/json/version`); break; } catch { await new Promise((r) => setTimeout(r, 150)); } }
-if (!version) { console.error('check-mission-pause: Chrome DevTools endpoint never came up.'); cleanup(1); }
+try {
+  version = await waitForDevTools(chrome, DBG, { name: 'check-mission-pause' });
+} catch (err) {
+  console.error(err.message);
+  cleanup(1);
+}
 
 const targets = await getJSON(`http://127.0.0.1:${DBG}/json/list`);
 const pageTarget = targets.find((t) => t.type === 'page' && t.webSocketDebuggerUrl);

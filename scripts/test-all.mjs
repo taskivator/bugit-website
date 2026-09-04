@@ -173,6 +173,7 @@ const SUITES = [
   // suites after it never ran while the command still looked busy. It survived three fixes
   // because nothing can ask Chromium to die on cue; this drives a fake that never answers.
   "check-browser-session.mjs",
+  "check-chrome-devtools.mjs",
   "check-routing.mjs",
   "check-progress-label.mjs",
   "check-instrument-size.mjs",

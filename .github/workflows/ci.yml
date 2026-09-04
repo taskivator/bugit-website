@@ -20,6 +20,13 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # A CEILING, because there was none and GitHub's default is 360 minutes. A full run
+    # here measures about 140 minutes -- nearly every step drives headless Chrome across
+    # eleven widths, ten routes and ten languages -- so a job still going at 240 is
+    # wedged, not slow. Without this a single hung step burns four hours of runner time
+    # and reports nothing. The agent repo put a ceiling on every job for exactly this
+    # reason; this repository never got the lesson until 2026-09-04.
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v7
       # Committed-secret scan (zero-dependency, deterministic). High-confidence
@@ -270,6 +277,13 @@ jobs:
       - name: Verify a dead browser is replaced under a clock, never waited on
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-browser-session.mjs
+      # The other half of the same lesson, one layer lower: browser-session.mjs is about a
+      # browser that has already died, this is about one that has not finished starting. On
+      # 2026-09-04 check-overflow went red here and green locally because Chrome was given
+      # twelve seconds to open its DevTools port on a cold shared runner.
+      - name: Verify a dead browser and a slow one are told apart at startup
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-chrome-devtools.mjs
       - name: Verify every route in every language, entered cold, by click, by reload, by history
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-routing.mjs
