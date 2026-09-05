@@ -43,8 +43,8 @@ terms.
 
 7. Term. BugIt is a one time purchase, not a subscription: you pay once, and there
    is no automatic renewal and no recurring charge. Your purchase grants a one year
-   license, including updates and license and activation services, that begins at
-   first activation. When the year ends the license expires; a 3-day grace period
+   license, including updates and license and activation services, that begins on
+   the date of purchase. When the year ends the license expires; a 3-day grace period
    follows, during which the Software continues to work. Continued use then
    requires a new license, which you may choose to buy, and Taskivator never charges you
    automatically. If there is any conflict between a translation of these terms and

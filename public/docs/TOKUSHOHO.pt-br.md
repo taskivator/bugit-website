@@ -55,8 +55,8 @@ pelo navegador no BugIt Portal ficam disponíveis na sua conta.
 
 ## Prazo da licença e escopo do produto
 
-- Sua compra concede uma licença com duração de 1 ano, contada a partir da primeira
-  ativação. Ela não é renovada automaticamente. Ao fim do ano a licença expira, e continuar
+- Sua compra concede uma licença com duração de 1 ano, contada a partir da data da
+  compra. Ela não é renovada automaticamente. Ao fim do ano a licença expira, e continuar
   usando exige uma nova compra.
 - Atualizações e serviços de licença estão incluídos por 365 dias durante o prazo.
 - O BugIt Solo pode ser usado em 1 dispositivo por vez, por um único usuário.

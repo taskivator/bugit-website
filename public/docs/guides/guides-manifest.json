@@ -6,229 +6,229 @@
     "weasyprint": "69.0",
     "pydyf": "0.12.1",
     "pango": "1.50.3",
-    "python": "3.12.10"
+    "python": "3.14.7"
   },
   "agent_source_date_epoch": "1735689600",
   "guides": [
     {
       "file": "ar/overview.pdf",
-      "sha256": "62c7049870bbefd5cde0929007bab2f49de4f430b2ab145697c4bd2985b46cae",
-      "bytes": 159298,
+      "sha256": "3fea016a945317dabc20aa1e1cb03157e0841882a72a88a4a6d590273d7dec74",
+      "bytes": 160643,
       "pages": 9,
       "language": "ar",
       "agent_pdf": "docs/translations/ar/BugIt-QA-Agent-Overview.ar.pdf",
       "source": "ar/overview.html",
-      "source_sha256": "b12fbfbfedb23983902cc3e517baa9d740517d71ae7f48d07d45dc122b10e473"
+      "source_sha256": "0694a77cc7f617f02f06a1bb75a14aa3194ebadd5a16899d34bb5f070b9f9a01"
     },
     {
       "file": "ar/user-guide.pdf",
-      "sha256": "8e350bfa2c52bc4debdf952e4f07a7416ed53a7a0f48ea991047750142cbe155",
-      "bytes": 243482,
+      "sha256": "ddcd176ed450d0ddc859fade3f13f354d93c68df3ad51be1f0736f3d7f4d9cdd",
+      "bytes": 245991,
       "pages": 23,
       "language": "ar",
       "agent_pdf": "docs/translations/ar/BugIt-User-Guide.ar.pdf",
       "source": "ar/user-guide.html",
-      "source_sha256": "250ff1ddcf925c784bd40200a4fa12141806ac75e7d681fc032893c25deb2ce6"
+      "source_sha256": "1c6ab4526f2839f8d6d032b3a56f6ab5539b7f05c434a5c526eb810be65b1399"
     },
     {
       "file": "de/overview.pdf",
-      "sha256": "be4f11febf0fc775596f51dd49c4ef0beb02083e208d1b53de734c8bf2476949",
-      "bytes": 125294,
+      "sha256": "ab345baba08bb2103ebd784a96d56b14b52b2db280c02bf72f266344353f7671",
+      "bytes": 126219,
       "pages": 9,
       "language": "de",
       "agent_pdf": "docs/translations/de/BugIt-QA-Agent-Ueberblick.de.pdf",
       "source": "de/overview.html",
-      "source_sha256": "aae2a39311e0d46ea697b8ecd44cee6bf691fa50cf8fd2b7a1c27cf1990c13e1"
+      "source_sha256": "7a67d2ac2ebc641253590046eb7a110c04718082339df4d097e677dfab9adf40"
     },
     {
       "file": "de/user-guide.pdf",
-      "sha256": "16df55648ba9a49420c3fc1bcd5a0839167bbf669c458f70c61ef04bdee554a5",
-      "bytes": 189034,
+      "sha256": "e87264030f614ec2bc1f67a2b8cd2b40980e6e42391eca42fea4bddb59dc06aa",
+      "bytes": 190339,
       "pages": 24,
       "language": "de",
       "agent_pdf": "docs/translations/de/BugIt-Benutzerhandbuch.de.pdf",
       "source": "de/user-guide.html",
-      "source_sha256": "8ac99c917884df7ddac65dbe1a7c84c5cd4e0813725139664e69662abd1a3e50"
+      "source_sha256": "65e3c4098c574616e00b7dd6870ebaf1a613526d8688bdbc63f6b52121e5db97"
     },
     {
       "file": "en/overview.pdf",
-      "sha256": "1bf228e05211898163940fd3cab1c58cc5594624472113c1e17c9f497bf5897f",
-      "bytes": 117373,
+      "sha256": "0d3df11568d6ff687c167b33f23701323e0921f16a517b81035f45ee9fffa0bc",
+      "bytes": 118201,
       "pages": 8,
       "language": "en",
       "agent_pdf": "docs/user/BugIt-QA-Agent-Overview.pdf",
       "source": "overview.html",
-      "source_sha256": "fef38b7c0a2a1ccb95bc3a1db62f371217c0153551b37e7fc1e12c7c5dd023b8"
+      "source_sha256": "eee5982dcf081570d78361be3f13536fb145d7d5e9387977f977743793f36121"
     },
     {
       "file": "en/user-guide.pdf",
-      "sha256": "434bc97f7c6a4a8a122b2ccb2d5bd6651bdba9bd8daffde1e43b950604f79856",
-      "bytes": 179995,
+      "sha256": "210bbdff5c2cb21f188246889fd0831889df61d008720493c530df8c809aef0d",
+      "bytes": 181228,
       "pages": 23,
       "language": "en",
       "agent_pdf": "docs/user/BugIt-User-Guide.pdf",
       "source": "user-guide.html",
-      "source_sha256": "51e385f3da6dafd354d6d2fdad6c7619d241b6310c488c0b6692b845a3fae455"
+      "source_sha256": "d3901bca661106d18c0a9218e5b75b0b53f07248ec7018526adcb2b899bb4c6a"
     },
     {
       "file": "es/overview.pdf",
-      "sha256": "a80d7876a37a1fcacdd7014b4b8fc2621696b008e77196e45e53ad78406dbcb9",
-      "bytes": 122735,
+      "sha256": "5df58411716922079770214c3bf649471c3d5bb19ac7335db5b5bf981442cc16",
+      "bytes": 123665,
       "pages": 9,
       "language": "es",
       "agent_pdf": "docs/translations/es/BugIt-QA-Agent-Descripcion-general.es.pdf",
       "source": "es/overview.html",
-      "source_sha256": "6fa37951251b817078bdb70bb4a19ae9dafef448de4a5e4e6d8651b76afc0f49"
+      "source_sha256": "8a91f1d2f8dcee0a962a36ad553eadaaa9c6059796ddbadf7fce31a48cb0b8a7"
     },
     {
       "file": "es/user-guide.pdf",
-      "sha256": "82d4ec68c6d39b19e9cf2729a02a7f09ee0f24f668eaaae2610882ca08cbc71c",
-      "bytes": 186290,
+      "sha256": "f9793658a45a2c8db635e040d872ab39f0a894fa7e3305392476ea0e36df7c84",
+      "bytes": 187625,
       "pages": 24,
       "language": "es",
       "agent_pdf": "docs/translations/es/BugIt-Guia-del-usuario.es.pdf",
       "source": "es/user-guide.html",
-      "source_sha256": "515c6b473e7c61301f8d4503c1f582d401700b2f848e4b84e03343f510bbd636"
+      "source_sha256": "7b9280a943efc4fd286b1778710c620fde62ef646c6cc5761f114490e89209ea"
     },
     {
       "file": "fr/overview.pdf",
-      "sha256": "6bc052e4f254b1bd8bbd7b990be0c28eb5735db827608ef7a5432e709deb7e35",
-      "bytes": 123947,
+      "sha256": "c4372f57725c8452b6a3629acdfd3605d9a17b1f87552f5d82d38ba1631c74ba",
+      "bytes": 124897,
       "pages": 9,
       "language": "fr",
       "agent_pdf": "docs/translations/fr/BugIt-QA-Agent-Presentation.fr.pdf",
       "source": "fr/overview.html",
-      "source_sha256": "4e4f7be6ca87d744ea449d5cd841813cb085a09355dfa2cb113b84a58ab4b71d"
+      "source_sha256": "bc0f59d162524e0cf25bc9017956751888e5fec59073560f0ea7157e6c4e6b59"
     },
     {
       "file": "fr/user-guide.pdf",
-      "sha256": "8ac1a124c24c51eb3a61904b6b432a6b4b5fefd80e71a04bd093931b0a7d6c38",
-      "bytes": 189968,
+      "sha256": "31559f5570996fd84c48cefc0dce66d5aa8cff74829769817ae1db9cb6b48735",
+      "bytes": 191363,
       "pages": 24,
       "language": "fr",
       "agent_pdf": "docs/translations/fr/BugIt-Guide-d-utilisation.fr.pdf",
       "source": "fr/user-guide.html",
-      "source_sha256": "1496015b02c0a3eff11b315652a0f50edc9839de5d599eb7501f22ea3d0aa7db"
+      "source_sha256": "392b6b251d2addcbc7ee813ef33b3a0c1441bd0f9278ab17dc52afe5d87cb82d"
     },
     {
       "file": "it/overview.pdf",
-      "sha256": "ac466d073661579708cde35c5d91b6236ad175f52749fc522ee42f4acedc9b6a",
-      "bytes": 120104,
+      "sha256": "cd1277f105f86db3a66731205635f5b14dd2f5e1e4e1e9140c9e513955015c98",
+      "bytes": 121016,
       "pages": 9,
       "language": "it",
       "agent_pdf": "docs/translations/it/BugIt-QA-Agent-Panoramica.it.pdf",
       "source": "it/overview.html",
-      "source_sha256": "295b79b2292ac9200b1dc0a6d3933c82454e5b6daa7122116864831d7c204902"
+      "source_sha256": "ae38ccfa8c6ad06d4a0b4ea2525c1e26a1a5b903df8ddefc7962b74f1b738e80"
     },
     {
       "file": "it/user-guide.pdf",
-      "sha256": "5c3a9cd65e715f13909f79ae1e37c6a6a7d900507dbf1f9539e0f02638bdaac9",
-      "bytes": 182282,
+      "sha256": "8acacd165891e5ce53db6afd82a933d41446dd868530c257fbe4e0c09e4114b4",
+      "bytes": 183544,
       "pages": 23,
       "language": "it",
       "agent_pdf": "docs/translations/it/BugIt-Guida-utente.it.pdf",
       "source": "it/user-guide.html",
-      "source_sha256": "58e05855165171d6dad8b2a412733afa341190c6c9e037818f78fd1d9f7d81fa"
+      "source_sha256": "4a9a78a360015e27c1fc15df923ed3c0a8e2e7b4200f2587a74c19ec3014a8f9"
     },
     {
       "file": "ja/overview.pdf",
-      "sha256": "4907d01ab6005fb798d9a4951ef55655ade848bf0a09b3be96850910cba3b5ef",
-      "bytes": 298461,
+      "sha256": "4151c6013c7a16526c7c675a86e4ca9413fc60ea196f210934ec9a1261c51020",
+      "bytes": 298898,
       "pages": 9,
       "language": "ja",
       "agent_pdf": "docs/translations/ja/BugIt-QA-Agent-Overview.ja.pdf",
       "source": "ja/overview.html",
-      "source_sha256": "bfe6f200435a67c57598adf3ca0b8ae0dd9f689c9e20d380441cfe3285566d03"
+      "source_sha256": "76c273d1cf9c069d64264857a5508ae1b54b242f1bb8d388b3b9b7a063c0a919"
     },
     {
       "file": "ja/user-guide.pdf",
-      "sha256": "57c92161a8adccc9e856a8d8b9ff736aa8ddff01fed518e96de2acf94b57a2ac",
-      "bytes": 397993,
+      "sha256": "c19342668a90fd88175a9266cdd47ec58945b224cdf56b9c6fe0a3727a2d332d",
+      "bytes": 398801,
       "pages": 26,
       "language": "ja",
       "agent_pdf": "docs/translations/ja/BugIt-User-Guide.ja.pdf",
       "source": "ja/user-guide.html",
-      "source_sha256": "792fc318c3f850a429a0f37aacb70fea3f4fafec69e4017f0d4a14ec439281c6"
+      "source_sha256": "6a5ad4fdf55a7a1ca3cf7c324b962ec80744915554d46119621d07714795f9ad"
     },
     {
       "file": "ko/overview.pdf",
-      "sha256": "975c4e020c5b6dafc60b8da90ae3e16fcd8ab55cfc47ef29ad8b1a8fbd2b55af",
-      "bytes": 200608,
+      "sha256": "8cee5fc3157bb1dd5576e0c0b513243b1207b3c9552584c39200582127fddea2",
+      "bytes": 200889,
       "pages": 9,
       "language": "ko",
       "agent_pdf": "docs/translations/ko/BugIt-QA-Agent-Overview.ko.pdf",
       "source": "ko/overview.html",
-      "source_sha256": "ea972a83a73f0ac8835ca1bfeb860f4c8293d620bb6690288896f7877bf76102"
+      "source_sha256": "cc603ff159a243f4eb5fea5325cece3a25136db0bf36d16fdc7a605bf5b7f1e7"
     },
     {
       "file": "ko/user-guide.pdf",
-      "sha256": "e5dc02bc7e5f1cce866ad74dfcbcb8d260933e7d94188177642702c2e57dffba",
-      "bytes": 272597,
+      "sha256": "9063848535f2b5d30efb8f3cdc87c0de7d64cb47f0646b423249deb387286644",
+      "bytes": 273653,
       "pages": 23,
       "language": "ko",
       "agent_pdf": "docs/translations/ko/BugIt-User-Guide.ko.pdf",
       "source": "ko/user-guide.html",
-      "source_sha256": "f4981b57fcf914e3cb17f5b1b9972138653ff4e9f412362d6b3a3d1327172287"
+      "source_sha256": "ada6635a5d5f80c15293f7cef53f001ccebaa207c40951e7ea6bcc69efd46b6a"
     },
     {
       "file": "pt-br/overview.pdf",
-      "sha256": "cc85990e9b026bdfde908cd1edb59b90f15e1b7c3a1b5fadce52ffc5f0eb0445",
-      "bytes": 123946,
+      "sha256": "a8e28d8b5a184af384f76917f5c8a9146b6a12efa6c7c18028bdc8ae4cc58492",
+      "bytes": 124854,
       "pages": 9,
       "language": "pt-br",
       "agent_pdf": "docs/translations/pt-br/BugIt-QA-Agent-Visao-geral.pt-br.pdf",
       "source": "pt-br/overview.html",
-      "source_sha256": "734f858d8f8795cabeb34e2a39b6c44716663c787be4ffe32d6897d7e2799e50"
+      "source_sha256": "14b96fee407062c46739a812608d198878662521907567a96d14ce9eea351059"
     },
     {
       "file": "pt-br/user-guide.pdf",
-      "sha256": "93872371adfcecf1bd89b5c8fdee9652cefc0cb2ab1e10b3efb62ec6d5bb5d1a",
-      "bytes": 186100,
+      "sha256": "703be5b2ddcf99f5045facfb436686905b3571eff5d5ab782d11a1ba91452caa",
+      "bytes": 187404,
       "pages": 24,
       "language": "pt-br",
       "agent_pdf": "docs/translations/pt-br/BugIt-Guia-do-usuario.pt-br.pdf",
       "source": "pt-br/user-guide.html",
-      "source_sha256": "f773d9354d567e32e89e92d6943973849f6399fc1bf8790628b68e0633837bff"
+      "source_sha256": "27f50162224d1ad9d706f4f0c154d382916ac24aa52a61d7c697d21014c035fb"
     },
     {
       "file": "ru/overview.pdf",
-      "sha256": "9011207b8ae53f7fd4d8e528ea50a5cc0e832e17c9467c480adbf7eddd524641",
-      "bytes": 133945,
+      "sha256": "ba4f25e738c8b6f0bf836950de02335c3b3bfcabaa08cc4f07ab91d711225cd4",
+      "bytes": 134808,
       "pages": 9,
       "language": "ru",
       "agent_pdf": "docs/translations/ru/BugIt-QA-Agent-Overview.ru.pdf",
       "source": "ru/overview.html",
-      "source_sha256": "0b156752bac7fb242e315619c21ed8cb3596328ff4f43f1035516fbe347811ea"
+      "source_sha256": "01a707b88e0607273dae067f1ddd4cce1b215b9a7e7185928836010875248571"
     },
     {
       "file": "ru/user-guide.pdf",
-      "sha256": "258ca7bc4d56e6c7d7843b16419aa9c30599e6f1089d5c3cde06482caecd3a39",
-      "bytes": 199965,
+      "sha256": "d2b47127f4dbcbe0be44617c202d176fd51c6b5072608b2ee3e46a2893ac792e",
+      "bytes": 201284,
       "pages": 24,
       "language": "ru",
       "agent_pdf": "docs/translations/ru/BugIt-User-Guide.ru.pdf",
       "source": "ru/user-guide.html",
-      "source_sha256": "676d77e7267dd91657f9631b8919eb070597869aeee441297fe9fd225397a0fb"
+      "source_sha256": "61f1b5910d471668959b846324249f339f8e567074a69241d1985b4b5e13e36c"
     },
     {
       "file": "zh/overview.pdf",
-      "sha256": "bdb77cadba370616ff7710878c4ad9dd9e1699c8754105e9aeb6a7940f8f89fe",
-      "bytes": 338549,
+      "sha256": "f0887e61f99e8b3468b0a006fbebfc7c3c767d4d3d0b4da58bbf2df4745fdbdb",
+      "bytes": 338582,
       "pages": 9,
       "language": "zh",
       "agent_pdf": "docs/translations/zh/BugIt-QA-Agent-Overview.zh.pdf",
       "source": "zh/overview.html",
-      "source_sha256": "e7e0a0f01f7d7a65ef78fae0b2fe7aaba57f8eea78d22230466dead46ea638c9"
+      "source_sha256": "0ad03b53b4f2425dc14c5c587b65cd05a41504b9b31313928f9130490b44ac76"
     },
     {
       "file": "zh/user-guide.pdf",
-      "sha256": "a296bec1e80a9169c72fb5274ec7b9d7e79cbe22c813ff5441bfed0b74507f94",
-      "bytes": 451221,
+      "sha256": "ebecc4fa21a7520bc4e708cb16e0a8d077176911825f89462a97ce9fd49c2add",
+      "bytes": 451863,
       "pages": 23,
       "language": "zh",
       "agent_pdf": "docs/translations/zh/BugIt-User-Guide.zh.pdf",
       "source": "zh/user-guide.html",
-      "source_sha256": "48483477caafb58cc822d06331a1573d8fcac96b600d0b1029cc6df9cc9c7a06"
+      "source_sha256": "548ab1a55516efc1adf5d0229d7182f6e70c1ade4b534dc375cb05158a8e94c5"
     }
   ]
 }

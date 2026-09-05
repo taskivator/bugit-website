@@ -56,8 +56,8 @@ und die browserbasierte Aktivierung im BugIt Portal in Ihrem Konto zur Verfügun
 
 ## Lizenzlaufzeit und Produktumfang
 
-- Ihr Kauf gewährt eine Lizenz mit einer Laufzeit von 1 Jahr, beginnend mit der ersten
-  Aktivierung. Sie verlängert sich nicht automatisch. Mit Ablauf des Jahres erlischt die
+- Ihr Kauf gewährt eine Lizenz mit einer Laufzeit von 1 Jahr, beginnend am Kaufdatum.
+  Sie verlängert sich nicht automatisch. Mit Ablauf des Jahres erlischt die
   Lizenz; die weitere Nutzung erfordert einen neuen Kauf.
 - Updates und Lizenzdienste sind während der Laufzeit für 365 Tage enthalten.
 - BugIt Solo darf von einer Person auf jeweils 1 Gerät genutzt werden.

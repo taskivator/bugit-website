@@ -55,8 +55,8 @@ via browser nel BugIt Portal diventano disponibili nel tuo account.
 
 ## Durata della licenza e ambito del prodotto
 
-- L’acquisto concede una licenza della durata di 1 anno, che decorre dalla prima
-  attivazione. Non si rinnova automaticamente. Al termine dell’anno la licenza scade e per
+- L’acquisto concede una licenza della durata di 1 anno, che decorre dalla data di
+  acquisto. Non si rinnova automaticamente. Al termine dell’anno la licenza scade e per
   continuare a usarla è necessario un nuovo acquisto.
 - Aggiornamenti e servizi di licenza sono inclusi per 365 giorni nel corso della durata.
 - BugIt Solo può essere usato su 1 dispositivo alla volta da un solo utente.

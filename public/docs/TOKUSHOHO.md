@@ -53,9 +53,9 @@ browser based activation in the BugIt Portal become available in your account.
 
 ## License term and product scope
 
-- Your purchase grants a license that lasts 1 year, beginning at first activation.
-  It does not renew automatically. When the year ends the license expires, and
-  continued use requires a new purchase.
+- Your purchase grants a license that lasts 1 year, beginning on the date of
+  purchase. It does not renew automatically. When the year ends the license
+  expires, and continued use requires a new purchase.
 - Updates and license services are included for 365 days during the term.
 - BugIt Solo may be used on 1 device at a time by one user.
 - BugIt Team covers up to 5 members. Each member has their own BugIt account and

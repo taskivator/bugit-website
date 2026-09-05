@@ -56,7 +56,7 @@ compte.
 
 ## Durée de la licence et périmètre du produit
 
-- Votre achat accorde une licence d’une durée de 1 an, qui débute à la première activation.
+- Votre achat accorde une licence d’une durée de 1 an, qui débute à la date d’achat.
   Elle ne se renouvelle pas automatiquement. À la fin de l’année, la licence expire et la
   poursuite de l’utilisation nécessite un nouvel achat.
 - Les mises à jour et les services de licence sont inclus pendant 365 jours au cours de la

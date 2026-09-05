@@ -55,8 +55,8 @@ activación desde el navegador en el BugIt Portal quedan disponibles en tu cuent
 
 ## Duración de la licencia y alcance del producto
 
-- Tu compra otorga una licencia con una duración de 1 año, que comienza con la primera
-  activación. No se renueva automáticamente. Al terminar el año la licencia caduca y
+- Tu compra otorga una licencia con una duración de 1 año, que comienza en la fecha de
+  compra. No se renueva automáticamente. Al terminar el año la licencia caduca y
   seguir usándola requiere una nueva compra.
 - Las actualizaciones y los servicios de licencia se incluyen durante 365 días dentro del
   plazo.

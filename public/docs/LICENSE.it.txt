@@ -53,7 +53,7 @@ licenza, non venduti. Acquistando, attivando o utilizzando il Software, l'utente
 7. Durata. BugIt è un acquisto una tantum e non un abbonamento: si paga una volta
    sola, senza rinnovo automatico né addebiti ricorrenti. L'acquisto concede una
    licenza di un anno, comprensiva degli aggiornamenti e dei servizi di licenza e
-   attivazione, che decorre dalla prima attivazione. Al termine dell'anno la licenza
+   attivazione, che decorre dalla data di acquisto. Al termine dell'anno la licenza
    scade; segue un periodo di grazia di 3 giorni, durante il quale il Software
    continua a funzionare. Per continuare a utilizzare il Software occorre poi una
    nuova licenza, che Lei può scegliere di acquistare, e Taskivator non effettua mai addebiti automatici. In

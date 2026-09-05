@@ -48,7 +48,7 @@ comprar, ativar ou usar o Software, você ("o Licenciado") concorda com estes te
 7. Prazo. O BugIt é uma compra única, não uma assinatura: você paga uma vez e não há
    renovação automática nem cobrança recorrente. Sua compra concede uma licença de um
    ano, incluindo atualizações e serviços de licença e ativação, que começa na
-   primeira ativação. Ao fim do ano a licença expira; segue-se um período de carência de 3 dias,
+   data da compra. Ao fim do ano a licença expira; segue-se um período de carência de 3 dias,
    durante o qual o Software continua funcionando. Depois disso, continuar usando
    exige uma nova licença, que você pode optar por comprar, e a Taskivator nunca cobra
    automaticamente. Havendo conflito entre uma tradução destes termos e a versão em
