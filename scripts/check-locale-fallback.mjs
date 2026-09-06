@@ -38,6 +38,17 @@ const CASES = [
   // The half that matters most. A returning visitor who chose a language must keep it, or the
   // fallback silently overrules every explicit choice on every load.
   { locale: "ja-JP", cookie: "fr", expect: "fr", label: "Français", why: "an explicit choice beats the browser: cookie fr wins over a ja-JP browser" },
+  // TOUCHING localStorage CAN THROW, and until 2026-09-07 that took the whole page with it.
+  // Safari with "Block all cookies", and several enterprise and privacy configurations, make
+  // every localStorage property access raise a SecurityError. Both uses here were unguarded:
+  // the READ sat outside the try in the chain below, and the WRITE sat in applyLang() BEFORE it
+  // set documentElement.lang, before it set dir, and before it applied a single string. So the
+  // throw did not merely lose the stored choice, it left the visitor on the untranslated HTML
+  // with the language control dead, in every language, including English.
+  // Found by a live audit of 365 first-time visitors: these three were the only failures.
+  { locale: "de-DE", breakStorage: true, expect: "de", label: "Deutsch", why: "storage throws and German is shipped: the browser is still the answer" },
+  { locale: "fr-FR", breakStorage: true, expect: "fr", label: "Français", why: "storage throws and French is shipped" },
+  { locale: "th-TH", breakStorage: true, expect: "en", label: "English", why: "storage throws and Thai is not shipped: English, and the page still works" },
 ];
 
 const PORT = await new Promise((resolve, reject) => {
@@ -68,6 +79,22 @@ try {
   for (const c of CASES) {
     const ctx = await browser.newContext({ locale: c.locale });
     if (c.cookie) await ctx.addCookies([{ name: "bugitLang", value: c.cookie, url: base }]);
+    // Reproduce a browser that refuses storage, BEFORE any page script runs. Replacing the
+    // property is how the real thing behaves: the throw comes from touching `localStorage`
+    // itself, not from the method, so a stub that only fails on getItem would miss the write.
+    if (c.breakStorage) {
+      await ctx.addInitScript(() => {
+        const boom = () => {
+          throw new DOMException("The operation is insecure.", "SecurityError");
+        };
+        Object.defineProperty(window, "localStorage", {
+          configurable: true,
+          get() {
+            return { getItem: boom, setItem: boom, removeItem: boom };
+          },
+        });
+      });
+    }
     const page = await ctx.newPage();
     const errors = [];
     page.on("pageerror", (e) => errors.push(String(e)));
@@ -81,7 +108,7 @@ try {
       // Proof the browser really was asked, so a pass cannot come from a stale cookie.
       navLangs: (navigator.languages || []).join(","),
     }));
-    const seen = c.locale + (c.cookie ? " + cookie " + c.cookie : "");
+    const seen = c.locale + (c.cookie ? " + cookie " + c.cookie : "") + (c.breakStorage ? " + storage throws" : "");
 
     if (got.lang !== c.expect) {
       fail.push(seen + ": documentElement.lang is '" + got.lang + "', expected '" + c.expect + "'. " + c.why);

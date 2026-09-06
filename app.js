@@ -149,7 +149,13 @@ function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}/* LOCALE O
    becomes 'ja'. Portuguese of any region gets pt-br, the only Portuguese in the set. */
 let currentLang=(function(){
   var m=document.cookie.match(/(?:^|; )bugitLang=([^;]+)/);
-  var chosen=(m&&decodeURIComponent(m[1]))||localStorage.getItem('bugitLang');
+  var chosen=m&&decodeURIComponent(m[1]);
+  /* TOUCHING localStorage CAN THROW. Safari with "Block all cookies", and several enterprise
+     and privacy configurations, raise a SecurityError on the PROPERTY, not just the method.
+     This read used to sit bare in the expression above, so the throw escaped the whole IIFE and
+     nothing after it ran. The cookie above still carries a returning visitor's choice, which is
+     why losing this one is survivable; losing the page is not. */
+  if(!chosen){try{chosen=localStorage.getItem('bugitLang')}catch(e){}}
   if(chosen)return chosen;
   try{
     var have=new Set(languages.map(function(l){return l[0]}));
@@ -165,7 +171,12 @@ let currentLang=(function(){
   }catch(e){}
   return 'en';
 })();
-function applyLang(lang){if(!i18n[lang])lang='en';currentLang=lang;localStorage.setItem('bugitLang',lang);(function(){var h=location.hostname,shared=(h==='bugit.dev'||/\.bugit\.dev$/.test(h));if(shared){document.cookie='bugitLang=;path=/;max-age=0;samesite=lax';document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax;domain=.bugit.dev';}else{document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax';}})();document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
+/* THE WRITE IS THE DANGEROUS ONE. It used to sit bare, and it sits BEFORE this function sets
+   documentElement.lang, before it sets dir, and before it applies a single string. So in a
+   browser that refuses storage the throw did not merely lose the stored choice: it left every
+   visitor on the untranslated HTML with the language control dead, in all eleven languages,
+   English included. Storing the preference is a convenience; rendering the page is not. */
+function applyLang(lang){if(!i18n[lang])lang='en';currentLang=lang;try{localStorage.setItem('bugitLang',lang)}catch(e){}(function(){var h=location.hostname,shared=(h==='bugit.dev'||/\.bugit\.dev$/.test(h));if(shared){document.cookie='bugitLang=;path=/;max-age=0;samesite=lax';document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax;domain=.bugit.dev';}else{document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax';}})();document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
 /* A DECLARED MENU IS A PROMISE ABOUT THE KEYBOARD, AND ONE PLACE KEEPS IT.
    External audit F-06, 2026-08-21: "Both live language menus declare menu semantics but ignore
    keyboard controls." role="menu" with menuitemradio rows, aria-haspopup and aria-expanded is
