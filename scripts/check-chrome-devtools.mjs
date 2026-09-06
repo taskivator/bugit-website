@@ -26,6 +26,24 @@ const check = (label, ok, detail) => {
 const alive = () => spawn(process.execPath, ['-e', 'setTimeout(() => {}, 60000);'],
                           { stdio: ['ignore', 'ignore', 'pipe'] });
 
+// ASK THE OS FOR A PORT, NEVER GUESS ONE. This file used to hard-code 59991 to 59994. Windows
+// reserves blocks of high ports when Hyper-V or WSL is present -- `netsh interface ipv4 show
+// excludedportrange protocol=tcp` lists them -- and it RE-RANDOMISES those blocks on every boot.
+// On a boot whose exclusions covered 59959 to 60058, the two cases below that must listen() died
+// with EACCES and took the process with them, so the last two checks in this file never ran and
+// the whole suite went red. The two cases that only CONNECT survived, because a refused
+// connection is what they assert, which is why the failure looked partial and arbitrary.
+//
+// A port the OS hands out is a port the OS has not reserved. `freePort` also serves the cases
+// that need a port with NOTHING on it: bind, read the number, release it.
+const freePort = async () => {
+  const s = http.createServer();
+  await new Promise((r) => s.listen(0, '127.0.0.1', r));
+  const { port } = s.address();
+  await new Promise((r) => s.close(r));
+  return port;
+};
+
 // --- the ceiling itself, asserted as a NUMBER ------------------------------------------------
 // The mechanism below would pass at twelve seconds too. This is the line that fails if someone
 // tunes the ceiling back down to where the incident lives.
@@ -38,7 +56,8 @@ check(`the default ceiling is at least 30s (it is ${Math.round(DEFAULT_TIMEOUT_M
     '-e', "process.stderr.write('simulated: error while loading shared libraries: libnss3.so'); process.exit(3);",
   ], { stdio: ['ignore', 'ignore', 'pipe'] });
   let msg = '';
-  try { await waitForDevTools(child, 59991, { name: 'fake', timeoutMs: 8000 }); }
+  const port = await freePort();
+  try { await waitForDevTools(child, port, { name: 'fake', timeoutMs: 8000 }); }
   catch (e) { msg = e.message; }
   check('a child that exits is reported as an exit, with its code',
         msg.includes('exited before its DevTools endpoint came up') && msg.includes('exit code 3'), msg);
@@ -49,9 +68,10 @@ check(`the default ceiling is at least 30s (it is ${Math.round(DEFAULT_TIMEOUT_M
 // --- a child that LIVES and stays silent is reported as that, not as dead ----------------------
 {
   const child = alive();
+  const port = await freePort();
   const t0 = Date.now();
   let msg = '';
-  try { await waitForDevTools(child, 59992, { name: 'fake', timeoutMs: 2000 }); }
+  try { await waitForDevTools(child, port, { name: 'fake', timeoutMs: 2000 }); }
   catch (e) { msg = e.message; }
   const waited = Date.now() - t0;
   child.kill();
@@ -67,9 +87,10 @@ check(`the default ceiling is at least 30s (it is ${Math.round(DEFAULT_TIMEOUT_M
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ Browser: 'HeadlessChrome/simulated' }));
   });
-  await new Promise((r) => server.listen(59993, '127.0.0.1', r));
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  const { port } = server.address();
   const child = alive();
-  const version = await waitForDevTools(child, 59993, { name: 'fake', timeoutMs: 5000 });
+  const version = await waitForDevTools(child, port, { name: 'fake', timeoutMs: 5000 });
   child.kill();
   server.close();
   check('an endpoint that answers returns its payload',
@@ -82,14 +103,15 @@ check(`the default ceiling is at least 30s (it is ${Math.round(DEFAULT_TIMEOUT_M
 // fifteen, and the ceiling that mattered is asserted as a number at the top of this file.
 {
   const server = http.createServer((req, res) => { res.writeHead(200); res.end('{"Browser":"late"}'); });
-  setTimeout(() => server.listen(59994, '127.0.0.1'), 5000);
+  const port = await freePort();
+  setTimeout(() => server.listen(port, '127.0.0.1'), 5000);
   const child = alive();
   let tight = '';
-  try { await waitForDevTools(child, 59994, { name: 'fake', timeoutMs: 2000 }); }
+  try { await waitForDevTools(child, port, { name: 'fake', timeoutMs: 2000 }); }
   catch (e) { tight = e.message; }
   check('CONTROL: a ceiling shorter than the start still fails',
         tight.includes('still running but did not open'));
-  const v = await waitForDevTools(child, 59994, { name: 'fake', timeoutMs: 20000 });
+  const v = await waitForDevTools(child, port, { name: 'fake', timeoutMs: 20000 });
   child.kill();
   server.close();
   check('and a ceiling longer than the start picks it up', v.Browser === 'late');
