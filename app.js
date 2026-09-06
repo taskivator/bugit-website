@@ -137,7 +137,34 @@ const DRIFT_MOBILE = 110;       /* ±55. On a 390px screen ±95px is ±24% of th
                                    animation, shorter travel. */
 function renderParticles(){const root=document.getElementById('ambient');if(!root||root.dataset.ready)return;if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;root.dataset.ready='1';const mobile=!!(window.matchMedia&&window.matchMedia('(max-width: 760px)').matches);const COUNT=mobile?PARTICLES_MOBILE:PARTICLES_DESKTOP;const DRIFT=mobile?DRIFT_MOBILE:DRIFT_DESKTOP;const SPEED=1.2;/* drift-speed multiplier: 1.0=baseline, 1.2=~20% faster; keep in sync with portal ambient.tsx PARTICLE_SPEED */const colors=['#fff','#c179ff','#ff4fc9','#18e1ff'];for(let i=0;i<COUNT;i++){const p=document.createElement('i');p.className='particle '+(i%9===0?'big':i%3===0?'small':'');p.style.left=Math.random()*100+'vw';p.style.top=Math.random()*100+'vh';p.style.setProperty('--x',(Math.random()*DRIFT-DRIFT/2)+'px');p.style.setProperty('--y',(Math.random()*170-85)+'px');p.style.setProperty('--d',((10+Math.random()*18)/SPEED)+'s');p.style.setProperty('--c',colors[i%colors.length]);root.appendChild(p)}}
 function renderTools(){document.querySelectorAll('[data-tools]').forEach(row=>{row.innerHTML=row.dataset.tools.split(',').filter(Boolean).map(k=>{const t=officialLogos[k]||[toolData[k]?.[0]||k,k];return `<div class="tool" title="${t[0]}">${officialLogo(t[0],t[1])}<span>${t[0]}</span></div>`}).join('')})}
-function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}let currentLang=(function(){var m=document.cookie.match(/(?:^|; )bugitLang=([^;]+)/);return (m&&decodeURIComponent(m[1]))||localStorage.getItem('bugitLang')||'en';})();
+function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}/* LOCALE ON FIRST LOAD. An explicit choice always wins, so the cookie and then localStorage
+   are read first and returned untouched: applyLang() sanitises an unknown value, and a visitor
+   who chose English in Tokyo must not be flipped to Japanese on the next load. Only when
+   nothing has ever been chosen do we ask the browser.
+   Until 2026-09-07 that last step did not exist. The chain ended in a hard coded 'en', so every
+   first time visitor on earth saw English, and the ten other locales were reachable only by
+   finding the language picker. Paid search made it concrete: an ad aimed at Japan would have
+   bought a click and landed it on an English page.
+   Exact tag first, so 'pt-BR' matches the 'pt-br' we ship. Then the base subtag, so 'ja-JP'
+   becomes 'ja'. Portuguese of any region gets pt-br, the only Portuguese in the set. */
+let currentLang=(function(){
+  var m=document.cookie.match(/(?:^|; )bugitLang=([^;]+)/);
+  var chosen=(m&&decodeURIComponent(m[1]))||localStorage.getItem('bugitLang');
+  if(chosen)return chosen;
+  try{
+    var have=new Set(languages.map(function(l){return l[0]}));
+    var tags=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language];
+    for(var i=0;i<tags.length;i++){
+      var tag=String(tags[i]||'').toLowerCase();
+      if(!tag)continue;
+      if(have.has(tag))return tag;
+      var base=tag.split('-')[0];
+      if(have.has(base))return base;
+      if(base==='pt')return 'pt-br';
+    }
+  }catch(e){}
+  return 'en';
+})();
 function applyLang(lang){if(!i18n[lang])lang='en';currentLang=lang;localStorage.setItem('bugitLang',lang);(function(){var h=location.hostname,shared=(h==='bugit.dev'||/\.bugit\.dev$/.test(h));if(shared){document.cookie='bugitLang=;path=/;max-age=0;samesite=lax';document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax;domain=.bugit.dev';}else{document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax';}})();document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
 /* A DECLARED MENU IS A PROMISE ABOUT THE KEYBOARD, AND ONE PLACE KEEPS IT.
    External audit F-06, 2026-08-21: "Both live language menus declare menu semantics but ignore

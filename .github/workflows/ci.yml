@@ -212,6 +212,14 @@ jobs:
           BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-a11y.mjs
           BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-spa-routing.mjs
           BASE_URL=http://localhost:3124 PORT=3124 node scripts/check-chrome-a11y.mjs
+      # Every other locale guard SETS the bugitLang cookie before it renders, because that is
+      # the documented way to drive this site. So not one of them could notice that nothing
+      # ELSE ever set it: the locale chain ended in a hard coded 'en', and every first time
+      # visitor on earth was served English while eleven translations sat behind a picker.
+      # This is the one guard that does not set the cookie. It asks the browser instead.
+      - name: Verify a first time visitor is served their own language
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-locale-fallback.mjs
       # The product's own name rendered as "BUGIT" in two places on the home page, in all
       # eleven languages, because a shared CSS rule uppercased the strings. No source grep
       # could see it: the text is correct until the stylesheet is applied. This reads the

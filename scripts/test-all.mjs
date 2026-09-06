@@ -132,6 +132,11 @@ const SUITES = [
   // Portuguese and every guard above passed, because a present key and a translated key
   // look identical until something compares the strings.
   "check-locale-crosstalk.mjs",
+  // check-locale-crosstalk asks whether a locale holds the right language. This asks whether
+  // a visitor ever REACHES it. Every locale guard here sets the bugitLang cookie first, so
+  // none of them could see that the chain ended in a hard coded 'en' and no first time
+  // visitor was served anything but English.
+  "check-locale-fallback.mjs",
   // ...and this one asks what those strings turn into. Every guard above reads the doc
   // SOURCE; the 2026-08-17 audit found 194 bidi tags printing as visible text and 45
   // dashed lines on the live pages, none of which the source can show you.
