@@ -42,22 +42,45 @@ import { fileURLToPath } from "node:url";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
-/** [wrong form, the form BugIt actually takes, what the particle does] */
+/** [wrong form, the form BugIt actually takes, what the particle does]
+ *
+ * THE INVENTORY IS THE GUARD. External audit 2026-09-07 (GPT), finding 1, HIGH: this held only
+ * the first five pairs, so it could report green with real defects present. Every Korean particle
+ * that alternates on the consonant/vowel rule belongs here.
+ *
+ * Kept IDENTICAL in three repositories and three languages. The agent repo's
+ * test_the_korean_guards_all_check_the_same_rule.py fails if any of them drifts.
+ */
 const PARTICLES = [
   ["는", "은", "topic"],
   ["가", "이", "subject"],
   ["를", "을", "object"],
   ["와", "과", "with/and"],
   ["로", "으로", "by/with"],
+  ["나", "이나", "or"],
+  ["란", "이란", "as for"],
+  ["라는", "이라는", "called"],
+  ["라고", "이라고", "quoted as"],
+  ["며", "이며", "and also"],
+  ["랑", "이랑", "with (casual)"],
+  ["든", "이든", "whether"],
+  ["예요", "이에요", "copula"],
 ];
 
 /** The Hangul syllable block. A particle followed by one of these starts a word instead. */
 const HANGUL = "[\\uAC00-\\uD7A3]";
 
+/** The boundary condition each particle actually needs. External audit 2026-09-07 (GPT):
+ *  keep the word-start exclusion for ONE-SYLLABLE forms (가이드, 나중, 며칠, 든든 are words) and
+ *  drop it for longer ones, because "BugIt라는데" is a real defect that the exclusion would skip.
+ *  Derived from length so a pair added later gets the right boundary automatically. */
+const patternFor = (wrong) =>
+  new RegExp("BugIt" + wrong + (wrong.length === 1 ? "(?!" + HANGUL + ")" : ""), "g");
+
 const offences = (text) => {
   const found = [];
   for (const [wrong, right, role] of PARTICLES) {
-    const re = new RegExp("BugIt" + wrong + "(?!" + HANGUL + ")", "g");
+    const re = patternFor(wrong);
     for (const m of text.matchAll(re)) {
       found.push({
         wrong, right, role,
@@ -105,6 +128,14 @@ const word = "BugIt가이드";                          // "BugIt guide"
 if (offences(word).length !== 0) {
   fail.push("negative control: the pattern matches BugIt가이드, so it would rewrite a Korean word "
     + "into nonsense");
+}
+// The fixtures the external auditor named when asked how the boundary should behave. The middle
+// one is a real defect that a uniform trailing-syllable exclusion would skip.
+for (const [probe, want] of [["BugIt라는 라이선스", true], ["BugIt라는데 문제가", true],
+                             ["BugIt나중에 확인", false], ["BugIt며칠 뒤", false]]) {
+  if ((offences(probe).length > 0) !== want) {
+    fail.push(`negative control: ${probe} should ${want ? "be flagged" : "be left alone"}`);
+  }
 }
 
 if (fail.length) {
