@@ -137,26 +137,55 @@ const DRIFT_MOBILE = 110;       /* ±55. On a 390px screen ±95px is ±24% of th
                                    animation, shorter travel. */
 function renderParticles(){const root=document.getElementById('ambient');if(!root||root.dataset.ready)return;if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;root.dataset.ready='1';const mobile=!!(window.matchMedia&&window.matchMedia('(max-width: 760px)').matches);const COUNT=mobile?PARTICLES_MOBILE:PARTICLES_DESKTOP;const DRIFT=mobile?DRIFT_MOBILE:DRIFT_DESKTOP;const SPEED=1.2;/* drift-speed multiplier: 1.0=baseline, 1.2=~20% faster; keep in sync with portal ambient.tsx PARTICLE_SPEED */const colors=['#fff','#c179ff','#ff4fc9','#18e1ff'];for(let i=0;i<COUNT;i++){const p=document.createElement('i');p.className='particle '+(i%9===0?'big':i%3===0?'small':'');p.style.left=Math.random()*100+'vw';p.style.top=Math.random()*100+'vh';p.style.setProperty('--x',(Math.random()*DRIFT-DRIFT/2)+'px');p.style.setProperty('--y',(Math.random()*170-85)+'px');p.style.setProperty('--d',((10+Math.random()*18)/SPEED)+'s');p.style.setProperty('--c',colors[i%colors.length]);root.appendChild(p)}}
 function renderTools(){document.querySelectorAll('[data-tools]').forEach(row=>{row.innerHTML=row.dataset.tools.split(',').filter(Boolean).map(k=>{const t=officialLogos[k]||[toolData[k]?.[0]||k,k];return `<div class="tool" title="${t[0]}">${officialLogo(t[0],t[1])}<span>${t[0]}</span></div>`}).join('')})}
-function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}/* LOCALE ON FIRST LOAD. An explicit choice always wins, so the cookie and then localStorage
-   are read first and returned untouched: applyLang() sanitises an unknown value, and a visitor
-   who chose English in Tokyo must not be flipped to Japanese on the next load. Only when
-   nothing has ever been chosen do we ask the browser.
+function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}/* LOCALE ON FIRST LOAD. An explicit choice always wins, and the hard part is knowing which
+   stored values ARE one. applyLang() writes bugitLang on EVERY render, including the automatic
+   first one, so the stored language on its own cannot tell a click from a guess. Before
+   2026-09-07 that guess was always 'en', persisted for a year on .bugit.dev, which means every
+   visitor the site ever had is carrying an English cookie nobody chose. Honouring it is how a
+   fixed fallback stays invisible: the fix works perfectly, and only for people who have never
+   been here. Reported from Tokyo the day it shipped, by someone the fix could not reach.
+   So the CHOICE is recorded separately from the language. bugitLangSet is 'user' when a human
+   picked from the menu and 'auto' when we guessed, and only 'user' pins the language; 'auto' is
+   re-derived every load, so changing your browser's language changes the site's. The value is
+   still written either way, because the portal reads this cookie across .bugit.dev and an
+   auto-detected Japanese should carry into it.
+   Absent means legacy, written before this existed. The old code auto-wrote 'en' and nothing
+   else, so a legacy value that is NOT 'en' can only have come from a click: grandfather it and
+   stamp the marker. A legacy 'en' is the ambiguous one and we re-derive it, which costs the few
+   who really did choose English on a non-English browser one click, and returns the language to
+   everyone else.
    Until 2026-09-07 that last step did not exist. The chain ended in a hard coded 'en', so every
    first time visitor on earth saw English, and the ten other locales were reachable only by
    finding the language picker. Paid search made it concrete: an ad aimed at Japan would have
    bought a click and landed it on an English page.
    Exact tag first, so 'pt-BR' matches the 'pt-br' we ship. Then the base subtag, so 'ja-JP'
    becomes 'ja'. Portuguese of any region gets pt-br, the only Portuguese in the set. */
+function readLangCookie(name){var m=document.cookie.match(new RegExp('(?:^|; )'+name+'=([^;]+)'));return m&&decodeURIComponent(m[1])}
+/* One place that knows how this site's cookies are scoped. On bugit.dev the value has to live on
+   .bugit.dev so the portal sees it, and the host-only copy is cleared first or it shadows the
+   shared one on every later visit. Writing a cookie can throw where storage is refused, and this
+   now runs on the first render of every page, so it is wrapped: persistence is a convenience,
+   the page is not. */
+function writeLangCookie(name,value){try{var h=location.hostname,shared=(h==='bugit.dev'||/\.bugit\.dev$/.test(h));if(shared){document.cookie=name+'=;path=/;max-age=0;samesite=lax';document.cookie=name+'='+value+';path=/;max-age=31536000;samesite=lax;domain=.bugit.dev';}else{document.cookie=name+'='+value+';path=/;max-age=31536000;samesite=lax';}}catch(e){}}
+/* A MARKER MUST ONLY EVER BE UPGRADED. applyLang() runs again on paths that are not a choice:
+   signing in re-renders the header through it, and so does the first automatic render. Each
+   of those would have written 'auto' straight over a 'user' set by a real click, so choosing
+   Japanese and then signing in would quietly demote the choice to a guess, and the next visit
+   from an English browser would take it away. That is the same defect this file is fixing,
+   arriving through the fix. 'user' always writes; 'auto' never overwrites a 'user'. */
+function markLangChoice(kind){if(kind!=='user'){var cur=readLangCookie('bugitLangSet');if(!cur){try{cur=localStorage.getItem('bugitLangSet')}catch(e){}}if(cur==='user')return;}writeLangCookie('bugitLangSet',kind);try{localStorage.setItem('bugitLangSet',kind)}catch(e){}}
 let currentLang=(function(){
-  var m=document.cookie.match(/(?:^|; )bugitLang=([^;]+)/);
-  var chosen=m&&decodeURIComponent(m[1]);
+  var chosen=readLangCookie('bugitLang');
   /* TOUCHING localStorage CAN THROW. Safari with "Block all cookies", and several enterprise
      and privacy configurations, raise a SecurityError on the PROPERTY, not just the method.
      This read used to sit bare in the expression above, so the throw escaped the whole IIFE and
      nothing after it ran. The cookie above still carries a returning visitor's choice, which is
      why losing this one is survivable; losing the page is not. */
   if(!chosen){try{chosen=localStorage.getItem('bugitLang')}catch(e){}}
-  if(chosen)return chosen;
+  var how=readLangCookie('bugitLangSet');
+  if(!how){try{how=localStorage.getItem('bugitLangSet')}catch(e){}}
+  if(chosen&&!how&&chosen!=='en'){markLangChoice('user');how='user';}
+  if(chosen&&how==='user')return chosen;
   try{
     var have=new Set(languages.map(function(l){return l[0]}));
     var tags=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language];
@@ -176,7 +205,7 @@ let currentLang=(function(){
    browser that refuses storage the throw did not merely lose the stored choice: it left every
    visitor on the untranslated HTML with the language control dead, in all eleven languages,
    English included. Storing the preference is a convenience; rendering the page is not. */
-function applyLang(lang){if(!i18n[lang])lang='en';currentLang=lang;try{localStorage.setItem('bugitLang',lang)}catch(e){}(function(){var h=location.hostname,shared=(h==='bugit.dev'||/\.bugit\.dev$/.test(h));if(shared){document.cookie='bugitLang=;path=/;max-age=0;samesite=lax';document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax;domain=.bugit.dev';}else{document.cookie='bugitLang='+lang+';path=/;max-age=31536000;samesite=lax';}})();document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
+function applyLang(lang,explicit){if(!i18n[lang])lang='en';currentLang=lang;try{localStorage.setItem('bugitLang',lang)}catch(e){}writeLangCookie('bugitLang',lang);markLangChoice(explicit?'user':'auto');document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
 /* A DECLARED MENU IS A PROMISE ABOUT THE KEYBOARD, AND ONE PLACE KEEPS IT.
    External audit F-06, 2026-08-21: "Both live language menus declare menu semantics but ignore
    keyboard controls." role="menu" with menuitemradio rows, aria-haspopup and aria-expanded is
@@ -366,7 +395,7 @@ function initLang(){const list=document.getElementById('langList');const langTag
   const close=(giveBack)=>{if(!menu.classList.contains('open'))return;menu.classList.remove('open');sync();items().forEach(b=>b.tabIndex=-1);if(giveBack)btn.focus()};
   items().forEach(b=>b.tabIndex=-1);
   btn.onclick=()=>{menu.classList.contains('open')?close(false):open(true)};
-  list.onclick=e=>{const b=e.target.closest('button');if(!b)return;close(true);applyLang(b.dataset.lang)};
+  list.onclick=e=>{const b=e.target.closest('button');if(!b)return;close(true);applyLang(b.dataset.lang,true)};
   /* The whole keyboard contract -- Enter/Space, the arrows, Home/End, type-ahead and Tab -- is
      wireMenuKeyboard's, shared with the account menu. Escape is below, at document level,
      because it must work from anywhere the reader has got to. */

@@ -1,4 +1,5 @@
-// Does a first-time visitor get their own language?
+// Does a visitor get their own language? Both kinds: one who has never been here, and one who
+// has, which is the half this file did not test on the day the fallback shipped.
 //
 // WHY THIS EXISTS. Until 2026-09-07 the answer was no, for everyone, everywhere. The whole
 // locale decision in app.js was cookie, then localStorage, then a hard coded 'en'. There is no
@@ -38,6 +39,25 @@ const CASES = [
   // The half that matters most. A returning visitor who chose a language must keep it, or the
   // fallback silently overrules every explicit choice on every load.
   { locale: "ja-JP", cookie: "fr", expect: "fr", label: "Français", why: "an explicit choice beats the browser: cookie fr wins over a ja-JP browser" },
+  // AND THE OTHER HALF, which the eight cases above could not see, because every one of them
+  // describes a visitor with no history. The fallback shipped on 2026-09-07 and was reported
+  // broken from Tokyo the same day, by the owner, on a Japanese browser. It was: applyLang()
+  // persists bugitLang on every render, so the pre-fix code had stamped 'en' on everyone for a
+  // year, and the cookie is read before the browser is ever asked. The fix was invisible to
+  // exactly the people who had been to the site before, which is every customer it already had.
+  // A first-visit guard cannot fail on a returning visitor. These are that visitor.
+  { locale: "ja-JP", cookie: "en", expect: "ja", label: "日本語", why: "LEGACY 'en' was written BY US, not chosen: a Japanese browser gets Japanese" },
+  { locale: "ja-JP", lsLang: "en", expect: "ja", label: "日本語", why: "the same legacy stamp in localStorage is equally not a choice" },
+  { locale: "ja-JP", cookie: "en", marker: "user", expect: "en", label: "English", why: "someone who really did click English in Tokyo keeps English" },
+  { locale: "de-DE", cookie: "ja", marker: "auto", expect: "de", label: "Deutsch", why: "an auto-detected value is re-derived, so a new browser language changes the site" },
+  { locale: "de-DE", cookie: "ja", marker: "user", expect: "ja", label: "日本語", why: "a real choice outlives a different browser language" },
+  // AND THE ONLY CASE THAT USES THE REAL CONTROL. Every case above INJECTS the stored state,
+  // which means none of them exercises the one path that creates it: a person clicking the
+  // picker. That gap hid a defect inside the fix itself. applyLang() also runs on renders that
+  // are not choices -- signing in re-renders the header through it -- and it was writing 'auto'
+  // over the 'user' a click had just written. The page looked right on the next load and lost
+  // the language on the one after, so two reloads are the minimum that can see it.
+  { locale: "ja-JP", click: "de", reloads: 2, expect: "de", label: "Deutsch", why: "a language chosen by CLICKING must survive the automatic re-renders that follow it" },
   // TOUCHING localStorage CAN THROW, and until 2026-09-07 that took the whole page with it.
   // Safari with "Block all cookies", and several enterprise and privacy configurations, make
   // every localStorage property access raise a SecurityError. Both uses here were unguarded:
@@ -79,6 +99,10 @@ try {
   for (const c of CASES) {
     const ctx = await browser.newContext({ locale: c.locale });
     if (c.cookie) await ctx.addCookies([{ name: "bugitLang", value: c.cookie, url: base }]);
+    // bugitLangSet is how a click is told apart from a guess. Absent is the LEGACY state, and
+    // it is the one that matters most here: it is what every existing visitor actually carries.
+    if (c.marker) await ctx.addCookies([{ name: "bugitLangSet", value: c.marker, url: base }]);
+    if (c.lsLang) await ctx.addInitScript((v) => { try { localStorage.setItem("bugitLang", v); } catch (e) {} }, c.lsLang);
     // Reproduce a browser that refuses storage, BEFORE any page script runs. Replacing the
     // property is how the real thing behaves: the throw comes from touching `localStorage`
     // itself, not from the method, so a stub that only fails on getItem would miss the write.
@@ -101,6 +125,17 @@ try {
     await page.goto(base, { waitUntil: "networkidle" });
     await page.waitForTimeout(400);
 
+    // Drive the picker the way a person does, then come back the way they do.
+    if (c.click) {
+      await page.click("#langButton");
+      await page.click('#langList button[data-lang="' + c.click + '"]');
+      await page.waitForTimeout(250);
+      for (let n = 0; n < (c.reloads || 1); n++) {
+        await page.goto(base, { waitUntil: "networkidle" });
+        await page.waitForTimeout(400);
+      }
+    }
+
     const got = await page.evaluate(() => ({
       lang: document.documentElement.lang,
       dir: document.documentElement.dir,
@@ -108,7 +143,10 @@ try {
       // Proof the browser really was asked, so a pass cannot come from a stale cookie.
       navLangs: (navigator.languages || []).join(","),
     }));
-    const seen = c.locale + (c.cookie ? " + cookie " + c.cookie : "") + (c.breakStorage ? " + storage throws" : "");
+    const seen = c.locale + (c.click ? " + clicked " + c.click + " then " + (c.reloads || 1) + " reload(s)" : "") +
+                 (c.cookie ? " + cookie " + c.cookie : "") + (c.lsLang ? " + stored " + c.lsLang : "") +
+                 (c.marker ? " + " + c.marker : c.cookie || c.lsLang ? " + no marker (legacy)" : "") +
+                 (c.breakStorage ? " + storage throws" : "");
 
     if (got.lang !== c.expect) {
       fail.push(seen + ": documentElement.lang is '" + got.lang + "', expected '" + c.expect + "'. " + c.why);
@@ -121,7 +159,7 @@ try {
     if (c.dir && got.dir !== c.dir) {
       fail.push(seen + ": direction is '" + got.dir + "', expected '" + c.dir + "'.");
     }
-    if (!c.cookie && !got.navLangs.toLowerCase().startsWith(c.locale.toLowerCase().split("-")[0])) {
+    if (!c.cookie && !c.lsLang && !got.navLangs.toLowerCase().startsWith(c.locale.toLowerCase().split("-")[0])) {
       fail.push(seen + ": the browser reported navigator.languages='" + got.navLangs +
                 "', so this case never presented the locale it claims to test.");
     }
@@ -138,11 +176,14 @@ try {
 
 if (fail.length) {
   for (const f of fail) console.error("FAIL: " + f);
-  console.error("\ncheck-locale-fallback: " + fail.length + " failure(s). A first-time visitor is " +
-                "not being served their own language. The decision is the IIFE that initialises " +
-                "currentLang in app.js: cookie, then localStorage, then navigator, then 'en'.");
+  console.error("\ncheck-locale-fallback: " + fail.length + " failure(s). A visitor is not being " +
+                "served their own language. Two places decide, and both read the marker before " +
+                "the language: the IIFE that initialises currentLang in app.js (bugitLangSet " +
+                "'user' pins bugitLang, 'auto' and absent re-derive from navigator), and " +
+                "applyLang(), which records WHICH of those two it just did.");
   process.exit(1);
 }
-console.log("check-locale-fallback: OK, all " + CASES.length + " cases. A first-time visitor with no " +
-            "cookie is served their own language where we ship it, English where we do not, and an " +
-            "explicit choice still overrules the browser.");
+console.log("check-locale-fallback: OK, all " + CASES.length + " cases. A visitor is served their own " +
+            "language where we ship it and English where we do not, whether they arrive with no " +
+            "history, with the 'en' this site stamped on everyone before 2026-09-07, or with a " +
+            "language they actually chose, which still overrules the browser.");
