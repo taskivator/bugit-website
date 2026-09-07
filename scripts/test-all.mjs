@@ -127,6 +127,10 @@ const SUITES = [
   "check-single-publication.mjs",
   "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
   "check-legal-dataflow.mjs", "check-a11y.mjs", "check-languages.mjs", "check-doc-hygiene.mjs", "check-doc-duplicates.mjs", "check-spa-routing.mjs",
+  // Korean attaches its particles by SOUND, and "BugIt" ends in a consonant. A localization
+  // round filed eight spans of the wrong form; there were 44, nineteen of them here, ten in
+  // documents nobody had thought to look in. See the header of check-korean-particle.mjs.
+  "check-korean-particle.mjs",
   // check-languages proves each locale HAS its keys; this proves the values are not
   // another locale's language. The Spanish integrations paragraph shipped in Brazilian
   // Portuguese and every guard above passed, because a present key and a translated key

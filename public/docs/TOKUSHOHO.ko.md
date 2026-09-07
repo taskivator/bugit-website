@@ -12,7 +12,7 @@
 판매자의 법적 상호, 사업장 주소, 전화번호는 구매 전 요청 시 지체 없이 제공됩니다. 요청은
 [support@bugit.dev](mailto:support@bugit.dev)로 보내실 수 있습니다.
 
-BugIt는 Taskivator라는 상호로 판매됩니다.
+BugIt은 Taskivator라는 상호로 판매됩니다.
 
 ## 연락처
 
@@ -23,7 +23,7 @@ BugIt는 Taskivator라는 상호로 판매됩니다.
 
 ## 제품 및 가격
 
-BugIt는 Visual Studio Code 안에서 실행되는 다운로드형 소프트웨어로, QA 팀이 버그 리포트를
+BugIt은 Visual Studio Code 안에서 실행되는 다운로드형 소프트웨어로, QA 팀이 버그 리포트를
 작성하고 검토한 뒤 트래커에 등록하도록 돕습니다.
 
 - BugIt Solo: 39.99 USD
@@ -40,7 +40,7 @@ BugIt는 Visual Studio Code 안에서 실행되는 다운로드형 소프트웨�
 ## 결제 수단 및 결제 시기
 
 결제는 Stripe가 처리합니다. 구매 시점에 Stripe Checkout이 제공하는 카드 및 기타 결제
-수단을 사용할 수 있습니다. 대금은 구매 시점에 전액 청구됩니다. BugIt는 1회 구매 제품으로,
+수단을 사용할 수 있습니다. 대금은 구매 시점에 전액 청구됩니다. BugIt은 1회 구매 제품으로,
 구독이나 자동 갱신이 없으며 구매 이후 추가 청구도 없습니다.
 
 ## 디지털 제공 시기
@@ -59,7 +59,7 @@ BugIt는 Visual Studio Code 안에서 실행되는 다운로드형 소프트웨�
 
 ## 시스템 요구 사항
 
-BugIt는 Visual Studio Code 안에서 실행되며, 고객이 직접 준비한 AI 제공자(GitHub Copilot
+BugIt은 Visual Studio Code 안에서 실행되며, 고객이 직접 준비한 AI 제공자(GitHub Copilot
 또는 본인의 OpenAI·Anthropic 키)와 지원되는 버전의 Python이 필요합니다. 트래커 등록에는
 고객이 자신의 트래커 계정에서 발급해 BugIt에 붙여 넣은 API 토큰을 사용합니다. 활성화와
 주기적인 라이선스 확인에는 인터넷 연결이 필요합니다. 확인과 확인 사이에는 최대 72시간까지
@@ -67,7 +67,7 @@ BugIt는 Visual Studio Code 안에서 실행되며, 고객이 직접 준비한 A
 
 ## 청약철회 및 환불
 
-BugIt는 자체 약관에 따라 적용되는 7일 자율 환불 정책을 제공합니다. [환불
+BugIt은 자체 약관에 따라 적용되는 7일 자율 환불 정책을 제공합니다. [환불
 정책](#/docs/refund)을 참고하세요.
 
 제공이 디지털 방식이고 고객의 요청에 따라 즉시 시작되므로, 제공이 시작된 뒤에는 법정

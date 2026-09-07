@@ -201,6 +201,7 @@ jobs:
           node scripts/check-legal-dataflow.mjs
           node scripts/check-languages.mjs
           node scripts/check-locale-crosstalk.mjs
+          node scripts/check-korean-particle.mjs
           node scripts/check-doc-hygiene.mjs
           node scripts/check-doc-duplicates.mjs
           node scripts/check-doc-rendering.mjs
