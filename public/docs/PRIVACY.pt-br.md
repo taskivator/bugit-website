@@ -34,14 +34,21 @@ O BugIt é ativado pelo navegador: você entra no BugIt Portal e aprova o dispos
 Não há chave de licença para digitar ou guardar. Do seu dispositivo, o software envia
 somente o necessário para operar sua licença:
 
-- um registro assinado de direito de uso e de ativação do dispositivo, gerado nesse
-  acesso ao Portal, para que o dispositivo possa ser autorizado e verificado
-  novamente depois, junto com a versão do aplicativo,
-- um identificador de dispositivo pseudonimizado, usado para ativação da licença,
-  limites de dispositivos e prevenção a fraudes, e
-- um nome curto de dispositivo ou de assento, apenas se você escolheu defini-lo
-  durante a configuração, para distinguir os dispositivos de uma conta Team. É
-  opcional e nunca é verificado.
+- um **identificador de instalação**, que distingue esta cópia do BugIt para que uma alteração
+  na sua licença seja aplicada à instalação correta,
+- uma **impressão digital do dispositivo com hash**: um hash unidirecional de 16 caracteres de
+  atributos estáveis da máquina, usado para reconhecer o mesmo computador para limites de
+  dispositivos e prevenção de fraude. Recebemos o hash, nunca os atributos que o originaram,
+- um **rótulo do dispositivo**, que é o nome de rede do seu computador, para que você possa
+  reconhecer e diferenciar os seus próprios dispositivos na sua conta,
+- o **nome do sistema operacional** e sua versão, e a **versão do BugIt**, para que possamos
+  informar se há uma versão mais recente,
+- **material de ativação** de curta duração: um valor aleatório criado para aquela única
+  solicitação, mantido apenas em memória e nunca gravado em disco. Ele comprova que a aprovação
+  que você deu no navegador pertence àquela solicitação e não pode ser reutilizada.
+
+Em troca, o seu dispositivo recebe um **direito de uso assinado** que registra o que você está
+licenciado a usar e até quando.
 
 Esses dados vão para o serviço de licenças da Taskivator, para ativar e verificar seu
 assento e para checar se há uma versão mais recente.
@@ -72,10 +79,10 @@ recomendamos consultá-los antes de conectar um serviço.
 - **Dados de pagamento**, tratados pelo nosso processador de pagamentos. Não
   armazenamos números completos de cartão.
 - **Direitos de uso e licenças**, para entregar e verificar o que você comprou
-- **Ativações de dispositivo**, incluindo o identificador de dispositivo
-  pseudonimizado, o nome que você tenha definido e o sistema operacional e a versão
-  do aplicativo, para que os limites de assentos e dispositivos funcionem e você
-  possa gerenciar seus próprios dispositivos
+- **Ativações de dispositivos**, incluindo o identificador de instalação, a impressão digital
+  do dispositivo com hash, o rótulo do dispositivo e o nome do sistema operacional e a versão do
+  BugIt, para que os limites de dispositivos funcionem e você possa gerenciar os seus próprios
+  dispositivos
 - **Participação em Team e convites**, para o plano Team
 - **Reembolsos, contestações e estornos**, quando ocorrerem
 - **Correspondência de suporte**, para podermos responder a você

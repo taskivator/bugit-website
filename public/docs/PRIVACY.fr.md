@@ -37,14 +37,21 @@ approuvez l'appareil. Aucune clé de licence n'est à saisir ni à conserver. De
 votre appareil, le logiciel n'envoie que ce qui est nécessaire au fonctionnement de
 votre licence :
 
-- un enregistrement signé de droit d'usage et d'activation d'appareil issu de cette
-  connexion au Portal, afin que votre appareil puisse être autorisé puis vérifié à
-  nouveau ultérieurement, ainsi que la version de l'application,
-- un identifiant d'appareil pseudonymisé utilisé pour l'activation de la licence,
-  les limites d'appareils et la prévention de la fraude, et
-- un court nom d'appareil ou de poste, uniquement si vous avez choisi de le définir
-  lors de la configuration, afin de distinguer les appareils d'un compte Team. Il
-  est facultatif et n'est jamais vérifié.
+- un **identifiant d'installation**, qui distingue cet exemplaire de BugIt afin qu'une
+  modification de votre licence s'applique à la bonne installation,
+- une **empreinte d'appareil hachée** : un hachage unidirectionnel de 16 caractères d'attributs
+  stables de la machine, servant à reconnaître le même ordinateur pour les limites d'appareils
+  et la prévention de la fraude. Nous recevons le haché, jamais les attributs dont il provient,
+- un **libellé d'appareil**, qui est le nom réseau de votre ordinateur, afin que vous puissiez
+  reconnaître et distinguer vos propres appareils dans votre compte,
+- le **nom du système d'exploitation** et sa version, ainsi que la **version de BugIt**, afin
+  que nous puissions vous indiquer si une version plus récente est disponible,
+- du **matériel d'activation** de courte durée : une valeur aléatoire créée pour cette seule
+  requête, conservée en mémoire uniquement et jamais écrite sur disque. Elle prouve que
+  l'approbation donnée dans votre navigateur appartient à cette requête et ne peut être rejouée.
+
+En retour, votre appareil reçoit un **droit d'usage signé** indiquant ce que vous êtes autorisé
+à utiliser et jusqu'à quand.
 
 Ces éléments sont transmis au service de licences de Taskivator, pour activer et
 vérifier votre poste et pour déterminer si une version plus récente est disponible.
@@ -79,10 +86,10 @@ vous invitons à en prendre connaissance avant de connecter un service.
   conservons pas les numéros de carte complets.
 - **Droits d'usage et licences**, afin de livrer et de vérifier ce que vous avez
   acheté
-- **Activations d'appareil**, dont l'identifiant d'appareil pseudonymisé, le nom que
-  vous avez éventuellement défini ainsi que le système d'exploitation et la version
-  de l'application, afin que les limites de postes et d'appareils fonctionnent et que
-  vous puissiez gérer vos propres appareils
+- **Activations d'appareils**, y compris l'identifiant d'installation, l'empreinte d'appareil
+  hachée, le libellé d'appareil ainsi que le nom du système d'exploitation et la version de
+  BugIt, afin que les limites d'appareils fonctionnent et que vous puissiez gérer vos propres
+  appareils
 - **Appartenance à un Team et invitations**, pour la formule Team
 - **Remboursements, litiges et rétrofacturations**, le cas échéant
 - **Correspondance de support**, afin de pouvoir vous répondre

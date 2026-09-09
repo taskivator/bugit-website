@@ -36,14 +36,22 @@ das Gerät frei. Es gibt keinen Lizenzschlüssel, den Sie eingeben oder speicher
 müssten. Von Ihrem Gerät sendet die Software nur das, was für den Betrieb Ihrer
 Lizenz erforderlich ist:
 
-- einen signierten Berechtigungs- und Geräteaktivierungsnachweis aus dieser
-  Anmeldung im Portal, damit Ihr Gerät autorisiert und später erneut geprüft werden
-  kann, zusammen mit der App Version,
-- eine pseudonyme Gerätekennung, die für Lizenzaktivierung, Gerätebegrenzungen und
-  Betrugsprävention verwendet wird, und
-- eine kurze Geräte- oder Platzbezeichnung, aber nur wenn Sie bei der Einrichtung
-  eine festgelegt haben, damit die Geräte eines Team Kontos unterscheidbar sind. Sie
-  ist freiwillig und wird nicht überprüft.
+- eine **Installationskennung**, die dieses Exemplar von BugIt unterscheidet, damit eine
+  Änderung an Ihrer Lizenz auf die richtige Installation angewendet wird,
+- einen **gehashten Gerätefingerabdruck**: ein 16 Zeichen langer Einweg-Hash stabiler
+  Gerätemerkmale, mit dem derselbe Rechner für Gerätegrenzen und Betrugsprävention
+  wiedererkannt wird. Wir erhalten den Hash, niemals die Merkmale, aus denen er gebildet wurde,
+- eine **Gerätebezeichnung**, nämlich den Netzwerknamen Ihres Rechners, damit Sie Ihre eigenen
+  Geräte in Ihrem Konto wiedererkennen und unterscheiden können,
+- den **Namen des Betriebssystems** und dessen Version sowie die **BugIt Version**, damit wir
+  Ihnen sagen können, ob eine neuere Version verfügbar ist,
+- kurzlebiges **Aktivierungsmaterial**: ein Zufallswert, der für diese eine Anfrage erzeugt,
+  nur im Arbeitsspeicher gehalten und nie auf die Festplatte geschrieben wird. Er belegt, dass
+  die Freigabe aus Ihrem Browser zu dieser Anfrage gehört, und kann nicht wiederverwendet
+  werden.
+
+Im Gegenzug erhält Ihr Gerät einen **signierten Berechtigungsnachweis**, der festhält, was Sie
+nutzen dürfen und bis wann.
 
 Diese Angaben gehen an den Lizenzdienst von Taskivator, um Ihren Platz zu aktivieren
 und zu prüfen und um festzustellen, ob eine neuere Version verfügbar ist.
@@ -76,9 +84,10 @@ Sie einen Dienst verbinden.
   speichern keine vollständigen Kartennummern.
 - **Berechtigungen und Lizenzen**, damit wir liefern und prüfen können, was Sie
   gekauft haben
-- **Geräteaktivierungen**, einschließlich der pseudonymen Gerätekennung, einer von
-  Ihnen vergebenen Bezeichnung sowie Betriebssystem und App Version, damit Platz-
-  und Gerätegrenzen funktionieren und Sie Ihre Geräte selbst verwalten können
+- **Geräteaktivierungen**, einschließlich der Installationskennung, des gehashten
+  Gerätefingerabdrucks, der Gerätebezeichnung sowie des Betriebssystemnamens und der BugIt
+  Version, damit Platz- und Gerätegrenzen funktionieren und Sie Ihre Geräte selbst verwalten
+  können
 - **Team Mitgliedschaften und Einladungen** für den Team Tarif
 - **Erstattungen, Streitfälle und Rückbuchungen**, soweit sie auftreten
 - **Supportkorrespondenz**, damit wir Ihnen antworten können

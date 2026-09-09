@@ -34,14 +34,22 @@ BugIt se activa desde su navegador: usted inicia sesión en el BugIt Portal y ap
 el dispositivo. No hay ninguna clave de licencia que introducir ni guardar. Desde su
 dispositivo, el software envía únicamente lo necesario para gestionar su licencia:
 
-- un registro firmado de derecho de uso y activación del dispositivo procedente de
-  ese inicio de sesión en el Portal, para que su dispositivo pueda autorizarse y
-  comprobarse de nuevo más adelante, junto con la versión de la aplicación,
-- un identificador de dispositivo seudonimizado que se utiliza para la activación de
-  la licencia, los límites de dispositivos y la prevención del fraude, y
-- un nombre corto de dispositivo o de puesto, solo si usted decidió establecerlo
-  durante la configuración, para poder distinguir los dispositivos de una cuenta
-  Team. Es opcional y nunca se verifica.
+- un **identificador de instalación**, que distingue esta copia de BugIt para que un cambio en
+  su licencia se aplique a la instalación correcta,
+- una **huella de dispositivo con hash**: un hash unidireccional de 16 caracteres de atributos
+  estables de la máquina, usado para reconocer el mismo equipo a efectos de límites de
+  dispositivos y prevención del fraude. Recibimos el hash, nunca los atributos de los que
+  procede,
+- una **etiqueta de dispositivo**, que es el nombre de red de su equipo, para que usted pueda
+  reconocer y distinguir sus propios dispositivos en su cuenta,
+- el **nombre del sistema operativo** y su versión, y la **versión de BugIt**, para que podamos
+  indicarle si hay una versión más reciente,
+- **material de activación** de vida corta: un valor aleatorio creado para esa única solicitud,
+  mantenido solo en memoria y nunca escrito en disco. Demuestra que la aprobación que usted dio
+  en su navegador pertenece a esa solicitud y no puede reutilizarse.
+
+A cambio, su dispositivo recibe un **derecho de uso firmado** que registra qué tiene licencia
+para usar y hasta cuándo.
 
 Estos datos se envían al servicio de licencias de Taskivator para activar y
 comprobar su puesto y para saber si existe una versión más reciente.
@@ -74,10 +82,10 @@ servicio.
 - **Datos de pago**, tratados por nuestro procesador de pagos. No almacenamos
   números de tarjeta completos.
 - **Derechos de uso y licencias**, para entregar y verificar lo que ha comprado
-- **Activaciones de dispositivo**, incluidos el identificador de dispositivo
-  seudonimizado, el nombre que usted haya establecido y el sistema operativo y la
-  versión de la aplicación, para que funcionen los límites de puestos y dispositivos
-  y usted pueda gestionar sus propios dispositivos
+- **Activaciones de dispositivos**, incluidos el identificador de instalación, la huella de
+  dispositivo con hash, la etiqueta de dispositivo y el nombre del sistema operativo y la
+  versión de BugIt, para que los límites de dispositivos funcionen y usted pueda gestionar sus
+  propios dispositivos
 - **Pertenencia a un Team e invitaciones**, para el plan Team
 - **Reembolsos, reclamaciones y contracargos**, cuando se produzcan
 - **Correspondencia de soporte**, para poder responderle
