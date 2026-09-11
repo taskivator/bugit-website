@@ -42,6 +42,11 @@ your license is checked again later, your device sends only the following:
 - short lived **activation material**: a random value created for that one request,
   held in memory only, and never written to disk. It proves that the approval you
   gave in your browser belongs to that request and cannot be replayed.
+- a per activation **acknowledgement secret**: a second random value, generated on your
+  machine and kept in your operating system's protected storage. We receive its hash when
+  you activate, and again on a later check if your machine is not yet holding one. If your
+  access is withdrawn from your account, the value itself is sent once, so that we can tell
+  this device received the withdrawal.
 
 In return, your device receives a **signed entitlement** recording what you are
 licensed to use and until when.

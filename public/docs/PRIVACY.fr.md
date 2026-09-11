@@ -49,6 +49,12 @@ votre licence :
 - du **matériel d'activation** de courte durée : une valeur aléatoire créée pour cette seule
   requête, conservée en mémoire uniquement et jamais écrite sur disque. Elle prouve que
   l'approbation donnée dans votre navigateur appartient à cette requête et ne peut être rejouée.
+- un **secret d'accusé de réception** par activation : une seconde valeur aléatoire,
+  générée sur votre appareil et conservée dans le stockage protégé de votre système
+  d'exploitation. Nous en recevons l'empreinte lors de l'activation, puis lors d'une
+  vérification ultérieure si votre appareil n'en détient pas encore. Si votre accès est
+  ensuite révoqué depuis votre compte, la valeur elle-même est envoyée une fois, afin que
+  nous sachions que cet appareil a bien reçu la révocation.
 
 En retour, votre appareil reçoit un **droit d'usage signé** indiquant ce que vous êtes autorisé
 à utiliser et jusqu'à quand.

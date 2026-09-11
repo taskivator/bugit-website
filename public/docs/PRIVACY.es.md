@@ -47,6 +47,11 @@ dispositivo, el software envía únicamente lo necesario para gestionar su licen
 - **material de activación** de vida corta: un valor aleatorio creado para esa única solicitud,
   mantenido solo en memoria y nunca escrito en disco. Demuestra que la aprobación que usted dio
   en su navegador pertenece a esa solicitud y no puede reutilizarse.
+- un **secreto de confirmación** por activación: un segundo valor aleatorio, generado en
+  su equipo y guardado en el almacenamiento protegido de su sistema operativo. Recibimos su
+  hash al activar, y de nuevo en una comprobación posterior si su equipo aún no tiene
+  ninguno. Si más adelante se retira su acceso desde su cuenta, el valor en sí se envía una
+  vez, para que podamos saber que este dispositivo recibió la retirada.
 
 A cambio, su dispositivo recibe un **derecho de uso firmado** que registra qué tiene licencia
 para usar y hasta cuándo.

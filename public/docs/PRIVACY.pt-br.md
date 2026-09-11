@@ -46,6 +46,11 @@ somente o necessário para operar sua licença:
 - **material de ativação** de curta duração: um valor aleatório criado para aquela única
   solicitação, mantido apenas em memória e nunca gravado em disco. Ele comprova que a aprovação
   que você deu no navegador pertence àquela solicitação e não pode ser reutilizada.
+- um **segredo de confirmação** por ativação: um segundo valor aleatório, gerado no seu
+  dispositivo e guardado no armazenamento protegido do seu sistema operacional. Recebemos o
+  hash dele ao ativar e novamente em uma verificação posterior, se o seu dispositivo ainda
+  não tiver um. Se o seu acesso for retirado da sua conta depois disso, o próprio valor é
+  enviado uma vez, para que possamos saber que este dispositivo recebeu a retirada.
 
 Em troca, o seu dispositivo recebe um **direito de uso assinado** que registra o que você está
 licenciado a usar e até quando.

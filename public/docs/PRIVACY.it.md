@@ -48,6 +48,12 @@ dispositivo il software invia solo ciò che serve a far funzionare la licenza:
 - **materiale di attivazione** di breve durata: un valore casuale creato per quella singola
   richiesta, tenuto solo in memoria e mai scritto su disco. Dimostra che l'approvazione data nel
   suo browser appartiene a quella richiesta e non può essere riutilizzata.
+- un **segreto di conferma** per ogni attivazione: un secondo valore casuale, generato sul
+  suo dispositivo e conservato nell'archivio protetto del suo sistema operativo. Ne
+  riceviamo l'hash al momento dell'attivazione, e di nuovo a un controllo successivo se il
+  suo dispositivo non ne possiede ancora uno. Se in seguito il suo accesso viene revocato
+  dal suo account, il valore stesso viene inviato una volta, così che possiamo sapere che
+  questo dispositivo ha ricevuto la revoca.
 
 In cambio, il suo dispositivo riceve un **diritto d'uso firmato** che registra che cosa è
 autorizzato a usare e fino a quando.

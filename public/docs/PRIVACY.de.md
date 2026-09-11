@@ -49,6 +49,12 @@ Lizenz erforderlich ist:
   nur im Arbeitsspeicher gehalten und nie auf die Festplatte geschrieben wird. Er belegt, dass
   die Freigabe aus Ihrem Browser zu dieser Anfrage gehört, und kann nicht wiederverwendet
   werden.
+- ein **Bestätigungsgeheimnis** je Aktivierung: ein zweiter Zufallswert, der auf Ihrem
+  Gerät erzeugt und im geschützten Speicher Ihres Betriebssystems abgelegt wird. Wir
+  erhalten seinen Hash bei der Aktivierung und erneut bei einer späteren Prüfung, falls
+  Ihr Gerät noch keines hält. Wird Ihr Zugriff später über Ihr Konto entzogen, wird der
+  Wert selbst einmalig gesendet, damit wir erkennen können, dass dieses Gerät den Entzug
+  erhalten hat.
 
 Im Gegenzug erhält Ihr Gerät einen **signierten Berechtigungsnachweis**, der festhält, was Sie
 nutzen dürfen und bis wann.
