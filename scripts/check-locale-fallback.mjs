@@ -21,6 +21,7 @@
 // the dictionary was applied needs a string that only that locale produces.
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
@@ -34,6 +35,20 @@ const CASES = [
   { locale: "pt-BR", expect: "pt-br", label: "Português BR",  why: "exact tag: pt-BR matches the pt-br we ship" },
   { locale: "pt-PT", expect: "pt-br", label: "Português BR",  why: "region fallback: any Portuguese gets pt-br, the only one in the set" },
   { locale: "ar-EG", expect: "ar",    label: "العربية", dir: "rtl", why: "base subtag, and Arabic must also flip direction" },
+  // THE OTHER FIVE. Until 2026-09-13 the first-visit cases above covered six of the eleven
+  // languages we ship, and the five missing ones -- Spanish, Italian, Korean, Chinese and
+  // Russian -- were served correctly only by the luck of a generic code path. That is the
+  // same shape as the defect this file was written for: a thing that works is not a thing
+  // that is checked, and the eleven translations are the most expensive asset on the site.
+  // Each uses a regional tag a real browser actually sends, not the bare subtag, because the
+  // bare subtag is the easy half of the match.
+  { locale: "es-ES", expect: "es",    label: "Español",  why: "base subtag: es-ES resolves to es" },
+  { locale: "es-419", expect: "es",   label: "Español",  why: "Latin American Spanish is a REGION code, not a country, and must still resolve" },
+  { locale: "it-IT", expect: "it",    label: "Italiano",       why: "base subtag: it-IT resolves to it" },
+  { locale: "ko-KR", expect: "ko",    label: "한국어",  why: "base subtag: ko-KR resolves to ko" },
+  { locale: "zh-CN", expect: "zh",    label: "中文",  why: "base subtag: zh-CN resolves to the bare zh we ship" },
+  { locale: "zh-Hant-TW", expect: "zh", label: "中文", why: "a SCRIPT subtag sits between language and region, and must not stop the base match" },
+  { locale: "ru-RU", expect: "ru",    label: "Русский", why: "base subtag: ru-RU resolves to ru" },
   { locale: "nl-NL", expect: "en",    label: "English",            why: "a locale we do NOT ship falls back to English, not to nothing" },
   { locale: "en-US", expect: "en",    label: "English",            why: "the control: English still resolves to English" },
   // The half that matters most. A returning visitor who chose a language must keep it, or the
@@ -70,6 +85,36 @@ const CASES = [
   { locale: "fr-FR", breakStorage: true, expect: "fr", label: "Français", why: "storage throws and French is shipped" },
   { locale: "th-TH", breakStorage: true, expect: "en", label: "English", why: "storage throws and Thai is not shipped: English, and the page still works" },
 ];
+
+// A GUARD MUST COMPUTE ITS OWN SUBJECT. The list above is hand written, and a hand written
+// list is exactly how this file came to cover six of eleven languages without anyone noticing:
+// nothing connected it to the set the site actually ships. So read that set out of app.js and
+// fail if any language has no FIRST-VISIT case -- a case with no cookie, no stored value, no
+// marker and no click, which is the only kind that proves a stranger's browser is asked at all.
+// Ship a twelfth language and this fails until someone proves a visitor can reach it.
+const appSrc = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const langsDecl = /const\s+languages\s*=\s*\[(.*?)\];/s.exec(appSrc);
+if (!langsDecl) {
+  console.error("FAIL: could not find the `languages` array in app.js, so this guard cannot " +
+                "know what the site ships and must not pretend it checked.");
+  process.exit(1);
+}
+const shipped = [...langsDecl[1].matchAll(/\['([a-z-]+)'\s*,/g)].map((m) => m[1]);
+if (shipped.length < 2) {
+  console.error("FAIL: parsed " + shipped.length + " language(s) out of app.js. The declaration " +
+                "shape changed; fix this parser rather than letting it check nothing.");
+  process.exit(1);
+}
+const firstVisitCovers = new Set(
+  CASES.filter((c) => !c.cookie && !c.lsLang && !c.marker && !c.click).map((c) => c.expect),
+);
+const uncovered = shipped.filter((l) => !firstVisitCovers.has(l));
+if (uncovered.length) {
+  console.error("FAIL: the site ships " + shipped.length + " languages and " + uncovered.length +
+                " have no first-visit case: " + uncovered.join(", ") + ". A visitor whose browser " +
+                "asks for one of these has nothing proving they are served it.");
+  process.exit(1);
+}
 
 const PORT = await new Promise((resolve, reject) => {
   const probe = net.createServer();
