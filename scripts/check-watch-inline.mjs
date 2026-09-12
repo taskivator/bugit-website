@@ -131,29 +131,63 @@ const SEEN = () => {
 };
 
 const FLOOR_MS = 1100;          // the travel is 620ms; a handoff would have happened by here
-const SETTLE_CAP_MS = 8000;     // generous: a cap that is merely too short reports a clock as a bug
+const SETTLE_CAP_MS = 15000;    // generous: a cap that is merely too short reports a clock as a bug
 const SETTLE_STEP_MS = 100;
+const QUIET_AFTER_END_MS = 250; // a tap can produce more than one scroll; wait out the next one
+const NO_EVENT_STILL_SAMPLES = 15;  // 1.5s of stillness, only when no scrollend was reported
 
-/* Sample the scroll position until it holds still for three consecutive reads. Returns true if
-   it was STILL MOVING when the cap ran out, so "the page never stopped" reaches the reader as
-   itself instead of arriving disguised as a measurement of where the player came to rest. */
+/* ASK THE BROWSER WHEN THE SCROLL ENDED. DO NOT INFER IT.
+   The first version of this waited a flat 1100ms, which measured a compositor-driven smooth
+   scroll mid flight and accused a correct page. The second inferred the end from three
+   identical readings of window.scrollY 100ms apart, and CI then failed at 58% with the scroll
+   56% of the way through its travel: a loaded runner can hold a smooth scroll still for 200ms
+   without it being over, so stillness is a PROXY for the end of a scroll and not the end of it.
+   `scrollend` is the event whose entire meaning is "the scroll is over". Both engines here
+   support it and both fire it for a programmatic smooth scroll, which was measured before this
+   was written rather than assumed. The counter is reset at the tap, so an end reported here
+   belongs to the travel and not to the scroll that put the tile on screen; and because one tap
+   can produce more than one scroll, a quiet period after the last end is required too.
+   The stillness fallback stays for the case where no end is ever reported, and the ARRIVES
+   failure then SAYS the browser never reported one, so the next reader is not left guessing. */
+async function armScrollEnd(page) {
+  await page.evaluate(() => {
+    window.__wt = { ends: 0, last: 0 };
+    addEventListener("scrollend", () => { window.__wt.ends++; window.__wt.last = performance.now(); });
+  });
+}
+
+async function resetScrollEnd(page) {
+  await page.evaluate(() => { if (window.__wt) { window.__wt.ends = 0; window.__wt.last = 0; } });
+}
+
 async function settle(page) {
-  let prev = null;
-  let stable = 0;
   const until = Date.now() + SETTLE_CAP_MS;
+  let prev = null, stable = 0;
   while (Date.now() < until) {
-    const y = await page.evaluate(() => Math.round(window.scrollY));
-    stable = y === prev ? stable + 1 : 0;
-    if (stable >= 2) return false;
-    prev = y;
+    const st = await page.evaluate(() => ({
+      ends: window.__wt ? window.__wt.ends : -1,
+      since: window.__wt && window.__wt.last ? performance.now() - window.__wt.last : -1,
+      y: Math.round(window.scrollY),
+    }));
+    if (st.ends > 0 && st.since >= QUIET_AFTER_END_MS) return { ended: true, stillMoving: false };
+    stable = st.y === prev ? stable + 1 : 0;
+    prev = st.y;
+    /* NO EVENT IS ALSO AN ANSWER, and it has a legitimate cause: a travel that needs no scroll
+       because the player is already where it belongs produces no scroll and therefore no end.
+       Waiting the full cap for an event that is never coming would add fifteen seconds to every
+       such tap. So long stillness ends the wait too, at ten times the span that fooled the
+       previous version, and the result still records that no end was reported so a failure can
+       say which kind of answer it had. */
+    if (stable >= NO_EVENT_STILL_SAMPLES) return { ended: false, stillMoving: false };
     await page.waitForTimeout(SETTLE_STEP_MS);
   }
-  return true;
+  return { ended: false, stillMoving: stable < 2 };
 }
 
 async function run(engineName, engine, deviceName, broken) {
   const failures = [];
   let taps = 0;
+  let ended = 0;
   const b = await engine.launch(quietLaunch(engineName));
   const ctx = await b.newContext({ ...devices[deviceName] });
   await hush(ctx);
@@ -174,6 +208,7 @@ async function run(engineName, engine, deviceName, broken) {
   await page.goto(BASE, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(900);
   await page.evaluate(() => document.getElementById("consentBanner")?.remove());
+  await armScrollEnd(page);
   const where = `${engineName}/${deviceName}`;
   const home = page.url();
 
@@ -213,8 +248,25 @@ async function run(engineName, engine, deviceName, broken) {
        or until the cap. This does not soften the assertion. A page that never travels settles
        IMMEDIATELY, still off screen, and fails exactly as it did before, which is what the
        ARRIVES control above exists to prove rather than assert. */
+    await resetScrollEnd(page);
+    /* THE RING AND THE POSITION ARE ASKED AT DIFFERENT MOMENTS, ON PURPOSE.
+       app.js starts the ring after THREE SECONDS of silence from the player, deliberately:
+       "if it never answers at all, the film is probably running and the ring should run with
+       it". The player host is aborted here, so silence is guaranteed and that fallback WILL
+       fire. The RING assertion is therefore a statement about the window before it: the ring
+       must not run while the page has neither heard from the player nor waited out its own
+       fallback. Reading it late does not make the page wrong, it makes the reading wrong, and
+       an earlier version of this file passed only because a flat 1100ms wait happened to sit
+       inside that window without ever saying so.
+       The floor is that reading. The position is a different question with a different answer
+       time, and it is asked after the browser says the scroll is over. */
     await page.waitForTimeout(FLOOR_MS);
-    const stillMoving = await settle(page);
+    const ringNow = await page.evaluate(() => {
+      const st = document.getElementById("ytStage");
+      return st ? st.classList.contains("is-timed") : false;
+    });
+    const scroll = await settle(page);
+    if (scroll.ended) ended++;
 
     if (opened.length > before) {
       failures.push(
@@ -244,13 +296,15 @@ async function run(engineName, engine, deviceName, broken) {
         `${where}: after tapping "${t.label}" only ${Math.round(seen.frac * 100)}% of the player ` +
           `is on screen (its top edge is at ${seen.top}px), so the film is playing somewhere the ` +
           "reader is not looking" +
-          (stillMoving
-            ? `, AND the page was still scrolling after ${SETTLE_CAP_MS / 1000}s, so this is a ` +
-              "machine too slow to finish the travel rather than a page that travels wrongly"
-            : ""),
+          (scroll.ended
+            ? " (the browser reported the scroll ENDED here, so this is where the page came to rest)"
+            : `, AND the browser never reported the scroll ending within ${SETTLE_CAP_MS / 1000}s` +
+              (scroll.stillMoving
+                ? ", and it was still moving, so the machine was too slow to finish the travel"
+                : ", though it had stopped moving, so read this as a stalled scroll rather than a resting place")),
       );
     }
-    if (seen.ring) {
+    if (ringNow) {
       failures.push(
         `${where}: after tapping "${t.label}" the countdown ring is running while the player has ` +
           "not said a word and cannot play at all here, so the page is claiming a film is under " +
@@ -261,11 +315,12 @@ async function run(engineName, engine, deviceName, broken) {
   if (!patched) failures.push("the negative control could never be installed: its anchor is gone");
   await ctx.close();
   await b.close();
-  return { failures, taps };
+  return { failures, taps, ended };
 }
 
 let failures = [];
 let taps = 0;
+let scrollEnds = 0;
 try {
   for (let i = 0; i < 60; i++) {
     if (serverExit) throw new Error(`the site server exited before serving (${serverExit})`);
@@ -275,6 +330,7 @@ try {
     const r = await run(name, engine, dev, false);
     failures = failures.concat(r.failures);
     taps += r.taps;
+    scrollEnds += r.ended;
   }
   /* AND ONE FILM THAT REALLY PLAYS, per engine, over the real network.
      Everything above runs with the player host aborted, which is right for asking what frame
@@ -502,6 +558,7 @@ try {
   console.log(
     `check-watch-inline: OK (${taps} films tapped across ${TARGETS.length} device/engine pairs, ` +
       `every one played here and brought the player on screen; ` +
+      `the browser reported the scroll ending on ${scrollEnds} of ${taps}; ` +
       (unconfirmed.length
         ? `playback itself was NOT confirmed on ${unconfirmed.length} of 2 engines, see above; `
         : "one film per engine watched all the way to playing over the real network; ") +
