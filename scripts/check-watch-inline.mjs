@@ -20,7 +20,9 @@
  *   STAYS      no new page or window is opened, and this one does not navigate away.
  *   PLAYS      an embed exists on the privacy host, carrying the id that tile asked for.
  *   ARRIVES    the player is substantially on screen once the transition settles, because a
- *              film playing 1,400px above the wall a finger is in reads as a dead tap.
+ *              film playing 1,400px above the wall a finger is in reads as a dead tap. The
+ *              settle is WAITED FOR and not timed: see the note at the wait for why a fixed
+ *              delay in front of a compositor-driven scroll accuses a working page.
  *   RING       the countdown around the stage is NOT running. In this context the player host
  *              is aborted, so nothing can play; a ring moving here is the page announcing a
  *              film over a still frame. Owner, 2026-08-22: "the video DOES NOT play but the
@@ -61,7 +63,7 @@ import { quietLaunch, hush, AUDIBLE } from "./lib/quiet.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const EMBED_HOST = "https://www.youtube-nocookie.com";
 
-/* Two negative controls, because this file now asserts two different things. Both are served
+/* Three negative controls, one per rule this file asserts. All are served
    rather than injected: the handlers are bound at init from a closure, so re-running anything
    after load would not restore the old behaviour. */
 const CONTROLS = [
@@ -71,6 +73,7 @@ const CONTROLS = [
     to: "    select(btn);window.open('https://www.youtube.com/watch?v='+encodeURIComponent(cutOf(btn))," +
         "'_blank','noopener,noreferrer');/*NEGATIVE CONTROL: the handoff that shipped for one day.*/",
     rule: "STAYS",
+    says: /opened \d+ new window|navigated to/,
   },
   {
     what: "the ring is started by the frame again rather than by the player",
@@ -78,6 +81,14 @@ const CONTROLS = [
     to: "    ringArmed = false;stage.classList.add('is-timed');" +
         "/*NEGATIVE CONTROL: the ring runs whether or not anything plays.*/\n  }\n  function runRing(){",
     rule: "RING",
+    says: /countdown ring is running/,
+  },
+  {
+    what: "the page never travels to the player, so the film starts off screen",
+    from: "  function travel(){",
+    to: "  function travel(){return;/*NEGATIVE CONTROL: the reader is left where they tapped.*/",
+    rule: "ARRIVES",
+    says: /of the player is on screen/,
   },
 ];
 
@@ -118,6 +129,27 @@ const SEEN = () => {
     ring: st.classList.contains("is-timed"),
   };
 };
+
+const FLOOR_MS = 1100;          // the travel is 620ms; a handoff would have happened by here
+const SETTLE_CAP_MS = 8000;     // generous: a cap that is merely too short reports a clock as a bug
+const SETTLE_STEP_MS = 100;
+
+/* Sample the scroll position until it holds still for three consecutive reads. Returns true if
+   it was STILL MOVING when the cap ran out, so "the page never stopped" reaches the reader as
+   itself instead of arriving disguised as a measurement of where the player came to rest. */
+async function settle(page) {
+  let prev = null;
+  let stable = 0;
+  const until = Date.now() + SETTLE_CAP_MS;
+  while (Date.now() < until) {
+    const y = await page.evaluate(() => Math.round(window.scrollY));
+    stable = y === prev ? stable + 1 : 0;
+    if (stable >= 2) return false;
+    prev = y;
+    await page.waitForTimeout(SETTLE_STEP_MS);
+  }
+  return true;
+}
 
 async function run(engineName, engine, deviceName, broken) {
   const failures = [];
@@ -167,7 +199,22 @@ async function run(engineName, engine, deviceName, broken) {
       continue;
     }
     taps++;
-    await page.waitForTimeout(1100);                 // the travel is 620ms; this is after it
+    /* WAIT FOR THE SCROLL TO STOP RATHER THAN GUESS HOW LONG IT TAKES.
+       This was a flat 1100ms. The page's travel is a NATIVE smooth scroll handed to the
+       compositor on purpose, so its duration belongs to the browser and grows with the distance
+       and with how busy the machine is. Measured on this laptop, the longest settle is 1077ms:
+       23ms of margin. On a shared runner the same tap has twice been caught still within 20px
+       of where it started at 1100ms -- CI 2026-09-11 reported "The introduction" at -345px when
+       it starts at -387, and 2026-09-12 reported "The FILE IT gate" at -616px when it starts at
+       -636 -- and both times this check called a correct page a broken one, on a DIFFERENT tile
+       each time, which is the signature of a clock rather than a layout.
+       The floor stays, because the frame is created and any handoff to another app would have
+       happened inside it. What follows it is the scroll itself: sampled until it holds still,
+       or until the cap. This does not soften the assertion. A page that never travels settles
+       IMMEDIATELY, still off screen, and fails exactly as it did before, which is what the
+       ARRIVES control above exists to prove rather than assert. */
+    await page.waitForTimeout(FLOOR_MS);
+    const stillMoving = await settle(page);
 
     if (opened.length > before) {
       failures.push(
@@ -196,7 +243,11 @@ async function run(engineName, engine, deviceName, broken) {
       failures.push(
         `${where}: after tapping "${t.label}" only ${Math.round(seen.frac * 100)}% of the player ` +
           `is on screen (its top edge is at ${seen.top}px), so the film is playing somewhere the ` +
-          "reader is not looking",
+          "reader is not looking" +
+          (stillMoving
+            ? `, AND the page was still scrolling after ${SETTLE_CAP_MS / 1000}s, so this is a ` +
+              "machine too slow to finish the travel rather than a page that travels wrongly"
+            : ""),
       );
     }
     if (seen.ring) {
@@ -398,17 +449,26 @@ try {
     await b.close();
   }
 
-  /* Both controls, because this file asserts two different things now. */
+  /* Every control, and each has to fire on its OWN rule. */
   const fired = [];
   for (const c of CONTROLS) {
     const control = await run("webkit", webkit, "iPhone 14", c);
+    /* ON ITS OWN RULE. A control that merely produces SOME failure proves only that the injury
+       was noticed by something; the claim being made is that THIS assertion sees it. */
+    const onRule = control.failures.filter((f) => c.says.test(f));
     if (!control.failures.length) {
       failures.push(
         `NEGATIVE CONTROL DID NOT FIRE (${c.rule}): with ${c.what}, this check still passed, so ` +
           `it is not measuring what it claims about ${c.rule}`,
       );
+    } else if (!onRule.length) {
+      failures.push(
+        `NEGATIVE CONTROL FIRED ON THE WRONG RULE (${c.rule}): with ${c.what}, this check failed, ` +
+          `but not one of its ${control.failures.length} finding(s) is about ${c.rule}. ` +
+          `First: ${control.failures[0]}`,
+      );
     }
-    fired.push(`${c.rule}:${control.failures.length}`);
+    fired.push(`${c.rule}:${onRule.length}`);
   }
   if (!taps) failures.push("no film was tapped, so a clean result here means nothing");
 
