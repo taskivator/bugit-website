@@ -2887,13 +2887,22 @@ if(typeof faqMoreLabel !== 'undefined'){
      animated on the stage itself: it is the iframe's parent, and a transform on the parent of a
      cross-origin player costs a re-layer of the video on every frame. */
   function travel(){
-    /* CENTERING AN ELEMENT TALLER THAN THE VIEWPORT PUTS ITS TOP OFF THE SCREEN, and on the
-       smallest phone we support it is. The iPhone SE viewport is 375x667 and the stage is about
-       1263px tall, so block:'center' resolves to a top edge of (667-1263)/2 = -298px: exactly
-       what CI measured, with 29% of the player visible. The film played above the part of the
-       page the reader was looking at.
-       Centre it when it fits, and align its top when it does not, so the player itself is always
-       what lands on screen. */
+    /* CENTERING AN ELEMENT TALLER THAN THE VIEWPORT PUTS ITS TOP OFF THE SCREEN, so centre it
+       when it fits and align its top when it does not. The player itself is then always what
+       lands on screen, rather than a film playing above the part of the page the reader is
+       looking at.
+       THIS COMMENT USED TO CARRY NUMBERS NOBODY CAN REPRODUCE: an iPhone SE at 375x667 with a
+       stage "about 1263px tall", resolving to a top edge of -298px with 29% of the player
+       visible. Measured 2026-09-12 in webkit across nine viewports from 320x568 to 1440x900,
+       the stage fits every one of them, and it cannot do otherwise: styles.css caps it at 74vh
+       on a phone and at 62vh of height above 760px, and BOTH CAPS ALREADY EXISTED on the day
+       those numbers were written here. On the smallest phone, 568px of viewport carries a 420px
+       stage that rests at top=121 with 100% of the player on screen.
+       THE BRANCH STAYS, and not out of politeness. vh is the LARGE viewport on a real phone
+       while window.innerHeight shrinks as the browser's toolbars come and go, so on a device
+       no headless browser reproduces the two can disagree by more than the cap's margin. What
+       is read below is innerHeight, which is the number that decides whether the reader can
+       actually see the film. */
     var fits = stage.getBoundingClientRect().height <= (window.innerHeight || 0);
     stage.scrollIntoView({block: fits ? 'center' : 'start',
                           behavior: reduced.matches ? 'auto' : 'smooth'});
