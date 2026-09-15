@@ -13,8 +13,8 @@
   "guides": [
     {
       "file": "ar/overview.pdf",
-      "sha256": "f864d1c3d7d924e06105f21073fa7879ce949202981d32f5e8da43adcfbc24dd",
-      "bytes": 150882,
+      "sha256": "8f4438d30a43d747ccdfef0527f5262257be2990000a1928d919338a8965a648",
+      "bytes": 150880,
       "pages": 9,
       "language": "ar",
       "agent_pdf": "docs/translations/ar/BugIt-QA-Agent-Overview.ar.pdf",
@@ -23,8 +23,8 @@
     },
     {
       "file": "ar/user-guide.pdf",
-      "sha256": "bbdc5f0d854ec9cba48dfa69876f5c25c46d3295de061d20c493ec64d065da34",
-      "bytes": 232660,
+      "sha256": "dfe4a1056b4daae0ebe63cc6d330cc7f970e017f4a8fb208245342bd23feee85",
+      "bytes": 232650,
       "pages": 24,
       "language": "ar",
       "agent_pdf": "docs/translations/ar/BugIt-User-Guide.ar.pdf",
