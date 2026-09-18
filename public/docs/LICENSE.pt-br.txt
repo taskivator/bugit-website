@@ -57,14 +57,18 @@ comprar, ativar ou usar o Software, você ("o Licenciado") concorda com estes te
    você tenha como consumidor sob a lei imperativa do seu país de residência e que não
    possa ser legalmente excluído.
 
-8. Revisão do que você registra. O Software ajuda a redigir e registrar relatórios de
-   bugs; ele não substitui o seu julgamento. Revise cada relatório, comentário ou
+8. Revisão do que você registra. O Software ajuda a redigir e registrar relatórios
+   de bugs; ele não substitui o seu julgamento. Revise cada relatório, comentário ou
    alteração antes de aprová-lo e use o Software de acordo com os termos das
-   ferramentas que você conecta a ele. O BugIt mostra uma prévia antes de qualquer
-   escrita externa, pede uma aprovação direta para cada uma delas, oferece um modo de
-   teste que não escreve nada e oculta os segredos que detecta. Essas proteções foram
-   pensadas para ajudar você a perceber erros antes que eles saiam da sua máquina, e
-   funcionam melhor junto com a sua revisão.
+   ferramentas que você conecta a ele. O BugIt mostra uma prévia antes de alterar um
+   rastreador conectado ou enviar uma notificação com o conteúdo do seu relato, pede
+   uma aprovação direta para cada uma delas, oferece um modo de teste que não escreve
+   nada e oculta os segredos que detecta. Os testes de conexão que você mesmo inicia
+   com notify connect, notify test ou notify doctor --live podem enviar uma mensagem
+   de teste fixa sem essa prévia; esses testes não levam conteúdo do relato, e o modo
+   de teste os bloqueia. Essas proteções foram pensadas para ajudar você a perceber
+   erros antes que eles saiam da sua máquina, e funcionam melhor junto com a sua
+   revisão.
 
 9. Sem garantia. O Software é fornecido "NO ESTADO EM QUE SE ENCONTRA", sem garantia
    de qualquer tipo, expressa ou implícita, incluindo comerciabilidade e adequação a

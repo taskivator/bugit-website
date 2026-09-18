@@ -68,11 +68,15 @@ Titulaire de la licence ») acceptez les présentes conditions.
    rapports d'anomalie ; il ne remplace pas votre propre jugement. Nous vous invitons
    à vérifier chaque rapport, commentaire ou modification avant de l'approuver et à
    utiliser le Logiciel conformément aux conditions des outils que vous y connectez.
-   BugIt affiche un aperçu avant toute écriture externe, demande une approbation
-   directe pour chacune, propose un mode d'essai qui n'écrit rien et masque les
-   secrets qu'il détecte. Ces garde fous sont conçus pour vous aider à repérer les
-   erreurs avant qu'elles ne quittent votre machine et donnent leur pleine mesure avec
-   votre relecture.
+   BugIt affiche un aperçu avant de modifier un outil de suivi connecté ou d'envoyer
+   une notification contenant votre rapport, demande une approbation directe pour
+   chacune, propose un mode d'essai qui n'écrit rien et masque les secrets qu'il
+   détecte. Les tests de connexion que vous lancez vous-même avec notify connect,
+   notify test ou notify doctor --live peuvent envoyer un message de test fixe sans
+   cet aperçu ; ces tests ne contiennent aucun contenu de rapport, et le mode d'essai
+   les bloque. Ces garde fous sont conçus pour vous aider à repérer les erreurs avant
+   qu'elles ne quittent votre machine et donnent leur pleine mesure avec votre
+   relecture.
 
 9. Absence de garantie. Le Logiciel est fourni « EN L'ÉTAT », sans garantie d'aucune
    sorte, expresse ou implicite, y compris la qualité marchande et l'adéquation à un

@@ -63,13 +63,17 @@ licenza, non venduti. Acquistando, attivando o utilizzando il Software, l'utente
    spettanti al consumatore ai sensi della normativa inderogabile del proprio Paese
    di residenza che non possano essere legalmente esclusi.
 
-8. Verifica di ciò che invia. Il Software La aiuta a redigere e inviare segnalazioni
-   di bug, ma non sostituisce il Suo giudizio. La invitiamo a rivedere ogni
-   segnalazione, commento o modifica prima di approvarli e a utilizzare il Software
-   nel rispetto dei termini degli strumenti che vi collega. BugIt mostra
-   un'anteprima prima di ogni scrittura esterna, richiede un'approvazione diretta per
-   ciascuna di esse, offre una modalità di prova che non scrive nulla e oscura i
-   segreti che rileva. Queste tutele sono pensate per aiutarLa a individuare gli
+8. Verifica di ciò che invia. Il Software La aiuta a redigere e inviare
+   segnalazioni di bug, ma non sostituisce il Suo giudizio. La invitiamo a rivedere
+   ogni segnalazione, commento o modifica prima di approvarli e a utilizzare il
+   Software nel rispetto dei termini degli strumenti che vi collega. BugIt mostra
+   un'anteprima prima di modificare un tracker collegato o di inviare una notifica
+   che contiene la sua segnalazione, richiede un'approvazione diretta per ciascuna di
+   esse, offre una modalità di prova che non scrive nulla e oscura i segreti che
+   rileva. I test di connessione che avvia lei stesso con notify connect, notify test
+   o notify doctor --live possono inviare un messaggio di prova fisso senza tale
+   anteprima; questi test non contengono contenuti della segnalazione e la modalità
+   di prova li blocca. Queste tutele sono pensate per aiutarLa a individuare gli
    errori prima che lascino la Sua macchina e danno il meglio insieme alla Sua
    revisione.
 

@@ -62,13 +62,17 @@ términos.
    corresponda como consumidor conforme a la ley imperativa de su país de residencia
    y que no pueda excluirse legalmente.
 
-8. Revisión de lo que registra. El Software le ayuda a redactar y registrar informes
-   de errores; no sustituye su propio criterio. Le rogamos que revise cada informe,
-   comentario o cambio antes de aprobarlo y que utilice el Software conforme a los
-   términos de las herramientas que conecte a él. BugIt muestra una vista previa
-   antes de cualquier escritura externa, solicita una aprobación directa para cada
-   una, ofrece un modo de prueba que no escribe nada y oculta los secretos que
-   detecta. Estas salvaguardas están pensadas para ayudarle a detectar errores antes
+8. Revisión de lo que registra. El Software le ayuda a redactar y registrar
+   informes de errores; no sustituye su propio criterio. Le rogamos que revise cada
+   informe, comentario o cambio antes de aprobarlo y que utilice el Software
+   conforme a los términos de las herramientas que conecte a él. BugIt muestra una
+   vista previa antes de modificar un rastreador conectado o enviar una notificación
+   con el contenido de su informe, solicita una aprobación directa para cada una,
+   ofrece un modo de prueba que no escribe nada y oculta los secretos que detecta.
+   Las pruebas de conexión que usted mismo inicia con notify connect, notify test o
+   notify doctor --live pueden enviar un mensaje de prueba fijo sin esa vista
+   previa; esas pruebas no llevan contenido del informe, y el modo de prueba las
+   bloquea. Estas salvaguardas están pensadas para ayudarle a detectar errores antes
    de que salgan de su equipo y funcionan mejor junto con su revisión.
 
 9. Sin garantía. El Software se proporciona «TAL CUAL», sin garantía de ningún tipo,

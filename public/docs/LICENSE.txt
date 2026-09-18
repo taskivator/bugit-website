@@ -56,10 +56,14 @@ terms.
 8. Reviewing what you file. The Software helps you draft and file bug reports; it
    does not replace your own judgment. Please review each report, comment, or change
    before approving it, and use the Software in line with the terms of the tools you
-   connect it to. BugIt shows a preview before any external write, asks for a direct
-   approval for each one, offers a dry run mode that writes nothing, and redacts
-   secrets it detects. These safeguards are designed to help you catch mistakes
-   before they leave your machine, and they work best alongside your review.
+   connect it to. BugIt shows a preview before it changes a connected tracker or
+   sends a notification that carries your report, asks for a direct approval for
+   each one, offers a dry run mode that writes nothing, and redacts secrets it
+   detects. Connection tests that you start yourself with notify connect, notify
+   test or notify doctor --live can send a fixed test message without that preview;
+   those tests carry no report content, and dry run blocks them. These safeguards
+   are designed to help you catch mistakes before they leave your machine, and they
+   work best alongside your review.
 
 9. No warranty. The Software is provided "AS IS", without warranty of any kind,
    express or implied, including merchantability and fitness for a particular

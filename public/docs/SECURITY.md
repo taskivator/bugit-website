@@ -3,8 +3,8 @@
 BugIt QA Agent is a human-in-the-loop assistant. It only acts through your VS Code session and the integrations you enable.
 
 ## What BugIt does to protect you
-- **No write without confirmation.** Every create/comment/attach/notify is previewed; irreversible filings need you to type FILE IT. Chat text alone never files, and a plain "yes" is not enough.
-- **Dry run = read-only.** `QA_AGENT_DRY_RUN=1` or "dry run" blocks all writes; helpers run reads only.
+- **No write without confirmation.** Every create/comment/attach/notify that carries your report is previewed; irreversible filings need you to type FILE IT. Chat text alone never files, and a plain "yes" is not enough. One exception: a connection test you start yourself with `notify connect`, `notify test` or `notify doctor --live` sends one fixed test message to the channel you are setting up without a preview. It carries no report content, and dry run blocks it.
+- **Dry run = read-only.** `QA_AGENT_DRY_RUN=1` blocks all writes; helpers run reads only. Saying "dry run" in chat asks the assistant to hold off, which is useful but is not the same guarantee: only the environment variable sets the mode the code enforces.
 - **No secrets in files.** `config.json` holds orgs/URLs only; tokens live in your OS credential store. The validator flags anything secret-shaped. `redact.py` makes a best-effort pass to scrub emails/tokens/IPs from drafts.
 - **Off by default.** Every integration ships disabled; nothing connects or files until you opt in.
 - **Output is data.** Page/ticket/crash text is treated as data, not commands, so injected instructions are flagged and surfaced, not obeyed.

@@ -65,14 +65,18 @@ verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären 
    zwingenden Recht Ihres Wohnsitzlandes zustehen und die nicht rechtswirksam
    ausgeschlossen werden können.
 
-8. Prüfung dessen, was Sie einreichen. Die Software unterstützt Sie beim Verfassen
-   und Einreichen von Fehlerberichten; sie ersetzt nicht Ihr eigenes
+8. Prüfung dessen, was Sie einreichen. Die Software unterstützt Sie beim
+   Verfassen und Einreichen von Fehlerberichten; sie ersetzt nicht Ihr eigenes
    Urteilsvermögen. Bitte prüfen Sie jeden Bericht, jeden Kommentar und jede
    Änderung, bevor Sie sie freigeben, und nutzen Sie die Software im Einklang mit
-   den Bedingungen der Werkzeuge, die Sie mit ihr verbinden. BugIt zeigt vor jedem
-   externen Schreibvorgang eine Vorschau, verlangt für jeden einzelnen eine direkte
+   den Bedingungen der Werkzeuge, die Sie mit ihr verbinden. BugIt zeigt eine
+   Vorschau, bevor es einen verbundenen Tracker ändert oder eine Benachrichtigung
+   mit Ihrem Berichtsinhalt sendet, verlangt für jeden einzelnen eine direkte
    Freigabe, bietet einen schreibfreien „dry run" Modus und schwärzt erkannte
-   Geheimnisse. Diese Schutzvorkehrungen sollen Ihnen helfen, Fehler zu erkennen,
+   Geheimnisse. Verbindungstests, die Sie selbst mit notify connect, notify test
+   oder notify doctor --live starten, können eine feste Testnachricht ohne diese
+   Vorschau senden; diese Tests enthalten keine Berichtsinhalte, und dry run
+   blockiert sie. Diese Schutzvorkehrungen sollen Ihnen helfen, Fehler zu erkennen,
    bevor sie Ihren Rechner verlassen, und sie wirken am besten zusammen mit Ihrer
    eigenen Prüfung.
 
