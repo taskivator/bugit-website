@@ -94,7 +94,7 @@ const getJSON = async (u) => (await fetch(u)).json();
 // and it is reached by CALLING it -- an uncaught throw here would leave all three behind.
 let version;
 try {
-  version = await waitForDevTools(chrome, DBG, { name: 'check-mission-pause' });
+  version = await waitForDevTools(chrome, DBG, { name: 'check-mission-pause', userDataDir: udir });
 } catch (err) {
   console.error(err.message);
   cleanup(1);

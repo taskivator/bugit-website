@@ -80,6 +80,17 @@
 /404.js
   Cache-Control: public, max-age=0, must-revalidate
 
+# /verify.json IS THE ANSWER TO "ARE MY BYTES GENUINE", AND IT CHANGES EVERY RELEASE.
+# An unhashed JSON file at the site root, exactly like /404.js above, so without a rule it
+# inherits the same four-hour default -- and the two paragraphs above record what that default
+# already did once to a root file. The failure here is worse than a stale script: the shipped
+# verifier tells every customer to compare their download against this URL, so a buyer who
+# verifies in the hours after a release can be handed the PREVIOUS release's checksum and told
+# their genuine download is wrong. It must be revalidated on every request, and it belongs in
+# the purge set after a release.
+/verify.json
+  Cache-Control: public, max-age=0, must-revalidate
+
 /public/media/*
   Cache-Control: public, max-age=604800
 /public/brand/*

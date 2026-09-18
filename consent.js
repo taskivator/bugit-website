@@ -20,6 +20,14 @@
   var ADS_ID = 'AW-18322852127'; /* build:BUGIT_ADS_ID */
 
   var CONSENT_COOKIE = 'bugit_consent';
+  // THE SHARED CONTRACT'S VERSION, AND THIS SIDE WAS NOT READING IT. The portal's
+  // parseConsentCookie rejects a cookie whose `v` is not this number; this file hardcoded `v: 1`
+  // on the way OUT and ignored `v` entirely on the way IN, so the two surfaces disagreed about
+  // the same cookie. Both files say at the top that they must stay identical. The day this number
+  // moves to 2, a v1 cookie makes the portal show the banner and deny, while bugit.dev reads the
+  // stale record and loads the advertising tag: the website failing open on exactly the boundary
+  // the portal fails closed on.
+  var CONSENT_VERSION = 1;
   var GCLID_COOKIE = 'bugit_gclid';
   var CONSENT_DAYS = 180;
   var GCLID_DAYS = 90;
@@ -47,19 +55,24 @@
     if (!raw) return null;
     try {
       var o = JSON.parse(decodeURIComponent(raw));
+      // Mirrors lib/analytics/consent.ts exactly: a wrong version is not a consent record, and a
+      // grant is the literal `true`. `!!o.ad_storage` treated 1, "false" and any object as a
+      // grant -- a coercion on the one field that decides whether advertising loads.
+      if (o === null || typeof o !== 'object') return null;
+      if (o.v !== CONSENT_VERSION) return null;
       return {
-        v: 1,
-        ad_storage: !!o.ad_storage,
-        analytics_storage: !!o.analytics_storage,
-        ad_user_data: !!o.ad_user_data,
-        ad_personalization: !!o.ad_personalization,
+        v: CONSENT_VERSION,
+        ad_storage: o.ad_storage === true,
+        analytics_storage: o.analytics_storage === true,
+        ad_user_data: o.ad_user_data === true,
+        ad_personalization: o.ad_personalization === true,
         ts: o.ts || 0
       };
     } catch (e) { return null; }
   }
   function writeConsent(c) {
     var payload = {
-      v: 1,
+      v: CONSENT_VERSION,
       ad_storage: !!c.ad_storage,
       analytics_storage: !!c.analytics_storage,
       ad_user_data: !!c.ad_user_data,
@@ -155,6 +168,10 @@
     ADS_ID: ADS_ID,
     read: readConsent,
     write: writeConsent,
-    hasDecision: function () { return !!getCookie(CONSENT_COOKIE); }
+    // A DECISION IS A READABLE ONE. This answered true for a cookie that readConsent rejects, so
+    // a corrupt or wrong-version record suppressed the banner while the visitor sat at the denied
+    // default with nothing on screen offering them the choice again. Asking the same function
+    // that decides everything else means the two can never disagree.
+    hasDecision: function () { return readConsent() !== null; }
   };
 })();

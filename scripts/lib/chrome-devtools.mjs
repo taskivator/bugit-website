@@ -27,6 +27,9 @@
 
 // EXPORTED so the guard can assert the number rather than only the mechanism. The incident
 // was a ceiling of 12s (80 polls x 150ms); anything back under ~30s reopens it.
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 export const DEFAULT_TIMEOUT_MS = 60_000;
 const POLL_MS = 150;
 const STDERR_KEEP = 4000; // enough for a loader error; bounded so a chatty Chrome cannot eat memory
@@ -56,12 +59,37 @@ export async function waitForDevTools(child, port, opts = {}) {
   let exited = null;
   child.on("exit", (code, signal) => { exited = { code, signal }; });
 
+  // WHOSE CHROME ANSWERED? The port is a fixed number in each caller (9411, 9416), and this used
+  // to return the first parseable reply that came back on it. A browser left behind by a killed
+  // run — which happens here — is listening on that same port, so the guard would adopt it,
+  // measure a page it does not own, and report green about a window it never opened. The fresh
+  // `--user-data-dir` the caller made was bypassed entirely.
+  //
+  // Chrome writes DevToolsActivePort INSIDE the profile directory once it is listening, and each
+  // caller mkdtemps a new one per run, so a file there is proof the answer came from our child.
+  // A leftover browser has a different profile and cannot produce it.
+  const userDataDir = opts.userDataDir || null;
+  const ownsEndpoint = () => {
+    if (!userDataDir) return true;
+    try {
+      const raw = readFileSync(join(userDataDir, "DevToolsActivePort"), "utf8");
+      return Number(raw.split("\n")[0].trim()) === Number(port);
+    } catch {
+      return false;
+    }
+  };
+
   const deadline = Date.now() + timeoutMs;
   let lastError = null;
+  let sawForeignEndpoint = false;
   while (Date.now() < deadline) {
     try {
       const res = await fetch(`http://127.0.0.1:${port}/json/version`);
-      return await res.json();
+      const payload = await res.json();
+      if (ownsEndpoint()) return payload;
+      // Something is listening, and it is not ours. Keep waiting: our child may still be coming
+      // up, and saying so at the end is more useful than timing out with no explanation.
+      sawForeignEndpoint = true;
     } catch (err) {
       lastError = err;
     }
@@ -76,6 +104,16 @@ export async function waitForDevTools(child, port, opts = {}) {
       );
     }
     await new Promise((r) => setTimeout(r, POLL_MS));
+  }
+
+  if (sawForeignEndpoint) {
+    throw new Error(
+      `${name}: port ${port} is answering, but the browser on it is NOT the one this run ` +
+      `started. Its profile at ${userDataDir} never wrote a DevToolsActivePort for that port. ` +
+      `Almost always a Chrome left behind by an earlier killed run. Close it and run again. ` +
+      `Adopting it would have measured a window this guard does not own and reported the result ` +
+      `as if it did.`,
+    );
   }
 
   throw new Error(

@@ -42,4 +42,8 @@ const server = http.createServer((req,res)=>{ try {
   try { if (!res.headersSent) res.writeHead(500); res.end('Server Error'); } catch {}
 }});
 const PORT=process.env.PORT||3000;
-server.listen(PORT,()=>console.log(`BugIt dev server running at http://localhost:${PORT}`));
+// LOOPBACK, EXPLICITLY. Node binds 0.0.0.0 when the host argument is omitted, so this served the
+// whole repository -- .git/ history, node_modules/, archive/ and the unapproved prototype-chatbot/
+// -- to anything on the LAN, while the line it printed said localhost. It is a development server
+// for the person running it; nothing needs it reachable from another machine.
+server.listen(PORT,'127.0.0.1',()=>console.log(`BugIt dev server running at http://127.0.0.1:${PORT}`));

@@ -129,6 +129,32 @@ for (const [p, minAge] of [['/public/media/x.mp4', 604800], ['/public/brand/x.sv
   );
 }
 
+// --- 3b. Files whose CONTENT changes every release while their PATH does not must be
+//         revalidated, not cached. A content hash in the filename is the other way to be safe,
+//         and these deliberately cannot have one: something else names them at a fixed path.
+//
+//         /verify.json had no rule at all, so it inherited the four-hour default that this
+//         file's own comments record twice as having already burned us. It is the value the
+//         shipped verifier tells customers to compare their download against, so serving the
+//         previous release's checksum for four hours tells honest buyers their bytes are wrong.
+for (const p of ['/verify.json', '/404.js']) {
+  const covering = rules.filter((r) => matches(r.pattern, p) && r.headers['cache-control']);
+  check(
+    covering.length > 0,
+    `${p} must have an explicit cache rule`,
+    'with no rule it inherits the platform default, which is four hours on a path whose ' +
+      'content changes at every release',
+  );
+  for (const r of covering) {
+    const cc = r.headers['cache-control'];
+    check(
+      !isLongLived(cc) && /max-age\s*=\s*0/i.test(cc),
+      `${p} must be revalidated on every request (matched by "${r.pattern}")`,
+      `Cache-Control: ${cc}`,
+    );
+  }
+}
+
 // --- 4. The build must not emit unhashed assets at all, so the bare paths 404
 //        (with the site-wide no-store) rather than serving a cacheable body.
 const dist = path.join(root, 'dist');

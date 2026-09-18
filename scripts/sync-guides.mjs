@@ -73,6 +73,8 @@ function siteName(entry) {
 const records = [];
 let copied = 0;
 let stale = 0;
+// Every copy this run intends to make, held until the whole set has validated.
+const pending = [];
 let missing = 0;
 
 for (const e of agent.pdfs) {
@@ -99,11 +101,11 @@ for (const e of agent.pdfs) {
   const same = before === fromHash;
   if (!same) stale++;
 
-  if (!CHECK_ONLY && !same) {
-    mkdirSync(dirname(dest), { recursive: true });
-    copyFileSync(from, dest);
-    copied++;
-  }
+  // DECIDED NOW, COPIED LATER. Copying inside this loop meant an abort further down left earlier
+  // files already written and then printed "nothing written" -- and the process.exit(2) on the
+  // next entry's hash mismatch abandons the run without rewriting the manifest, so the tree was
+  // half synced and described by a manifest for the previous state.
+  if (!CHECK_ONLY && !same) pending.push({ from, dest });
   console.log(
     `${same ? "current" : CHECK_ONLY ? "STALE  " : "updated"}  ${e.language}/${name}  <- ${e.pdf}`,
   );
@@ -128,6 +130,14 @@ if (missing) {
 if (CHECK_ONLY) {
   console.log(`\n${stale} of ${records.length} guide(s) differ from the agent's published PDFs.`);
   process.exit(stale ? 1 : 0);
+}
+
+// Past every refusal: the copies are safe to make now, which is what makes the sentence above
+// true whenever it is printed.
+for (const { from, dest } of pending) {
+  mkdirSync(dirname(dest), { recursive: true });
+  copyFileSync(from, dest);
+  copied++;
 }
 
 records.sort((a, b) => a.file.localeCompare(b.file));

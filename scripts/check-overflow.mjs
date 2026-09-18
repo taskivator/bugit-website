@@ -102,7 +102,7 @@ async function getJSON(url) { const r = await fetch(url); return r.json(); }
 // and it is reached by CALLING it -- an uncaught throw here would leave all three behind.
 let version;
 try {
-  version = await waitForDevTools(chrome, DBG, { name: 'check-overflow' });
+  version = await waitForDevTools(chrome, DBG, { name: 'check-overflow', userDataDir: udir });
 } catch (err) {
   console.error(err.message);
   cleanup(1);
