@@ -127,6 +127,10 @@ const SUITES = [
   "check-single-publication.mjs",
   "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
   "check-legal-dataflow.mjs", "check-a11y.mjs", "check-languages.mjs", "check-doc-hygiene.mjs", "check-doc-duplicates.mjs", "check-spa-routing.mjs",
+  // "F-05, the privacy policy on licence data" was found by four separate audit packs and
+  // fixed narrowly each time, because nothing here compared one language's list of what the
+  // software sends to another's, or to the copy in the FAQ. See the header of the gate.
+  "check-licence-disclosure.mjs",
   // Korean attaches its particles by SOUND, and "BugIt" ends in a consonant. A localization
   // round filed eight spans of the wrong form; there were 44, nineteen of them here, ten in
   // documents nobody had thought to look in. See the header of check-korean-particle.mjs.

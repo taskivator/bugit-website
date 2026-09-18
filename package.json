@@ -34,6 +34,7 @@
     "test:languages": "node scripts/check-languages.mjs",
     "test:locale-fallback": "node scripts/check-locale-fallback.mjs",
     "test:doc-hygiene": "node scripts/check-doc-hygiene.mjs",
+    "test:licence-disclosure": "node scripts/check-licence-disclosure.mjs",
     "test:doc-duplicates": "node scripts/check-doc-duplicates.mjs",
     "test:spa-routing": "node scripts/check-spa-routing.mjs",
     "test:chrome-a11y": "node scripts/check-chrome-a11y.mjs",
