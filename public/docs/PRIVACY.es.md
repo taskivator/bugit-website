@@ -44,9 +44,18 @@ dispositivo, el software envía únicamente lo necesario para gestionar su licen
   reconocer y distinguir sus propios dispositivos en su cuenta,
 - el **nombre del sistema operativo** y su versión, y la **versión de BugIt**, para que podamos
   indicarle si hay una versión más reciente,
+- el **filtro de plan** que eligió al empezar la activación: Solo, Team o ninguna
+  preferencia. Solo reduce la lista de licencias que el Portal le ofrece para aprobar.
+  Nunca nombra una licencia concreta, y BugIt nunca envía un identificador de derecho de
+  uso, de equipo, de pertenencia ni de puesto: esa elección la hace usted, con su sesión
+  iniciada, en su navegador,
 - **material de activación** de vida corta: un valor aleatorio creado para esa única solicitud,
   mantenido solo en memoria y nunca escrito en disco. Demuestra que la aprobación que usted dio
   en su navegador pertenece a esa solicitud y no puede reutilizarse.
+- el **token de aprobación de un solo uso** del enlace que abrió su navegador. Se nos
+  devuelve mientras BugIt espera su aprobación y una vez más para completar la
+  activación. Lo emitimos nosotros, solo sirve para esa activación y no dice nada sobre
+  usted.
 - un **secreto de confirmación** por activación: un segundo valor aleatorio, generado en
   su equipo y guardado en el almacenamiento protegido de su sistema operativo. Recibimos su
   hash al activar, y de nuevo en una comprobación posterior si su equipo aún no tiene

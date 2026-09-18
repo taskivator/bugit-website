@@ -45,10 +45,19 @@ Lizenz erforderlich ist:
   Geräte in Ihrem Konto wiedererkennen und unterscheiden können,
 - den **Namen des Betriebssystems** und dessen Version sowie die **BugIt Version**, damit wir
   Ihnen sagen können, ob eine neuere Version verfügbar ist,
+- den **Planfilter**, den Sie zu Beginn der Aktivierung gewählt haben: Solo, Team oder
+  keine Angabe. Er schränkt nur die Liste der Lizenzen ein, die Ihnen das Portal zur
+  Freigabe anbietet. Er benennt nie eine bestimmte Lizenz, und BugIt sendet nie eine
+  Berechtigungs-, Team-, Mitgliedschafts- oder Platzkennung: diese Wahl treffen Sie
+  selbst, angemeldet, in Ihrem Browser,
 - kurzlebiges **Aktivierungsmaterial**: ein Zufallswert, der für diese eine Anfrage erzeugt,
   nur im Arbeitsspeicher gehalten und nie auf die Festplatte geschrieben wird. Er belegt, dass
   die Freigabe aus Ihrem Browser zu dieser Anfrage gehört, und kann nicht wiederverwendet
   werden.
+- den **einmaligen Freigabe-Token** aus dem Link, den Ihr Browser geöffnet hat. Er wird
+  zurückgesendet, während BugIt auf Ihre Freigabe wartet, und noch einmal, um die
+  Aktivierung abzuschließen. Wir haben ihn ausgestellt, er gilt nur für diese eine
+  Aktivierung, und er sagt nichts über Sie aus.
 - ein **Bestätigungsgeheimnis** je Aktivierung: ein zweiter Zufallswert, der auf Ihrem
   Gerät erzeugt und im geschützten Speicher Ihres Betriebssystems abgelegt wird. Wir
   erhalten seinen Hash bei der Aktivierung und erneut bei einer späteren Prüfung, falls

@@ -39,9 +39,17 @@ your license is checked again later, your device sends only the following:
   recognise your own devices in your account and tell them apart,
 - the **operating system name** and release, and the **BugIt version**, so that we
   can tell you whether a newer version is available,
+- the **plan filter** you chose when you started activation: Solo, Team, or no
+  preference. It only narrows the list of licences the Portal offers you to approve. It
+  never names a particular licence, and BugIt never sends an entitlement, team,
+  membership or seat identifier: you make that choice yourself, signed in, in your
+  browser,
 - short lived **activation material**: a random value created for that one request,
   held in memory only, and never written to disk. It proves that the approval you
   gave in your browser belongs to that request and cannot be replayed.
+- the **one-time approval token** from the link your browser opened, sent back while
+  BugIt waits for you to approve and once more to complete the activation. We issued it,
+  it is good for that one activation, and it says nothing about you.
 - a per activation **acknowledgement secret**: a second random value, generated on your
   machine and kept in your operating system's protected storage. We receive its hash when
   you activate, and again on a later check if your machine is not yet holding one. If your

@@ -43,9 +43,18 @@ somente o necessário para operar sua licença:
   reconhecer e diferenciar os seus próprios dispositivos na sua conta,
 - o **nome do sistema operacional** e sua versão, e a **versão do BugIt**, para que possamos
   informar se há uma versão mais recente,
+- o **filtro de plano** que você escolheu ao iniciar a ativação: Solo, Team ou nenhuma
+  preferência. Ele apenas reduz a lista de licenças que o Portal oferece para você
+  aprovar. Nunca nomeia uma licença específica, e o BugIt nunca envia um identificador
+  de direito de uso, de time, de associação ou de assento: essa escolha é sua, com você
+  conectado, no seu navegador,
 - **material de ativação** de curta duração: um valor aleatório criado para aquela única
   solicitação, mantido apenas em memória e nunca gravado em disco. Ele comprova que a aprovação
   que você deu no navegador pertence àquela solicitação e não pode ser reutilizada.
+- o **token de aprovação de uso único** do link que o seu navegador abriu. Ele volta
+  para nós enquanto o BugIt espera a sua aprovação e mais uma vez para concluir a
+  ativação. Fomos nós que o emitimos, ele vale só para aquela ativação e não diz nada
+  sobre você.
 - um **segredo de confirmação** por ativação: um segundo valor aleatório, gerado no seu
   dispositivo e guardado no armazenamento protegido do seu sistema operacional. Recebemos o
   hash dele ao ativar e novamente em uma verificação posterior, se o seu dispositivo ainda

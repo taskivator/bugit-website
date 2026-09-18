@@ -45,9 +45,18 @@ dispositivo il software invia solo ciò che serve a far funzionare la licenza:
   riconoscere e distinguere i propri dispositivi nel suo account,
 - il **nome del sistema operativo** e la sua versione, e la **versione di BugIt**, così che
   possiamo indicarle se è disponibile una versione più recente,
+- il **filtro di piano** che ha scelto all’inizio dell’attivazione: Solo, Team o nessuna
+  preferenza. Restringe soltanto l’elenco delle licenze che il Portal le propone di
+  approvare. Non nomina mai una licenza specifica, e BugIt non invia mai un
+  identificatore di diritto d’uso, di team, di appartenenza o di postazione: quella
+  scelta la fa lei, con l’accesso effettuato, nel suo browser,
 - **materiale di attivazione** di breve durata: un valore casuale creato per quella singola
   richiesta, tenuto solo in memoria e mai scritto su disco. Dimostra che l'approvazione data nel
   suo browser appartiene a quella richiesta e non può essere riutilizzata.
+- il **token di approvazione monouso** contenuto nel link che il suo browser ha aperto.
+  Ci viene restituito mentre BugIt attende la sua approvazione e ancora una volta per
+  completare l’attivazione. Lo emettiamo noi, vale solo per quell’attivazione e non dice
+  nulla di lei.
 - un **segreto di conferma** per ogni attivazione: un secondo valore casuale, generato sul
   suo dispositivo e conservato nell'archivio protetto del suo sistema operativo. Ne
   riceviamo l'hash al momento dell'attivazione, e di nuovo a un controllo successivo se il

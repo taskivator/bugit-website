@@ -46,9 +46,18 @@ votre licence :
   reconnaître et distinguer vos propres appareils dans votre compte,
 - le **nom du système d'exploitation** et sa version, ainsi que la **version de BugIt**, afin
   que nous puissions vous indiquer si une version plus récente est disponible,
+- le **filtre d'offre** que vous avez choisi au début de l'activation : Solo, Team ou
+  aucune préférence. Il ne fait que restreindre la liste des licences que le Portal vous
+  propose d'approuver. Il ne désigne jamais une licence particulière, et BugIt n'envoie
+  jamais d'identifiant de droit d'usage, d'équipe, d'adhésion ou de poste : ce choix,
+  c'est vous qui le faites, connecté, dans votre navigateur,
 - du **matériel d'activation** de courte durée : une valeur aléatoire créée pour cette seule
   requête, conservée en mémoire uniquement et jamais écrite sur disque. Elle prouve que
   l'approbation donnée dans votre navigateur appartient à cette requête et ne peut être rejouée.
+- le **jeton d'approbation à usage unique** issu du lien que votre navigateur a ouvert.
+  Il nous est renvoyé pendant que BugIt attend votre approbation, puis une fois encore
+  pour terminer l'activation. Nous l'avons émis, il ne vaut que pour cette activation, et
+  il ne dit rien de vous.
 - un **secret d'accusé de réception** par activation : une seconde valeur aléatoire,
   générée sur votre appareil et conservée dans le stockage protégé de votre système
   d'exploitation. Nous en recevons l'empreinte lors de l'activation, puis lors d'une
