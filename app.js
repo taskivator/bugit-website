@@ -750,7 +750,7 @@ const DOC_ERROR = {
 };
 function docErrorText(lang,key){const b=DOC_ERROR[lang]||DOC_ERROR.en;return b[key]||DOC_ERROR.en[key];}
 // Writes the failure message as TEXT, not as interpolated markup, and clears aria-busy --
-// the region had been left announcing `still loading` forever after the failure had already
+// the region had been left announcing `still loading` indefinitely after the failure had already
 // replaced its contents.
 function docErrorInto(box,lang,key){
   if(!box)return;
