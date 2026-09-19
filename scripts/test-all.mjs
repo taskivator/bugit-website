@@ -179,6 +179,13 @@ const SUITES = [
   //                 language, plus the dead-link sweep.
   // check-instrument-size  the owner's rule that the instrument may not change size when the
   //                 report opens, or on its own while it runs.
+  // A guard that never runs reads as coverage, which is what check-ci-coverage says about
+  // exactly this. These three sat in scripts/ and in neither this list nor ci.yml, so `npm test`
+  // and CI both went green without them: the consent CONTRACT between this site and the Portal
+  // over one shared cookie, the licence-disclosure copy, and the build's own refusals.
+  "check-build-refuses-a-silent-skip.mjs",
+  "check-consent-contract.mjs",
+  "check-licence-disclosure.mjs",
   "check-dev-server.mjs",
   "check-space.mjs",
   // Runs BEFORE check-routing, and in a second, because it is the guard for the wedge that

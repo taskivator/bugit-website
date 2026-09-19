@@ -276,6 +276,21 @@ jobs:
       - name: Verify one bad URL cannot kill the preview server
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-dev-server.mjs
+      # THREE GUARDS THAT EXISTED AND NEVER RAN. check-ci-coverage names this failure in its own
+      # words -- "a guard that never runs is worse than no guard: it reads as coverage" -- and
+      # these three were in neither this file nor test-all.mjs SUITES. The consent one checks the
+      # agreement between this site and the Portal about one shared cookie; the licence one is
+      # customer copy; the build one asserts that an unapplied ads-id override and a missing
+      # required root file both STOP the build instead of being reported as done.
+      - name: Verify the build refuses a silent skip
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-build-refuses-a-silent-skip.mjs
+      - name: Verify the consent contract with the Portal
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-consent-contract.mjs
+      - name: Verify the licence disclosure copy
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-licence-disclosure.mjs
       - name: Verify every language has room, on every screen, on every route
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-space.mjs

@@ -160,7 +160,17 @@ function get(o,path){return path.split('.').reduce((x,k)=>x&&x[k],o)}/* LOCALE O
    bought a click and landed it on an English page.
    Exact tag first, so 'pt-BR' matches the 'pt-br' we ship. Then the base subtag, so 'ja-JP'
    becomes 'ja'. Portuguese of any region gets pt-br, the only Portuguese in the set. */
-function readLangCookie(name){var m=document.cookie.match(new RegExp('(?:^|; )'+name+'=([^;]+)'));return m&&decodeURIComponent(m[1])}
+/* READING A COOKIE CAN THROW TOO, AND THIS ONE RUNS FIRST (CR-08-F01). Every guard in this
+   block is on the WRITE side and on localStorage, and the comments underneath say why: a
+   SecurityError on those left visitors on untranslated HTML with the language control dead.
+   This read sits above all of them, in the initializer for `currentLang`, outside every try --
+   and it has two ways to fail. `document.cookie` itself raises where cookies are refused
+   entirely, and `decodeURIComponent` raises URIError on any malformed percent escape, which is
+   whatever a corrupted or hand-edited cookie happens to contain. Either one takes the whole
+   IIFE with it and the page never renders in any language.
+   Failing to `null` is the correct answer: no stored choice, fall through to the browser's own
+   languages, which is what a first visitor gets anyway. */
+function readLangCookie(name){try{var m=document.cookie.match(new RegExp('(?:^|; )'+name+'=([^;]+)'));return m&&decodeURIComponent(m[1])}catch(e){return null}}
 /* One place that knows how this site's cookies are scoped. On bugit.dev the value has to live on
    .bugit.dev so the portal sees it, and the host-only copy is cleared first or it shadows the
    shared one on every later visit. Writing a cookie can throw where storage is refused, and this
@@ -185,7 +195,11 @@ let currentLang=(function(){
   var how=readLangCookie('bugitLangSet');
   if(!how){try{how=localStorage.getItem('bugitLangSet')}catch(e){}}
   if(chosen&&!how&&chosen!=='en'){markLangChoice('user');how='user';}
-  if(chosen&&how==='user')return chosen;
+  /* A STORED CHOICE IS STILL CHECKED AGAINST THE LANGUAGES WE SHIP (CR-08-F01). This
+     returned the cookie's value as-is, so `__proto__` or `constructor` became currentLang
+     before applyLang ever ran, and every later `i18n[currentLang]` answered truthy for a
+     dictionary that has no strings in it. */
+  if(chosen&&how==='user'&&hasLang(chosen))return chosen;
   try{
     var have=new Set(languages.map(function(l){return l[0]}));
     var tags=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language];
@@ -205,7 +219,15 @@ let currentLang=(function(){
    browser that refuses storage the throw did not merely lose the stored choice: it left every
    visitor on the untranslated HTML with the language control dead, in all eleven languages,
    English included. Storing the preference is a convenience; rendering the page is not. */
-function applyLang(lang,explicit){if(!i18n[lang])lang='en';currentLang=lang;try{localStorage.setItem('bugitLang',lang)}catch(e){}writeLangCookie('bugitLang',lang);markLangChoice(explicit?'user':'auto');document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
+/* WHICH LANGUAGES EXIST, ASKED OF THE DICTIONARY'S OWN KEYS (CR-08-F01). `if(!i18n[lang])` is a
+   property lookup on a plain object literal, so it walks the prototype chain: 'constructor',
+   'toString', 'valueOf' and '__proto__' all answer truthy, and `lang` comes from a cookie and
+   from `location.hash`. The next line then did `i18n[lang].faq`, which is undefined on every one
+   of them, and the page died with the language control half-applied instead of falling back to
+   English. `hasOwnProperty` via Object.prototype, not via the object, because the object is
+   exactly the one whose inherited members are the problem. */
+function hasLang(lang){return Object.prototype.hasOwnProperty.call(i18n,lang)}
+function applyLang(lang,explicit){if(!hasLang(lang))lang='en';currentLang=lang;try{localStorage.setItem('bugitLang',lang)}catch(e){}writeLangCookie('bugitLang',lang);markLangChoice(explicit?'user':'auto');document.documentElement.lang=lang;document.documentElement.dir=RTL_LOCALES.has(lang)?'rtl':'ltr';const dict=i18n[lang];document.querySelectorAll('[data-t]').forEach(el=>{const v=get(dict,el.dataset.t);if(v!==undefined)el.textContent=v});document.querySelectorAll('[data-html]').forEach(el=>{const v=get(dict,el.dataset.html);if(v!==undefined)el.innerHTML=v});document.querySelectorAll('[data-t-aria]').forEach(el=>{const v=get(dict,el.dataset.tAria);if(v!==undefined)el.setAttribute('aria-label',v)});var _ll=document.getElementById('langLabel');if(_ll){_ll.textContent=dict.name}else{document.getElementById('langButton').textContent=dict.name}document.querySelectorAll('.lang-list button').forEach(b=>{const on=b.dataset.lang===lang;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false')});renderFaq([reqFaqItem(lang)].concat(dict.faq.items),lang);renderDocRoute();if(window.__mcRelocalize)window.__mcRelocalize()}
 /* A DECLARED MENU IS A PROMISE ABOUT THE KEYBOARD, AND ONE PLACE KEEPS IT.
    External audit F-06, 2026-08-21: "Both live language menus declare menu semantics but ignore
    keyboard controls." role="menu" with menuitemradio rows, aria-haspopup and aria-expanded is
@@ -667,7 +689,7 @@ function notFoundText(lang){
 }
 function renderNotFound(){
   const home=document.getElementById('homeView'),doc=document.getElementById('docView');
-  const lang=i18n[currentLang]?currentLang:'en';
+  const lang=hasLang(currentLang)?currentLang:'en';
   const nf=notFoundText(lang);
   home.hidden=true;doc.hidden=false;
   // Write INTO the docs containers, never over them. This used to replace the whole of
@@ -815,25 +837,25 @@ function renderDocRoute(){
     const urls=lang==='en'?[`/public/docs/${stem}.web.md`]:[`/public/docs/${stem}.${lang}.web.md`,`/public/docs/${stem}.web.md`];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box)box.innerHTML='<p class="license-copy">This guide is temporarily unavailable. Please refresh the page or open a support ticket.</p>';});
+      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">This guide is temporarily unavailable. Please refresh the page or open a support ticket.</p>';box.removeAttribute('aria-busy');}});
   }else if(r==='docs/license'){
     const box=document.getElementById('licenseText');
     const urls=lang==='en'?['/public/docs/LICENSE.txt']:['/public/docs/LICENSE.'+lang+'.txt','/public/docs/LICENSE.txt'];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatLicense(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The license text is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
+      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">The license text is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';box.removeAttribute('aria-busy');}});
   }else if(r==='docs/privacy'){
     const box=document.getElementById('privacyText');
     const urls=lang==='en'?['/public/docs/PRIVACY.md']:['/public/docs/PRIVACY.'+lang+'.md','/public/docs/PRIVACY.md'];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The privacy statement is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
+      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">The privacy statement is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';box.removeAttribute('aria-busy');}});
   }else if(r==='docs/refund'){
     const box=document.getElementById('refundText');
     const urls=lang==='en'?['/public/docs/REFUND.md']:['/public/docs/REFUND.'+lang+'.md','/public/docs/REFUND.md'];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box)box.innerHTML='<p class="license-copy">The refund policy is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
+      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">The refund policy is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';box.removeAttribute('aria-busy');}});
   }else if(r==='docs/commerce'){
     const box=document.getElementById('commerceText');
     // The heading and the intro line above this box are localized for every language, so
@@ -846,7 +868,7 @@ function renderDocRoute(){
     const urls=lang==='en'?['/public/docs/TOKUSHOHO.md']:['/public/docs/TOKUSHOHO.'+lang+'.md','/public/docs/TOKUSHOHO.md'];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box)box.innerHTML='<p class="license-copy">This disclosure is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';});
+      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">This disclosure is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';box.removeAttribute('aria-busy');}});
   }
   updateSkipTarget();
   window.scrollTo({top:0,behavior:'smooth'});

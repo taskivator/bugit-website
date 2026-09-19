@@ -94,8 +94,34 @@ fs.rmSync(dist,{recursive:true,force:true}); fs.mkdirSync(dist,{recursive:true})
 // 200 with its source for as long as the build has existed. check-assets.mjs now computes the
 // set of scripts in dist and fails any that import a node: builtin, so the next one cannot
 // arrive quietly under a different name.
+// WHICH OF THESE MAY BE ABSENT, SAID OUT LOUD (CR-08-F07).
+//
+// Every item was copied `if (fs.existsSync(src))`, so a missing file was indistinguishable from
+// a copied one and the build printed "Build complete" either way. That is fine for a file that
+// is genuinely optional and catastrophic for `index.html`, which IS the site, or for `_headers`,
+// which carries the CSP, HSTS and frame-ancestors rules that `check-security-headers.mjs`
+// verifies against the SOURCE rather than against dist. A build missing it deploys a site with
+// no security headers at all and says nothing.
+//
+// So absence is a decision rather than an accident: the required ones stop the build and the
+// optional ones are named as skipped, which is the same distinction `attachment` and `sidecar`
+// handling makes everywhere else in this project.
+const REQUIRED_AT_ROOT = new Set(['index.html','styles.css','app.js','consent.js','404.html','_headers']);
+const skippedOptional = [];
 for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','.well-known','verify.json']) {
-  const src = path.join(root,item); if (fs.existsSync(src)) fs.cpSync(src,path.join(dist,item),{recursive:true});
+  const src = path.join(root,item);
+  if (!fs.existsSync(src)) {
+    if (REQUIRED_AT_ROOT.has(item)) {
+      console.error(
+        `build: ${item} is missing from the source tree. It is required, and copying silently\n` +
+        `       skipped it before, so the build reported success while shipping a site without\n` +
+        `       it. Refusing rather than deploying whatever this would have produced.`);
+      process.exit(1);
+    }
+    skippedOptional.push(item);
+    continue;
+  }
+  fs.cpSync(src,path.join(dist,item),{recursive:true});
 }
 
 // ---------------------------------------------------------------- localized /404.html
@@ -214,13 +240,41 @@ for (const item of ['index.html','styles.css','app.js','consent.js','public','ro
 // the tag at a different account via BUGIT_ADS_ID without editing source. The ID is
 // defined in exactly one place (the `var ADS_ID='…'` line), so this single swap
 // covers every use of it.
+// THE PATTERN DID NOT MATCH THE LINE IT WAS AIMED AT, AND IT SAID IT HAD (CR-08-F04).
+//
+// `consent.js` declares `var ADS_ID = 'AW-...';` with spaces around the `=`, and the pattern
+// required none. So `replace` was a no-op on every build, and the line below printed
+// "Google Ads ID overridden from BUGIT_ADS_ID" anyway, because it was outside the question.
+// A deploy that pointed the tag at a different account got the default account and a log line
+// saying otherwise: conversions attributed to the wrong advertiser, with nothing to notice by.
+//
+// `check-ads-tag.mjs` could not catch it either, because it compares against the id in the
+// SOURCE, which is the value the broken substitution left in place.
+//
+// Whitespace is now tolerated, and the substitution is CHECKED rather than announced. A
+// build-time override that silently does nothing is worse than no override, so a failure to
+// apply it stops the build rather than printing a sentence nobody will re-read.
 const adsId = process.env.BUGIT_ADS_ID;
 if (adsId) {
   const cp = path.join(dist,'consent.js');
-  let cs = fs.readFileSync(cp,'utf8');
-  cs = cs.replace(/var ADS_ID='[^']*';/, `var ADS_ID='${adsId.replace(/'/g,"")}';`);
+  const before = fs.readFileSync(cp,'utf8');
+  const clean = adsId.replace(/'/g,"");
+  const cs = before.replace(/var\s+ADS_ID\s*=\s*'[^']*'\s*;/, `var ADS_ID = '${clean}';`);
+  if (cs === before) {
+    console.error(
+      `build: BUGIT_ADS_ID is set (${adsId}) and the ADS_ID declaration in consent.js could not\n` +
+      `       be found, so the tag would ship pointing at the DEFAULT account while this build\n` +
+      `       reported an override. Refusing. Look for the \`var ADS_ID = '...'\` line.`);
+    process.exit(1);
+  }
   fs.writeFileSync(cp,cs);
-  console.log(`build: Google Ads ID overridden from BUGIT_ADS_ID (${adsId}).`);
+  // Read back, because a substitution that produced the wrong text is the same failure with
+  // extra steps. This is the one assertion that the shipped bytes carry the requested account.
+  if (!fs.readFileSync(cp,'utf8').includes(`var ADS_ID = '${clean}';`)) {
+    console.error('build: the ADS_ID override did not survive the write to dist/consent.js.');
+    process.exit(1);
+  }
+  console.log(`build: Google Ads ID overridden from BUGIT_ADS_ID (${clean}).`);
 }
 
 // Minify the two hashed assets IN dist (sources stay readable + unversioned).
@@ -307,5 +361,10 @@ for (const html of ['index.html','404.html']) {
       console.error(`build: ${html} still references unhashed media: ${f}`); process.exit(1);
     }
   }
+}
+// Named rather than counted. An optional file that stopped being copied is something somebody
+// should see once, at the end, rather than discover from a 404 in production.
+if (skippedOptional.length) {
+  console.log(`build: not present in the source tree, so not copied: ${skippedOptional.join(', ')}`);
 }
 console.log(`Build complete: dist (${built['styles.css']}, ${built['app.js']}, ${built['consent.js']})`);
