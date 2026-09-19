@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Última atualização: 2 de agosto de 2026**
+**Última atualização: 20 de setembro de 2026**
 
 Esta política explica quais dados pessoais tratamos quando você usa o site do BugIt
 (bugit.dev), o BugIt Portal (gerenciamento de conta, compra e licenças) e o software
@@ -116,17 +116,36 @@ mora, a base legal costuma ser a execução do nosso contrato com você, o cumpr
 de obrigação legal, nosso legítimo interesse em manter o serviço seguro ou o seu
 consentimento.
 
+## O assistente “Pergunte ao BugIt” no Portal
+
+O Portal inclui o “Pergunte ao BugIt”, um assistente que responde a perguntas sobre o BugIt e
+sobre a sua conta. Muitas respostas são preparadas com antecedência e redigidas sem um modelo
+de IA. Quando o assistente redige uma resposta com seu modelo de IA, a sua pergunta, a
+conversa até aquele momento e um resumo da sua conta (suas licenças, dispositivos, Team e
+tickets de suporte abertos) são enviados à Anthropic, que os trata em nosso nome para redigir
+a resposta. Nunca adicionamos chaves de licença ou dados de pagamento a esse resumo, mas o
+texto que você mesmo digita é enviado exatamente como você escreveu, por isso pedimos que não
+digite no assistente dados de cartão, bancários ou outras informações sensíveis. O assistente
+remove senhas e tokens de acesso reconhecíveis antes de qualquer envio, mas não consegue
+reconhecer tudo.
+
+A conversa fica guardada na aba do seu navegador e é apagada quando você sai da conta. Não a
+armazenamos em nossos servidores, a menos que você envie um ticket de suporte pelo assistente
+e opte por incluir a conversa. Para que um limite mensal de uso possa ser aplicado,
+registramos quanto custam, a cada mês, as respostas com IA do assistente para a sua conta.
+
 ## Prestadores de serviços
 
 Utilizamos prestadores de serviços para autenticação e hospedagem, processamento de
-pagamentos, e-mail transacional, entrega e segurança do site e medição de publicidade
-baseada em consentimento. Esses prestadores tratam apenas as informações necessárias
-para nos prestar seus serviços e não podem usá-las para fins próprios.
+pagamentos, e-mail transacional, entrega e segurança do site, respostas com IA do assistente
+do Portal e medição de publicidade baseada em consentimento. Esses prestadores tratam apenas
+as informações necessárias para nos prestar seus serviços e não podem usá-las para fins
+próprios.
 
 Os principais prestadores são Supabase (contas e banco de dados), Stripe (pagamentos,
-reembolsos e contestações), Vercel (hospedagem do Portal), Cloudflare (entrega e
-segurança do site e análise sem cookies), Resend (e-mail transacional) e Google
-(medição de publicidade, somente com o seu consentimento).
+reembolsos e contestações), Vercel (hospedagem do Portal), Cloudflare (entrega e segurança do
+site e análise sem cookies), Resend (e-mail transacional), Anthropic (respostas com IA do
+assistente do Portal) e Google (medição de publicidade, somente com o seu consentimento).
 
 Alguns desses prestadores operam fora do seu país, inclusive nos Estados Unidos.
 Quando há transferência internacional de dados pessoais, apoiamo-nos nas cláusulas de

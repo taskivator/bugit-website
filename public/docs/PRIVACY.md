@@ -2,7 +2,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Last updated: 2 August 2026**
+**Last updated: 20 September 2026**
 
 This policy explains what personal data we handle when you use the BugIt website
 (bugit.dev), the BugIt Portal (your account, purchase, and license management), and
@@ -108,17 +108,36 @@ the legal basis is normally the performance of our contract with you, compliance
 with a legal obligation, our legitimate interest in securing the service, or your
 consent.
 
+## The Ask BugIt assistant in the Portal
+
+The Portal includes Ask BugIt, an assistant that answers questions about BugIt and
+your account. Many answers are prepared in advance and are written without an AI
+model. When the assistant writes an answer with its AI model, your question, the
+conversation so far, and a summary of your account (your licenses, devices, Team, and
+open support tickets) are sent to Anthropic, which processes them on our behalf to
+write the reply. We never add license keys or payment details to that summary, but
+text you type yourself is sent as you wrote it, so please do not type card, bank, or
+other sensitive details into the assistant. The assistant removes recognisable
+passwords and access tokens before anything is sent, but it cannot recognise
+everything.
+
+The conversation is kept in your browser tab and is cleared when you sign out. We do
+not store it on our servers unless you send a support ticket from the assistant and
+choose to include the conversation. So that a monthly usage limit can apply, we
+record what the assistant's AI answers cost for your account each month.
+
 ## Service providers
 
 We use service providers for authentication and hosting, payment processing,
-transactional email, website delivery and security, and consent based advertising
-measurement. These providers process only the information needed to deliver their
-services to us, and they are not permitted to use it for their own purposes.
+transactional email, website delivery and security, AI answers in the Portal
+assistant, and consent based advertising measurement. These providers process only
+the information needed to deliver their services to us, and they are not permitted to
+use it for their own purposes.
 
 The main providers are Supabase (accounts and database), Stripe (payments, refunds,
 and disputes), Vercel (Portal hosting), Cloudflare (website delivery, security, and
-cookieless analytics), Resend (transactional email), and Google (advertising
-measurement, only with your consent).
+cookieless analytics), Resend (transactional email), Anthropic (AI answers in the
+Portal assistant), and Google (advertising measurement, only with your consent).
 
 Some of these providers operate outside your country, including in the United
 States. Where personal data is transferred internationally, we rely on the data

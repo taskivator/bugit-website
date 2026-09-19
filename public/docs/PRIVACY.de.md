@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Zuletzt aktualisiert: 2. August 2026**
+**Zuletzt aktualisiert: 20. September 2026**
 
 Diese Erklärung beschreibt, welche personenbezogenen Daten wir verarbeiten, wenn Sie
 die BugIt Website (bugit.dev), das BugIt Portal (Konto, Kauf und Lizenzverwaltung)
@@ -121,18 +121,37 @@ zu messen. Je nach Wohnsitz ist die Rechtsgrundlage in der Regel die Erfüllung
 unseres Vertrags mit Ihnen, die Erfüllung einer rechtlichen Verpflichtung, unser
 berechtigtes Interesse an der Sicherheit des Dienstes oder Ihre Einwilligung.
 
+## Der Assistent „BugIt fragen“ im Portal
+
+Das Portal enthält „BugIt fragen“, einen Assistenten, der Fragen zu BugIt und zu Ihrem Konto
+beantwortet. Viele Antworten sind vorbereitet und entstehen ohne KI-Modell. Wenn der Assistent
+eine Antwort mit seinem KI-Modell schreibt, werden Ihre Frage, der bisherige Gesprächsverlauf
+und eine Zusammenfassung Ihres Kontos (Ihre Lizenzen, Geräte, Ihr Team und offene
+Support-Tickets) an Anthropic gesendet, das sie in unserem Auftrag verarbeitet, um die Antwort
+zu schreiben. Lizenzschlüssel oder Zahlungsdaten fügen wir dieser Zusammenfassung niemals
+hinzu, aber Text, den Sie selbst eingeben, wird so gesendet, wie Sie ihn geschrieben haben.
+Geben Sie daher bitte keine Karten-, Bank- oder anderen sensiblen Daten in den Assistenten
+ein. Der Assistent entfernt erkennbare Passwörter und Zugangstoken, bevor etwas gesendet wird,
+kann aber nicht alles erkennen.
+
+Das Gespräch wird in Ihrem Browser-Tab gespeichert und beim Abmelden gelöscht. Wir speichern
+es nicht auf unseren Servern, es sei denn, Sie senden aus dem Assistenten ein Support-Ticket
+und entscheiden sich, das Gespräch beizufügen. Damit ein monatliches Nutzungslimit gelten
+kann, erfassen wir, was die KI-Antworten des Assistenten für Ihr Konto jeden Monat kosten.
+
 ## Dienstleister
 
 Wir setzen Dienstleister für Authentifizierung und Hosting, Zahlungsabwicklung,
-Transaktions-E-Mails, Auslieferung und Sicherheit der Website sowie für
-einwilligungsbasierte Werbemessung ein. Diese Dienstleister verarbeiten nur die
-Informationen, die zur Erbringung ihrer Leistung für uns erforderlich sind, und
-dürfen sie nicht für eigene Zwecke nutzen.
+Transaktions-E-Mails, Auslieferung und Sicherheit der Website, KI-Antworten des Assistenten im
+Portal sowie für einwilligungsbasierte Werbemessung ein. Diese Dienstleister verarbeiten nur
+die Informationen, die zur Erbringung ihrer Leistung für uns erforderlich sind, und dürfen sie
+nicht für eigene Zwecke nutzen.
 
-Die wichtigsten Dienstleister sind Supabase (Konten und Datenbank), Stripe
-(Zahlungen, Erstattungen und Streitfälle), Vercel (Hosting des Portals), Cloudflare
-(Auslieferung und Sicherheit der Website sowie cookiefreie Analyse), Resend
-(Transaktions-E-Mails) und Google (Werbemessung, nur mit Ihrer Einwilligung).
+Die wichtigsten Dienstleister sind Supabase (Konten und Datenbank), Stripe (Zahlungen,
+Erstattungen und Streitfälle), Vercel (Hosting des Portals), Cloudflare (Auslieferung und
+Sicherheit der Website sowie cookiefreie Analyse), Resend (Transaktions-E-Mails), Anthropic
+(KI-Antworten des Assistenten im Portal) und Google (Werbemessung, nur mit Ihrer
+Einwilligung).
 
 Einige dieser Dienstleister arbeiten außerhalb Ihres Landes, unter anderem in den
 Vereinigten Staaten. Wenn personenbezogene Daten international übermittelt werden,
