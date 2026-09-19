@@ -104,6 +104,11 @@ const SUITES = [
   // answered false for it and every returning Arabic reader was handed English. Three browser
   // suites caught the effect; this catches the cause, in milliseconds, without a browser.
   "check-locale-registration-order.mjs",
+  // Spanish and Italian take the informal register in product copy; the 2026-09-18 LQA round
+  // rejected 18 records that had moved them to formal. Nothing structural can see the
+  // difference -- a formal sentence spells, parses and renders perfectly -- so it needs its own
+  // check. It found two survivors of the hand-built sweep on its first run.
+  "check-register-es-it.mjs",
   "check-release-identity.mjs",
   // check-logo.mjs proves the rendered logo has no clipping artifact; this proves
   // the asset it renders is the one the brand pipeline produced and was not

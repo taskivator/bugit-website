@@ -88,6 +88,12 @@ jobs:
       - name: A language is registered before anything asks whether we ship it
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-locale-registration-order.mjs
+      # Spanish and Italian address the reader informally in product copy. The register has
+      # drifted twice and no structural check can see it, because a formal sentence is spelled
+      # correctly and renders correctly. Contract text is exempt by exact sentence, not by page.
+      - name: Spanish and Italian keep one register, and it is the informal one
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-register-es-it.mjs
       - name: bugit.dev publishes the values the verifier compares against
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-release-identity.mjs
