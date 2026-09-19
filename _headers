@@ -103,6 +103,13 @@
 /public/fonts/*
   Cache-Control: public, max-age=604800
 
+# The Guide's answers and its code. These filenames carry NO content hash, so they get the same
+# treatment as /404.js and /verify.json above rather than a long TTL on a stable path: a corrected
+# answer, or a correction to the matching rules, must not sit at the edge for hours. They are
+# fetched once per visitor who opens the Guide, and an unchanged file costs a 304.
+/public/guide/*
+  Cache-Control: public, max-age=0, must-revalidate
+
 # Current web guides must revalidate after every release so version switches are
 # atomic across the website, portal, and update service. This covers the PDFs too
 # — see below for why they get no exemption.

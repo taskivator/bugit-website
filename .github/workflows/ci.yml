@@ -150,6 +150,10 @@ jobs:
       # Its complement: cache-headers asks what may be cached, this asks what protects the
       # response. The site shipped without any Cross-Origin-Opener-Policy because no list said
       # which security headers it sends, so nothing could notice one missing.
+      - name: The Guide answers only from its bank, and never guesses
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-guide-answers.mjs
+
       - name: Verify every required security header is sent on /*
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-security-headers.mjs
@@ -357,6 +361,10 @@ jobs:
       - name: Verify the page chrome in every language
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-chrome.mjs
+
+      - name: The Guide answers from prepared text in the browser and sends nothing
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-guide.mjs
       # A reveal that never finishes leaves a card greyed out for ever, and the cause has no
       # visible connection to it: `overflow:hidden` on a grid makes that grid the scroll
       # container an `animation-timeline:view()` inside it resolves against, and a scroller that

@@ -123,6 +123,13 @@ const SUITES = [
   // because the site shipped with no Cross-Origin-Opener-Policy at all, and an absence is
   // invisible to a guard that only inspects what is written.
   "check-security-headers.mjs",
+  // The Guide answers from prepared text in the visitor's browser and calls no model and no server.
+  // That claim is made to every visitor and in the privacy policy, and only a browser can check it:
+  // this one asks real questions and fails if anything leaves the origin.
+  "check-guide.mjs",
+  // The matching rules themselves, and the bank they read: every case that must answer is paired
+  // with one that must NOT, because a matcher that answers everything is a wrong answer generator.
+  "check-guide-answers.mjs",
   "check-billing-copy.mjs",
   // check-billing-copy asserts the four prices somebody typed into it are still present in
   // this repository. This asks the question that one cannot: is each of them a price the

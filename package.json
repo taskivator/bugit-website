@@ -23,6 +23,8 @@
     "test:ads-tag": "node scripts/check-ads-tag.mjs",
     "test:cache": "node scripts/check-cache-headers.mjs",
     "test:security-headers": "node scripts/check-security-headers.mjs",
+    "test:guide": "node scripts/check-guide.mjs",
+    "test:guide-answers": "node scripts/check-guide-answers.mjs",
     "test:csp": "node scripts/check-csp-telemetry.mjs",
     "test:billing": "node scripts/check-billing-copy.mjs",
     "test:team-paused": "node scripts/check-team-paused.mjs",

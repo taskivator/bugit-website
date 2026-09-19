@@ -1,0 +1,15 @@
+{
+ "did_you_mean": {
+  "en": "I'm not sure which of these you mean. Tap the one closest to your question, or ask it another way.",
+  "ar": "لست متأكدًا أيًّا من هذه الخيارات تقصد. اختر الخيار الأقرب إلى سؤالك أو أعد صياغة السؤال بطريقة أخرى.",
+  "de": "Ich bin nicht sicher, was genau Sie meinen. Tippen Sie auf die Option, die Ihrer Frage am nächsten kommt, oder formulieren Sie sie anders.",
+  "es": "No estoy seguro de cuál de estas opciones quieres decir. Toca la que más se acerque a tu pregunta, o formúlala de otra manera.",
+  "fr": "Je ne suis pas certain de comprendre laquelle de ces options correspond à votre demande. Sélectionnez celle qui s'en rapproche le plus, ou reformulez votre question.",
+  "it": "Non sono sicuro a quale di queste ti riferisci. Tocca quella più vicina alla tua domanda, oppure formulala in un altro modo.",
+  "ja": "どの選択肢を指しているのか判断できません。最も近いものをタップいただくか、別の言い方でお尋ねください。",
+  "ko": "어떤 항목을 말씀하시는지 확실하지 않습니다. 질문과 가장 가까운 항목을 선택하시거나, 다른 방식으로 다시 질문해 주세요.",
+  "pt-br": "Não tenho certeza de qual dessas opções você quer dizer. Toque na que mais se aproxima da sua pergunta, ou pergunte de outra forma.",
+  "ru": "Не получилось точно понять, что вы имеете в виду. Выберите вариант, который ближе всего к вашему вопросу, или сформулируйте его по-другому.",
+  "zh": "不确定您想问的是哪一项，请点击最接近您问题的选项，或换一种方式提问。"
+ }
+}
