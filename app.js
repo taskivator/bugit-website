@@ -720,6 +720,47 @@ function renderNotFound(){
   document.title=nf.title+' | '+BASE_TITLE;
   updateSkipTarget();
 }
+// The five document-load failure messages, in every language the site ships (CR-08-F03).
+//
+// These were hard-coded English while the rest of the page was localized, so a reader who
+// had chosen Japanese, Arabic or Korean was handed an English sentence at the one moment
+// something had gone wrong. The moment a reader most needs to understand the page is the
+// moment it stopped being in their language.
+//
+// `temporarily` is doing real work here: this is a failed fetch, not a withdrawn document,
+// so refreshing is worth trying. Each language uses its own idiom for that rather than a
+// word-for-word equivalent, which also keeps this copy clear of the Team purchase phrasings
+// that scripts/check-team-paused.mjs scans for -- `non e temporaneamente disponibile` and
+// its French and Portuguese equivalents are in that list, and they are not about Team.
+//
+// Shaped like NOT_FOUND above: one table, read through one accessor, so a document route
+// added later cannot reintroduce an English literal without check-languages noticing.
+const DOC_ERROR = {
+  en:{guide:"This guide is temporarily unavailable. Please refresh the page or open a support ticket.",license:"The license text is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.",privacy:"The privacy statement is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.",refund:"The refund policy is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.",commerce:"This disclosure is temporarily unavailable. Please refresh the page, or contact support@bugit.dev."},
+  ja:{guide:"このガイドは現在ご利用いただけません。ページを再読み込みするか、サポートチケットを作成してください。",license:"ライセンス文書は現在ご利用いただけません。ページを再読み込みするか、support@bugit.dev までご連絡ください。",privacy:"プライバシーに関する声明は現在ご利用いただけません。ページを再読み込みするか、support@bugit.dev までご連絡ください。",refund:"返金ポリシーは現在ご利用いただけません。ページを再読み込みするか、support@bugit.dev までご連絡ください。",commerce:"この表示は現在ご利用いただけません。ページを再読み込みするか、support@bugit.dev までご連絡ください。"},
+  fr:{guide:"Ce guide est momentanément indisponible. Actualisez la page ou ouvrez un ticket d’assistance.",license:"Le texte de la licence est momentanément indisponible. Actualisez la page ou écrivez à support@bugit.dev.",privacy:"La déclaration de confidentialité est momentanément indisponible. Actualisez la page ou écrivez à support@bugit.dev.",refund:"La politique de remboursement est momentanément indisponible. Actualisez la page ou écrivez à support@bugit.dev.",commerce:"Ces informations légales sont momentanément indisponibles. Actualisez la page ou écrivez à support@bugit.dev."},
+  de:{guide:"Diese Anleitung ist vorübergehend nicht verfügbar. Bitte laden Sie die Seite neu oder eröffnen Sie ein Support-Ticket.",license:"Der Lizenztext ist vorübergehend nicht verfügbar. Bitte laden Sie die Seite neu oder wenden Sie sich an support@bugit.dev.",privacy:"Die Datenschutzerklärung ist vorübergehend nicht verfügbar. Bitte laden Sie die Seite neu oder wenden Sie sich an support@bugit.dev.",refund:"Die Rückerstattungsrichtlinie ist vorübergehend nicht verfügbar. Bitte laden Sie die Seite neu oder wenden Sie sich an support@bugit.dev.",commerce:"Diese rechtlichen Angaben sind vorübergehend nicht verfügbar. Bitte laden Sie die Seite neu oder wenden Sie sich an support@bugit.dev."},
+  es:{guide:"Esta guía no está disponible en este momento. Actualiza la página o abre un ticket de soporte.",license:"El texto de la licencia no está disponible en este momento. Actualiza la página o escribe a support@bugit.dev.",privacy:"La declaración de privacidad no está disponible en este momento. Actualiza la página o escribe a support@bugit.dev.",refund:"La política de reembolsos no está disponible en este momento. Actualiza la página o escribe a support@bugit.dev.",commerce:"Este aviso legal no está disponible en este momento. Actualiza la página o escribe a support@bugit.dev."},
+  'pt-br':{guide:"Este guia não está disponível no momento. Atualize a página ou abra um ticket de suporte.",license:"O texto da licença não está disponível no momento. Atualize a página ou escreva para support@bugit.dev.",privacy:"A declaração de privacidade não está disponível no momento. Atualize a página ou escreva para support@bugit.dev.",refund:"A política de reembolso não está disponível no momento. Atualize a página ou escreva para support@bugit.dev.",commerce:"Estas informações legais não estão disponíveis no momento. Atualize a página ou escreva para support@bugit.dev."},
+  it:{guide:"Questa guida non è disponibile al momento. Aggiorna la pagina o apri un ticket di assistenza.",license:"Il testo della licenza non è disponibile al momento. Aggiorna la pagina o scrivi a support@bugit.dev.",privacy:"L’informativa sulla privacy non è disponibile al momento. Aggiorna la pagina o scrivi a support@bugit.dev.",refund:"La politica di rimborso non è disponibile al momento. Aggiorna la pagina o scrivi a support@bugit.dev.",commerce:"Queste informazioni legali non sono disponibili al momento. Aggiorna la pagina o scrivi a support@bugit.dev."},
+  ko:{guide:"이 가이드를 지금은 불러올 수 없습니다. 페이지를 새로고침하거나 지원 티켓을 열어 주세요.",license:"라이선스 전문을 지금은 불러올 수 없습니다. 페이지를 새로고침하거나 support@bugit.dev로 문의해 주세요.",privacy:"개인정보 처리방침을 지금은 불러올 수 없습니다. 페이지를 새로고침하거나 support@bugit.dev로 문의해 주세요.",refund:"환불 정책을 지금은 불러올 수 없습니다. 페이지를 새로고침하거나 support@bugit.dev로 문의해 주세요.",commerce:"이 고지를 지금은 불러올 수 없습니다. 페이지를 새로고침하거나 support@bugit.dev로 문의해 주세요."},
+  zh:{guide:"本指南暂时无法加载。请刷新页面，或提交支持工单。",license:"许可证文本暂时无法加载。请刷新页面，或联系 support@bugit.dev。",privacy:"隐私声明暂时无法加载。请刷新页面，或联系 support@bugit.dev。",refund:"退款政策暂时无法加载。请刷新页面，或联系 support@bugit.dev。",commerce:"本公示信息暂时无法加载。请刷新页面，或联系 support@bugit.dev。"},
+  ru:{guide:"Это руководство сейчас недоступно. Обновите страницу или создайте запрос в поддержку.",license:"Текст лицензии сейчас недоступен. Обновите страницу или напишите на support@bugit.dev.",privacy:"Заявление о конфиденциальности сейчас недоступно. Обновите страницу или напишите на support@bugit.dev.",refund:"Политика возврата сейчас недоступна. Обновите страницу или напишите на support@bugit.dev.",commerce:"Эти сведения сейчас недоступны. Обновите страницу или напишите на support@bugit.dev."},
+  ar:{guide:"هذا الدليل غير متاح حاليًا. حدّث الصفحة أو افتح تذكرة دعم.",license:"نص الترخيص غير متاح حاليًا. حدّث الصفحة أو راسلنا على support@bugit.dev.",privacy:"بيان الخصوصية غير متاح حاليًا. حدّث الصفحة أو راسلنا على support@bugit.dev.",refund:"سياسة الاسترداد غير متاحة حاليًا. حدّث الصفحة أو راسلنا على support@bugit.dev.",commerce:"هذا الإفصاح غير متاح حاليًا. حدّث الصفحة أو راسلنا على support@bugit.dev."},
+};
+function docErrorText(lang,key){const b=DOC_ERROR[lang]||DOC_ERROR.en;return b[key]||DOC_ERROR.en[key];}
+// Writes the failure message as TEXT, not as interpolated markup, and clears aria-busy --
+// the region had been left announcing `still loading` forever after the failure had already
+// replaced its contents.
+function docErrorInto(box,lang,key){
+  if(!box)return;
+  box.innerHTML='';
+  const p=document.createElement('p');
+  p.className='license-copy';
+  p.textContent=docErrorText(lang,key);
+  box.appendChild(p);
+  box.removeAttribute('aria-busy');
+}
 function renderDocRoute(){
   const r=route();
   const home=document.getElementById('homeView'),doc=document.getElementById('docView');
@@ -852,25 +893,25 @@ function renderDocRoute(){
     const urls=lang==='en'?[`/public/docs/${stem}.web.md`]:[`/public/docs/${stem}.${lang}.web.md`,`/public/docs/${stem}.web.md`];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">This guide is temporarily unavailable. Please refresh the page or open a support ticket.</p>';box.removeAttribute('aria-busy');}});
+      .catch(()=>{docErrorInto(box,lang,'guide')});
   }else if(r==='docs/license'){
     const box=document.getElementById('licenseText');
     const urls=lang==='en'?['/public/docs/LICENSE.txt']:['/public/docs/LICENSE.'+lang+'.txt','/public/docs/LICENSE.txt'];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatLicense(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">The license text is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';box.removeAttribute('aria-busy');}});
+      .catch(()=>{docErrorInto(box,lang,'license')});
   }else if(r==='docs/privacy'){
     const box=document.getElementById('privacyText');
     const urls=lang==='en'?['/public/docs/PRIVACY.md']:['/public/docs/PRIVACY.'+lang+'.md','/public/docs/PRIVACY.md'];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">The privacy statement is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';box.removeAttribute('aria-busy');}});
+      .catch(()=>{docErrorInto(box,lang,'privacy')});
   }else if(r==='docs/refund'){
     const box=document.getElementById('refundText');
     const urls=lang==='en'?['/public/docs/REFUND.md']:['/public/docs/REFUND.'+lang+'.md','/public/docs/REFUND.md'];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">The refund policy is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';box.removeAttribute('aria-busy');}});
+      .catch(()=>{docErrorInto(box,lang,'refund')});
   }else if(r==='docs/commerce'){
     const box=document.getElementById('commerceText');
     // The heading and the intro line above this box are localized for every language, so
@@ -883,7 +924,7 @@ function renderDocRoute(){
     const urls=lang==='en'?['/public/docs/TOKUSHOHO.md']:['/public/docs/TOKUSHOHO.'+lang+'.md','/public/docs/TOKUSHOHO.md'];
     fetchFirstText(urls)
       .then(txt=>{if(box){box.innerHTML=formatMarkdownDoc(txt);box.removeAttribute('aria-busy');docReadingReady(token);}})
-      .catch(()=>{if(box){box.innerHTML='<p class="license-copy">This disclosure is temporarily unavailable. Please refresh the page, or contact support@bugit.dev.</p>';box.removeAttribute('aria-busy');}});
+      .catch(()=>{docErrorInto(box,lang,'commerce')});
   }
   updateSkipTarget();
   window.scrollTo({top:0,behavior:'smooth'});

@@ -155,6 +155,49 @@ if (!notFoundFallback) fail.push("not-found render lacks explicit English fallba
 if (!/\/\^#\\\/\.\+\/\.test\(location\.hash\)/.test(app))
   fail.push("unknown route-style hash (#/…) does not route to the not-found page");
 
+// THE DOCUMENT-LOAD FAILURE MESSAGES (CR-08-F03), AND THE PROPERTY THAT MATTERS.
+//
+// Five sentences appear when a guide, the licence, the privacy statement, the refund policy or
+// the commerce disclosure fails to fetch. They were hard-coded English on a site that ships in
+// eleven languages, so the one moment a reader most needed to understand the page was the moment
+// it stopped being in theirs.
+//
+// The guarantee asked for here is not a spelling: it is that every shipped locale has all five,
+// that lookup falls back to English rather than rendering undefined, and -- the part that stops
+// this coming back -- that no English sentence survives OUTSIDE the table. A sixth document route
+// added later cannot quietly reintroduce a literal.
+//
+// The locale list is DERIVED from the catalogue above rather than restated, because a restated
+// list goes stale and this file has no way to notice when an eleventh language becomes a twelfth.
+const DOC_ERROR_KEYS = ["guide", "license", "privacy", "refund", "commerce"];
+const DOC_ERROR_EN = {
+  guide: "This guide is temporarily unavailable",
+  license: "The license text is temporarily unavailable",
+  privacy: "The privacy statement is temporarily unavailable",
+  refund: "The refund policy is temporarily unavailable",
+  commerce: "This disclosure is temporarily unavailable",
+};
+const docErrorTable = (app.match(/const DOC_ERROR\s*=\s*\{([\s\S]*?)\n\};/) || [])[1];
+if (!docErrorTable) {
+  fail.push("DOC_ERROR table missing — document-load failures would be English only");
+} else {
+  const shipped = [cat.base, ...cat.documentationLocales.preview];
+  for (const lg of shipped) {
+    const row = new RegExp(`(?:^|\\n)\\s*(?:'${lg}'|"${lg}"|${lg})\\s*:\\s*\\{([^}]*)\\}`).exec(docErrorTable);
+    if (!row) { fail.push(`DOC_ERROR has no ${lg} row`); continue; }
+    for (const k of DOC_ERROR_KEYS)
+      if (!new RegExp(`\\b${k}\\s*:\\s*"`).test(row[1])) fail.push(`DOC_ERROR.${lg} is missing ${k}`);
+  }
+  if (!/return b\[key\]\|\|DOC_ERROR\.en\[key\];/.test(app))
+    fail.push("doc-error lookup lacks an explicit English fallback");
+  // Exactly once each, and that once is inside the table.
+  for (const [k, sentence] of Object.entries(DOC_ERROR_EN)) {
+    const n = app.split(sentence).length - 1;
+    if (n === 0) fail.push(`DOC_ERROR English copy for ${k} disappeared`);
+    else if (n > 1) fail.push(`English doc-error literal for ${k} appears ${n} times — one of them is a call site, not the table`);
+  }
+}
+
 // --- Crashlytics / BugSnag truthfulness (item 10) -----------------------------
 const builtin = (html.match(/integrations\.builtin"[^]*?data-tools="([^"]*)"/) || [])[1] || "";
 for (const t of ["crashlytics", "bugsnag"])
