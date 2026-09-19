@@ -32,6 +32,19 @@ import { join } from "node:path";
 
 export const DEFAULT_TIMEOUT_MS = 60_000;
 const POLL_MS = 150;
+// One attempt's ceiling. Well under DEFAULT_TIMEOUT_MS so a hung socket costs a few seconds and
+// then the loop asks again, rather than spending the whole budget inside one await. DevTools on
+// loopback answers in single-digit milliseconds when it answers at all.
+const ATTEMPT_MS = 5_000;
+
+/** `p`, but rejecting if it has not settled within `ms`. */
+function withTimeout(p, ms, message) {
+  let timer;
+  return Promise.race([
+    p.finally(() => clearTimeout(timer)),
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(message)), ms); }),
+  ]);
+}
 const STDERR_KEEP = 4000; // enough for a loader error; bounded so a chatty Chrome cannot eat memory
 
 /**
@@ -84,8 +97,22 @@ export async function waitForDevTools(child, port, opts = {}) {
   let sawForeignEndpoint = false;
   while (Date.now() < deadline) {
     try {
-      const res = await fetch(`http://127.0.0.1:${port}/json/version`);
-      const payload = await res.json();
+      // BOUNDED, BECAUSE THE LOOP CONDITION ONLY BOUNDS LOOP ENTRY. `while (Date.now() <
+      // deadline)` is checked before an attempt and never again, so a socket that accepts the
+      // connection and then never answers -- a half-open connection, a process stopped at a
+      // breakpoint, something else entirely holding the port -- parks inside this `await`
+      // forever. The guard then hangs rather than failing, which in CI is a forty-minute job
+      // timeout reported as `cancelled` with nothing saying why. The remaining time is the
+      // budget, so no attempt can outlive the deadline it was started under.
+      const left = deadline - Date.now();
+      if (left <= 0) break;
+      const res = await fetch(`http://127.0.0.1:${port}/json/version`,
+                              { signal: AbortSignal.timeout(Math.min(left, ATTEMPT_MS)) });
+      // The body read is bounded too. A response whose headers arrive and whose body does not
+      // is the same hang one line later, and it is the likelier half: the headers are what a
+      // listening socket produces cheaply.
+      const payload = await withTimeout(res.json(), Math.min(left, ATTEMPT_MS),
+                                        `${name}: the DevTools reply on port ${port} never finished`);
       if (ownsEndpoint()) return payload;
       // Something is listening, and it is not ours. Keep waiting: our child may still be coming
       // up, and saying so at the end is more useful than timing out with no explanation.

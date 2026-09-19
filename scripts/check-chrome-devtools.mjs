@@ -14,6 +14,9 @@
  */
 import http from 'node:http';
 import { spawn } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { waitForDevTools, DEFAULT_TIMEOUT_MS } from './lib/chrome-devtools.mjs';
 
 let failures = 0;
@@ -117,7 +120,74 @@ check(`the default ceiling is at least 30s (it is ${Math.round(DEFAULT_TIMEOUT_M
   check('and a ceiling longer than the start picks it up', v.Browser === 'late');
 }
 
+// --- WHOSE BROWSER ANSWERED (CR-08-F28) -------------------------------------------------------
+// The callers use fixed debugging ports, 9411 and 9416. A Chrome left behind by a killed run --
+// which happens on this machine -- is listening on that same port, and the helper used to return
+// the first parseable reply it got. The guard would then drive a window it did not open, in a
+// profile it did not create, and report the result as its own. That is a green run measuring
+// nothing, which is the worst outcome a guard has.
+{
+  const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end('{"Browser":"SomebodyElsesChrome/1.0"}');
+  });
+  const port = await freePort();
+  await new Promise((r) => server.listen(port, '127.0.0.1', r));
+  const child = alive();
+
+  // A profile directory that exists and holds no DevToolsActivePort: precisely the state of a
+  // freshly mkdtemp'd profile whose Chrome has not come up yet.
+  const udir = fs.mkdtempSync(path.join(os.tmpdir(), 'bugit-devtools-check-'));
+  let msg = '';
+  try { await waitForDevTools(child, port, { name: 'fake', timeoutMs: 2000, userDataDir: udir }); }
+  catch (e) { msg = e.message; }
+  check('a browser answering on the port that is NOT ours is refused, not adopted',
+        msg.includes('is NOT the one this run started'), msg.split('\n')[0]);
+
+  // CONTROL, and it is the one that matters: with the profile marker present the SAME endpoint
+  // is accepted. Without this, a helper that refused every endpoint would pass the check above.
+  fs.writeFileSync(path.join(udir, 'DevToolsActivePort'), `${port}\n/devtools/browser/x\n`, 'utf8');
+  const mine = await waitForDevTools(child, port, { name: 'fake', timeoutMs: 8000, userDataDir: udir });
+  check('CONTROL: the same endpoint IS adopted once our profile claims that port',
+        mine.Browser === 'SomebodyElsesChrome/1.0');
+
+  // And a marker naming a DIFFERENT port does not count as ownership of this one.
+  fs.writeFileSync(path.join(udir, 'DevToolsActivePort'), `${port + 1}\n/devtools/browser/x\n`, 'utf8');
+  let other = '';
+  try { await waitForDevTools(child, port, { name: 'fake', timeoutMs: 2000, userDataDir: udir }); }
+  catch (e) { other = e.message; }
+  check('a profile marker for another port is not ownership of this one',
+        other.includes('is NOT the one this run started'));
+
+  child.kill();
+  server.close();
+  fs.rmSync(udir, { recursive: true, force: true });
+}
+
+// --- A SOCKET THAT ACCEPTS AND NEVER ANSWERS ---------------------------------------------------
+// The loop condition is checked before an attempt and never again, so an await inside it was
+// unbounded. Something holding the port that accepts the connection and then says nothing parked
+// the guard forever: in CI that is a forty-minute job timeout reported as `cancelled`, with
+// nothing anywhere saying what it was waiting for. This case hangs the connection deliberately
+// and asserts that the helper still gives up on time.
+{
+  const server = http.createServer(() => { /* accept, then never respond */ });
+  const port = await freePort();
+  await new Promise((r) => server.listen(port, '127.0.0.1', r));
+  const child = alive();
+  const started = Date.now();
+  let msg = '';
+  try { await waitForDevTools(child, port, { name: 'fake', timeoutMs: 3000 }); }
+  catch (e) { msg = e.message; }
+  const took = Date.now() - started;
+  child.kill();
+  server.close();
+  check('a socket that accepts and never answers still fails on time, rather than hanging',
+        msg !== '' && took < 15_000, `${took}ms: ${msg.split('\n')[0]}`);
+}
+
 console.log(failures
   ? `\ncheck-chrome-devtools: ${failures} FAILURE(S)`
-  : '\ncheck-chrome-devtools OK: a dead browser and a slow one are told apart, and the ceiling is the one the incident needs');
+  : '\ncheck-chrome-devtools OK: a dead browser and a slow one are told apart, an endpoint we do ' +
+    'not own is refused, a hung socket fails on time, and the ceiling is the one the incident needs');
 process.exit(failures ? 1 : 0);

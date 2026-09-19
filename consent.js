@@ -48,6 +48,22 @@
     var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
     return m ? m[1] : null;
   }
+  // WITHDRAWING CONSENT HAS TO REMOVE WHAT CONSENT PUT THERE. `captureAttribution` stopped
+  // WRITING `bugit_gclid` the moment advertising was denied, and that is not the same as the
+  // cookie being gone: one already written survives the refusal for its full ninety days and
+  // keeps travelling to the Portal on the shared .bugit.dev domain. Somebody who grants, is
+  // measured, and then rejects is still carrying the click id they rejected.
+  //
+  // Written with the SAME Domain and Path as `setCookie`, because a cookie is identified by
+  // that triple: deleting `bugit_gclid` at the default host-only scope leaves the
+  // `Domain=.bugit.dev` one exactly where it was, with nothing on screen saying so. Both
+  // scopes are cleared, since a decision made on localhost and a decision made on the live
+  // site must both end with the value gone.
+  function deleteCookie(name) {
+    var dead = '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+    document.cookie = name + dead + domainAttr() + secureAttr();
+    document.cookie = name + dead + secureAttr();
+  }
 
   // --- Consent state (read/normalize/write).
   function readConsent() {
@@ -82,6 +98,10 @@
     var prev = readConsent();
     setCookie(CONSENT_COOKIE, encodeURIComponent(JSON.stringify(payload)), CONSENT_DAYS);
     applyToGtag(payload);
+    // Cleared BEFORE the reload below, which does not return. Ordered this way deliberately:
+    // the revocation path is exactly the one where the stored click id must not survive, and
+    // it is also the only path that leaves this function early.
+    if (!payload.ad_storage) deleteCookie(GCLID_COOKIE);
     captureAttribution(payload);
     // STRICT GATING (owner policy 2026-07-27): the Google tag loads ONLY when advertising
     // is granted. If a prior grant is being REVOKED this session (the tag is already
@@ -141,6 +161,44 @@
   }
   // On page load, load the tag ONLY if a STORED decision granted advertising.
   maybeLoadTag(stored);
+
+  // A DECISION IS SHARED AND THE REVOCATION WAS NOT. The cookie spans the apex and the Portal
+  // subdomain, so a visitor can reject advertising in one tab while another tab, or the Portal
+  // in another tab, is still running the Google tag that was loaded under the old grant. The
+  // reload in `writeConsent` fires only in the document that did the writing, and a tab that
+  // merely READS an already-denied cookie never met that condition at all. So the strict claim
+  // -- that after a rejection no further Google request may fire -- held for one document.
+  //
+  // Cookies raise no `storage` event, so there is nothing to subscribe to. The moment a
+  // background tab can act is the moment it comes back, which is exactly when it would resume
+  // making requests, so that is when it re-reads the decision.
+  //
+  // THIS CANNOT LOOP. It reloads only while the tag is loaded, and after the reload the stored
+  // decision denies, so `maybeLoadTag` above does not load it and the condition is false.
+  function reconcileWithStoredDecision() {
+    if (!window.__bugitTagLoaded) return;
+    var now = readConsent();
+    // No readable decision is not a grant. A cookie cleared in another tab, or expired, or
+    // written by a newer contract version, all arrive here as null and all mean the same
+    // thing: this document is running a tag that nothing currently authorises.
+    if (now && now.ad_storage) return;
+    applyToGtag(now || { ad_storage: false, analytics_storage: false,
+                         ad_user_data: false, ad_personalization: false });
+    deleteCookie(GCLID_COOKIE);
+    try { location.reload(); } catch (e) {}
+  }
+  if (document.addEventListener) {
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) reconcileWithStoredDecision();
+    });
+  }
+  if (window.addEventListener) {
+    window.addEventListener('focus', reconcileWithStoredDecision);
+    // Coming back through the back/forward cache, where nothing else fires.
+    window.addEventListener('pageshow', function (e) {
+      if (e && e.persisted) reconcileWithStoredDecision();
+    });
+  }
 
   // --- gclid/gbraid/wbraid attribution capture. Stored in `bugit_gclid` ONLY when
   //     ad_storage is granted, so the portal can read attribution after the user

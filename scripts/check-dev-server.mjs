@@ -19,6 +19,8 @@ import net from "node:net";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import fs from "node:fs";
+import os from "node:os";
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const fail = [];
@@ -145,6 +147,60 @@ if (stderr.trim()) fail.push("the server wrote to stderr: " + stderr.trim().spli
     });
     if (/^HTTP\/1\.1 200/.test(escaped) && escaped.includes("createServer")) {
       fail.push("SITE_ROOT: /../server.js served this file's own source from outside the chosen root");
+    }
+
+    // A SIBLING WHOSE NAME BEGINS WITH THE ROOT'S. `startsWith(root)` answered yes for every
+    // path under `<root>-old` and `<root>.bak`, which on this machine is exactly where stale
+    // checkouts sit. The request is raw again so nothing normalises it away.
+    const siblingDir = dist + "-escape-probe";
+    const marker = "ESCAPED_THE_ROOT_BY_PREFIX";
+    fs.mkdirSync(siblingDir, { recursive: true });
+    fs.writeFileSync(path.join(siblingDir, "secret.txt"), marker, "utf8");
+    try {
+      const sibling = await new Promise((done) => {
+        const s = net.connect(distPort, "127.0.0.1", () => {
+          s.write(`GET /../${path.basename(siblingDir)}/secret.txt HTTP/1.1\r\n` +
+                  "Host: 127.0.0.1\r\nConnection: close\r\n\r\n");
+        });
+        let buf = "";
+        s.on("data", (c) => { buf += c.toString(); });
+        s.on("close", () => done(buf));
+        s.on("error", () => done(""));
+        setTimeout(() => { s.destroy(); done(buf); }, 4000);
+      });
+      if (sibling.includes(marker)) {
+        fail.push("SITE_ROOT: a directory beside the root, whose name merely starts with it, " +
+                  "was served as though it were inside");
+      }
+    } finally {
+      fs.rmSync(siblingDir, { recursive: true, force: true });
+    }
+
+    // A SYMLINK INSIDE THE TREE. The old check was made on the joined NAME while the read is
+    // made through the filesystem, so a link whose name is contained and whose target is not
+    // passed. Skipped rather than failed where a link cannot be created: on Windows this needs
+    // Developer Mode or elevation, and a guard that fails on a machine setting is a guard that
+    // gets commented out.
+    const linkPath = path.join(dist, "escape-probe-link.txt");
+    const outsideFile = path.join(os.tmpdir(), "bugit-escape-probe.txt");
+    const linkMarker = "ESCAPED_THE_ROOT_BY_SYMLINK";
+    let linked = false;
+    try {
+      fs.writeFileSync(outsideFile, linkMarker, "utf8");
+      fs.symlinkSync(outsideFile, linkPath, "file");
+      linked = true;
+    } catch { /* not permitted here; the prefix case above still ran */ }
+    if (linked) {
+      try {
+        const viaLink = await fetch(distBase + "/escape-probe-link.txt").then((x) => x.text());
+        if (viaLink.includes(linkMarker)) {
+          fail.push("SITE_ROOT: a symlink inside the root served a file from outside it -- the " +
+                    "containment check is reading the path's name rather than what it resolves to");
+        }
+      } finally {
+        fs.rmSync(linkPath, { force: true });
+        fs.rmSync(outsideFile, { force: true });
+      }
     }
   }
   srv2.kill();

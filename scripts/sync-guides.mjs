@@ -128,8 +128,44 @@ if (missing) {
 }
 
 if (CHECK_ONLY) {
-  console.log(`\n${stale} of ${records.length} guide(s) differ from the agent's published PDFs.`);
-  process.exit(stale ? 1 : 0);
+  // AND THE MANIFEST, WHICH --check NEVER LOOKED AT. `stale` compares the PDF bytes on disk
+  // against the agent's hashes, and nothing asked whether `guides-manifest.json` -- the file the
+  // site actually serves this list from -- agrees with either of them. So a tree whose twenty-two
+  // PDFs are all correct passed while the manifest beside them described a previous state, named
+  // a different toolchain, or was missing altogether. That manifest is the only thing a reader
+  // has that says WHICH build printed these; a check that cannot see it is checking half the
+  // artifact. The full-run path below rewrites it from the same `records`, so the comparison is
+  // against exactly what this script would write.
+  let manifestStale = 0;
+  if (!existsSync(MANIFEST)) {
+    console.error(`MISSING: ${MANIFEST}: the site has the PDFs and nothing that describes them`);
+    manifestStale = 1;
+  } else {
+    let have = null;
+    try {
+      have = JSON.parse(readFileSync(MANIFEST, "utf8"));
+    } catch (e) {
+      console.error(`UNREADABLE: ${MANIFEST} (${e.message})`);
+      manifestStale = 1;
+    }
+    if (have) {
+      const want = manifestBody(records);
+      for (const [k, v] of Object.entries(want)) {
+        if (k === "guides") continue;
+        if (JSON.stringify(have[k]) !== JSON.stringify(v)) {
+          console.error(`MANIFEST ${k}: ${JSON.stringify(have[k])}, expected ${JSON.stringify(v)}`);
+          manifestStale++;
+        }
+      }
+      if (JSON.stringify(have.guides) !== JSON.stringify(want.guides)) {
+        console.error("MANIFEST guides: the entry list differs from what a sync would write");
+        manifestStale++;
+      }
+    }
+  }
+  console.log(`\n${stale} of ${records.length} guide(s) differ from the agent's published PDFs; ` +
+              `${manifestStale} manifest difference(s).`);
+  process.exit(stale || manifestStale ? 1 : 0);
 }
 
 // Past every refusal: the copies are safe to make now, which is what makes the sentence above
@@ -140,13 +176,18 @@ for (const { from, dest } of pending) {
   copied++;
 }
 
-records.sort((a, b) => a.file.localeCompare(b.file));
-writeFileSync(
-  MANIFEST,
-  JSON.stringify(
-    {
+writeFileSync(MANIFEST, JSON.stringify(manifestBody(records), null, 2) + "\n", "utf8");
+console.log(`\n${copied} updated, ${records.length - copied} already current. Wrote ${MANIFEST}.`);
+
+// ONE DEFINITION OF THE MANIFEST, so `--check` compares against exactly what a real run writes.
+// Two copies of this shape would drift, and the drift would be invisible: the check would pass
+// on a manifest the writer would never produce. It sorts a COPY, because --check runs before
+// the write path and must not reorder the caller's array as a side effect.
+function manifestBody(recs) {
+  const guides = [...recs].sort((a, b) => a.file.localeCompare(b.file));
+  return {
       schema: "bugit-site-guides/1",
-      count: records.length,
+      count: guides.length,
       // WHAT PRINTED THESE, carried across rather than restated. "weasyprint" alone is the half
       // of the answer that never changes, which is the half that cannot explain a change: on
       // 2026-09-01 all 22 of these files came back with new bytes from unedited sources, and
@@ -158,11 +199,6 @@ writeFileSync(
       agent_generator: agent.generator,
       agent_toolchain: agent.toolchain,
       agent_source_date_epoch: agent.source_date_epoch,
-      guides: records,
-    },
-    null,
-    2,
-  ) + "\n",
-  "utf8",
-);
-console.log(`\n${copied} updated, ${records.length - copied} already current. Wrote ${MANIFEST}.`);
+      guides,
+  };
+}

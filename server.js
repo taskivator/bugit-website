@@ -16,6 +16,24 @@ import { fileURLToPath } from 'node:url';
 // against this value, so a request still cannot escape whichever root was chosen.
 const root = path.resolve(process.env.SITE_ROOT || path.dirname(fileURLToPath(import.meta.url)));
 const mime = {'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.mp4':'video/mp4','.pdf':'application/pdf','.md':'text/plain; charset=utf-8','.txt':'text/plain; charset=utf-8','.svg':'image/svg+xml'};
+// Inside `root`, decided on the boundary and on what the filesystem says the path IS. Exported
+// in shape (not as a module) to the two private fixture servers under scripts/, which carried
+// the same one-line check; they each hold a copy of this function with this comment above it,
+// because they must be runnable with no import of the site's own server.
+function contained(p) {
+  const withSep = root.endsWith(path.sep) ? root : root + path.sep;
+  if (p !== root && !p.startsWith(withSep)) return false;
+  try {
+    const real = fs.realpathSync(p);
+    const realRoot = fs.realpathSync(root);
+    const realWithSep = realRoot.endsWith(path.sep) ? realRoot : realRoot + path.sep;
+    return real === realRoot || real.startsWith(realWithSep);
+  } catch {
+    // It does not exist. Nothing can be read through it, and the caller's 404 fallback is the
+    // right answer -- refusing here would turn every missing page into Forbidden.
+    return true;
+  }
+}
 const server = http.createServer((req,res)=>{ try {
   // `/%`, `/%zz` and any other malformed escape make decodeURIComponent THROW. Thrown here it
   // is an uncaught exception and the process exits -- one bad URL ends the server, and the
@@ -24,7 +42,19 @@ const server = http.createServer((req,res)=>{ try {
   try { clean = decodeURIComponent(req.url.split('?')[0]); }
   catch { res.writeHead(400); return res.end('Bad Request'); }
   let file = path.join(root, clean === '/' ? 'index.html' : clean);
-  if (!file.startsWith(root)) { res.writeHead(403); return res.end('Forbidden'); }
+  // A STRING PREFIX IS NOT A DIRECTORY BOUNDARY, and a path is not the file it names.
+  //
+  // `startsWith(root)` answers yes for a SIBLING whose name merely begins with the root's:
+  // serving from `.../bugit-website` admitted every path under `.../bugit-website-old` and
+  // `.../bugit-website.bak`, which on this machine is where stale checkouts live. Comparing
+  // against root + separator is what "inside this directory" actually means.
+  //
+  // And the check was made on the JOINED path while the read is made through the filesystem,
+  // so a symlink inside the tree pointing anywhere at all passed: the name was contained and
+  // the bytes were not. `realpathSync` asks the filesystem the question the string cannot.
+  // It throws on a path that does not exist, which is the ordinary 404 case, so absence falls
+  // through to the index.html fallback below exactly as before rather than becoming a 403.
+  if (!contained(file)) { res.writeHead(403); return res.end('Forbidden'); }
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file,'index.html');
   if (!fs.existsSync(file)) file = path.join(root,'index.html');
   res.writeHead(200, {'Content-Type': mime[path.extname(file)] || 'application/octet-stream'});

@@ -69,6 +69,48 @@ check(
     "at the denied default with no way back to the choice",
 );
 
+// --- WITHDRAWAL, which is a different promise from refusal (CR-08-F06).
+//
+// The site tells visitors that rejecting advertising means no further Google request fires and
+// nothing is kept. Stopping new writes is not that: the `bugit_gclid` click id already written
+// under an earlier grant survived the rejection for its full ninety days and kept travelling to
+// the Portal on the shared .bugit.dev domain. And the reload that purges the loaded Google
+// runtime fired only in the document that wrote the denial, so any other open tab carried on.
+check(
+  /function deleteCookie\(/.test(websiteSrc),
+  "consent.js must be able to delete a cookie, not only write one",
+  "setCookie only ever takes a positive lifetime, so nothing could remove stored attribution",
+);
+
+check(
+  /if \(!payload\.ad_storage\) deleteCookie\(GCLID_COOKIE\);/.test(websiteSrc),
+  "writing a denial must delete the stored click id",
+  "refusing to write a new one leaves the old one in place for ninety days",
+);
+
+check(
+  /document\.cookie = name \+ dead \+ domainAttr\(\) \+ secureAttr\(\);/.test(websiteSrc) &&
+    /document\.cookie = name \+ dead \+ secureAttr\(\);/.test(websiteSrc),
+  "the deletion must cover both cookie scopes",
+  "a cookie is identified by name+Domain+Path, so deleting the host-only one leaves the " +
+    "Domain=.bugit.dev one exactly where it was",
+);
+
+check(
+  /function reconcileWithStoredDecision\(\)/.test(websiteSrc) &&
+    /visibilitychange/.test(websiteSrc) &&
+    /window\.addEventListener\('focus', reconcileWithStoredDecision\)/.test(websiteSrc),
+  "a tab must re-read the decision when it comes back to the foreground",
+  "cookies raise no storage event, so a tab that was open when another one revoked consent " +
+    "keeps running the tag it loaded under the old grant",
+);
+
+check(
+  /if \(!window\.__bugitTagLoaded\) return;/.test(websiteSrc),
+  "reconciliation must do nothing unless the tag is actually loaded",
+  "without that guard the reload condition stays true after the reload and the page loops",
+);
+
 // --- And now the same questions of the portal, which is the other half of the contract.
 if (!existsSync(portalConsent)) {
   console.log(

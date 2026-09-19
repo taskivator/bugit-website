@@ -56,10 +56,27 @@ if (!CHROME) {
 console.log(`check-mission-pause: using ${CHROME}`);
 
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.pdf': 'application/pdf', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.ico': 'image/x-icon' };
+// Inside ROOT, decided on the boundary and on what the filesystem says the path IS. A string
+// prefix answers yes for a SIBLING whose name merely begins with the root's, and a check on the
+// joined path says nothing about a symlink inside the tree. Same function and same reasoning as
+// server.js; copied rather than imported so this guard runs with no dependency on the site's
+// own server.
+function contained(p) {
+  const withSep = ROOT.endsWith(path.sep) ? ROOT : ROOT + path.sep;
+  if (p !== ROOT && !p.startsWith(withSep)) return false;
+  try {
+    const real = fs.realpathSync(p);
+    const realRoot = fs.realpathSync(ROOT);
+    const realWithSep = realRoot.endsWith(path.sep) ? realRoot : realRoot + path.sep;
+    return real === realRoot || real.startsWith(realWithSep);
+  } catch {
+    return true;   // does not exist: the caller's 404 fallback is the right answer
+  }
+}
 const server = http.createServer((req, res) => {
   const clean = decodeURIComponent(req.url.split('?')[0]);
   let file = path.join(ROOT, clean === '/' ? 'index.html' : clean);
-  if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end('Forbidden'); }
+  if (!contained(file)) { res.writeHead(403); return res.end('Forbidden'); }
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
   if (!fs.existsSync(file)) file = path.join(ROOT, 'index.html');
   res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream' });
