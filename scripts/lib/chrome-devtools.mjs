@@ -82,8 +82,40 @@ export async function waitForDevTools(child, port, opts = {}) {
   // caller mkdtemps a new one per run, so a file there is proof the answer came from our child.
   // A leftover browser has a different profile and cannot produce it.
   const userDataDir = opts.userDataDir || null;
-  const ownsEndpoint = () => {
+
+  /* THE FILE STOPPED EXISTING, AND THE GUARD CALLED ITS OWN BROWSER A STRANGER.
+   *
+   * Chrome 153 with `--headless=new` and an EXPLICIT `--remote-debugging-port` writes no
+   * DevToolsActivePort at all -- not at the profile root, not under Default, nowhere. Verified
+   * by launching it with this exact flag set and searching the whole temp profile. So from that
+   * version on, `ownsEndpoint()` answered false for our own child, every time: check-overflow
+   * and check-mission-pause aborted with "the browser on it is NOT the one this run started"
+   * on a machine with nothing left behind and the port free seconds earlier.
+   *
+   * It failed CLOSED, which is the right direction to fail and is why this was a red guard
+   * rather than a wrong measurement. But a guard that cannot recognise its own browser is one
+   * people learn to skip, and that costs more than the guard is worth.
+   *
+   * SO OWNERSHIP IS PROVED FROM THE CHILD'S OWN WORDS FIRST. Chrome announces
+   * `DevTools listening on ws://127.0.0.1:<port>/devtools/browser/<uuid>` on the stderr of the
+   * process WE spawned, and `/json/version` reports that same uuid in webSocketDebuggerUrl.
+   * Matching them ties the endpoint answering us to the process we started, which is a stronger
+   * proof than a file anyone could have left in a directory: a browser from a killed run
+   * announced itself on somebody else's stderr, and its uuid is different.
+   *
+   * The file is kept as the fallback for older Chrome, so this works either way round.
+   */
+  const announcedSessionId = () => {
+    const m = /DevTools listening on ws:\/\/[^/\s]+\/devtools\/browser\/(\S+)/.exec(stderr);
+    return m ? m[1] : null;
+  };
+  const ownsEndpoint = (payload) => {
     if (!userDataDir) return true;
+
+    const ours = announcedSessionId();
+    const theirs = String(payload?.webSocketDebuggerUrl ?? "").split("/devtools/browser/")[1];
+    if (ours && theirs) return ours === theirs;
+
     try {
       const raw = readFileSync(join(userDataDir, "DevToolsActivePort"), "utf8");
       return Number(raw.split("\n")[0].trim()) === Number(port);
@@ -113,7 +145,7 @@ export async function waitForDevTools(child, port, opts = {}) {
       // listening socket produces cheaply.
       const payload = await withTimeout(res.json(), Math.min(left, ATTEMPT_MS),
                                         `${name}: the DevTools reply on port ${port} never finished`);
-      if (ownsEndpoint()) return payload;
+      if (ownsEndpoint(payload)) return payload;
       // Something is listening, and it is not ours. Keep waiting: our child may still be coming
       // up, and saying so at the end is more useful than timing out with no explanation.
       sawForeignEndpoint = true;
@@ -136,7 +168,8 @@ export async function waitForDevTools(child, port, opts = {}) {
   if (sawForeignEndpoint) {
     throw new Error(
       `${name}: port ${port} is answering, but the browser on it is NOT the one this run ` +
-      `started. Its profile at ${userDataDir} never wrote a DevToolsActivePort for that port. ` +
+      `started. Our child never announced that endpoint on its stderr, and its profile at ` +
+      `${userDataDir} holds no DevToolsActivePort naming that port either. ` +
       `Almost always a Chrome left behind by an earlier killed run. Close it and run again. ` +
       `Adopting it would have measured a window this guard does not own and reported the result ` +
       `as if it did.`,

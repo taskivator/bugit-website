@@ -196,7 +196,15 @@ async function run(engineName, engine, deviceName, broken) {
   if (broken) {
     await ctx.route("**/app*.js", async (route) => {
       const res = await route.fetch();
-      const body = await res.text();
+      /* NORMALIZED TO LF BEFORE THE ANCHOR IS LOOKED FOR.
+         Every `from` above is written with \n, and the file this serves is app.js from the
+         working tree. Git stores it with LF and hands it over with CRLF on checkout here, so
+         the anchors matched nothing and `patched` stayed false: the negative control could not
+         be installed, and this check went red for a reason that had nothing to do with the
+         page. A pattern written with the wrong line ending matches nothing and looks exactly
+         like a file that changed, which is the failure this repository keeps rediscovering.
+         Serving LF to the browser is fine; JavaScript does not care. */
+      const body = (await res.text()).split("\r\n").join("\n");
       if (body.includes(broken.from)) patched = true;
       route.fulfill({ response: res, body: body.split(broken.from).join(broken.to) });
     });

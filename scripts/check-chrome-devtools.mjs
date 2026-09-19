@@ -29,6 +29,15 @@ const check = (label, ok, detail) => {
 const alive = () => spawn(process.execPath, ['-e', 'setTimeout(() => {}, 60000);'],
                           { stdio: ['ignore', 'ignore', 'pipe'] });
 
+// A child that says what Chrome says. Real Chrome announces its endpoint on stderr:
+//     DevTools listening on ws://127.0.0.1:9411/devtools/browser/<uuid>
+// That line, on the stderr of the process WE spawned, is the ownership proof the helper uses
+// first -- because Chrome 153 stopped writing DevToolsActivePort at all. See the block below.
+const announcing = (port, id) =>
+  spawn(process.execPath,
+        ['-e', `process.stderr.write("DevTools listening on ws://127.0.0.1:${port}/devtools/browser/${id}\\n");setTimeout(() => {}, 60000);`],
+        { stdio: ['ignore', 'ignore', 'pipe'] });
+
 // ASK THE OS FOR A PORT, NEVER GUESS ONE. This file used to hard-code 59991 to 59994. Windows
 // reserves blocks of high ports when Hyper-V or WSL is present -- `netsh interface ipv4 show
 // excludedportrange protocol=tcp` lists them -- and it RE-RANDOMISES those blocks on every boot.
@@ -160,6 +169,56 @@ check(`the default ceiling is at least 30s (it is ${Math.round(DEFAULT_TIMEOUT_M
         other.includes('is NOT the one this run started'));
 
   child.kill();
+  server.close();
+  fs.rmSync(udir, { recursive: true, force: true });
+}
+
+// --- WHOSE BROWSER ANSWERED, WHEN THERE IS NO FILE TO ASK ------------------------------------
+// THE PROOF ABOVE STOPPED EXISTING. Chrome 153 with --headless=new and an explicit
+// --remote-debugging-port writes no DevToolsActivePort anywhere in the profile -- verified by
+// launching it with the exact flag set check-overflow uses and searching the whole temp tree. So
+// ownsEndpoint() answered false for our OWN child on every run, and check-overflow and
+// check-mission-pause aborted saying a browser we had just started was somebody else's.
+//
+// It failed closed, so nothing was ever mis-measured. But the two guards were permanently red,
+// and a guard that cannot recognise its own browser is one people learn to skip.
+//
+// The replacement proof is the child's own announcement on stderr matched against the uuid the
+// endpoint reports. These two cases cover it: the file fallback above is exercised, this is the
+// path that actually runs on a current Chrome, and without them the working mechanism would be
+// the untested one.
+{
+  const id = 'b62a6fea-2b94-423d-8e9b-b41e74d23722';
+  const port = await freePort();
+  const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      Browser: 'Chrome/153.0.8010.48',
+      webSocketDebuggerUrl: `ws://127.0.0.1:${port}/devtools/browser/${id}`,
+    }));
+  });
+  await new Promise((r) => server.listen(port, '127.0.0.1', r));
+
+  // A profile with NO marker in it, which is what a current Chrome leaves behind.
+  const udir = fs.mkdtempSync(path.join(os.tmpdir(), 'bugit-devtools-ws-'));
+
+  const ours = announcing(port, id);
+  const got = await waitForDevTools(ours, port, { name: 'fake', timeoutMs: 8000, userDataDir: udir });
+  check('our own browser is recognised by what it announced, with no marker file at all',
+        got.Browser === 'Chrome/153.0.8010.48');
+  ours.kill();
+
+  // THE CONTROL THAT MATTERS: same endpoint, but our child announced a DIFFERENT session. This
+  // is the killed-run case on a modern Chrome -- the leftover browser holds the port and
+  // announced itself on somebody else's stderr, so the uuids cannot agree.
+  const theirs = announcing(port, '00000000-0000-0000-0000-000000000000');
+  let msg = '';
+  try { await waitForDevTools(theirs, port, { name: 'fake', timeoutMs: 2000, userDataDir: udir }); }
+  catch (e) { msg = e.message; }
+  check('an endpoint whose session is not the one our child announced is still refused',
+        msg.includes('is NOT the one this run started'), msg.split('\n')[0]);
+  theirs.kill();
+
   server.close();
   fs.rmSync(udir, { recursive: true, force: true });
 }

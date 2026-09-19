@@ -81,6 +81,13 @@ jobs:
       - name: Verify the online guides carry no retired product vocabulary
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-retired-vocabulary.mjs
+      # Arabic is registered about two thousand lines below the other ten locales, so a
+      # membership check made while the file is still being read answered false for it, and
+      # every returning Arabic reader was served English with the language control showing
+      # English as current. Cheap, and it names the cause rather than the symptom.
+      - name: A language is registered before anything asks whether we ship it
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-locale-registration-order.mjs
       - name: bugit.dev publishes the values the verifier compares against
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-release-identity.mjs

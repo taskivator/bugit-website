@@ -99,6 +99,11 @@ const SUITES = [
   // and nothing compared their wording with either until a term corrected in both stayed live
   // here. See the header of check-retired-vocabulary.mjs.
   "check-retired-vocabulary.mjs",
+  // A language must be registered before anything asks whether we ship it. Arabic is registered
+  // about two thousand lines below the other ten, so a membership check made at load time
+  // answered false for it and every returning Arabic reader was handed English. Three browser
+  // suites caught the effect; this catches the cause, in milliseconds, without a browser.
+  "check-locale-registration-order.mjs",
   "check-release-identity.mjs",
   // check-logo.mjs proves the rendered logo has no clipping artifact; this proves
   // the asset it renders is the one the brand pipeline produced and was not
