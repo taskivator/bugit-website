@@ -15,7 +15,7 @@ BugIt is a commercial VS Code Copilot agent that converts raw test notes into co
 - BugIt sends no product analytics or ticket telemetry to Taskivator.
 - Your connected AI provider and enabled integrations process only the content you choose to send them.
 - License and update requests use license data and a one-way device identifier, not ticket content.
-- Dry-run mode prevents bundled Python helpers from writing, but you must still review external MCP actions.
+- Dry-run mode stops the bundled Python helpers writing to your trackers, and stops them reading from your trackers too. Updating and licensing this installation are the exception: those reach BugIt's own service and install what they fetch, so a machine that always has the variable set can still take a security fix. You must still review external MCP actions.
 - Configuration files must never contain credential values.
 
 ## Integration tiers
