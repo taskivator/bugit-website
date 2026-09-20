@@ -62,6 +62,9 @@ const CONTRAST = new Set(["solo", "team", "jira", "azure devops", "github", "git
  * of one short question would cost the visitor far more than answering it in the site's language.
  */
 export function languageFromBank(bank, text, min = 0.5, margin = 0.15) {
+  // Capped here rather than at the call site: this runs matchPrepared once per downloaded language,
+  // so it is the MOST expensive path in the widget, and it was the one path the cap did not cover.
+  text = String(text || "").slice(0, MATCH_LIMIT);
   const scores = [];
   for (const lang of Object.keys(bank.langs)) {
     const top = matchPrepared(bank, lang, text, 1)[0];
@@ -126,6 +129,14 @@ function joinCompounds(s) {
   for (const [re, joined] of COMPOUNDS) s = s.replace(re, joined);
   return s;
 }
+
+/**
+ * How much of a question is read. The scan for commands and file names backtracks over a long run of
+ * letters with no separator, which is quadratic: 2000 characters of Japanese cost 178 milliseconds on
+ * the main thread, and a question is read three times. The longest phrasing in the bank is under 200
+ * characters, so nothing is lost by stopping here.
+ */
+export const MATCH_LIMIT = 600;
 
 /** Terms for one text in one language. A Set: the similarity counts a term once. */
 export function termsOf(text, lang) {
@@ -393,6 +404,9 @@ export const RELATED_AT = 0.3;
  *   { kind: "none" }                               nothing close enough: offer a person
  */
 export function answerFor(bank, lang, question) {
+  // Long enough for any real question and for every phrasing in the bank (the longest is under 200
+  // characters). Past this the matcher only spends time: see MATCH_LIMIT's note in termsOf.
+  question = String(question || "").slice(0, MATCH_LIMIT);
   const matches = matchPrepared(bank, lang, question, 5);
   const top = confidentMatch(matches, ANSWER_AT);
   if (top) {
@@ -417,11 +431,19 @@ export function answerFor(bank, lang, question) {
 /** Up to three other questions about other entries, close to the one just answered. */
 export function relatedTo(bank, lang, item) {
   const ids = item.kind === "entry" && item.entry ? [item.entry] : (item.cited ?? []);
-  return matchPrepared(bank, lang, item.question, 8)
-    .filter((r) => r.item.id !== item.id && r.item.kind !== "intent" && r.sim >= RELATED_AT && r.sim < 0.9)
-    .filter((r) => !ids.includes(r.item.entry) && !(r.item.cited ?? []).some((c) => ids.includes(c)))
-    .map((r) => r.item.question)
-    .slice(0, 3);
+  const seen = new Set([item.question]);
+  const out = [];
+  for (const r of matchPrepared(bank, lang, item.question, 8)) {
+    if (r.item.id === item.id || r.item.kind === "intent" || r.sim < RELATED_AT || r.sim >= 0.9) continue;
+    if (ids.includes(r.item.entry) || (r.item.cited ?? []).some((c) => ids.includes(c))) continue;
+    // Two items can carry the SAME wording (an entry and the recorded common answer that cites it),
+    // and the same question offered twice reads as a bug to the customer.
+    if (seen.has(r.item.question)) continue;
+    seen.add(r.item.question);
+    out.push(r.item.question);
+    if (out.length === 3) break;
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- the language a visitor writes in
@@ -464,23 +486,47 @@ const MARKS = [
 const NEUTRAL =
   /`[^`]*`|https?:\/\/\S+|\S*[\d_/\\]\S*|\w+\.\w[\w.]*|(?<![\p{L}])(?:BugIt|Taskivator|Solo|Teams?|FILE IT|Jira|Azure|DevOps|GitHub|GitLab|Bugzilla|YouTrack|Linear|Shortcut|ClickUp|Asana|Trello|Copilot|Claude|VS ?Code|Visual Studio|Windows|macOS|Linux|Ubuntu|Python|Portal|MCP|API|PAT|Stripe|Chrome|Edge|Firefox|Safari)(?![\p{L}])/giu;
 
+/**
+ * The subset of NEUTRAL that may be removed before counting SCRIPTS, voting on WORDS or counting
+ * ACCENT MARKS. A web or mail address, and a code span, can carry any script or any letter without
+ * the sentence being written in it, so they go. The rest of NEUTRAL must not go here: see the note
+ * in guessLanguage for the two things that were measured lost when it did.
+ *
+ * A bare host (jira.acme.com) and a path are in here as well as a full URL: they are how a
+ * customer actually writes one, and their pieces are words. "jira.acme.com portal.acme.com
+ * login?" read as Portuguese, because `com` is a Portuguese word and it was in there twice.
+ * The path and file-name patterns are deliberately ASCII, so they cannot reach into CJK text.
+ */
+const ADDRESSES = /`[^`]*`|https?:\/\/\S+|www\.\S+|\S+@[\w.-]+\.\w+|[\w.:-]*[/\\][\w.:/\\-]*|\w+\.\w[\w.]*/giu;
+
 const count = (s, re) => (s.match(re) || []).length;
 
 export function guessLanguage(text) {
   const s = String(text || "").normalize("NFKC");
-  const latin = count(s.replace(NEUTRAL, " "), /[a-zA-ZÀ-ɏ]/g);
+  // THREE READINGS OF THE SAME MESSAGE, because the three counts below are asking different
+  // questions and one strip cannot serve all of them.
+  //   prose  - the whole neutral list gone, for the Latin tally: a product name is Latin in every
+  //            language and must not make a Chinese question look like an English one.
+  //   plain  - only addresses gone, for the script tally, the word vote and the accent marks. The
+  //            rest of NEUTRAL cannot be used here: `\S*[\d_/\\]\S*` matches any run of
+  //            non-space characters containing a digit, which is an entire Japanese sentence (no
+  //            spaces) and is also the German word in "7-taegigen", whose umlaut was the only
+  //            evidence the sentence had. Both were measured, both were lost.
+  const prose = s.replace(NEUTRAL, " ");
+  const plain = s.replace(ADDRESSES, " ");
+  const latin = count(prose, /[a-zA-ZÀ-ɏ]/g);
   for (const [code, re] of SCRIPTS) {
-    if (code === "zh" && count(s, KANA)) continue; // kana present: Japanese
-    const n = count(s, re);
+    if (code === "zh" && count(plain, KANA)) continue; // kana present: Japanese
+    const n = count(plain, re);
     if (n >= 2 && n >= latin * 0.25) return code;
   }
-  const words = s.toLowerCase().match(/[\p{L}']+/gu) || [];
+  const words = plain.toLowerCase().match(/[\p{L}']+/gu) || [];
   const score = Object.fromEntries(Object.keys(SETS).map((k) => [k, 0]));
   for (const w of words) {
     const bare = w.replace(/^['’]+|['’]+$/g, "");
     for (const [k, set] of Object.entries(SETS)) if (set.has(bare)) score[k] += 1;
   }
-  const lower = s.toLowerCase();
+  const lower = plain.toLowerCase();
   for (const [k, re, weight] of MARKS) score[k] += count(lower, re) * weight;
   const ranked = Object.entries(score).sort((a, b) => b[1] - a[1]);
   const [best, second] = ranked;

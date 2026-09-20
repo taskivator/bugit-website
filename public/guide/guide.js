@@ -35,288 +35,211 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       launch: "Ask BugIt", title: "BugIt Guide", status: "Answers from BugIt's docs", statusBusy: "Looking into it",
       newChat: "New conversation", expand: "Expand", collapse: "Shrink", close: "Close",
       eyebrow: "Ask in your language", h1: "What can I help you ", h2: "figure out?",
-      helloSub: "I answer from BugIt's documentation. If I can't confirm something, I'll pass it to the team so you get a real answer.",
+      helloSub: "I answer from BugIt's documentation, using answers written in advance. If I can't confirm something, I'll help you email the team.",
       cards: [
         { tag: "Get started", q: "How do I install BugIt?" },
         { tag: "Trackers", q: "Does BugIt work with Jira and Azure DevOps?" },
         { tag: "Licenses", q: "What's the difference between Solo and Team?" },
         { tag: "Privacy", q: "Does BugIt send my code anywhere?" },
       ],
-      placeholder: "Ask about setup, trackers, licenses…", inputLabel: "Your question", send: "Send", stop: "Stop",
-      disclaimer: "Answers can be wrong. Never paste passwords or tokens.", human: "Talk to a person",
+      placeholder: "Ask about setup, trackers, licenses…", inputLabel: "Your question", send: "Send", disclaimer: "Answers can be wrong. Never paste passwords or tokens.", human: "Talk to a person",
       searching: "Searching BugIt's docs", searched: "Checked BugIt's docs", found: "Relevant articles: {n}", noMatch: "No matching article",
-      handing: "Preparing a ticket for the team", sources: "Sources", related: "You might also ask",
+      sources: "Sources", related: "You might also ask",
       copy: "Copy answer", copied: "Copied", good: "Helpful", bad: "Not helpful", thanks: "Thanks for the feedback",
-      ticketTitle: "Send this to the BugIt team", ticketBadge: "From the chatbot",
-      ticketLede: "A person reads every message and replies by email. This ticket is marked as coming from the chatbot.",
-      humanLede: "Tell us what you need and a person will reply by email.",
-      subject: "Subject", message: "What you need", email: "Email", name: "Name (optional)", include: "Include this conversation",
-      sendTicket: "Send to the team", sending: "Sending…", sentTitle: "Sent to the BugIt team", sentBody: "Your reference is {id}. We'll reply to {email}.",
-      errEmail: "Enter a valid email address.", errEmpty: "Add a subject and a message.", errSend: "That didn't send. Try again in a moment.",
-      errBusy: "You're sending messages quickly. Wait a few seconds and try again.", errNetwork: "The connection dropped. Check your network and try again.",
-      errInterrupted: "The answer was cut off before it finished. Try again.", errServer: "Something went wrong on our side. Try again, or talk to a person.", errSecret: "That looks like a password, token or card number. Remove it, then send again.",
-      stopped: "Stopped.", retry: "Try again", langsLabel: "Ask in any of these languages",
+      ticketTitle: "Send this to the BugIt team", errNetwork: "The connection dropped. Check your network and try again.",
+      errSecret: "That looks like a password, token or card number. Remove it, then send again.",
+      retry: "Try again", langsLabel: "Ask in any of these languages",
       docs: { userGuide: "User guide", overview: "Product overview", license: "License terms", privacy: "Privacy policy", refund: "Refund policy", commerce: "Commercial disclosure", faq: "FAQ", support: "Support" },
     },
     ar: {
       launch: "اسأل BugIt", title: "BugIt Guide", status: "إجابات من وثائق BugIt", statusBusy: "جارٍ العمل على ذلك",
       newChat: "محادثة جديدة", expand: "توسيع", collapse: "تصغير", close: "إغلاق",
       eyebrow: "اسأل بلغتك", h1: "كيف يمكنني ", h2: "مساعدتك؟",
-      helloSub: "أجيب استنادًا إلى وثائق BugIt. إذا لم أتمكن من تأكيد أمر ما، أحيله إلى الفريق لتحصل على إجابة موثوقة.",
+      helloSub: "أجيب من وثائق BugIt بإجابات مُعدّة مسبقًا. وإذا لم أستطع تأكيد شيء، أساعدك في مراسلة الفريق بالبريد الإلكتروني.",
       cards: [
         { tag: "البدء", q: "كيف أثبّت BugIt؟" },
         { tag: "أدوات التتبع", q: "هل يعمل BugIt مع Jira وAzure DevOps؟" },
         { tag: "التراخيص", q: "ما الفرق بين Solo وTeam؟" },
         { tag: "الخصوصية", q: "هل يرسل BugIt الشيفرة الخاصة بي إلى أي مكان؟" },
       ],
-      placeholder: "اسأل عن الإعداد وأدوات التتبع والتراخيص…", inputLabel: "سؤالك", send: "إرسال", stop: "إيقاف",
-      disclaimer: "قد تحتوي الإجابات على أخطاء. لا تلصق كلمات المرور أو الرموز المميزة أبدًا.", human: "التحدث إلى شخص",
+      placeholder: "اسأل عن الإعداد وأدوات التتبع والتراخيص…", inputLabel: "سؤالك", send: "إرسال", disclaimer: "قد تحتوي الإجابات على أخطاء. لا تلصق كلمات المرور أو الرموز المميزة أبدًا.", human: "التحدث إلى شخص",
       searching: "جارٍ البحث في وثائق BugIt", searched: "تم الاطلاع على وثائق BugIt", found: "المقالات ذات الصلة: {n}", noMatch: "لا توجد مقالة مطابقة",
-      handing: "جارٍ تجهيز تذكرة للفريق", sources: "المصادر", related: "قد ترغب أيضًا في السؤال",
+      sources: "المصادر", related: "قد ترغب أيضًا في السؤال",
       copy: "نسخ الإجابة", copied: "تم النسخ", good: "مفيد", bad: "غير مفيد", thanks: "شكرًا على ملاحظاتك",
-      ticketTitle: "أرسل هذا إلى فريق BugIt", ticketBadge: "من روبوت المحادثة",
-      ticketLede: "يقرأ شخص كل رسالة ويرد عبر البريد الإلكتروني. تُوسم هذه التذكرة بأنها واردة من روبوت المحادثة.",
-      humanLede: "أخبرنا بما تحتاج إليه وسيرد عليك شخص عبر البريد الإلكتروني.",
-      subject: "الموضوع", message: "ما تحتاج إليه", email: "البريد الإلكتروني", name: "الاسم (اختياري)", include: "إرفاق هذه المحادثة",
-      sendTicket: "إرسال إلى الفريق", sending: "جارٍ الإرسال…", sentTitle: "تم الإرسال إلى فريق BugIt", sentBody: "رقمك المرجعي هو {id}. سنرسل ردنا إلى {email}.",
-      errEmail: "أدخل عنوان بريد إلكتروني صالحًا.", errEmpty: "أضف موضوعًا ورسالة.", errSend: "تعذّر الإرسال. حاول مرة أخرى بعد قليل.",
-      errBusy: "أنت ترسل الرسائل بوتيرة سريعة جدًا. انتظر بضع ثوانٍ ثم حاول مرة أخرى.", errNetwork: "انقطع الاتصال. تحقق من الشبكة وحاول مرة أخرى.",
-      errInterrupted: "انقطعت الإجابة قبل أن تكتمل. حاول مرة أخرى.", errServer: "حدث خطأ من جانبنا. حاول مرة أخرى أو تحدث إلى شخص.", errSecret: "يبدو هذا ككلمة مرور أو رمز مميز أو رقم بطاقة. احذفه ثم أرسل مرة أخرى.",
-      stopped: "تم الإيقاف.", retry: "إعادة المحاولة", langsLabel: "اسأل بأي لغة من هذه اللغات",
+      ticketTitle: "أرسل هذا إلى فريق BugIt", errNetwork: "انقطع الاتصال. تحقق من الشبكة وحاول مرة أخرى.",
+      errSecret: "يبدو هذا ككلمة مرور أو رمز مميز أو رقم بطاقة. احذفه ثم أرسل مرة أخرى.",
+      retry: "إعادة المحاولة", langsLabel: "اسأل بأي لغة من هذه اللغات",
     },
     de: {
       launch: "BugIt fragen", title: "BugIt Guide", status: "Antworten aus der BugIt-Dokumentation", statusBusy: "Wird bearbeitet",
       newChat: "Neues Gespräch", expand: "Vergrößern", collapse: "Verkleinern", close: "Schließen",
       eyebrow: "Fragen Sie in Ihrer Sprache", h1: "Wobei kann ich ", h2: "Ihnen helfen?",
-      helloSub: "Ich antworte auf Grundlage der BugIt-Dokumentation. Wenn ich etwas nicht sicher bestätigen kann, gebe ich es an das Team weiter, damit Sie eine verlässliche Antwort erhalten.",
+      helloSub: "Ich antworte anhand der BugIt-Dokumentation mit vorab geschriebenen Antworten. Wenn ich etwas nicht bestätigen kann, helfe ich Ihnen, dem Team eine E-Mail zu schreiben.",
       cards: [
         { tag: "Erste Schritte", q: "Wie installiere ich BugIt?" },
         { tag: "Tracker", q: "Funktioniert BugIt mit Jira und Azure DevOps?" },
         { tag: "Lizenzen", q: "Was ist der Unterschied zwischen Solo und Team?" },
         { tag: "Datenschutz", q: "Sendet BugIt meinen Code irgendwohin?" },
       ],
-      placeholder: "Fragen zu Einrichtung, Trackern, Lizenzen…", inputLabel: "Ihre Frage", send: "Senden", stop: "Stopp",
-      disclaimer: "Antworten können fehlerhaft sein. Fügen Sie niemals Passwörter oder Tokens ein.", human: "Mit einem Supportmitarbeiter sprechen",
+      placeholder: "Fragen zu Einrichtung, Trackern, Lizenzen…", inputLabel: "Ihre Frage", send: "Senden", disclaimer: "Antworten können fehlerhaft sein. Fügen Sie niemals Passwörter oder Tokens ein.", human: "Mit einem Supportmitarbeiter sprechen",
       searching: "BugIt-Dokumentation wird durchsucht", searched: "BugIt-Dokumentation geprüft", found: "Passende Artikel: {n}", noMatch: "Kein passender Artikel",
-      handing: "Ticket für das Team wird vorbereitet", sources: "Quellen", related: "Das könnte Sie auch interessieren",
+      sources: "Quellen", related: "Das könnte Sie auch interessieren",
       copy: "Antwort kopieren", copied: "Kopiert", good: "Hilfreich", bad: "Nicht hilfreich", thanks: "Danke für Ihr Feedback",
-      ticketTitle: "An das BugIt-Team senden", ticketBadge: "Vom Chatbot",
-      ticketLede: "Jede Nachricht wird von einem Supportmitarbeiter gelesen und per E-Mail beantwortet. Dieses Ticket ist als vom Chatbot stammend gekennzeichnet.",
-      humanLede: "Beschreiben Sie Ihr Anliegen, und ein Supportmitarbeiter antwortet Ihnen per E-Mail.",
-      subject: "Betreff", message: "Ihr Anliegen", email: "E-Mail", name: "Name (optional)", include: "Dieses Gespräch mitsenden",
-      sendTicket: "An das Team senden", sending: "Wird gesendet…", sentTitle: "An das BugIt-Team gesendet", sentBody: "Ihre Referenz lautet {id}. Wir antworten an die Adresse {email}.",
-      errEmail: "Geben Sie eine gültige E-Mail-Adresse ein.", errEmpty: "Geben Sie einen Betreff und eine Nachricht ein.", errSend: "Das Senden hat nicht geklappt. Versuchen Sie es gleich noch einmal.",
-      errBusy: "Sie senden Nachrichten in zu kurzen Abständen. Warten Sie einige Sekunden und versuchen Sie es erneut.", errNetwork: "Die Verbindung wurde unterbrochen. Prüfen Sie Ihr Netzwerk und versuchen Sie es erneut.",
-      errInterrupted: "Die Antwort wurde abgebrochen, bevor sie fertig war. Versuchen Sie es erneut.", errServer: "Bei uns ist etwas schiefgelaufen. Versuchen Sie es erneut oder wenden Sie sich an einen Supportmitarbeiter.", errSecret: "Das sieht nach einem Passwort, Token oder einer Kartennummer aus. Entfernen Sie es und senden Sie erneut.",
-      stopped: "Angehalten.", retry: "Erneut versuchen", langsLabel: "Fragen Sie in einer dieser Sprachen",
+      ticketTitle: "An das BugIt-Team senden", errNetwork: "Die Verbindung wurde unterbrochen. Prüfen Sie Ihr Netzwerk und versuchen Sie es erneut.",
+      errSecret: "Das sieht nach einem Passwort, Token oder einer Kartennummer aus. Entfernen Sie es und senden Sie erneut.",
+      retry: "Erneut versuchen", langsLabel: "Fragen Sie in einer dieser Sprachen",
     },
     es: {
       launch: "Pregunta a BugIt", title: "BugIt Guide", status: "Respuestas de la documentación de BugIt", statusBusy: "Trabajando en ello",
       newChat: "Nueva conversación", expand: "Ampliar", collapse: "Reducir", close: "Cerrar",
       eyebrow: "Pregunta en tu idioma", h1: "¿En qué puedo ", h2: "ayudarte?",
-      helloSub: "Respondo a partir de la documentación de BugIt. Si no puedo confirmar algo, lo paso al equipo para que recibas una respuesta fiable.",
+      helloSub: "Respondo con la documentación de BugIt, usando respuestas escritas de antemano. Si no puedo confirmar algo, te ayudo a escribir al equipo por correo electrónico.",
       cards: [
         { tag: "Primeros pasos", q: "¿Cómo instalo BugIt?" },
         { tag: "Trackers", q: "¿BugIt funciona con Jira y Azure DevOps?" },
         { tag: "Licencias", q: "¿Qué diferencia hay entre Solo y Team?" },
         { tag: "Privacidad", q: "¿BugIt envía mi código a alguna parte?" },
       ],
-      placeholder: "Pregunta sobre instalación, trackers, licencias…", inputLabel: "Tu pregunta", send: "Enviar", stop: "Detener",
-      disclaimer: "Las respuestas pueden contener errores. Nunca pegues contraseñas ni tokens.", human: "Hablar con una persona",
+      placeholder: "Pregunta sobre instalación, trackers, licencias…", inputLabel: "Tu pregunta", send: "Enviar", disclaimer: "Las respuestas pueden contener errores. Nunca pegues contraseñas ni tokens.", human: "Hablar con una persona",
       searching: "Buscando en la documentación de BugIt", searched: "Documentación de BugIt revisada", found: "Artículos relevantes: {n}", noMatch: "Ningún artículo coincide",
-      handing: "Preparando un ticket para el equipo", sources: "Fuentes", related: "También podrías preguntar",
+      sources: "Fuentes", related: "También podrías preguntar",
       copy: "Copiar respuesta", copied: "Copiado", good: "Útil", bad: "No es útil", thanks: "Gracias por tu opinión",
-      ticketTitle: "Enviar esto al equipo de BugIt", ticketBadge: "Desde el chatbot",
-      ticketLede: "Una persona lee cada mensaje y responde por correo electrónico. Este ticket queda marcado como enviado desde el chatbot.",
-      humanLede: "Cuéntanos qué necesitas y una persona te responderá por correo electrónico.",
-      subject: "Asunto", message: "Qué necesitas", email: "Correo electrónico", name: "Nombre (opcional)", include: "Incluir esta conversación",
-      sendTicket: "Enviar al equipo", sending: "Enviando…", sentTitle: "Enviado al equipo de BugIt", sentBody: "Tu referencia es {id}. Responderemos a {email}.",
-      errEmail: "Introduce una dirección de correo válida.", errEmpty: "Añade un asunto y un mensaje.", errSend: "No se ha podido enviar. Inténtalo de nuevo en un momento.",
-      errBusy: "Estás enviando mensajes muy rápido. Espera unos segundos e inténtalo de nuevo.", errNetwork: "Se ha perdido la conexión. Comprueba tu red e inténtalo de nuevo.",
-      errInterrupted: "La respuesta se cortó antes de terminar. Inténtalo de nuevo.", errServer: "Algo ha fallado por nuestra parte. Inténtalo de nuevo o habla con una persona.", errSecret: "Parece una contraseña, un token o un número de tarjeta. Elimínalo y vuelve a enviar.",
-      stopped: "Detenido.", retry: "Reintentar", langsLabel: "Pregunta en cualquiera de estos idiomas",
+      ticketTitle: "Enviar esto al equipo de BugIt", errNetwork: "Se ha perdido la conexión. Comprueba tu red e inténtalo de nuevo.",
+      errSecret: "Parece una contraseña, un token o un número de tarjeta. Elimínalo y vuelve a enviar.",
+      retry: "Reintentar", langsLabel: "Pregunta en cualquiera de estos idiomas",
     },
     fr: {
       launch: "Demander à BugIt", title: "BugIt Guide", status: "Réponses tirées de la documentation BugIt", statusBusy: "Recherche en cours",
       newChat: "Nouvelle conversation", expand: "Agrandir", collapse: "Réduire", close: "Fermer",
       eyebrow: "Posez vos questions dans votre langue", h1: "Comment puis-je ", h2: "vous aider ?",
-      helloSub: "Je réponds à partir de la documentation BugIt. Si je ne peux pas confirmer quelque chose, je transmets la question à l’équipe pour que vous obteniez une réponse fiable.",
+      helloSub: "Je réponds à partir de la documentation de BugIt, avec des réponses rédigées à l'avance. Si je ne peux pas confirmer quelque chose, je vous aide à écrire un e-mail à l'équipe.",
       cards: [
         { tag: "Premiers pas", q: "Comment installer BugIt ?" },
         { tag: "Outils de suivi", q: "BugIt fonctionne-t-il avec Jira et Azure DevOps ?" },
         { tag: "Licences", q: "Quelle différence entre Solo et Team ?" },
         { tag: "Confidentialité", q: "BugIt envoie-t-il mon code quelque part ?" },
       ],
-      placeholder: "Installation, outils de suivi, licences…", inputLabel: "Votre question", send: "Envoyer", stop: "Arrêter",
-      disclaimer: "Les réponses peuvent contenir des erreurs. Ne collez jamais de mots de passe ni de jetons.", human: "Parler à une personne",
+      placeholder: "Installation, outils de suivi, licences…", inputLabel: "Votre question", send: "Envoyer", disclaimer: "Les réponses peuvent contenir des erreurs. Ne collez jamais de mots de passe ni de jetons.", human: "Parler à une personne",
       searching: "Recherche dans la documentation BugIt", searched: "Documentation BugIt consultée", found: "Articles pertinents : {n}", noMatch: "Aucun article correspondant",
-      handing: "Préparation d’un ticket pour l’équipe", sources: "Sources", related: "Vous pourriez aussi demander",
+      sources: "Sources", related: "Vous pourriez aussi demander",
       copy: "Copier la réponse", copied: "Copié", good: "Utile", bad: "Pas utile", thanks: "Merci pour votre retour",
-      ticketTitle: "Envoyer à l’équipe BugIt", ticketBadge: "Provenant du chatbot",
-      ticketLede: "Chaque message est lu par une personne, qui répond par e-mail. Ce ticket est marqué comme provenant du chatbot.",
-      humanLede: "Dites-nous ce dont vous avez besoin : une personne vous répondra par e-mail.",
-      subject: "Objet", message: "Votre demande", email: "E-mail", name: "Nom (facultatif)", include: "Joindre cette conversation",
-      sendTicket: "Envoyer à l’équipe", sending: "Envoi…", sentTitle: "Envoyé à l’équipe BugIt", sentBody: "Votre référence : {id}. Nous répondrons à {email}.",
-      errEmail: "Saisissez une adresse e-mail valide.", errEmpty: "Ajoutez un objet et un message.", errSend: "L’envoi a échoué. Réessayez dans un instant.",
-      errBusy: "Vous envoyez des messages trop fréquemment. Patientez quelques secondes, puis réessayez.", errNetwork: "La connexion a été interrompue. Vérifiez votre réseau et réessayez.",
-      errInterrupted: "La réponse a été interrompue avant la fin. Réessayez.", errServer: "Un problème est survenu de notre côté. Réessayez ou parlez à une personne.", errSecret: "Cela ressemble à un mot de passe, un jeton ou un numéro de carte. Supprimez-le, puis renvoyez le message.",
-      stopped: "Arrêté.", retry: "Réessayer", langsLabel: "Posez vos questions dans l’une de ces langues",
+      ticketTitle: "Envoyer à l’équipe BugIt", errNetwork: "La connexion a été interrompue. Vérifiez votre réseau et réessayez.",
+      errSecret: "Cela ressemble à un mot de passe, un jeton ou un numéro de carte. Supprimez-le, puis renvoyez le message.",
+      retry: "Réessayer", langsLabel: "Posez vos questions dans l’une de ces langues",
     },
     it: {
       launch: "Chiedi a BugIt", title: "BugIt Guide", status: "Risposte dalla documentazione di BugIt", statusBusy: "Ci sto lavorando",
       newChat: "Nuova conversazione", expand: "Espandi", collapse: "Riduci", close: "Chiudi",
       eyebrow: "Chiedi nella tua lingua", h1: "Come posso ", h2: "aiutarti?",
-      helloSub: "Rispondo in base alla documentazione di BugIt. Se non posso confermare qualcosa, lo passo al team così ricevi una risposta affidabile.",
+      helloSub: "Rispondo con la documentazione di BugIt, usando risposte scritte in anticipo. Se non posso confermare qualcosa, ti aiuto a scrivere un'email al team.",
       cards: [
         { tag: "Per iniziare", q: "Come installo BugIt?" },
         { tag: "Tracker", q: "BugIt funziona con Jira e Azure DevOps?" },
         { tag: "Licenze", q: "Che differenza c’è tra Solo e Team?" },
         { tag: "Privacy", q: "BugIt invia il mio codice da qualche parte?" },
       ],
-      placeholder: "Chiedi di installazione, tracker, licenze…", inputLabel: "La tua domanda", send: "Invia", stop: "Interrompi",
-      disclaimer: "Le risposte possono contenere errori. Non incollare mai password o token.", human: "Parla con una persona",
+      placeholder: "Chiedi di installazione, tracker, licenze…", inputLabel: "La tua domanda", send: "Invia", disclaimer: "Le risposte possono contenere errori. Non incollare mai password o token.", human: "Parla con una persona",
       searching: "Ricerca nella documentazione di BugIt", searched: "Documentazione di BugIt consultata", found: "Articoli pertinenti: {n}", noMatch: "Nessun articolo corrispondente",
-      handing: "Preparo un ticket per il team", sources: "Fonti", related: "Potresti anche chiedere",
+      sources: "Fonti", related: "Potresti anche chiedere",
       copy: "Copia risposta", copied: "Copiato", good: "Utile", bad: "Non utile", thanks: "Grazie per il feedback",
-      ticketTitle: "Invia al team di BugIt", ticketBadge: "Dal chatbot",
-      ticketLede: "Ogni messaggio viene letto da una persona, che risponde via email. Questo ticket è contrassegnato come proveniente dal chatbot.",
-      humanLede: "Dicci di cosa hai bisogno e una persona ti risponderà via email.",
-      subject: "Oggetto", message: "Di cosa hai bisogno", email: "Email", name: "Nome (facoltativo)", include: "Includi questa conversazione",
-      sendTicket: "Invia al team", sending: "Invio in corso…", sentTitle: "Inviato al team di BugIt", sentBody: "Il tuo riferimento è {id}. Risponderemo a {email}.",
-      errEmail: "Inserisci un indirizzo email valido.", errEmpty: "Aggiungi un oggetto e un messaggio.", errSend: "Invio non riuscito. Riprova tra un momento.",
-      errBusy: "Stai inviando messaggi troppo di frequente. Attendi qualche secondo e riprova.", errNetwork: "La connessione si è interrotta. Controlla la rete e riprova.",
-      errInterrupted: "La risposta si è interrotta prima di finire. Riprova.", errServer: "Si è verificato un problema da parte nostra. Riprova oppure parla con una persona.", errSecret: "Sembra una password, un token o un numero di carta. Rimuovilo e invia di nuovo.",
-      stopped: "Interrotto.", retry: "Riprova", langsLabel: "Chiedi in una di queste lingue",
+      ticketTitle: "Invia al team di BugIt", errNetwork: "La connessione si è interrotta. Controlla la rete e riprova.",
+      errSecret: "Sembra una password, un token o un numero di carta. Rimuovilo e invia di nuovo.",
+      retry: "Riprova", langsLabel: "Chiedi in una di queste lingue",
     },
     ja: {
       launch: "BugIt に質問", title: "BugIt Guide", status: "BugIt のドキュメントに基づいて回答", statusBusy: "回答を準備中",
       newChat: "新しい会話", expand: "拡大", collapse: "縮小", close: "閉じる",
       eyebrow: "お使いの言語で質問できます", h1: "どんなことを", h2: "お手伝いしましょうか？",
-      helloSub: "BugIt のドキュメントに基づいてお答えします。確認できない内容はチームに引き継ぎ、確かな回答をお届けします。",
+      helloSub: "BugIt のドキュメントをもとに、あらかじめ用意された回答をお示しします。確認できない内容は、チーム宛てのメール作成をお手伝いします。",
       cards: [
-        { tag: "はじめに", q: "BugIt をインストールするにはどうすればよいですか？" },
+        { tag: "はじめに", q: "BugIt のインストール手順を教えてください。" },
         { tag: "トラッカー", q: "BugIt は Jira や Azure DevOps で使えますか？" },
         { tag: "ライセンス", q: "Solo と Team の違いは何ですか？" },
         { tag: "プライバシー", q: "BugIt はコードを外部に送信しますか？" },
       ],
-      placeholder: "セットアップ、トラッカー、ライセンスについて質問…", inputLabel: "質問", send: "送信", stop: "停止",
-      disclaimer: "回答が誤っている場合があります。パスワードやトークンは絶対に貼り付けないでください。", human: "担当者に問い合わせる",
+      placeholder: "セットアップ、トラッカー、ライセンスについて質問…", inputLabel: "質問", send: "送信", disclaimer: "回答が誤っている場合があります。パスワードやトークンは絶対に貼り付けないでください。", human: "担当者に問い合わせる",
       searching: "BugIt のドキュメントを検索中", searched: "BugIt のドキュメントを確認しました", found: "関連する記事：{n}件", noMatch: "該当する記事はありません",
-      handing: "チーム向けのチケットを準備中", sources: "出典", related: "こんな質問もできます",
+      sources: "出典", related: "こんな質問もできます",
       copy: "回答をコピー", copied: "コピーしました", good: "役に立った", bad: "役に立たなかった", thanks: "フィードバックありがとうございます",
-      ticketTitle: "BugIt チームに送信", ticketBadge: "チャットボットから",
-      ticketLede: "すべてのメッセージを担当者が確認し、メールで返信します。このチケットにはチャットボットから送信されたことが明記されます。",
-      humanLede: "ご用件をお聞かせください。担当者がメールで返信します。",
-      subject: "件名", message: "ご用件", email: "メールアドレス", name: "お名前（任意）", include: "この会話を添付する",
-      sendTicket: "チームに送信", sending: "送信中…", sentTitle: "BugIt チームに送信しました", sentBody: "受付番号は{id}です。{email}宛てに返信します。",
-      errEmail: "有効なメールアドレスを入力してください。", errEmpty: "件名とメッセージを入力してください。", errSend: "送信できませんでした。しばらくしてからもう一度お試しください。",
-      errBusy: "メッセージの送信間隔が短すぎます。数秒待ってから、もう一度お試しください。", errNetwork: "接続が切れました。ネットワークを確認して、もう一度お試しください。",
-      errInterrupted: "回答が途中で途切れました。もう一度お試しください。", errServer: "こちら側で問題が発生しました。もう一度お試しいただくか、担当者にお問い合わせください。", errSecret: "パスワード、トークン、またはカード番号のようです。削除してから、もう一度送信してください。",
-      stopped: "停止しました。", retry: "再試行", langsLabel: "次の言語で質問できます",
+      ticketTitle: "BugIt チームに送信", errNetwork: "接続が切れました。ネットワークを確認して、もう一度お試しください。",
+      errSecret: "パスワード、トークン、またはカード番号のようです。削除してから、もう一度送信してください。",
+      retry: "再試行", langsLabel: "次の言語で質問できます",
     },
     ko: {
       launch: "BugIt에 질문", title: "BugIt Guide", status: "BugIt 문서를 바탕으로 답변", statusBusy: "답변 준비 중",
       newChat: "새 대화", expand: "확대", collapse: "축소", close: "닫기",
       eyebrow: "사용하는 언어로 질문하세요", h1: "무엇을 ", h2: "도와드릴까요?",
-      helloSub: "BugIt 문서를 바탕으로 답변합니다. 확인할 수 없는 내용은 팀에 전달해 정확한 답변을 받으실 수 있도록 합니다.",
+      helloSub: "BugIt 문서를 바탕으로 미리 작성된 답변을 보여 드립니다. 확인할 수 없는 내용은 팀에 보낼 메일 작성을 도와드립니다.",
       cards: [
         { tag: "시작하기", q: "BugIt은 어떻게 설치하나요?" },
-        { tag: "트래커", q: "BugIt은 Jira 및 Azure DevOps와 연동되나요?" },
+        { tag: "트래커", q: "BugIt은 어떤 트래커를 지원하나요?" },
         { tag: "라이선스", q: "Solo와 Team은 어떻게 다른가요?" },
         { tag: "개인정보 보호", q: "BugIt이 제 코드를 외부로 보내나요?" },
       ],
-      placeholder: "설정, 트래커, 라이선스에 대해 질문하세요…", inputLabel: "질문", send: "보내기", stop: "중지",
-      disclaimer: "답변이 틀릴 수 있습니다. 비밀번호나 토큰은 절대 붙여넣지 마세요.", human: "상담원과 연결",
+      placeholder: "설정, 트래커, 라이선스에 대해 질문하세요…", inputLabel: "질문", send: "보내기", disclaimer: "답변이 틀릴 수 있습니다. 비밀번호나 토큰은 절대 붙여넣지 마세요.", human: "상담원과 연결",
       searching: "BugIt 문서 검색 중", searched: "BugIt 문서 확인 완료", found: "관련 문서: {n}건", noMatch: "일치하는 문서 없음",
-      handing: "팀에 보낼 티켓 준비 중", sources: "출처", related: "이런 질문도 해 보세요",
+      sources: "출처", related: "이런 질문도 해 보세요",
       copy: "답변 복사", copied: "복사됨", good: "도움이 됨", bad: "도움이 안 됨", thanks: "의견을 보내 주셔서 감사합니다",
-      ticketTitle: "BugIt 팀에 보내기", ticketBadge: "챗봇에서 보냄",
-      ticketLede: "모든 메시지는 담당자가 직접 읽고 이메일로 답장합니다. 이 티켓에는 챗봇에서 보냈다는 표시가 붙습니다.",
-      humanLede: "필요한 내용을 알려 주시면 담당자가 이메일로 답장드립니다.",
-      subject: "제목", message: "문의 내용", email: "이메일", name: "이름(선택)", include: "이 대화 포함",
-      sendTicket: "팀에 보내기", sending: "보내는 중…", sentTitle: "BugIt 팀에 보냈습니다", sentBody: "접수 번호는 {id}입니다. {email} 주소로 답장드리겠습니다.",
-      errEmail: "올바른 이메일 주소를 입력하세요.", errEmpty: "제목과 메시지를 입력하세요.", errSend: "보내지 못했습니다. 잠시 후 다시 시도하세요.",
-      errBusy: "메시지를 너무 자주 보내고 있습니다. 몇 초 후 다시 시도하세요.", errNetwork: "연결이 끊어졌습니다. 네트워크를 확인한 후 다시 시도하세요.",
-      errInterrupted: "답변이 끝나기 전에 끊겼습니다. 다시 시도하세요.", errServer: "서비스 측에 문제가 발생했습니다. 다시 시도하거나 상담원과 연결하세요.", errSecret: "비밀번호, 토큰 또는 카드 번호로 보입니다. 삭제한 후 다시 보내세요.",
-      stopped: "중지됨", retry: "다시 시도", langsLabel: "다음 언어로 질문할 수 있습니다",
+      ticketTitle: "BugIt 팀에 보내기", errNetwork: "연결이 끊어졌습니다. 네트워크를 확인한 후 다시 시도하세요.",
+      errSecret: "비밀번호, 토큰 또는 카드 번호로 보입니다. 삭제한 후 다시 보내세요.",
+      retry: "다시 시도", langsLabel: "다음 언어로 질문할 수 있습니다",
     },
     "pt-br": {
       launch: "Pergunte ao BugIt", title: "BugIt Guide", status: "Respostas da documentação do BugIt", statusBusy: "Trabalhando nisso",
       newChat: "Nova conversa", expand: "Expandir", collapse: "Reduzir", close: "Fechar",
       eyebrow: "Pergunte no seu idioma", h1: "Como posso ", h2: "ajudar você?",
-      helloSub: "Respondo com base na documentação do BugIt. Se eu não puder confirmar algo, encaminho para a equipe para que você receba uma resposta confiável.",
+      helloSub: "Respondo com a documentação do BugIt, usando respostas escritas com antecedência. Se eu não puder confirmar algo, ajudo você a escrever um e-mail para a equipe.",
       cards: [
         { tag: "Primeiros passos", q: "Como instalo o BugIt?" },
         { tag: "Trackers", q: "O BugIt funciona com Jira e Azure DevOps?" },
         { tag: "Licenças", q: "Qual a diferença entre Solo e Team?" },
         { tag: "Privacidade", q: "O BugIt envia meu código para algum lugar?" },
       ],
-      placeholder: "Pergunte sobre instalação, trackers, licenças…", inputLabel: "Sua pergunta", send: "Enviar", stop: "Parar",
-      disclaimer: "As respostas podem conter erros. Nunca cole senhas ou tokens.", human: "Falar com uma pessoa",
+      placeholder: "Pergunte sobre instalação, trackers, licenças…", inputLabel: "Sua pergunta", send: "Enviar", disclaimer: "As respostas podem conter erros. Nunca cole senhas ou tokens.", human: "Falar com uma pessoa",
       searching: "Pesquisando a documentação do BugIt", searched: "Documentação do BugIt consultada", found: "Artigos relevantes: {n}", noMatch: "Nenhum artigo correspondente",
-      handing: "Preparando um chamado para a equipe", sources: "Fontes", related: "Você também pode perguntar",
+      sources: "Fontes", related: "Você também pode perguntar",
       copy: "Copiar resposta", copied: "Copiado", good: "Útil", bad: "Não foi útil", thanks: "Obrigado pelo feedback",
-      ticketTitle: "Enviar para a equipe do BugIt", ticketBadge: "Do chatbot",
-      ticketLede: "Uma pessoa lê cada mensagem e responde por e-mail. Este chamado fica marcado como enviado pelo chatbot.",
-      humanLede: "Conte o que você precisa e uma pessoa vai responder por e-mail.",
-      subject: "Assunto", message: "O que você precisa", email: "E-mail", name: "Nome (opcional)", include: "Incluir esta conversa",
-      sendTicket: "Enviar para a equipe", sending: "Enviando…", sentTitle: "Enviado para a equipe do BugIt", sentBody: "Sua referência é {id}. Vamos responder para {email}.",
-      errEmail: "Informe um endereço de e-mail válido.", errEmpty: "Adicione um assunto e uma mensagem.", errSend: "Não foi possível enviar. Tente novamente em instantes.",
-      errBusy: "Você está enviando mensagens com muita frequência. Aguarde alguns segundos e tente novamente.", errNetwork: "A conexão caiu. Verifique sua rede e tente novamente.",
-      errInterrupted: "A resposta foi interrompida antes de terminar. Tente novamente.", errServer: "Algo deu errado do nosso lado. Tente novamente ou fale com uma pessoa.", errSecret: "Isso parece uma senha, um token ou um número de cartão. Remova e envie novamente.",
-      stopped: "Interrompido.", retry: "Tentar novamente", langsLabel: "Pergunte em qualquer um destes idiomas",
+      ticketTitle: "Enviar para a equipe do BugIt", errNetwork: "A conexão caiu. Verifique sua rede e tente novamente.",
+      errSecret: "Isso parece uma senha, um token ou um número de cartão. Remova e envie novamente.",
+      retry: "Tentar novamente", langsLabel: "Pergunte em qualquer um destes idiomas",
     },
     ru: {
       launch: "Спросить BugIt", title: "BugIt Guide", status: "Ответы из документации BugIt", statusBusy: "Идёт поиск ответа",
       newChat: "Новый чат", expand: "Развернуть", collapse: "Свернуть", close: "Закрыть",
       eyebrow: "Спрашивайте на своём языке", h1: "Чем я могу ", h2: "помочь?",
-      helloSub: "Я отвечаю на основе документации BugIt. Если я не могу что-то подтвердить, я передам вопрос команде, чтобы вы получили надёжный ответ.",
+      helloSub: "Я отвечаю по документации BugIt заранее написанными ответами. Если я не могу что-то подтвердить, помогу вам написать письмо команде.",
       cards: [
         { tag: "Начало работы", q: "Как установить BugIt?" },
         { tag: "Трекеры", q: "Работает ли BugIt с Jira и Azure DevOps?" },
         { tag: "Лицензии", q: "Чем отличаются Solo и Team?" },
         { tag: "Конфиденциальность", q: "Отправляет ли BugIt мой код куда-либо?" },
       ],
-      placeholder: "Спросите о настройке, трекерах, лицензиях…", inputLabel: "Ваш вопрос", send: "Отправить", stop: "Остановить",
-      disclaimer: "Ответы могут содержать ошибки. Никогда не вставляйте пароли и токены.", human: "Связаться со специалистом поддержки",
+      placeholder: "Спросите о настройке, трекерах, лицензиях…", inputLabel: "Ваш вопрос", send: "Отправить", disclaimer: "Ответы могут содержать ошибки. Никогда не вставляйте пароли и токены.", human: "Связаться со специалистом поддержки",
       searching: "Поиск в документации BugIt", searched: "Документация BugIt проверена", found: "Подходящих статей: {n}", noMatch: "Подходящих статей нет",
-      handing: "Готовим обращение для команды", sources: "Источники", related: "Вы также можете спросить",
+      sources: "Источники", related: "Вы также можете спросить",
       copy: "Копировать ответ", copied: "Скопировано", good: "Полезно", bad: "Не помогло", thanks: "Спасибо за отзыв",
-      ticketTitle: "Отправить команде BugIt", ticketBadge: "Из чат-бота",
-      ticketLede: "Каждое сообщение читает специалист, который отвечает по электронной почте. Это обращение помечено как отправленное из чат-бота.",
-      humanLede: "Опишите, что вам нужно, и человек ответит вам по электронной почте.",
-      subject: "Тема", message: "Что вам нужно", email: "Эл. почта", name: "Имя (необязательно)", include: "Приложить эту переписку",
-      sendTicket: "Отправить команде", sending: "Отправка…", sentTitle: "Отправлено команде BugIt", sentBody: "Номер обращения: {id}. Мы ответим по адресу {email}.",
-      errEmail: "Введите корректный адрес электронной почты.", errEmpty: "Укажите тему и сообщение.", errSend: "Не удалось отправить. Повторите попытку чуть позже.",
-      errBusy: "Вы отправляете сообщения слишком часто. Подождите несколько секунд и повторите попытку.", errNetwork: "Соединение прервано. Проверьте сеть и повторите попытку.",
-      errInterrupted: "Ответ оборвался до завершения. Повторите попытку.", errServer: "На нашей стороне произошла ошибка. Повторите попытку или обратитесь к специалисту поддержки.", errSecret: "Похоже на пароль, токен или номер карты. Удалите это и отправьте снова.",
-      stopped: "Остановлено.", retry: "Повторить", langsLabel: "Спрашивайте на любом из этих языков",
+      ticketTitle: "Отправить команде BugIt", errNetwork: "Соединение прервано. Проверьте сеть и повторите попытку.",
+      errSecret: "Похоже на пароль, токен или номер карты. Удалите это и отправьте снова.",
+      retry: "Повторить", langsLabel: "Спрашивайте на любом из этих языков",
     },
     zh: {
       launch: "询问 BugIt", title: "BugIt Guide", status: "基于 BugIt 文档回答", statusBusy: "正在处理",
       newChat: "新对话", expand: "展开", collapse: "收起", close: "关闭",
       eyebrow: "用您的语言提问", h1: "有什么可以", h2: "帮您？",
-      helloSub: "我会根据 BugIt 文档回答。无法确认的内容，我会转交给团队，确保您得到可靠的答复。",
+      helloSub: "我根据 BugIt 的文档，用预先写好的回答作答。无法确认的内容，我会帮您写一封发给团队的邮件。",
       cards: [
         { tag: "快速上手", q: "如何安装 BugIt？" },
         { tag: "跟踪工具", q: "BugIt 支持 Jira 和 Azure DevOps 吗？" },
         { tag: "许可证", q: "Solo 和 Team 有什么区别？" },
         { tag: "隐私", q: "BugIt 会把我的代码发送到别处吗？" },
       ],
-      placeholder: "询问设置、跟踪工具、许可证等问题…", inputLabel: "您的问题", send: "发送", stop: "停止",
-      disclaimer: "回答可能有误。切勿粘贴密码或令牌。", human: "联系人工客服",
+      placeholder: "询问设置、跟踪工具、许可证等问题…", inputLabel: "您的问题", send: "发送", disclaimer: "回答可能有误。切勿粘贴密码或令牌。", human: "联系人工客服",
       searching: "正在搜索 BugIt 文档", searched: "已查阅 BugIt 文档", found: "相关文章：{n}篇", noMatch: "没有匹配的文章",
-      handing: "正在为团队准备工单", sources: "来源", related: "您还可以问",
+      sources: "来源", related: "您还可以问",
       copy: "复制回答", copied: "已复制", good: "有帮助", bad: "没有帮助", thanks: "感谢您的反馈",
-      ticketTitle: "发送给 BugIt 团队", ticketBadge: "来自聊天机器人",
-      ticketLede: "每条消息都会由专人阅读并通过电子邮件回复。此工单会标注为来自聊天机器人。",
-      humanLede: "请告诉我们您的需求，专人会通过电子邮件回复您。",
-      subject: "主题", message: "您的需求", email: "电子邮件", name: "姓名（可选）", include: "附上此对话",
-      sendTicket: "发送给团队", sending: "正在发送…", sentTitle: "已发送给 BugIt 团队", sentBody: "您的编号是{id}。我们会回复至{email}。",
-      errEmail: "请输入有效的电子邮件地址。", errEmpty: "请填写主题和消息。", errSend: "发送失败。请稍后重试。",
-      errBusy: "您发送消息过于频繁。请稍候几秒再试。", errNetwork: "连接已中断。请检查网络后重试。",
-      errInterrupted: "回答在完成前中断了。请重试。", errServer: "我们这边出现了问题。请重试，或联系人工客服。", errSecret: "这看起来像密码、令牌或银行卡号。请删除后再发送。",
-      stopped: "已停止。", retry: "重试", langsLabel: "可以用以下任一语言提问",
+      ticketTitle: "发送给 BugIt 团队", errNetwork: "连接已中断。请检查网络后重试。",
+      errSecret: "这看起来像密码、令牌或银行卡号。请删除后再发送。",
+      retry: "重试", langsLabel: "可以用以下任一语言提问",
     },
   };
 
@@ -352,9 +275,13 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   }
 
 
-  /** A line from one of the tables below, in the interface language. */
-  function table(t11) {
-    return t11[lang] || t11.en;
+  /**
+   * A line from one of the tables below. In the interface language by default, but the handoff card
+   * passes the language the ANSWER is in: an answer in German inside a card in English is the exact
+   * split the owner's language rule exists to prevent.
+   */
+  function table(t11, inLang) {
+    return t11[inLang] || t11[lang] || t11.en;
   }
 
   // Nothing close enough in the bank. The prototype said "send it to the team below", meaning its
@@ -391,6 +318,14 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     ja: "メールアプリが開き、ご質問がすでに入力されています。すべてのメッセージを担当者が確認し、メールで返信します。",
     ko: "메일 앱이 열리고 질문이 이미 입력되어 있습니다. 모든 메시지는 담당자가 직접 읽고 이메일로 답장합니다.",
     zh: "这会打开您的邮件应用，其中已写好您的问题。每条消息都会由专人阅读并通过电子邮件回复。",
+  };
+
+  // Above the questions offered when the Guide is not sure which was meant. "You might also ask",
+  // the label for related reading, contradicted the sentence right above it.
+  const SUGGEST_LABEL = {
+    en: "Did you mean", de: "Meinten Sie", es: "¿Quisiste decir?", fr: "Vouliez-vous dire",
+    it: "Intendevi", "pt-br": "Você quis dizer", ru: "Вы имели в виду", ar: "هل تقصد",
+    ja: "もしかして", ko: "혹시 이 질문인가요", zh: "您是想问",
   };
 
   const HAND_LABEL = {
@@ -441,18 +376,22 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   }
 
+  // Object.hasOwn, not truthiness: "constructor" and "__proto__" are properties of every object
+  // literal, and either one would send the Guide looking for a language file that cannot exist.
+  const known = (l) => Object.hasOwn(I18N, l);
+
   function siteLang() {
     let l = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
-    if (I18N[l]) return l;
+    if (known(l)) return l;
     if (l.startsWith("pt")) return "pt-br";
     if (l.startsWith("zh")) return "zh";
     l = l.split("-")[0];
-    return I18N[l] ? l : "en";
+    return known(l) ? l : "en";
   }
   let lang = siteLang();
 
-  function t(key, vars) {
-    const table = I18N[lang] || I18N.en;
+  function t(key, vars, inLang) {
+    const table = I18N[inLang && known(inLang) ? inLang : lang] || I18N.en;
     let s = table[key] != null ? table[key] : I18N.en[key];
     if (typeof s === "string" && vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? String(vars[k]) : m));
     return s;
@@ -697,7 +636,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
 
   // ---------------------------------------------------------------- state
 
-  const state = { open: false, wide: false, busy: false, turns: [], controller: null };
+  const state = { open: false, wide: false, busy: false, turns: [] };
   let saveTimer = null;
 
   function save() {
@@ -717,7 +656,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       const d = JSON.parse(sessionStorage.getItem(STORE_KEY) || "null");
       if (!d || !Array.isArray(d.turns)) return;
       state.turns = d.turns.filter((x) => x && (x.role === "user" || x.role === "assistant")).map((x) =>
-        x.role === "assistant" && !x.done ? { ...x, done: true, error: x.text || x.handoff ? null : "network", stopped: Boolean(x.text) } : x);
+        x.role === "assistant" && !x.done ? { ...x, done: true, error: x.text || x.handoff ? null : "network" } : x);
       state.open = Boolean(d.open);
       state.wide = Boolean(d.wide);
     } catch (_) {
@@ -729,7 +668,13 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
 
   const live = h("div", { class: "bgd-sr", "aria-live": "polite", "aria-atomic": "true" });
   const launchLabel = h("span", { class: "bgd-launch-label" });
-  const launch = h("button", { class: "bgd-launch", type: "button", "aria-haspopup": "dialog", "aria-expanded": "false", "aria-controls": "bgd-panel" },
+  // NO aria-expanded. It opens a DIALOG, which announces itself and carries its own close button,
+  // and aria-expanded is the promise a disclosure makes: press me again and I collapse. This button
+  // cannot keep that promise, because the panel it opens sits over it (both are pinned to the same
+  // corner), so a second press never reaches it. check-disclosure found it in both engines and it
+  // was right to: a control that says it is expanded and cannot be collapsed is a lie to a screen
+  // reader. aria-haspopup="dialog" with aria-controls is the pattern for opening a dialog.
+  const launch = h("button", { class: "bgd-launch", type: "button", "aria-haspopup": "dialog", "aria-controls": "bgd-panel" },
     h("span", { class: "bgd-launch-avatar", html: blip() }), launchLabel, h("kbd", { class: "bgd-kbd", text: "/" }));
 
   const titleEl = h("div", { class: "bgd-title", id: "bgd-title" });
@@ -758,8 +703,10 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   const panel = h("section", { class: "bgd-panel", id: "bgd-panel", role: "dialog", "aria-modal": "false", "aria-labelledby": "bgd-title", hidden: true }, head, scroller, foot);
   const root = h("div", { class: "bgd-root" }, launch, panel, live);
 
-  function announce(text) {
+  function announce(text, inLang) {
     live.textContent = "";
+    // The announcement is the answer, so it is announced AS the answer's language.
+    live.lang = inLang || lang;
     setTimeout(() => { live.textContent = String(text).replace(/[`*_#>|]/g, "").slice(0, 400); }, 60);
   }
 
@@ -768,13 +715,13 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     input.style.height = Math.min(input.scrollHeight, 150) + "px";
   }
 
+  // There is nothing to stop: an answer is looked up here, and the only wait is the one download of
+  // the language file. So the button stays Send and is simply unavailable until it can be used.
   function paintSend() {
-    sendBtn.classList.toggle("bgd-stop", state.busy);
-    sendBtn.innerHTML = state.busy ? I.stop : I.send;
-    const k = state.busy ? "stop" : "send";
-    sendBtn.setAttribute("aria-label", t(k));
-    sendBtn.title = t(k);
-    sendBtn.disabled = !state.busy && !input.value.trim();
+    sendBtn.innerHTML = I.send;
+    sendBtn.setAttribute("aria-label", t("send"));
+    sendBtn.title = t("send");
+    sendBtn.disabled = state.busy || !input.value.trim();
   }
 
   function paintExpand() {
@@ -855,10 +802,10 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     let label;
     let icon;
     if (running) {
-      label = handed && !searches.length ? table(HAND_LABEL) : t("searching");
+      label = handed && !searches.length ? table(HAND_LABEL, turn.replyLang) : t("searching");
       icon = "run";
     } else if (!searches.length && handed) {
-      label = table(HAND_LABEL);
+      label = table(HAND_LABEL, turn.replyLang);
       icon = "hand";
     } else {
       label = foundIds.size ? `${t("searched")} · ${t("found", { n: foundIds.size })}` : `${t("searched")} · ${t("noMatch")}`;
@@ -882,7 +829,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
         if (lang === "en" && n) body.append(h("div", { class: "bgd-found" }, s.found.slice(0, 4).map((f) => h("span", { text: f.title, title: f.title }))));
         list.append(h("li", { class: "bgd-step" }, stateIcon(s.state === "running" ? "run" : n ? "ok" : "none"), body));
       } else if (s.kind === "hand_off_to_support") {
-        list.append(h("li", { class: "bgd-step" }, stateIcon(s.state === "running" ? "run" : "hand"), h("div", { text: table(HAND_LABEL) })));
+        list.append(h("li", { class: "bgd-step" }, stateIcon(s.state === "running" ? "run" : "hand"), h("div", { text: table(HAND_LABEL, turn.replyLang) })));
       }
     }
     details.append(list);
@@ -898,17 +845,18 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     el.innerHTML = md(turn.text);
   }
 
+  // The only failure left is the one download this widget makes.
   function errorNode(i) {
-    const turn = state.turns[i];
-    const key = { busy: "errBusy", network: "errNetwork", interrupted: "errInterrupted" }[turn.error] || "errServer";
-    return h("div", { class: "bgd-error", role: "alert" }, h("span", { text: t(key) }), h("button", { type: "button", text: t("retry"), onclick: () => retry(i) }));
+    return h("div", { class: "bgd-error", role: "alert" }, h("span", { text: t("errNetwork") }), h("button", { type: "button", text: t("retry"), onclick: () => retry(i) }));
   }
 
   function metaNode(i) {
     const turn = state.turns[i];
     const meta = h("div", { class: "bgd-meta" });
     const hrefs = [];
-    for (const e of turn.sources || []) for (const l of e.links || []) if (l && l.href && !hrefs.includes(l.href)) hrefs.push(l.href);
+    // Through the same allowlist as every link in an answer. The file is ours, but a link the Guide
+    // renders under BugIt's name is checked wherever it came from.
+    for (const e of turn.sources || []) for (const l of e.links || []) if (l && l.href && allowedLink(l.href) && !hrefs.includes(l.href)) hrefs.push(l.href);
     if (hrefs.length) {
       meta.append(h("span", { class: "bgd-label", text: t("sources") }));
       for (const href of hrefs.slice(0, 3)) {
@@ -949,7 +897,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
 
   function followNode(turn) {
     return h("div", { class: "bgd-follows" },
-      h("span", { class: "bgd-label", text: t("related") }),
+      h("span", { class: "bgd-label", text: turn.suggest ? table(SUGGEST_LABEL, turn.replyLang) : t("related", null, turn.replyLang) }),
       turn.followups.map((q) => h("button", { class: "bgd-follow", type: "button", dir: "auto", onclick: () => ask(q) }, h("span", { html: I.next }), h("span", { text: q }))));
   }
 
@@ -970,24 +918,36 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
    * so nothing can be sent without the visitor seeing it: they press send in their own mail app.
    */
   function buildHandoff(i) {
-    const hd = state.turns[i].handoff;
+    const turn = state.turns[i];
+    const hd = turn.handoff;
+    // The answer above this card is in the language the visitor wrote in, so the card is too.
+    const l = turn.replyLang;
     const uid = "bgd-h" + ++formCount;
-    const wrap = h("div", { class: "bgd-hand", role: "group", "aria-labelledby": uid + "-t" });
+    const wrap = h("div", { class: "bgd-hand", role: "group", "aria-labelledby": uid + "-t", lang: l || null, dir: l === "ar" ? "rtl" : null });
     wrap.append(h("div", { class: "bgd-hand-top" },
       h("span", { class: "bgd-hand-icon", html: I.person }),
-      h("h3", { id: uid + "-t", text: t("ticketTitle") })));
-    wrap.append(h("p", { text: table(MAIL_NOTE) }));
+      h("h3", { id: uid + "-t", text: t("ticketTitle", null, l) })));
+    wrap.append(h("p", { text: table(MAIL_NOTE, l) }));
     wrap.append(h("a", {
       class: "bgd-primary bgd-mail", href: mailtoFor(hd),
-      html: esc(table(MAIL_LABEL)) + I.send,
+      html: esc(table(MAIL_LABEL, l)) + I.send,
     }));
     return wrap;
   }
 
+  /**
+   * Half of a surrogate pair on its own is not valid text, and encodeURIComponent THROWS on it
+   * rather than escaping it. One emoji cut in half by a length limit was enough to leave the
+   * visitor with no email link at all, which is the one route to a person this build has.
+   */
+  function whole(text) {
+    return String(text == null ? "" : text).replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "");
+  }
+
   function mailtoFor(hd) {
     // The subject is the topic the prepared answer named, or the visitor's own first line.
-    const question = String(hd.details || "");
-    const subject = String(hd.subject || "").trim() || question.split("\n")[0].slice(0, 80);
+    const question = whole(hd.details);
+    const subject = whole(hd.subject).trim() || whole(question.split("\n")[0].slice(0, 80));
     return "mailto:" + SUPPORT_EMAIL + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(question);
   }
 
@@ -997,7 +957,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     const node = h("div", { class: "bgd-bot" });
     if (turn.steps && turn.steps.length) node.append(trailNode(i));
     if (!turn.manual) {
-      const answer = h("div", { class: "bgd-answer", dir: "auto" });
+      const answer = h("div", { class: "bgd-answer", dir: "auto", lang: turn.replyLang || null });
       paintAnswerInto(answer, turn);
       node.append(answer);
     }
@@ -1036,21 +996,27 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     if (!old || !old.isConnected || !state.turns[i]) return renderThread();
     const active = document.activeElement;
     const range = active && typeof active.selectionStart === "number" ? [active.selectionStart, active.selectionEnd] : null;
+    // WHERE the focus was, not which node held it. The feedback buttons are rebuilt by this very
+    // call, so the node is gone by the time we try to give it the focus back: pressing Helpful with
+    // the keyboard dropped the focus out of the panel entirely. Counting among its own kind inside
+    // the turn survives the rebuild.
+    const inOld = active && old.contains(active);
+    const mark = inOld
+      ? { tag: active.tagName, cls: active.getAttribute("class") || "", at: [...old.querySelectorAll(active.tagName)].filter((e) => (e.getAttribute("class") || "") === (active.getAttribute("class") || "")).indexOf(active) }
+      : null;
     const n = turnNode(i);
     old.replaceWith(n);
     nodes.set(i, n);
-    // Rebuilding a turn moves its ticket form, and moving a focused field drops the focus. Someone
-    // typing their email while the answer finished must not lose their place.
+    // Rebuilding a turn moves its controls, and moving a focused field drops the focus. Someone
+    // typing while the answer finished must not lose their place.
     if (active && active !== document.activeElement && active.isConnected && panel.contains(active)) {
       active.focus({ preventScroll: true });
       if (range) try { active.setSelectionRange(range[0], range[1]); } catch (_) { /* not a text field */ }
+    } else if (mark && !(active && active.isConnected)) {
+      const kin = [...n.querySelectorAll(mark.tag)].filter((e) => (e.getAttribute("class") || "") === mark.cls);
+      const want = kin[mark.at] || kin[0];
+      if (want) want.focus({ preventScroll: true });
     }
-  }
-
-  function paintAnswer(i) {
-    const n = nodes.get(i);
-    const el = n && n.querySelector(".bgd-answer");
-    if (el) paintAnswerInto(el, state.turns[i]);
   }
 
   function paintTrail(i) {
@@ -1140,6 +1106,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       await ensureLanguage(lang);
       const reply = await replyLanguage(text);
       const decision = answerFor(bank, reply, text);
+      turn.replyLang = reply;
       step.state = "done";
       if (decision.kind === "answer") {
         turn.text = decision.answer;
@@ -1150,17 +1117,20 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
         // A topic only a person can settle (a refund, a data request, a quote): its prepared reply
         // says so, and the email is prepared with the subject the bank names.
         turn.text = decision.item.reply;
+        // What matched is a topic for a person, not an article to read: the trail says that and
+        // nothing else, rather than "Relevant articles: 1" with no article on screen.
+        turn.steps = [];
         turn.handoff = {
           subject: undash(decision.item.subject || "", reply),
           details: text,
           category: decision.item.category || "other",
           reason: decision.item.reason || "",
         };
-        step.found = [{ id: decision.item.id, title: decision.item.question }];
         turn.steps.push({ id: "p2", kind: "hand_off_to_support", state: "done" });
       } else if (decision.kind === "suggest") {
         turn.text = DID_YOU_MEAN[reply] || DID_YOU_MEAN.en;
         turn.followups = decision.questions;
+        turn.suggest = true;
       } else {
         turn.text = NO_ANSWER[reply] || NO_ANSWER.en;
         turn.handoff = { subject: "", details: text, category: "other", reason: "not covered by the prepared answers" };
@@ -1176,14 +1146,16 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       if (alive()) {
         refreshTurn(i);
         scrollToEnd(false);
-        if (turn.text) announce(turn.text);
+        if (turn.text) announce(turn.text, turn.replyLang);
       }
       save();
     }
   }
 
   function retry(i) {
-    if (state.busy) return;
+    // Only the last exchange can be retried: ask() appends, so retrying an earlier one would move it
+    // to the end and silently reorder the conversation.
+    if (state.busy || i !== state.turns.length - 1) return;
     const prev = state.turns[i - 1];
     if (!prev || prev.role !== "user") return;
     const q = prev.text;
@@ -1205,9 +1177,17 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       return;
     }
     const lastUser = [...state.turns].reverse().find((x) => x.role === "user");
+    // The card, its labels and the email are written in the language the visitor was ANSWERED in.
+    // Pressing "Talk to a person" after a German answer used to produce an English card, because
+    // only the automatic hand-off recorded the reply language.
+    const lastBot = [...state.turns].reverse().find((x) => x.role === "assistant" && x.replyLang);
+    const guessed = lastUser ? guessLanguage(lastUser.text) : null;
     const turn = {
       role: "assistant", text: "", manual: true, done: true, steps: [],
-      handoff: { manual: true, subject: "", details: lastUser ? lastUser.text.slice(0, 1200) : "", category: "other", reason: "visitor asked for a person" },
+      replyLang: (lastBot && lastBot.replyLang) || (guessed && PREPARED_LANGS.includes(guessed) ? guessed : null),
+      // The whole question, exactly as the automatic hand-off sends it. It used to be cut at 1200
+      // characters although the composer accepts 2000, so the team read two thirds of a question.
+      handoff: { manual: true, subject: "", details: lastUser ? lastUser.text : "", category: "other", reason: "visitor asked for a person" },
     };
     state.turns.push(turn);
     renderThread();
@@ -1232,11 +1212,23 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
 
   // ---------------------------------------------------------------- open, close, size
 
+  // The banner is a decision the visitor has to make; the Guide is not. While it is up, the Guide
+  // stays out of the way, launcher AND panel.
+  function consentUp() {
+    const el = document.getElementById("consentBanner");
+    // NOT offsetParent. It is null for a position:fixed element by definition, and this banner is
+    // fixed to the bottom of the viewport, so the whole gate was inert: both ways past it, the "/"
+    // shortcut and a saved open state, went straight through while the CSS rule that hides the
+    // launcher kept the failure invisible. getClientRects() is empty only when the element really
+    // is not being rendered, fixed or not.
+    return Boolean(el && !el.hidden && el.getClientRects().length > 0);
+  }
+
   function openPanel(focus = true) {
+    if (consentUp()) return;
     state.open = true;
     panel.hidden = false;
     panel.classList.toggle("bgd-wide", state.wide);
-    launch.setAttribute("aria-expanded", "true");
     requestAnimationFrame(() => scrollToEnd(true));
     if (focus) setTimeout(() => input.focus({ preventScroll: true }), 40);
     save();
@@ -1245,7 +1237,6 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   function closePanel(returnFocus = true) {
     state.open = false;
     panel.hidden = true;
-    launch.setAttribute("aria-expanded", "false");
     if (returnFocus) launch.focus({ preventScroll: true });
     save();
   }
@@ -1259,7 +1250,11 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
 
   // ---------------------------------------------------------------- wiring
 
-  launch.addEventListener("click", () => openPanel(true));
+  // The launcher TOGGLES. It carries aria-expanded, so a button that says it is expanded and does
+  // nothing when pressed again is a control that lies to a screen reader and to everyone else: on a
+  // phone the panel covers the screen and pressing the thing that opened it is the obvious way to
+  // put it away. Found by check-disclosure, which opens every disclosure on the page and closes it.
+  launch.addEventListener("click", () => (state.open ? closePanel(true) : openPanel(true)));
   btnClose.addEventListener("click", () => closePanel(true));
   btnExpand.addEventListener("click", toggleWide);
   btnNew.addEventListener("click", newChat);
@@ -1318,5 +1313,44 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   load();
   document.body.append(root);
   applyLang();
-  if (state.open) openPanel(false);
+  // A saved "open" from before a reload reopens the panel, but not over the consent banner.
+  //
+  // WHEN that question is asked decides the answer. app.js shows the banner from its own
+  // DOMContentLoaded handler, and this file is a module, so it runs BEFORE that: asked here, at
+  // boot, the answer was always "no banner", and the panel reopened on top of one that appeared a
+  // moment later. So the restore waits for the same event (app.js registered its handler first, so
+  // the banner is up by the time this runs), and the observer holds the rule for the rest of the
+  // page's life, including the footer's "Cookie preferences" link, which brings the banner back.
+  function restoreOpen() {
+    if (!state.open) return;
+    state.open = false;
+    openPanel(false);
+  }
+  // A deferred module runs while readyState is ALREADY "interactive", so asking for "loading" here
+  // meant the restore never waited for anything and the panel opened for a frame before the banner
+  // existed. DOMContentLoaded is the event app.js shows the banner from, and this handler is
+  // registered after its, so it runs after it. `load` is the way back for a copy of this file that
+  // is injected later, when DOMContentLoaded is already long gone.
+  let restored = false;
+  const restoreOnce = () => {
+    if (restored) return;
+    restored = true;
+    restoreOpen();
+  };
+  if (document.readyState === "complete") restoreOnce();
+  else {
+    document.addEventListener("DOMContentLoaded", restoreOnce);
+    window.addEventListener("load", restoreOnce);
+  }
+
+  const bannerEl = document.getElementById("consentBanner");
+  if (bannerEl) {
+    new MutationObserver(() => {
+      // Only while the visitor has still to make the choice. Once they have made one, the banner
+      // coming back is them opening their own cookie preferences from the footer, and closing the
+      // Guide on top of that would be the widget taking a decision away from them.
+      const decided = Boolean(window.BugitConsent && window.BugitConsent.hasDecision && window.BugitConsent.hasDecision());
+      if (state.open && consentUp() && !decided) closePanel(false);
+    }).observe(bannerEl, { attributes: true, attributeFilter: ["hidden"] });
+  }
 })();

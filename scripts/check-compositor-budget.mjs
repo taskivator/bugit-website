@@ -142,7 +142,11 @@ async function state({ menuOpen, zoom, broken }) {
   if (broken) {
     await ctx.route("**/styles*.css", async (route) => {
       const res = await route.fetch();
-      const body = await res.text();
+      // Line endings normalised first. A Windows checkout with core.autocrlf serves this file with
+      // CRLF, the mutation below is written with LF, and the control then rewrites NOTHING. It
+      // reported "never applied" rather than going green, which is the only reason this was visible
+      // at all, and it is why that report exists. CSS does not care which it gets.
+      const body = (await res.text()).split("\r\n").join("\n");
       if (body.includes(BREAK_FROM)) mutationBit = true;
       route.fulfill({ response: res, body: body.split(BREAK_FROM).join(BREAK_TO) });
     });

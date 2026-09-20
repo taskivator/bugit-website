@@ -20,6 +20,11 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const bank = JSON.parse(readFileSync(path.join(ROOT, "public/guide/prepared/en.json"), "utf8"));
 const entry = bank.items.find((i) => i.kind === "entry");
 const refund = bank.items.find((i) => i.id === "intent:refund-request");
+// The German half below asks in German, so it asks with the GERMAN bank's own wording. A sentence
+// invented here scored 0.56 against a threshold of 0.8 and was offered a list of questions instead
+// of an answer, which is the matcher behaving correctly and the test being wrong.
+const de = JSON.parse(readFileSync(path.join(ROOT, "public/guide/prepared/de.json"), "utf8"));
+const deRefund = de.items.find((i) => i.id === "intent:refund-request");
 
 const PORT = await new Promise((res, rej) => {
   const p = net.createServer();
@@ -48,7 +53,32 @@ try {
   const page = await ctx.newPage();
   const offsite = [];
   const asked = [];
+  const carried = [];   // requests that took part of the conversation with them, anywhere
+  const spoke = [];     // requests that were not a plain GET with no body
+  const typed = [];     // everything typed into the composer, so the watcher knows what to look for
+  // WHAT a request carries, not just where it goes. A question put in a header on the bank fetch
+  // leaves the browser exactly as surely as a request to another host, and this guard used to
+  // decide by hostname alone: a planted header shipped every conversation and nothing failed.
+  const readsAll = (r) => {
+    const url = r.url();
+    const method = r.method();
+    const post = r.postData() || "";
+    if (method !== "GET" || post) spoke.push(`${method} ${url}${post ? " body=" + post.slice(0, 60) : ""}`);
+    let head = "";
+    try { head = JSON.stringify(r.headers()); } catch (_) { head = ""; }
+    const hay = decodeURIComponent(`${url} ${head} ${post}`).toLowerCase();
+    for (const q of typed) {
+      const needle = q.toLowerCase().slice(0, 24);
+      if (needle.length > 8 && hay.includes(needle)) carried.push(`${needle} -> ${url.slice(0, 80)}`);
+    }
+  };
+  const ask = async (question) => {
+    typed.push(question);
+    await page.fill("#bgd-input", question);
+    await page.click(".bgd-send");
+  };
   page.on("request", (r) => {
+    readsAll(r);
     const url = r.url();
     if (url.startsWith(base) || url.startsWith("data:") || url.startsWith("blob:")) {
       if (url.includes("/public/guide/")) asked.push(url.slice(base.length - 1));
@@ -71,8 +101,7 @@ try {
   await page.evaluate(() => document.getElementById("consentBanner")?.remove());
 
   await page.click(".bgd-launch");
-  await page.fill("#bgd-input", entry.question);
-  await page.click(".bgd-send");
+  await ask(entry.question);
   await page.waitForSelector(".bgd-answer p", { timeout: 15000 });
   const answered = await page.textContent(".bgd-bot .bgd-answer");
   const first = entry.answer.split("\n")[0].replace(/[*`]/g, "").slice(0, 40);
@@ -80,32 +109,137 @@ try {
   check("the answers were downloaded only when the Guide was used", asked.some((u) => u.includes("prepared/en.json")));
 
   await page.click(".bgd-head .bgd-icon");   // new conversation
-  await page.fill("#bgd-input", "how many cats live in Tokyo");
-  await page.click(".bgd-send");
+  await ask("how many cats live in Tokyo");
   await page.waitForSelector(".bgd-bot .bgd-answer p", { timeout: 15000 });
   const unknown = await page.textContent(".bgd-bot .bgd-answer");
   check("a question it does not know is not answered", /don't have a confirmed answer|not sure which of these/i.test(unknown), unknown.slice(0, 80));
 
   await page.click(".bgd-head .bgd-icon");
-  await page.fill("#bgd-input", refund.question);
-  await page.click(".bgd-send");
+  await ask(refund.question);
   await page.waitForSelector(".bgd-hand a.bgd-mail", { timeout: 15000 });
   const href = await page.getAttribute(".bgd-hand a.bgd-mail", "href");
   check("a refund goes to a person, by email", href.startsWith("mailto:support@bugit.dev?subject="), href.slice(0, 60));
   check("the visitor's own question is in that email", decodeURIComponent(href).includes(refund.question.slice(0, 30)));
 
-  // The claim itself.
+  // EVERY CONTROL, because a leak hides in the one that is never pressed. A review put a beacon in
+  // the feedback button and a pixel in closePanel, and this guard passed without touching either.
+  // A missing control FAILS here: pressing what happens to be on screen is how four of these six
+  // went untouched for a whole review round while this file said "EVERY CONTROL". `force` because
+  // these are small buttons whose own label sits over them, and this is a network check, not a
+  // hit-area check.
+  const press = async (selector) => {
+    const el = page.locator(selector).first();
+    const there = await el.count();
+    check(`the control is on screen to be pressed: ${selector}`, there > 0);
+    if (there) await el.click({ force: true });
+  };
+  // Back to an ANSWERED turn, which is the only turn that has feedback buttons, a trail and
+  // related questions. The hand-off above has none of them.
+  await page.click(".bgd-head .bgd-icon");
+  await ask(entry.question);
+  await page.waitForSelector(".bgd-meta .bgd-tools .bgd-icon", { timeout: 15000 });
+  await press(".bgd-meta .bgd-tools .bgd-icon:nth-child(1)");               // copy
+  await press(".bgd-meta .bgd-tools .bgd-icon:nth-child(2)");               // useful
+  await press(".bgd-meta .bgd-tools .bgd-icon:nth-child(3)");               // not useful
+  await press(".bgd-trail summary");                                        // the disclosure
+  await press(".bgd-follow");                                               // a related question
+  await page.waitForSelector(".bgd-bot:nth-of-type(2), .bgd-me", { timeout: 15000 });
+  await page.waitForTimeout(400);
+  await press(".bgd-human");                                                // talk to a person
+  await page.waitForSelector(".bgd-hand a.bgd-mail", { timeout: 15000 });
+  await press(".bgd-expand");                                               // widen
+  await press(".bgd-expand");
+  await page.keyboard.press("Escape");                                      // close
+  await press(".bgd-launch");                                               // and open again
+  await page.reload({ waitUntil: "networkidle" });                         // restored from the tab
+  await page.evaluate(() => document.getElementById("consentBanner")?.remove());
+  await page.keyboard.press("/");
+  check("the conversation survives a reload", (await page.$$(".bgd-bot")).length > 0);
+
+  // The claim itself, in its three parts: nothing went to another host, nothing carried the
+  // conversation anywhere at all, and nothing spoke rather than read.
   check("NOTHING left this origin but the site's own account check", offsite.length === 0, offsite.slice(0, 4).join(", "));
-  check("no script errors", errors.length === 0, errors[0] || "");
+  check("no request carried any part of the conversation", carried.length === 0, carried.slice(0, 3).join(", "));
+  check("every request was a plain GET with no body", spoke.length === 0, spoke.slice(0, 3).join(", "));
+
+  // NEGATIVE CONTROL for the watcher above: it has to be able to see a request leave. Without this,
+  // a watcher that never fires and a page that never leaks look exactly the same.
+  await page.evaluate(() => { new Image().src = "https://control.invalid/proof"; });
+  await page.waitForTimeout(300);
+  check("the watcher can actually see a request leave", offsite.some((u) => u.includes("control.invalid")), offsite.join(", "));
+  offsite.length = 0;
+
+  // AND THAT IT CAN SEE A SAME-ORIGIN ONE CARRY THE CONVERSATION. This is the shape the review
+  // planted: a header on a request to this site's own files, which every check above passed.
+  await page.evaluate(() => fetch("/public/guide/sources.json", { headers: { "x-proof": "how many cats live in Tokyo" } }).catch(() => {}));
+  await page.evaluate(() => fetch("/public/guide/sources.json", { method: "POST", body: "proof" }).catch(() => {}));
+  await page.waitForTimeout(400);
+  check("the watcher can see the conversation ride along on a same-origin request", carried.length > 0);
+  check("the watcher can see a request that speaks rather than reads", spoke.length > 0);
+  carried.length = 0;
+  spoke.length = 0;
+
+  // C1: the launcher hides while the banner is up, but the PANEL had two ways past it, the "/"
+  // shortcut and a saved open state after a reload. A first visitor was asked two things at once.
+  const fresh = await ctx.newPage();
+  await fresh.goto(base, { waitUntil: "networkidle" });
+  await fresh.keyboard.press("/");
+  check("the shortcut cannot open the Guide over the consent banner", !(await fresh.isVisible(".bgd-panel")));
+  await fresh.evaluate(() => sessionStorage.setItem("bugitGuide.v1", JSON.stringify({ open: true, wide: false, turns: [] })));
+  await fresh.reload({ waitUntil: "networkidle" });
+  check("a saved open state does not reopen it over the banner", !(await fresh.isVisible(".bgd-panel")));
+  await fresh.evaluate(() => document.getElementById("consentBanner")?.remove());
+  await fresh.click(".bgd-launch");
+  check("and it opens normally once the banner is gone", await fresh.isVisible(".bgd-panel"));
+  await fresh.close();
 
   // German, to prove the language rule and a second bank.
   await page.click(".bgd-head .bgd-icon");
-  await page.fill("#bgd-input", "Wie viel kostet BugIt und wie kann ich es kaufen?");
-  await page.click(".bgd-send");
+  await ask("Wie viel kostet BugIt und wie kann ich es kaufen?");
   await page.waitForSelector(".bgd-bot .bgd-answer p", { timeout: 15000 });
   const german = await page.textContent(".bgd-bot .bgd-answer");
   check("a German question is answered in German", /[äöüß]|BugIt kostet|Lizenz/i.test(german), german.slice(0, 80));
+
+  // A German answer inside an English card was the split the owner's language rule exists to prevent.
+  await ask(deRefund.question);
+  await page.waitForSelector(".bgd-hand a.bgd-mail", { timeout: 15000 });
+  const card = await page.textContent(".bgd-hand");
+  check("the card around a German answer is German too", /[äöüß]|Support|E-Mail/.test(card) && !card.includes("Email support"), card.slice(0, 80));
+
+  // "Talk to a person" after a German answer. The card it builds is a different code path from the
+  // automatic hand-off above, and it took the SITE's language: a German answer with an English card
+  // under it was the exact split the owner's language rule exists to prevent.
+  await page.click(".bgd-head .bgd-icon");
+  await ask("Wie viel kostet BugIt und wie kann ich es kaufen?");
+  await page.waitForSelector(".bgd-bot .bgd-answer p", { timeout: 15000 });
+  const answerLang = await page.getAttribute(".bgd-bot .bgd-answer", "lang");
+  check("the answer itself is marked as the language it is written in", answerLang === "de", String(answerLang));
+  await page.click(".bgd-human");
+  await page.waitForSelector(".bgd-hand a.bgd-mail", { timeout: 15000 });
+  const manual = await page.textContent(".bgd-hand");
+  check("asking for a person after a German answer gives a German card", /[äöüß]|Support|E-Mail/.test(manual) && !manual.includes("Email support"), manual.slice(0, 80));
+
+  // HALF AN EMOJI. encodeURIComponent throws on one half of a surrogate pair, and the hand-off used
+  // to cut the question at a fixed length, which can land between the two: the visitor was left
+  // with no email link at all, which is the only route to a person this build has.
+  await page.click(".bgd-head .bgd-icon");
+  await page.evaluate(() => {
+    const el = document.getElementById("bgd-input");
+    el.value = "Refund please " + String.fromCharCode(0xd83d);   // a lone high surrogate
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.click(".bgd-send");
+  await page.waitForSelector(".bgd-bot", { timeout: 15000 });
+  await page.click(".bgd-human");
+  await page.waitForSelector(".bgd-hand a.bgd-mail", { timeout: 15000 });
+  const half = await page.getAttribute(".bgd-hand a.bgd-mail", "href");
+  check("a question holding half an emoji still produces an email link", Boolean(half && half.startsWith("mailto:")), String(half).slice(0, 40));
+
   check("still nothing left this origin", offsite.length === 0, offsite.slice(0, 4).join(", "));
+  check("and still nothing carried the conversation", carried.length === 0 && spoke.length === 0, carried.concat(spoke).slice(0, 3).join(", "));
+  // Last, so that everything above is inside it: this used to sit mid-file and could not fail for
+  // anything that came after.
+  check("no script errors", errors.length === 0, errors[0] || "");
 } finally {
   await browser.close();
   server.kill();
