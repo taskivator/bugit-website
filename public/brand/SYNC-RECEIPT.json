@@ -3,11 +3,12 @@
   "generatedFrom": "taskivator-brand-source-of-truth/dist/brand",
   "note": "sha256 of file contents; text files hashed with CR stripped so CRLF checkouts are not false drift",
   "files": {
-    "public/brand/MANIFEST.json": "f9d7f52b5699ebba8b2501db9111344da71704535715aeb9a13ba81d2f7852f0",
+    "public/brand/MANIFEST.json": "ca895bc726ee63b3dfdc747709b34c267deeb317701dd8a955bf76aa26960aed",
     "public/brand/blip-bugit.svg": "b8a0e1698ada04cf840af08163664b46cc3035c0fc1a4c51d0fd746e95bd63a4",
     "public/brand/blip-buildit.svg": "c26d750b35b6c09aed557c840b1ca4c7b5ee9252896a2147709b7bb65f0348c8",
     "public/brand/blip-deployit.svg": "b5ec3a2389b977ab9b84fa39e8b97ee42fbe1a8e6b3692ff3898f801502e14b2",
     "public/brand/blip-docsit.svg": "8e7e09f938155724a7453d5eed8a6e867a10df2ca6f8721fdb18f9b5a1478fbc",
+    "public/brand/blip-guide.svg": "5423114a168bacf0284849f94ce7d0feb1d275f1c6878cccbd86066ffe582e82",
     "public/brand/blip-logo.svg": "b8a0e1698ada04cf840af08163664b46cc3035c0fc1a4c51d0fd746e95bd63a4",
     "public/brand/blip-main.svg": "4e79dc17ba39dcaa8f66a12a4f44cf791ea95859f69eaba56033b9da3268f7b8",
     "public/brand/blip-mark.svg": "4e79dc17ba39dcaa8f66a12a4f44cf791ea95859f69eaba56033b9da3268f7b8",

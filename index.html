@@ -136,7 +136,30 @@
   <main id="homeView" tabindex="-1">
     <section id="top" class="hero shell">
       <div class="hero-copy">
-        <div class="pill"><span></span> <span data-t="hero.badge">BugIt QA Agent</span></div>
+        <!-- ASK BUGIT. This replaced the static "BugIt QA Agent" pill on 2026-09-20. The pill
+             restated the product's own name, which a visitor can already read in the nav and the
+             title; this opens the on-page Guide, which is the thing almost nobody discovers. The
+             Guide also has a launcher pinned to the corner, but a corner bubble is exactly the
+             shape people have learned to ignore, so the hero says it out loud instead.
+
+             It is a real <button> with a STABLE accessible name (hero.askCta). The question text
+             inside rotates and is aria-hidden on purpose: a name that changes every few seconds
+             cannot be spoken by a voice-control user and re-announces itself to a screen reader
+             every time it changes. The visible rotation is decoration over a fixed promise. -->
+        <button type="button" class="askbar" id="askBar" aria-haspopup="dialog" aria-controls="bgd-panel"
+                data-t-aria="hero.askCta" aria-label="Ask BugIt anything and get an instant answer">
+          <span class="askbar-orb" aria-hidden="true">
+            <img src="/public/brand/blip-guide.svg" alt="" width="54" height="54" />
+          </span>
+          <span class="askbar-body" aria-hidden="true">
+            <span class="askbar-label" data-t="hero.askLabel">Ask BugIt</span>
+            <span class="askbar-q"><span class="askbar-q-text" id="askBarQ"></span><i class="askbar-caret"></i></span>
+          </span>
+          <kbd class="askbar-kbd" aria-hidden="true">/</kbd>
+          <span class="askbar-go" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12h13"/><path d="m12 5 7 7-7 7"/></svg>
+          </span>
+        </button>
         <h1 class="hero-title" data-html="hero.title">The AI QA engineer that <span>learns your project.</span></h1>
         <p data-t="hero.subtitle">BugIt learns your project: its terminology, severity rules, and past tickets. Then it turns rough notes into reviewed, duplicate-checked, privacy-safe reports, ready for your tracker.</p>
         <div class="metrics">

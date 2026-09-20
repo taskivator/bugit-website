@@ -129,6 +129,15 @@ const SUITES = [
   // each other by scripts/check-ci-coverage.mjs.
   "check-assets.mjs", "check-chrome-a11y.mjs",
   "check-doc-links.mjs", "check-docs.mjs", "check-overflow.mjs", "check-mission-pause.mjs", "check-logo.mjs",
+  // check-logo asks whether the marks are drawn correctly. This asks whether the
+  // Guide's INLINE copy of its mark still says the same thing as the generated
+  // file -- the one place on this site where brand artwork is hand-copied.
+  "check-guide-blip.mjs",
+  // check-guide.mjs is the Guide's behaviour guard and it is thorough -- in ONE browser at
+  // ONE size. Until 2026-09-20 the customer-facing chatbot had never been opened by this
+  // repository in Firefox, in WebKit (which is every browser on iOS), on a phone or on a
+  // tablet. Thorough in one configuration reads as coverage for all of them.
+  "check-guide-devices.mjs",
   // check-docs proves the served guides match guides-manifest.json. check-guides-fresh proves
   // that manifest is the agent's CURRENT publication -- a different question, and a stale sync
   // is perfectly self-consistent. On 2026-08-31 the site served the pre-fix guides all day with

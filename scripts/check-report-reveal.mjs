@@ -152,7 +152,17 @@ for (const view of VIEWS) {
       const r = document.getElementById("reportMoreToggle").getBoundingClientRect();
       return { x: r.left + r.width / 2, y: r.top + r.height / 2, top: r.top, bottom: r.bottom, vh: innerHeight };
     });
-    if (box.top < 0 || box.bottom > box.vh) {
+    // A CSS pixel of slack, because the subject is REACHABILITY and layout is fractional.
+    // Measured 2026-09-21: after scrollIntoView({block:"nearest"}) this control sits 0.297px
+    // (iPhone 13) to 0.406px (1440x900) past the fold, because its own height is fractional
+    // (65.813px, 66.906px) and "nearest" scrolls the minimum. It had always been fractional;
+    // a layout shift elsewhere on the page merely changed which side of the integer it fell on,
+    // which is why this guard went red without the control moving anywhere a finger could tell.
+    // Slack of one pixel keeps every real finding -- a control actually under the fold misses by
+    // tens of pixels, as this guard's own history shows -- and drops a class of false red that
+    // says nothing about whether a reader can press the thing.
+    const EDGE_SLACK = 1;
+    if (box.top < -EDGE_SLACK || box.bottom > box.vh + EDGE_SLACK) {
       fail.push(`${label}: the control is not fully on screen to be pressed (${Math.round(box.top)}..${Math.round(box.bottom)} of ${box.vh})`);
       await browser.close(); continue;
     }

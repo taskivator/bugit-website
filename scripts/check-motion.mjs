@@ -132,7 +132,10 @@ try {
   await page.waitForTimeout(1800);
   const heroDone = await page.evaluate(() => {
     const g = (s) => { const e = document.querySelector(s); return e ? +getComputedStyle(e).opacity : null; };
-    return { title: g(".hero-title"), pill: g(".pill"), metrics: g(".metrics div"),
+    // .askbar replaced the old .pill chip on 2026-09-20. Renamed rather than dropped: the
+    // question this asks -- does every part of the hero finish its opening fully opaque -- is
+    // exactly as worth asking about the new control.
+    return { title: g(".hero-title"), askbar: g(".askbar"), metrics: g(".metrics div"),
              actions: g(".actions"), panel: g(".mission-wrap"), under: g(".under") };
   });
   for (const [k, v] of Object.entries(heroDone)) {

@@ -138,7 +138,11 @@ try {
 
   // The negative control. Put the incident back and require the scanner to catch it, otherwise
   // a pass above proves only that nothing was read.
-  await page.addStyleTag({ content: ".pill{text-transform:uppercase !important}" });
+  // .askbar-label, not .pill: the hero chip was renamed on 2026-09-20 and this control went on
+  // injecting a rule that matched nothing. It did not pass -- it reported itself blind, which is
+  // the whole reason it is here. A renamed element must be followed, or the control decays into
+  // a line that always says "no finding".
+  await page.addStyleTag({ content: ".askbar-label{text-transform:uppercase !important}" });
   await page.waitForTimeout(60);
   const control = await page.evaluate(SCAN, BRAND);
   const caught = control.wrong.find((w) => w.seen === BRAND.toUpperCase());

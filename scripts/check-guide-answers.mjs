@@ -20,6 +20,17 @@ import { performance } from "node:perf_hooks";
 import { ANSWER_AT, answerFor, buildPreparedBank, contentWords, guessLanguage, languageFromBank, matchPrepared, normalizeExact, relatedTo, termsOf, undash } from "../public/guide/match.js";
 
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
+// Read a source file with its line endings NORMALISED.
+//
+// This repo has no .gitattributes and core.autocrlf is on, so git checks these
+// files out CRLF on Windows and LF on CI's Linux runner. Several assertions below
+// read guide.js as text and find the I18N table with patterns containing a literal
+// newline. On a CRLF checkout those matched ZERO times, and the guard then reported
+// "0 language sections" -- which reads as eleven missing translations and is
+// actually a line ending. Red on every fresh Windows clone, green in CI forever,
+// and the failure names the wrong thing, which is the worst part. Normalising on
+// read costs nothing and removes the whole class.
+const readText = (p) => readFileSync(here(p), "utf8").replace(/\r\n/g, "\n");
 const load = (lang) => JSON.parse(readFileSync(here(`../public/guide/prepared/${lang}.json`), "utf8"));
 const bankOf = (...langs) => buildPreparedBank(langs.map(load));
 
@@ -147,7 +158,7 @@ test("NEGATIVE CONTROL: a question that only half matches is offered, never answ
 test("the starter cards the Guide offers can all be answered by the bank it reads", () => {
   // Two could not: tapping them showed "I'm not sure which of these you mean", the Guide failing its
   // own suggestion. They are the first thing a visitor sees, in every language.
-  const widget = readFileSync(here("../public/guide/guide.js"), "utf8");
+  const widget = readText("../public/guide/guide.js");
   const table = widget.slice(widget.indexOf("const I18N = {"), widget.indexOf("---------- helpers"));
   const langs = [...table.matchAll(/\n    "?([a-z-]+)"?: \{/g)].map((m) => m[1]);
   const cardSets = [...table.matchAll(/cards: \[(.*?)\],\n/gs)].map((m) => [...m[1].matchAll(/q: "((?:[^"\\]|\\.)*)"/g)].map((x) => x[1]));
@@ -222,7 +233,7 @@ test("a long question cannot lock up the page it runs in", () => {
 });
 
 test("every label the widget asks for exists in all eleven languages", () => {
-  const widget = readFileSync(here("../public/guide/guide.js"), "utf8");
+  const widget = readText("../public/guide/guide.js");
   const table = widget.slice(widget.indexOf("const I18N = {"), widget.indexOf("---------- helpers"));
   const langs = [...table.matchAll(/\n    "?([a-z-]+)"?: \{\n/g)].map((m) => m[1]);
   const asked = new Set([...widget.matchAll(/\bt\("([a-zA-Z]+)"/g)].map((m) => m[1]));
@@ -263,7 +274,7 @@ test("no answer carries a dash of any kind, in any language", () => {
 });
 
 test("the widget asks for nothing but this site's own files", () => {
-  const widget = readFileSync(here("../public/guide/guide.js"), "utf8");
+  const widget = readText("../public/guide/guide.js");
   const fetches = [...widget.matchAll(/fetch\(([^,)]+)/g)].map((m) => m[1].trim());
   assert.deepEqual(fetches, ['BANK_BASE + code + ".json"', "SOURCES_URL"]);
   for (const forbidden of ["anthropic", "api.", "challenges.cloudflare.com", "/api/guide"]) {
@@ -278,7 +289,7 @@ test("the widget asks for nothing but this site's own files", () => {
  * and check-guide.mjs because it never clicks feedback and never closes the panel.
  */
 test("the widget's fetches may read, and may not speak", () => {
-  const code = readFileSync(here("../public/guide/guide.js"), "utf8");
+  const code = readText("../public/guide/guide.js");
   // A request is not safe because of where it goes. `fetch(url, { headers: { "x-q": question } })`
   // is same-origin, is a GET, and hands the conversation to this site's CDN: the browser guard
   // used to pass it and so did every test here. The only second argument allowed is the one that
@@ -294,7 +305,7 @@ test("the widget's fetches may read, and may not speak", () => {
 });
 
 test("no other way of speaking to the network is in the widget at all", () => {
-  const code = readFileSync(here("../public/guide/guide.js"), "utf8") + readFileSync(here("../public/guide/match.js"), "utf8");
+  const code = readText("../public/guide/guide.js") + readText("../public/guide/match.js");
   const ways = [
     /\bsendBeacon\b/, /\bnew Image\b/, /\bWebSocket\b/, /\bEventSource\b/, /\bXMLHttpRequest\b/,
     /\bnavigator\.geolocation\b/, /\bimport\s*\(/, /\bRTCPeerConnection\b/, /\bBroadcastChannel\b/,

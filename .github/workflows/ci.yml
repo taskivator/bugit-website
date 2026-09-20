@@ -111,6 +111,9 @@ jobs:
       - name: Verify BugIt logo highlight is clipped (upper-corner artifact guard)
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-logo.mjs
+      - name: Verify the Guide's inline mark matches the generated one
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-guide-blip.mjs
       # The brand source of truth lives outside this repo and outside git, so CI
       # here cannot regenerate the assets to compare against them — which is why
       # brand staleness kept going unnoticed twice, each time as a pipeline step
@@ -505,6 +508,13 @@ jobs:
       - name: Install Firefox for the forced-colours sweep
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: npx playwright install --with-deps firefox
+      # All three engines exist by this point: chromium and webkit from the consent-test
+      # install above, firefox from the line right before this one. The Guide had never been
+      # opened by CI in Firefox, in WebKit, on a phone or on a tablet: check-guide.mjs is
+      # Chromium at 1280x900 and nothing else.
+      - name: Verify the Guide works on every engine and every screen size
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-guide-devices.mjs
       - name: Verify Windows High Contrast still shows focus and every control's edge
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-forced-colors.mjs

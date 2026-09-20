@@ -8429,3 +8429,207 @@
     .footer nav{gap:10px 18px}
   }
 }
+
+@layer fixes {
+  /* =========================================================================
+     ASK BUGIT  -  the hero's entry point into the on-page Guide (2026-09-20)
+
+     Replaces the old "BugIt QA Agent" pill. The Guide already ships a launcher
+     pinned to the corner, and a corner bubble is the one shape visitors have
+     trained themselves not to see, so the hero states it instead: an input-
+     shaped control that types real questions to itself.
+
+     It is NOT an input. It is a button that looks like a place to type, which
+     is the whole point: the affordance says "ask", the semantics say "opens a
+     dialog", and the accessible name never changes while the visible text does.
+
+     Motion budget: ONE rotating element (the conic ring) and one blinking
+     caret, both transform/opacity only, both stopped under reduced motion,
+     when the tab is hidden, and when the bar scrolls out of view. No blurs:
+     the phone compositor-memory gate counts those.
+     ========================================================================= */
+
+  .askbar{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:13px;
+    width:min(100%,592px);
+    min-height:62px;
+    margin:0;
+    padding:9px 10px 9px 9px;
+    border:0;
+    border-radius:18px;
+    overflow:hidden;            /* clips the oversized conic ring to the rounded box */
+    isolation:isolate;          /* keeps the ring's negative z-index inside this button */
+    cursor:pointer;
+    text-align:start;
+    color:var(--text);
+    background:transparent;
+    box-shadow:0 20px 54px rgba(141,76,255,.20);
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* The ring. An oversized conic gradient spun by transform and clipped by the
+     parent's overflow. Animating a rotation is cheap; animating a gradient's
+     angle needs @property and is not universal. */
+  .askbar::before{
+    content:'';
+    position:absolute;
+    left:50%; top:50%;
+    width:210%; aspect-ratio:1;
+    z-index:-2;
+    translate:-50% -50%;
+    background:conic-gradient(from 0deg,
+      rgba(141,76,255,0) 0deg,
+      var(--purple) 58deg,
+      var(--pink) 96deg,
+      var(--hot) 124deg,
+      rgba(255,79,201,0) 176deg,
+      rgba(141,76,255,0) 360deg);
+    animation:askSpin 5.6s linear infinite;
+  }
+  /* The face, inset by the ring's thickness. */
+  .askbar::after{
+    content:'';
+    position:absolute;
+    inset:1.6px;
+    z-index:-1;
+    border-radius:16.4px;
+    background:
+      radial-gradient(120% 180% at 0% 50%, rgba(141,76,255,.20), transparent 62%),
+      rgba(9,6,18,.94);
+  }
+  @keyframes askSpin{ to{ rotate:360deg } }
+
+  .askbar>*{ position:relative; z-index:1 }
+
+  .askbar-orb{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    display:grid; place-items:center;
+  }
+  .askbar-orb img{ width:54px; height:54px; max-width:none; margin:-5px; display:block }
+
+  .askbar-body{ flex:1 1 auto; min-width:0; display:block }
+
+  .askbar-label{
+    display:block;
+    /* 12px, not 11: check-type-floor holds the sheet to an 11.5px minimum and 11px broke it in
+       five languages at four widths. And NOT uppercase: the product name is cased BugIt
+       everywhere, and text-transform breaks that at render time while leaving the source string
+       looking perfect, which is why check-brand-casing caught "ASK BUGIT" in all eleven
+       languages and no source scan could have. An eyebrow can be small, heavy and tracked
+       without being capitals. */
+    font-size:12px;
+    font-weight:950;
+    letter-spacing:1.2px;
+    color:#f0a8e0;
+    line-height:1.1;
+    margin-bottom:3px;
+  }
+
+  /* Fixed height so a longer question cannot nudge the headline: the typed text
+     changes every few seconds and layout must not move with it. */
+  .askbar-q{
+    display:block;
+    min-height:1.36em;
+    font-size:16px;
+    font-weight:700;
+    line-height:1.36;
+    color:#fff;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .askbar-caret{
+    display:inline-block;
+    width:2px; height:1.02em;
+    margin-inline-start:3px;
+    vertical-align:-2px;
+    background:var(--pink);
+    animation:askBlink 1.05s steps(1) infinite;
+  }
+  @keyframes askBlink{ 0%,50%{opacity:1} 51%,100%{opacity:0} }
+
+  .askbar-kbd{
+    flex:0 0 auto;
+    display:grid; place-items:center;
+    min-width:26px; height:26px;
+    padding:0 7px;
+    border-radius:7px;
+    border:1px solid rgba(255,255,255,.22);
+    background:rgba(255,255,255,.08);
+    font:800 12px/1 var(--font-sans);
+    color:#e9d9ff;
+  }
+  .askbar-go{
+    flex:0 0 auto;
+    display:grid; place-items:center;
+    width:38px; height:38px;
+    border-radius:12px;
+    background:linear-gradient(100deg,var(--purple),var(--pink));
+    color:#fff;
+    transition:transform .22s ease;
+  }
+  .askbar-go svg{ width:19px; height:19px }
+  /* RTL: the arrow is direction, not decoration. */
+  [dir="rtl"] .askbar-go svg{ transform:scaleX(-1) }
+
+  @media (hover:hover){
+    .askbar:hover{ box-shadow:0 24px 62px rgba(255,79,201,.28) }
+    .askbar:hover .askbar-go{ transform:translateX(3px) }
+    [dir="rtl"] .askbar:hover .askbar-go{ transform:translateX(-3px) }
+    .askbar:hover::before{ animation-duration:2.6s }
+  }
+  .askbar:active{ transform:translateY(1px) }
+
+  /* The focus ring sits OUTSIDE, so overflow:hidden must not eat it. */
+  .askbar:focus-visible{ outline:2px solid var(--pink); outline-offset:3px }
+
+  @media (max-width:1320px){
+    .askbar{ width:min(100%,560px) }
+  }
+  @media (max-width:560px){
+    .askbar{ gap:11px; min-height:58px; padding:8px 9px 8px 8px; border-radius:16px }
+    .askbar::after{ border-radius:14.4px }
+    .askbar-orb{ width:40px; height:40px }
+    .askbar-orb img{ width:48px; height:48px; margin:-4px }
+    .askbar-q{ font-size:15px }
+    .askbar-kbd{ display:none }        /* no physical keyboard to press it with */
+    .askbar-go{ width:34px; height:34px }
+  }
+
+  /* The narrowest phones get the label alone. Measured across 11 languages x 8 widths: at 320px
+     and 360px the question overflows in up to five languages (Russian by 57px, and 34px over the
+     arrow), while every width from 390 up fits in all eleven. The question is decorative -- its
+     wrapper is aria-hidden and .askbar-label already names the control -- so it is dropped here
+     rather than clipped, which is what an ellipsis on a half-typed sentence looks like. */
+  @media (max-width:383px){
+    .askbar-q{ display:none }
+  }
+
+  /* Reduced motion: no spin, no blink, no travel. The ring becomes a plain
+     gradient edge so the control still reads as the brightest thing in the
+     hero, which is the job it was added to do. */
+  @media (prefers-reduced-motion:reduce){
+    .askbar::before{
+      animation:none;
+      background:linear-gradient(100deg,var(--purple),var(--pink),var(--hot));
+      width:100%; aspect-ratio:auto; height:100%;
+    }
+    .askbar-caret{ animation:none; opacity:1 }
+    .askbar-go,.askbar:hover .askbar-go{ transition:none; transform:none }
+    .askbar:hover::before{ animation:none }
+  }
+
+  /* Windows High Contrast. Gradients and shadows are dropped by the OS anyway;
+     without this the control loses its edge entirely and reads as bare text. */
+  @media (forced-colors:active){
+    .askbar{ border:2px solid ButtonText; background:ButtonFace; color:ButtonText; box-shadow:none }
+    .askbar::before,.askbar::after{ display:none }
+    .askbar-orb,.askbar-go{ background:none; box-shadow:none; forced-color-adjust:none; color:ButtonText }
+    .askbar-label,.askbar-q{ color:ButtonText }
+    .askbar-caret{ background:ButtonText }
+  }
+}

@@ -500,12 +500,21 @@ async function selfCloseHolds(engineName, engine, deviceName) {
        50ms short produced two findings on two different controls. */
     await page.waitForTimeout(1100);
     const st = await page.evaluate((elId) => {
+      const EDGE = 8;   // see the note on `reachable` below
       const el = document.getElementById(elId);
       const r = el.getBoundingClientRect();
       return {
         expanded: el.getAttribute("aria-expanded") === "true",
-        reachable: r.top >= -1 && r.bottom <= window.innerHeight + 1 &&
-                   r.left >= -1 && r.right <= window.innerWidth + 1,
+        /* REACHABLE MEANS A FINGER CAN GET TO IT, not that the box is perfectly inside.
+           Measured 2026-09-21, webkit/iPhone SE: expanding #mcStepsToggle moves it down about
+           5px, which put its bottom 3.24px past the fold, and this read that as a reader
+           stranded on a locked page. They were not: `locked` was FALSE, the page scrolled
+           normally, and 40 of the control's 43px were on screen. The defect this guard exists
+           for measures top -888 (see the negative control), so a margin of 8px keeps every real
+           finding and drops the class where a layout shift elsewhere nudges a control a few
+           pixels over an edge it was already sitting on. */
+        reachable: r.top >= -EDGE && r.bottom <= window.innerHeight + EDGE &&
+                   r.left >= -EDGE && r.right <= window.innerWidth + EDGE,
         locked: getComputedStyle(document.body).position === "fixed",
         top: Math.round(r.top),
       };

@@ -32,6 +32,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 //   blip-logo  — the primary logo (mascot + magnifier)
 //   blip-bugit — a byte-identical alias of the primary logo
 //   blip-main / blip-mark — the BugIt mascot mark (no magnifier)
+//   blip-guide — the Guide/assistant face (mascot + speech bubble)
 //   favicon    — the static favicon mark
 // The other blip-*.svg files (buildit/deployit/docsit/planit/reviewit/testit/
 // watchit) are SEPARATE Taskivator product marks — deliberately out of scope, so
@@ -42,6 +43,10 @@ const LOGO_SVGS = [
   "public/brand/blip-bugit.svg",
   "public/brand/blip-main.svg",
   "public/brand/blip-mark.svg",
+  // blip-guide — the Guide/assistant face. Same BugIt body and the same white
+  // highlight, so the same artifact is possible; it is in scope for exactly the
+  // reason blip-logo is, and was added the day the mark was cut.
+  "public/brand/blip-guide.svg",
   "public/brand/favicon.svg",
 ];
 

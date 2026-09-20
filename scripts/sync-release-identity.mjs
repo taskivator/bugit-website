@@ -237,7 +237,14 @@ const next = JSON.stringify(identity, null, 2) + "\n";
 const current = existsSync(out) ? readFileSync(out, "utf8") : "";
 
 if (check) {
-  if (current !== next) {
+  /* COMPARED BY VALUE, NOT BY BYTES. This repo has no .gitattributes and core.autocrlf=true, so
+     a Windows working tree holds verify.json with CRLF while this script writes LF, and the
+     whole-file comparison then fails with every field identical. That is exactly how it read on
+     2026-09-21: version, hash, key and file count all matched and it still called the release
+     stale. On Linux CI the same tree passes, so the disagreement was invisible there. The subject
+     of this check is the VALUES a customer compares against, and a line ending is not one. */
+  const norm = (t) => t.split(String.fromCharCode(13)).join("");
+  if (norm(current) !== norm(next)) {
     console.error("FAIL: verify.json does not describe the current release.\n" +
       `  published: ${JSON.parse(current || "{}").version ?? "(none)"} / ` +
       `${(JSON.parse(current || "{}").archive_sha256 ?? "").slice(0, 16)}\n` +

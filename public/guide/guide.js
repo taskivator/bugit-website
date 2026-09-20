@@ -271,7 +271,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   let blipCount = 0;
   function blip() {
     const n = ++blipCount;
-    return `<svg class="bgd-blip" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><linearGradient id="bgdg${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF2E9A"/><stop offset="1" stop-color="#C21C79"/></linearGradient><clipPath id="bgdc${n}"><rect x="20" y="22" width="60" height="60" rx="20"/></clipPath></defs><g class="b-float"><rect x="30" y="82" width="12" height="8" rx="4" fill="#C21C79"/><rect x="58" y="82" width="12" height="8" rx="4" fill="#C21C79"/><rect x="20" y="22" width="60" height="60" rx="20" fill="url(#bgdg${n})"/><rect x="20" y="22" width="60" height="30" rx="20" fill="#fff" opacity=".12" clip-path="url(#bgdc${n})"/><g class="b-eye"><circle cx="50" cy="50" r="15" fill="#17101a"/><g class="b-look"><circle cx="45.8" cy="44.9" r="4.5" fill="#fff"/><circle cx="53.9" cy="54.5" r="2.1" fill="#fff" opacity=".55"/></g></g><path d="M43 68 Q50 74.3 57 68" fill="none" stroke="#17101a" stroke-width="2.4" stroke-linecap="round"/></g></svg>`;
+    return `<svg class="bgd-blip" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><linearGradient id="bgdg${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF2E9A"/><stop offset="1" stop-color="#C21C79"/></linearGradient><clipPath id="bgdc${n}"><rect x="20" y="22" width="60" height="60" rx="20"/></clipPath></defs><g class="b-float"><rect x="30" y="82" width="12" height="8" rx="4" fill="#C21C79"/><rect x="58" y="82" width="12" height="8" rx="4" fill="#C21C79"/><rect x="20" y="22" width="60" height="60" rx="20" fill="url(#bgdg${n})"/><rect x="20" y="22" width="60" height="30" rx="20" fill="#fff" opacity=".12" clip-path="url(#bgdc${n})"/><g class="b-eye"><circle cx="50" cy="50" r="15" fill="#17101a"/><g class="b-look"><circle cx="45.8" cy="44.9" r="4.5" fill="#fff"/><circle cx="53.9" cy="54.5" r="2.1" fill="#fff" opacity=".55"/></g></g><path d="M43 68 Q50 74.3 57 68" fill="none" stroke="#17101a" stroke-width="2.4" stroke-linecap="round"/><g class="b-tool"><g transform="translate(66 64) scale(1.16)"><path d="M-11 -8 H9 A3.6 3.6 0 0 1 12.6 -4.4 V3.4 A3.6 3.6 0 0 1 9 7 H-1.4 L-6.6 11.4 V7 H-11 A3.6 3.6 0 0 1 -14.6 3.4 V-4.4 A3.6 3.6 0 0 1 -11 -8 Z" fill="#fff" stroke="#17101a" stroke-width="2"/><circle class="b-dot" cx="-6" cy="-.5" r="1.9" fill="#17101a"/><circle class="b-dot d2" cx="-.6" cy="-.5" r="1.9" fill="#17101a"/><circle class="b-dot d3" cx="4.8" cy="-.5" r="1.9" fill="#17101a"/></g></g></g></svg>`;
   }
 
 
@@ -1313,6 +1313,34 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   load();
   document.body.append(root);
   applyLang();
+
+  // ---------------------------------------------------------------- public API
+  // The hero's "Ask BugIt" bar opens the Guide through this, NOT by synthesising a click on the
+  // launcher. Three reasons the click would be wrong: the launcher TOGGLES, so a visitor pressing
+  // the hero bar while the panel is already open would close the thing they just asked for; the
+  // launcher is hidden by CSS while the consent banner is up, so there would be nothing to click;
+  // and it makes the hero depend on a class name instead of a contract.
+  //
+  // `open()` RETURNS whether it opened. It can legitimately refuse, because the Guide will not
+  // cover the consent banner, and a caller that cannot tell the difference between "opened" and
+  // "silently did nothing" ends up shipping a dead button.
+  window.BugitGuide = {
+    open() {
+      if (consentUp()) return false;
+      openPanel(true);
+      return true;
+    },
+    close() { closePanel(false); },
+    isOpen() { return state.open; },
+    canOpen() { return !consentUp(); },
+  };
+  // Fired once, after the API exists. A hero button that loads first listens for this rather than
+  // polling, and anything that arrives later can just read window.BugitGuide.
+  try {
+    document.dispatchEvent(new CustomEvent("bugit-guide:ready"));
+  } catch (_) {
+    /* CustomEvent is ancient; if it is missing the bar falls back to the launcher click */
+  }
   // A saved "open" from before a reload reopens the panel, but not over the consent banner.
   //
   // WHEN that question is asked decides the answer. app.js shows the banner from its own

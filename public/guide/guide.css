@@ -255,6 +255,18 @@ body:has(#consentBanner:not([hidden])) .bgd-launch{display:none}
 @keyframes bgd-bB{0%,88%,100%{transform:scaleY(1)}93%{transform:scaleY(.12)}}
 @keyframes bgd-bL{0%,26%{transform:translate(0,0)}40%,58%{transform:translate(3px,.4px)}72%,90%{transform:translate(-2.4px,0)}100%{transform:translate(0,0)}}
 @keyframes bgd-read{0%,100%{transform:translate(-3px,1px)}50%{transform:translate(3px,1px)}}
+/* The speech bubble and its typing dots. Same figures as the generated
+   public/brand/blip-guide.svg, which scripts/check-guide-blip.mjs enforces --
+   the mark is defined once, in the brand source, and this is a copy that is not
+   allowed to drift. The dots quicken while an answer is being composed, so the
+   mark carries the same "working" signal the eye already does. */
+.bgd-blip .b-tool{transform-box:view-box;transform-origin:66px 64px;animation:bgd-bT 3.1s ease-in-out infinite}
+.bgd-blip .b-dot{transform-box:view-box;animation:bgd-bD 1.5s ease-in-out infinite}
+.bgd-blip .b-dot.d2{animation-delay:.18s}
+.bgd-blip .b-dot.d3{animation-delay:.36s}
+.bgd-busy .bgd-blip .b-dot{animation-duration:.72s}
+@keyframes bgd-bT{0%,100%{transform:rotate(-6deg) translateY(0)}50%{transform:rotate(7deg) translateY(-1.4px)}}
+@keyframes bgd-bD{0%,62%,100%{opacity:.35;transform:translateY(0)}28%{opacity:1;transform:translateY(-1.7px)}}
 
 /* ---------------------------------------------------------------- small screens */
 @media (max-width:560px){
@@ -262,6 +274,7 @@ body:has(#consentBanner:not([hidden])) .bgd-launch{display:none}
   .bgd-launch{padding-inline:6px;width:58px;justify-content:center}
   .bgd-launch-label,.bgd-launch .bgd-kbd{display:none}
   .bgd-panel,.bgd-panel.bgd-wide{inset:auto 0 0 0;width:100%;height:calc(100dvh - 10px);border-radius:22px 22px 0 0;border-bottom:0}
+  .bgd-foot{padding-bottom:calc(12px + env(safe-area-inset-bottom) + (100lvh - 100dvh))}
   .bgd-expand{display:none}
   .bgd-cards{grid-template-columns:1fr}
   .bgd-row{grid-template-columns:1fr}
