@@ -3,6 +3,7 @@
 // that server, tears the server down, and exits non-zero on ANY failure — no pre-existing dist,
 // browser server, or CONSENT_TEST_URL required. Run with: npm test
 import { spawn, spawnSync } from "node:child_process";
+import { createServer } from "node:net";
 
 /* A SUITE THAT WEDGES MUST BECOME A RECORDED FAILURE, NOT AN INFINITE WAIT.
  *
@@ -47,7 +48,34 @@ function step(label, cmd, args, env) {
 if (!step("build", "node", ["build.js"])) { console.error("build failed"); process.exit(1); }
 
 // 2. Start the server on a disposable port.
-const port = 3200 + Math.floor(Math.random() * 700);
+//
+// A RANDOM PORT IS NOT A FREE PORT. The range is 700 wide and the comment below records that
+// sixteen leaked servers were once found alive on this machine, so the two facts meet about once
+// every seven hundred runs: the spawn below fails to bind, nothing reads its error because it is a
+// detached child, and the readiness poll then succeeds against the STRANGER. Every suite would
+// measure a site nobody built.
+//
+// That is not hypothetical arithmetic. It happened to the Portal's gate on 2026-09-20, where a
+// server left by an aborted run served pages naming chunk hashes the new build had replaced: 1,320
+// HTTP 500s, 132 renders of a page with no JavaScript, and a PASS.
+//
+// So the port is probed first, and a candidate that anything is listening on is discarded.
+const canBind = (p) =>
+  new Promise((resolve) => {
+    const probe = createServer();
+    probe.once("error", () => resolve(false));
+    probe.once("listening", () => probe.close(() => resolve(true)));
+    probe.listen(p, "127.0.0.1");
+  });
+let port = 0;
+for (let tries = 0; tries < 40 && !port; tries++) {
+  const candidate = 3200 + Math.floor(Math.random() * 700);
+  if (await canBind(candidate)) port = candidate;
+}
+if (!port) {
+  console.error("no free port in 3200-3899 after 40 tries: something is holding this range, probably leaked servers");
+  process.exit(1);
+}
 const base = `http://localhost:${port}`;
 // NO `shell` HERE, and that is the whole point. With shell:true on Windows this spawns
 // cmd.exe, which spawns node; `srv.kill()` then kills the SHELL and leaves the server
@@ -70,9 +98,22 @@ const shutdown = () => {
 process.on("exit", shutdown);
 process.on("SIGINT", () => { shutdown(); process.exit(130); });
 
+// A SERVER THAT DIED IS NOT A SERVER THAT IS STARTING. Without this, an immediate exit (a bind
+// that lost a race, a syntax error in server.js) is indistinguishable from a slow boot, and if
+// anything else answers on the port the poll below calls that success.
+let serverDied = null;
+srv.on("exit", (code, signal) => {
+  serverDied = signal ? `killed by ${signal}` : `exited with code ${code}`;
+});
+
 // 3. Wait for readiness (poll, never a fixed sleep). Fail loudly if the server never comes up.
 let ready = false;
 for (let i = 0; i < 60; i++) {
+  if (serverDied) {
+    console.error(`the server we started ${serverDied} before answering. Nothing was measured.`);
+    shutdown();
+    process.exit(1);
+  }
   try { const r = await fetch(base + "/"); if (r.ok) { ready = true; break; } } catch { /* not up yet */ }
   await new Promise((r) => setTimeout(r, 250));
 }
