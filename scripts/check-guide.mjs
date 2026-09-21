@@ -188,6 +188,31 @@ try {
   await fresh.evaluate(() => sessionStorage.setItem("bugitGuide.v1", JSON.stringify({ open: true, wide: false, turns: [] })));
   await fresh.reload({ waitUntil: "networkidle" });
   check("a saved open state does not reopen it over the banner", !(await fresh.isVisible(".bgd-panel")));
+  // PRESSING THE HERO BAR WHILE THE BANNER IS UP MUST SHOW THE VISITOR SOMETHING. The Guide
+  // refuses to open, app.js honours the refusal by focusing "Accept all", and until 2026-09-22
+  // that was the whole of it: this banner is fixed to the bottom of the viewport, so the
+  // scrollIntoView beside that focus call moves nothing, and a focus ring at the far edge of the
+  // screen is not an answer to pressing the largest control on the page. Every Google Ads click
+  // is a first visit, so this is the state most visitors meet the Ask bar in.
+  const bannerBox = async () => fresh.evaluate(() => {
+    const r = document.getElementById("consentBanner").getBoundingClientRect();
+    return [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)].join(",");
+  });
+  const boxBefore = await bannerBox();
+  await fresh.click("#askBar");
+  await fresh.waitForTimeout(200);
+  const pointed = await fresh.evaluate(() => {
+    const b = document.getElementById("consentBanner");
+    return { marked: b.classList.contains("is-pointed"), outline: getComputedStyle(b).outlineStyle,
+             focused: document.activeElement?.id, panelHidden: document.querySelector(".bgd-panel").hidden };
+  });
+  check("pressing the Ask bar over the banner marks the banner", pointed.marked);
+  check("and the mark is a visible outline", pointed.outline === "solid", pointed.outline);
+  check("and focus still goes to the choice that is blocking", pointed.focused === "consentAccept", String(pointed.focused));
+  check("and the Guide still refuses to open over it", pointed.panelHidden === true);
+  // An outline and not a border, so the fifteen viewports check-notice-fits renders are unchanged.
+  check("and the banner does not move or resize", (await bannerBox()) === boxBefore, `${boxBefore} -> ${await bannerBox()}`);
+
   await fresh.evaluate(() => document.getElementById("consentBanner")?.remove());
   await fresh.click(".bgd-launch");
   check("and it opens normally once the banner is gone", await fresh.isVisible(".bgd-panel"));
@@ -234,6 +259,48 @@ try {
   await page.waitForSelector(".bgd-hand a.bgd-mail", { timeout: 15000 });
   const half = await page.getAttribute(".bgd-hand a.bgd-mail", "href");
   check("a question holding half an emoji still produces an email link", Boolean(half && half.startsWith("mailto:")), String(half).slice(0, 40));
+
+  // THE PASTED-SECRET WARNING, WHICH NOTHING HERE HAD EVER PRESSED. Added 2026-09-22. The net in
+  // guide.js is 60 lines of regular expressions and a Luhn check, it is the only thing standing
+  // between a customer pasting a token and that token going into a mailto, and no guard in this
+  // repository had ever typed a secret into the composer. It was found by an audit doing it by
+  // hand against the live site.
+  //
+  // BOTH DIRECTIONS, because a net that refuses everything is worse than no net: it would block
+  // ordinary questions and the visitor would have no way to reach a person at all. The prose
+  // cases below are the ones a careless pattern matches -- "Authorization: approved" is a real
+  // sentence about activation, and "basic troubleshooting" is a real request.
+  const composerRefuses = async (text) => {
+    await page.click(".bgd-head .bgd-icon");
+    typed.push(text);
+    await page.fill("#bgd-input", text);
+    await page.click(".bgd-send");
+    await page.waitForTimeout(250);
+    return page.evaluate(() => {
+      const w = document.querySelector(".bgd-warn");
+      return Boolean(w && !w.hidden);
+    });
+  };
+  // Synthetic values throughout. Nothing here is or resembles a live credential.
+  for (const [what, text] of [
+    ["an API key", "sk-ant-api03-" + "A".repeat(24)],
+    ["a password given in words", "my password is hunter22xyz"],
+    ["a card number", "4111 1111 1111 1111"],
+    ["credentials inside a tracker URL", "our jira is https://svcacct:hunter22xyz@jira.example.com"],
+    ["an Authorization header", "Authorization: Bearer 8f3a9c2e1b7d4f6a0c5e"],
+    ["a private key", "-----BEGIN OPENSSH PRIVATE KEY-----"],
+  ]) {
+    check(`the composer refuses ${what}`, await composerRefuses(text), text.slice(0, 30));
+  }
+  for (const [what, text] of [
+    ["an ordinary question", "how do I connect BugIt to Jira Cloud?"],
+    ["a tracker URL with no credentials", "our jira is at https://jira.example.com/rest/api/2"],
+    ["the word authorization in a sentence", "Authorization: required before the device appears"],
+    ["the word basic in a sentence", "I need basic troubleshooting steps for the tracker"],
+    ["an order number and a date", "my order number is 4471 and I paid on 12/28"],
+  ]) {
+    check(`the composer accepts ${what}`, !(await composerRefuses(text)), text.slice(0, 40));
+  }
 
   check("still nothing left this origin", offsite.length === 0, offsite.slice(0, 4).join(", "));
   check("and still nothing carried the conversation", carried.length === 0 && spoke.length === 0, carried.concat(spoke).slice(0, 3).join(", "));

@@ -353,6 +353,40 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       "zh": "不确定您想问的是哪一项，请点击最接近您问题的选项，或换一种方式提问。"
   };
 
+  /* ...AND THE SAME LINE WHEN THERE IS ONLY ONE THING TO TAP.
+   *
+   * `answerFor` returns between one and three suggestions, and the line above asks the visitor
+   * which of THESE they mean and to tap the one CLOSEST. With a single option both halves are
+   * false: there is nothing to choose between and nothing to compare it to.
+   *
+   * It is not rare. Replaying the 2,358 real visitor questions in
+   * 08-test-evidence/2026-09-14-prototype-chatbot-corpus/ through this matcher, 77 of them --
+   * 3.3%, in all eleven languages -- produce exactly one suggestion, and in most of those the
+   * one option is the right article. "Kann ich statt in US-Dollar auch in Euro oder Yen
+   * bezahlen?" was offered only "In welcher Währung sind die Preise?", under a sentence asking
+   * which of them the reader meant.
+   *
+   * THE FIX IS THE COPY, NOT THE THRESHOLD, and that was checked rather than assumed. All 40
+   * distinct single-option cases in that corpus sit BELOW ANSWER_AT rather than being held down
+   * by SHORT_QUESTION_CAP, and several score 0.30 to 0.45 where the single option is plainly
+   * wrong ("How much revenue has BugIt made so far" is offered "Where do I download BugIt?").
+   * Answering those because they are alone would be worse than asking. So the Guide still asks;
+   * it just stops asking a question that has one answer.
+   */
+  const DID_YOU_MEAN_ONE = {
+      "en": "I'm not sure this is what you meant. Tap it if it is, or ask your question another way.",
+      "ar": "لست متأكدًا أن هذا ما تقصده. اختره إن كان كذلك، أو أعد صياغة سؤالك بطريقة أخرى.",
+      "de": "Ich bin nicht sicher, ob Sie das meinen. Tippen Sie darauf, wenn es passt, oder formulieren Sie Ihre Frage anders.",
+      "es": "No estoy seguro de que sea esto lo que quieres decir. Tócalo si lo es, o formula tu pregunta de otra manera.",
+      "fr": "Je ne suis pas certain que ce soit votre question. Sélectionnez-la si c'est le cas, ou reformulez votre question.",
+      "it": "Non sono sicuro che sia questo che intendi. Toccalo se è così, oppure formula la tua domanda in un altro modo.",
+      "ja": "こちらのご質問でしょうか。近いものであればタップしていただくか、別の言い方でお尋ねください。",
+      "ko": "이 질문을 말씀하시는 것인지 확실하지 않습니다. 맞으면 선택하시고, 아니면 다른 방식으로 다시 질문해 주세요.",
+      "pt-br": "Não tenho certeza se é isso que você quer dizer. Toque nela se for, ou pergunte de outra forma.",
+      "ru": "Не уверен, что вы имеете в виду именно это. Нажмите, если да, или сформулируйте вопрос по-другому.",
+      "zh": "不确定您想问的是不是这个。如果是，请点击；或者换一种方式提问。"
+  };
+
   // ---------------------------------------------------------------- helpers
 
   function h(tag, attrs, ...kids) {
@@ -440,6 +474,19 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     /\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{10,}/g, /\bwhsec_[A-Za-z0-9+/=]{10,}/g, /\bAIza[0-9A-Za-z_-]{30,}/g,
     /\beyJ[\w-]{6,}\.eyJ[\w-]{6,}\.[\w-]{6,}/g, /\b[a-z2-7]{52}\b/g, /\b[A-Za-z0-9]{76}AZDO[A-Za-z0-9]{4}\b/g,
     /\bBUGIT(?:-[0-9A-Z]{5}){4}\b/gi, /\b[A-Z2-7.=]{6}(?:-[A-Z2-7.=]{1,6}){7,}/g,
+    // THE SHAPES A CREDENTIAL TAKES WHEN IT BELONGS TO NO PARTICULAR VENDOR. Added 2026-09-22,
+    // carried from the Portal's lib/assistant/redact.ts, where the full reasoning and the tests
+    // live (a-credential-is-not-only-a-vendors-token.test.ts). Every shape above is some named
+    // vendor's published token format, so the list answered "is this one of those" and never
+    // "is this a credential". A user and password inside a URL is the one a BugIt customer is
+    // most likely to paste, because a self-hosted Jira or GitLab is routinely written that way.
+    // Each rule is anchored so it cannot fire on prose: here the warning is the whole product,
+    // and refusing an ordinary sentence would read as the Guide being broken.
+    /(?<=\b[a-z][a-z0-9+.-]{1,31}:\/\/)[^\s/?#@:]+:[^\s/?#@]+(?=@)/gi,
+    /(?<=\bauthorization\s{0,4}[:=]\s{0,4})(?:bearer|basic|token)\s{1,4}[^\s"',;]{8,}/gi,
+    /(?<=\bauthorization\s{0,4}[:=]\s{0,4})(?=[^\s"',;]*\d)[^\s"',;]{16,}/gi,
+    /-----BEGIN [A-Z0-9 ]{0,40}PRIVATE KEY-----[\s\S]*?-----END [A-Z0-9 ]{0,40}PRIVATE KEY-----/g,
+    /-----BEGIN [A-Z0-9 ]{0,40}PRIVATE KEY-----/g,
   ];
   // Quotes are allowed around the joiner, so pasted configuration ({"password": "hunter2"}) is caught too.
   const SECRET_ASSIGNED = new RegExp(
@@ -1137,7 +1184,8 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
         };
         turn.steps.push({ id: "p2", kind: "hand_off_to_support", state: "done" });
       } else if (decision.kind === "suggest") {
-        turn.text = DID_YOU_MEAN[reply] || DID_YOU_MEAN.en;
+        const bank = decision.questions.length === 1 ? DID_YOU_MEAN_ONE : DID_YOU_MEAN;
+        turn.text = bank[reply] || bank.en;
         turn.followups = decision.questions;
         turn.suggest = true;
       } else {

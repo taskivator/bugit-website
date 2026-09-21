@@ -3175,6 +3175,18 @@ if(typeof faqMoreLabel !== 'undefined'){
     if(!target) return false;
     try{ banner.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'}) }catch(e){}
     try{ target.focus({preventScroll:true}) }catch(e){ try{target.focus()}catch(_){} }
+    /* AND SAY SO WHERE IT CAN BE SEEN. The two lines above are the whole of what used to
+       happen, and neither is visible to a sighted mouse user: this banner is fixed to the
+       bottom of the viewport, so it is already "in view" and scrollIntoView moves nothing,
+       and a focus ring on a button at the far edge of the screen is not an answer to
+       pressing the largest control on the page. Marked, not moved, so the layout is
+       identical; the class removes itself so a second press marks it again. */
+    try{
+      banner.classList.remove('is-pointed');
+      void banner.offsetWidth;                /* restart the animation on a repeat press */
+      banner.classList.add('is-pointed');
+      setTimeout(function(){ banner.classList.remove('is-pointed') }, 2200);
+    }catch(e){}
     return true;
   }
 

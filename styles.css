@@ -1771,6 +1771,25 @@
     -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
   }
   #consentBanner p{font-size:var(--t-2xs);line-height:1.6}
+  /* THE ASK BAR POINTS HERE, AND POINTING HAD TO BE VISIBLE.
+     The Guide refuses to open over this banner, and app.js honours that refusal by focusing
+     "Accept all". But the banner is already fixed to the bottom of the viewport, so the
+     scrollIntoView beside that focus call moves nothing, and all a sighted mouse user got for
+     pressing the hero bar was a focus ring appearing at the other end of the screen. Measured
+     2026-09-22: the panel stays hidden and activeElement becomes #consentAccept, with nothing
+     else on screen changing. Every Google Ads click is a first visit, so this is the state most
+     visitors meet the Ask bar in.
+     `outline` and not `border` or `padding`, so the banner's geometry is untouched and the
+     fifteen viewports check-notice-fits renders still measure the same box. */
+  #consentBanner.is-pointed{outline:2px solid var(--pink,#ff4fc9);outline-offset:-2px}
+  @media (prefers-reduced-motion:no-preference){
+    #consentBanner.is-pointed{animation:consent-point .9s ease-out 1}
+    @keyframes consent-point{
+      0%{outline-color:transparent}
+      20%{outline-color:var(--pink,#ff4fc9)}
+      100%{outline-color:var(--pink,#ff4fc9)}
+    }
+  }
   .consent-btn{border-radius:var(--r-sm);font-size:var(--t-xs);font-weight:560}
 
   /* ---------- 17. Motion: one reveal, opt-in ------------------------------ */

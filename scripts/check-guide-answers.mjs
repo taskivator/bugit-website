@@ -87,6 +87,10 @@ test("every handoff reply points at the email, and none at a form that is not th
 test("a near miss offers questions to pick from rather than guessing between them", () => {
   const got = answerFor(en, "en", "install");
   assert.equal(got.kind, "suggest");
+  // ONE IS A LEGITIMATE ANSWER HERE, and the widget has a separate line for it -- see the two
+  // tests below. This assertion used to be the whole of the story, and `>= 1` under a test named
+  // "rather than guessing between them" is how the single-option case went unnoticed: there is
+  // nothing to guess between, and the sentence the visitor was shown said there was.
   assert.ok(got.questions.length >= 1 && got.questions.length <= 3);
 });
 
@@ -232,6 +236,47 @@ test("a long question cannot lock up the page it runs in", () => {
   assert.ok(took < 60, `a 2000 character question took ${took}ms`);
 });
 
+test("the Guide has a separate line for when there is only one thing to tap", () => {
+  // `answerFor` returns one to three suggestions. The plural line asks which of THESE the
+  // visitor means and to tap the one CLOSEST, and with a single option both halves are false.
+  // Measured on the 2,358 real questions in 08-test-evidence/2026-09-14-prototype-chatbot-corpus:
+  // 77 of them, 3.3%, across all eleven languages, produce exactly one suggestion.
+  const widget = readText("../public/guide/guide.js");
+  assert.match(widget, /const DID_YOU_MEAN_ONE = \{/, "the single-option line is missing");
+  // Declared is not used. This is the line that chooses between the two, and without it the
+  // table above is decoration -- the exact shape of a guard that checks a constant exists while
+  // the code that reads it says something else.
+  assert.match(
+    widget,
+    /decision\.questions\.length === 1 \? DID_YOU_MEAN_ONE : DID_YOU_MEAN/,
+    "the single-option line is declared but never chosen",
+  );
+  const one = JSON.parse("{" + widget.match(/const DID_YOU_MEAN_ONE = \{([\s\S]*?)\n  \};/)[1] + "}");
+  const many = JSON.parse("{" + widget.match(/const DID_YOU_MEAN = \{([\s\S]*?)\n  \};/)[1] + "}");
+  assert.deepEqual(Object.keys(one).sort(), Object.keys(many).sort(), "the two lines cover different languages");
+  assert.equal(Object.keys(one).length, 11);
+  for (const [lang, text] of Object.entries(one)) {
+    assert.ok(text.trim().length > 0, `${lang} is empty`);
+    assert.notEqual(text, many[lang], `${lang} repeats the plural line`);
+    // The owner's standing rule, and these are customer-facing sentences in eleven languages.
+    assert.doesNotMatch(text, /[–—]/, `${lang} contains an en or em dash`);
+  }
+});
+
+test("prepared/common.json is the same copy the widget renders", () => {
+  // The widget builds these lines in rather than fetching them, and common.json is PUBLISHED
+  // beside the answer banks. Nothing read it: on 2026-09-22 it was referenced in one comment and
+  // nowhere else, so the file a person would naturally edit was inert while the real copy sat in
+  // guide.js. Two copies of one sentence with nothing comparing them is how a corrected string
+  // survives in one of them, which this repository has recorded before.
+  const widget = readText("../public/guide/guide.js");
+  const common = JSON.parse(readFileSync(here("../public/guide/prepared/common.json"), "utf8"));
+  for (const [key, name] of [["did_you_mean", "DID_YOU_MEAN"], ["did_you_mean_one", "DID_YOU_MEAN_ONE"]]) {
+    const inline = JSON.parse("{" + widget.match(new RegExp("const " + name + " = \\{([\\s\\S]*?)\\n  \\};"))[1] + "}");
+    assert.deepEqual(common[key], inline, `prepared/common.json ${key} has drifted from ${name} in guide.js`);
+  }
+});
+
 test("every label the widget asks for exists in all eleven languages", () => {
   const widget = readText("../public/guide/guide.js");
   const table = widget.slice(widget.indexOf("const I18N = {"), widget.indexOf("---------- helpers"));
@@ -322,4 +367,53 @@ test("no other way of speaking to the network is in the widget at all", () => {
   assert.ok(anchors.some((x) => /href: mailtoFor\(hd\)/.test(x)), anchors.join(" || "));
   assert.ok(anchors.some((x) => /class: "bgd-chip", href,/.test(x)), anchors.join(" || "));
   assert.match(code, /allowedLink\(l\.href\)/, "the Sources chips no longer check their address");
+});
+
+test("every price the Guide states is a price the site states", () => {
+  /* THE BANK IS A CLAIM SURFACE, AND IT WAS IN NONE OF THE CLAIM GUARDS.
+   *
+   * This repository has ten guards over what the site CLAIMS -- the tracker list, capabilities,
+   * billing copy, the price against what checkout actually offers, attachments, legal copy,
+   * activation copy, retired vocabulary, untranslated strings, doc hygiene. Measured 2026-09-22:
+   * NONE of them reads public/guide/prepared/*.json. The Guide answers 410 questions in eleven
+   * languages and states the prices in every one of them, and nothing would have noticed if one
+   * moved. A price is a public offer.
+   *
+   * The same shape has now appeared three times: the FAQ was a surface a claim-scan passed over,
+   * the online doc pages were a third copy of the package guides that nothing compared, and this
+   * is the Guide. A guard is written against the surfaces that exist the day it is written.
+   *
+   * WHAT THIS ASSERTS, and what it deliberately does not. It compares the SET of amounts, not
+   * their placement: the bank may mention a price as often as it likes and in whatever sentence,
+   * but it may not name an amount the site does not. check-billing-copy owns what the site says,
+   * and check-price-matches-checkout owns whether Stripe agrees, so this one hop is the piece
+   * that was missing rather than a fourth opinion about the number.
+   *
+   * Spanish and Brazilian Portuguese write a decimal comma, correctly, so amounts are compared
+   * after normalising the separator.
+   */
+  const money = (s) => new Set(
+    [...s.matchAll(/(?:US\s?\$|\$)\s?(\d{1,3}(?:[.,]\d{2})?)/g)].map((m) => m[1].replace(",", ".")),
+  );
+  const site = money(readText("../index.html"));
+  assert.ok(site.size >= 2, `only found ${site.size} prices on the site; the scan is broken`);
+
+  for (const lang of ["en", "ar", "de", "es", "fr", "it", "ja", "ko", "pt-br", "ru", "zh"]) {
+    const doc = load(lang);
+    const bank = money(doc.items.map((i) => `${i.answer ?? ""}\n${i.reply ?? ""}`).join("\n"));
+    const unknown = [...bank].filter((v) => !site.has(v));
+    assert.deepEqual(
+      unknown,
+      [],
+      `the ${lang} Guide states ${unknown.map((v) => "$" + v).join(", ")}, which the site does not. ` +
+        `The site states ${[...site].map((v) => "$" + v).join(", ")}. A price is a public offer, ` +
+        "so the Guide and the page have to name the same ones.",
+    );
+    assert.ok(bank.size > 0, `${lang} names no price at all, which is also wrong`);
+  }
+
+  // POSITIVE CONTROL: the comparison can fail, and the normaliser does its job.
+  assert.deepEqual([...money("costs $39.99 or US $199 today")].sort(), ["199", "39.99"]);
+  assert.deepEqual([...money("custa $39,99")].sort(), ["39.99"]);
+  assert.ok(!money("costs $39.99").has("49.99"), "the comparison would accept any amount");
 });
