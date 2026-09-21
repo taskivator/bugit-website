@@ -25,6 +25,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { parseHeadersFile, matchesPattern } from './lib/headers-file.mjs';
+
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const headers = fs.readFileSync(path.join(root, '_headers'), 'utf8');
 
@@ -35,30 +37,14 @@ const check = (ok, label, detail) => {
   console.error(`FAIL: ${label}${detail ? `\n      ${detail}` : ''}`);
 };
 
-// --- Parse _headers into [{ pattern, headers: {name: value} }].
-const rules = [];
-let current = null;
-for (const raw of headers.split(/\r?\n/)) {
-  const line = raw.replace(/\s+$/, '');
-  if (!line.trim() || line.trim().startsWith('#')) continue;
-  if (!/^\s/.test(line)) {
-    current = { pattern: line.trim(), headers: {} };
-    rules.push(current);
-  } else if (current) {
-    const m = line.trim().match(/^([^:]+):\s*(.*)$/);
-    if (m) current.headers[m[1].toLowerCase()] = m[2];
-  }
-}
+// --- Parse _headers. The parser lives in scripts/lib/headers-file.mjs because
+//     check-live-delivery.mjs needs the same one to compare what this file ASKS for
+//     against what the origin actually serves, and two copies of one list is a mistake
+//     this workspace has already paid for.
+const rules = parseHeadersFile(root);
 check(rules.length > 0, '_headers must contain at least one rule');
 
-// --- Cloudflare _headers path matching: `*` is a greedy splat that MAY match the
-//     empty string; everything else is literal. Anchored at both ends.
-function matches(pattern, urlPath) {
-  const re = new RegExp(
-    '^' + pattern.split('*').map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + '$',
-  );
-  return re.test(urlPath);
-}
+const matches = matchesPattern;
 
 // Self-test the matcher, so a wrong matcher cannot silently pass the real checks.
 for (const [pattern, urlPath, want] of [

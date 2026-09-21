@@ -124,14 +124,22 @@ if (stderr.trim()) fail.push("the server wrote to stderr: " + stderr.trim().spli
   if (!(await alive2())) {
     fail.push("SITE_ROOT: the server never came up against dist" + (out2.trim() ? " -- " + out2.trim().split("\n")[0] : "; has `node build.js` run?"));
   } else {
-    const r = await fetch(distBase + "/404.js");
+    // The discriminator is read from dist rather than named, because 404.js is
+    // CONTENT-HASHED from 2026-09-21 and its name changes whenever app.js's NOT_FOUND table
+    // does. Hard-coding it would turn this guard red on the next content change, and the
+    // reflex then is to weaken the guard rather than update the name.
+    const hashed404 = fs.readdirSync(dist).find((n) => /^404\.[a-f0-9]{10}\.js$/.test(n));
+    if (!hashed404) {
+      fail.push("SITE_ROOT: dist holds no hashed 404 script, so this check had no discriminator to use");
+    }
+    const r = await fetch(distBase + "/" + (hashed404 || "404.js"));
     const type = (r.headers.get("content-type") || "").toLowerCase();
     const body = await r.text();
     if (!type.startsWith("application/javascript")) {
-      fail.push(`SITE_ROOT: /404.js came back as ${type || "(no type)"}, so the server is still serving the repo root`);
+      fail.push(`SITE_ROOT: /${hashed404} came back as ${type || "(no type)"}, so the server is still serving the repo root`);
     }
     if (!body.includes("notFound") && !body.includes("nf-body")) {
-      fail.push(`SITE_ROOT: /404.js body does not look like the generated table (${body.slice(0, 60)})`);
+      fail.push(`SITE_ROOT: /${hashed404} body does not look like the generated table (${body.slice(0, 60)})`);
     }
     // The traversal guard is compared against the CHOSEN root, so moving the root must not open
     // a way back out of it. fetch() would normalise the `..` away, so the request goes raw.

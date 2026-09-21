@@ -48,13 +48,20 @@ const CONVENTIONAL = [
   ["robots.txt", "the first thing a crawler asks for"],
   ["sitemap.xml", "named by robots.txt, so a 404 here makes that line a dead pointer"],
   ["404.html", "the page a wrong link lands on"],
-  ["404.js", "the eleven-language strings 404.html swaps in; without it the page is English"],
+  // 404.js is CONTENT-HASHED from 2026-09-21, so it is matched by SHAPE rather than by name.
+  // Naming it exactly would fail on every build, and the reflex then is to delete the line,
+  // which drops the check entirely. The file still has to be there; it just has a new name
+  // whenever its content changes.
+  [/^404\.[a-f0-9]{10}\.js$/, "the eleven-language strings 404.html swaps in; without it the page is English"],
 ];
 const dist = join(root, "dist");
 if (existsSync(dist)) {
   for (const [file, why] of CONVENTIONAL) {
     checked++;
-    if (!existsSync(join(dist, file))) {
+    const present = file instanceof RegExp
+      ? readdirSync(dist).some((n) => file.test(n))
+      : existsSync(join(dist, file));
+    if (!present) {
       missing++;
       console.error(`FAIL: dist/${file} is missing \u2014 ${why}`);
     }

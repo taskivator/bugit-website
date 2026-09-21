@@ -313,7 +313,11 @@ for (const [file,loader] of [['app.js','js'],['consent.js','js'],['styles.css','
 const hashOf = (f) => crypto.createHash('md5').update(fs.readFileSync(path.join(dist,f))).digest('hex').slice(0,10);
 const hashedName = (f,h) => f.replace(/\.(js|css)$/, `.${h}.$1`);
 const built = {};
-for (const f of ['styles.css','app.js','consent.js']) {
+// 404.js joins them from 2026-09-21. It is generated from the NOT_FOUND table in app.js, so
+// its CONTENT changes with a release while its PATH never did, and _headers asking for
+// max-age=0 did not save it: the edge bumps .js to its own four hour browser TTL regardless.
+// Same defect as the Guide's code, same remedy.
+for (const f of ['styles.css','app.js','consent.js','404.js'].filter((n) => fs.existsSync(path.join(dist,n)))) {
   const h = hashOf(f);
   const name = hashedName(f,h);
   fs.renameSync(path.join(dist,f), path.join(dist,name));
@@ -343,23 +347,94 @@ if (fs.existsSync(mediaDir)) {
   }
 }
 
+// THE GUIDE'S OWN CODE GETS THE SAME TREATMENT, and the reason is worth stating because
+// _headers already tries to solve this and cannot.
+//
+// WHAT WENT WRONG, 2026-09-21. The owner reported two Guide bugs still present on his phone
+// AFTER a deploy this repository had verified byte-identical at the edge. Both fixes were
+// genuinely live. His browser was holding the PREVIOUS guide.css and guide.js, because those
+// two filenames carry no content hash and so never change.
+//
+// _headers ASKS for the right thing and is overridden. It sets `/public/guide/* max-age=0,
+// must-revalidate` precisely so a corrected answer cannot sit in a cache for hours. Measured
+// against the live site, that rule is honoured for sources.json and for the prepared answer
+// bank, and silently ignored for guide.css and guide.js, which come back `max-age=14400`: the
+// edge bumps those two extensions to its own four hour browser TTL. So the one rule written to
+// keep the Guide correctable works on the Guide's DATA and is defeated on the Guide's CODE,
+// which is the half that needed it. /404.js is served the same way, for the same reason.
+//
+// A header we do not control cannot be argued with. A filename can. Hashing makes a changed
+// file a path that has never been requested, so no cache anywhere can answer it with
+// yesterday's bytes, and `immutable` becomes true rather than hopeful. This is the same
+// argument the block above makes for app.js and for the demo clips; the Guide was never added.
+const guideDir = path.join(dist,'public','guide');
+const guideAssets = {};
+if (fs.existsSync(guideDir)) {
+  const codeFiles = fs.readdirSync(guideDir).filter((n) => /\.(js|css)$/.test(n));
+  const stamp = (f) => {
+    const src = path.join(guideDir,f);
+    const h = crypto.createHash('md5').update(fs.readFileSync(src)).digest('hex').slice(0,10);
+    const name = f.replace(/\.(js|css)$/, `.${h}.$1`);
+    fs.renameSync(src, path.join(guideDir,name));
+    guideAssets[f] = name;
+    return name;
+  };
+
+  // DEPENDENCIES FIRST, then the entry point, and the order is the whole trick. guide.js is an
+  // ES module that imports ./match.js, which is where the answer matching lives. Hashing the
+  // entry point while leaving its import unhashed would fix half of this and leave the half that
+  // decides what the Guide SAYS stuck behind the same four hour cache.
+  const entryPoints = new Set(['guide.js','guide.css']);
+  for (const f of codeFiles.filter((n) => !entryPoints.has(n))) stamp(f);
+
+  // Rewrite the imports BEFORE hashing guide.js, so its hash describes the bytes actually served
+  // rather than the bytes before the rewrite. Getting this backwards produces a filename that
+  // promises immutability for content it does not describe, which is worse than no hash at all.
+  const entryJs = path.join(guideDir,'guide.js');
+  if (fs.existsSync(entryJs) && Object.keys(guideAssets).length) {
+    let code = fs.readFileSync(entryJs,'utf8');
+    for (const [from,to] of Object.entries(guideAssets)) {
+      code = code.split(`./${from}`).join(`./${to}`);
+    }
+    fs.writeFileSync(entryJs, code);
+    const missed = code.match(/["']\.\/[A-Za-z0-9._-]+\.(?:js|css)["']/g) || [];
+    const unhashed = missed.filter((m) => !/\.[a-f0-9]{10}\.(?:js|css)["']$/.test(m));
+    if (unhashed.length) {
+      console.error(`build: the Guide's entry point still imports an unhashed module: ${unhashed.join(', ')}`);
+      process.exit(1);
+    }
+  }
+
+  for (const f of codeFiles.filter((n) => entryPoints.has(n))) if (fs.existsSync(path.join(guideDir,f))) stamp(f);
+  console.log(`build: the Guide's code is content-hashed (${Object.values(guideAssets).join(', ') || 'nothing found'}).`);
+}
+
 for (const html of ['index.html','404.html']) {
   const p = path.join(dist,html);
   if (!fs.existsSync(p)) continue;
   let s = fs.readFileSync(p,'utf8');
-  s = s.replace(/(href|src)="\/(styles\.css|app\.js|consent\.js)(?:\?v=[^"]*)?"/g,
-    (_m,attr,file) => `${attr}="/${built[file]}"`);
+  s = s.replace(/(href|src)="\/(styles\.css|app\.js|consent\.js|404\.js)(?:\?v=[^"]*)?"/g,
+    (_m,attr,file) => built[file] ? `${attr}="/${built[file]}"` : _m);
   // src= plus the data-landscape/data-portrait pair the player swaps between.
   s = s.replace(/\/public\/media\/([A-Za-z0-9._-]+\.mp4)/g,
     (m,file) => media[file] ? `/public/media/${media[file]}` : m);
+  s = s.replace(/(href|src)="\/public\/guide\/(guide\.css|guide\.js)"/g,
+    (m,attr,file) => guideAssets[file] ? `${attr}="/public/guide/${guideAssets[file]}"` : m);
   fs.writeFileSync(p,s);
   // A missed reference would 404 in production, so fail the build instead.
-  const stale = s.match(/(?:href|src)="\/(?:styles\.css|app\.js|consent\.js)(?:\?[^"]*)?"/);
+  const stale = s.match(/(?:href|src)="\/(?:styles\.css|app\.js|consent\.js|404\.js)(?:\?[^"]*)?"/);
   if (stale) { console.error(`build: ${html} still references an unhashed asset: ${stale[0]}`); process.exit(1); }
   for (const f of Object.keys(media)) {
     if (s.includes(`/public/media/${f}"`) || s.includes(`/public/media/${f}'`)) {
       console.error(`build: ${html} still references unhashed media: ${f}`); process.exit(1);
     }
+  }
+  // The same refusal for the Guide. A missed reference here would NOT 404 loudly: server.js
+  // falls back to the SPA with HTTP 200 and HTML for any unknown path, so the page would load
+  // and the Guide would simply be dead on it. Fail the build instead.
+  const staleGuide = s.match(/(?:href|src)="\/public\/guide\/guide\.(?:css|js)"/);
+  if (staleGuide && Object.keys(guideAssets).length) {
+    console.error(`build: ${html} still references an unhashed Guide asset: ${staleGuide[0]}`); process.exit(1);
   }
 }
 // Named rather than counted. An optional file that stopped being copied is something somebody

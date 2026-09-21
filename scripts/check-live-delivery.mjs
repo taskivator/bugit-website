@@ -28,6 +28,8 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, sep, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { parseHeadersFile, promisedCacheControl, maxAgeOf } from "./lib/headers-file.mjs";
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
 
@@ -68,6 +70,9 @@ async function probe(url) {
       hash: sha(body),
       type: r.headers.get("content-type") || "",
       cache: r.headers.get("cf-cache-status") || "-",
+      // The BROWSER cache policy, as opposed to the edge one above. _headers can ASK for a
+      // value the edge declines to honour, and the only way to know is to read it back.
+      cc: r.headers.get("cache-control") || "",
       // Age matters only in company with cf-cache-status, and then it is decisive: a MISS that
       // arrives ALREADY OLD means the edge had nothing and fetched from a layer above the zone
       // -- the layer `purge_cache` cannot clear. Without Age, that case is indistinguishable
@@ -76,7 +81,7 @@ async function probe(url) {
       location: r.headers.get("location") || "",
     };
   } catch (e) {
-    return { ok: false, status: 0, body: Buffer.alloc(0), hash: "", type: "", cache: "-", age: null, error: String(e.message || e) };
+    return { ok: false, status: 0, body: Buffer.alloc(0), hash: "", type: "", cache: "-", cc: "", age: null, error: String(e.message || e) };
   }
 }
 
@@ -252,7 +257,42 @@ CANONICALISED (delivered, at the origin's own URL) -- ${redirected.length}`);
   for (const { t, r } of redirected) console.log(`  · ${t.label}  -> ${new URL(r.finalUrl).pathname}`);
 }
 
-const findings = dead.length + badStatus.length + mismatch.length + wrongType.length + leaked.length;
+/* -------------------------------------------------- what the edge ACTUALLY caches
+ *
+ * _headers is a REQUEST, not a guarantee, and check-cache-headers.mjs only reads the request.
+ * It asserts the file says `max-age=0` and has been green throughout, while the live origin
+ * served `max-age=14400` for the two paths it mattered most for. On 2026-09-21 that cost the
+ * owner a night of looking at a Guide that had been fixed and deployed hours earlier: his
+ * browser was entitled to hold the previous guide.css and guide.js for four hours and did.
+ *
+ * Measured that day: sources.json and the prepared answer bank are served max-age=0 exactly as
+ * written; guide.css, guide.js and 404.js are bumped to the edge's own four hour browser TTL,
+ * which it applies by EXTENSION. So the rule worked on the data and was defeated on the code.
+ *
+ * This is the check that would have caught it: for every file whose _headers rule promises a
+ * short life, read what the origin actually says. A promise nobody verifies is a comment.
+ */
+const headerRules = parseHeadersFile(ROOT);
+const cachePolicy = [];
+for (const { t, r } of results) {
+  if (!r.ok || r.status !== 200) continue;
+  const promise = promisedCacheControl(headerRules, t.label.split("  ")[0]);
+  if (!promise) continue;
+  const want = maxAgeOf(promise.cacheControl);
+  const got = maxAgeOf(r.cc);
+  if (want === null || got === null) continue;
+  // Only one direction is a finding. The edge serving something SHORTER than asked costs a
+  // revalidation; serving something LONGER means a correction cannot reach anyone, which is
+  // the failure this exists for.
+  if (got > want) cachePolicy.push({ t, r, promise, want, got });
+}
+
+say("CACHED LONGER THAN _headers ASKS  (a fix cannot reach a reader who already has one)", cachePolicy,
+  ({ t, promise, want, got }) =>
+    `${t.label}  asked max-age=${want} via "${promise.pattern}", served max-age=${got}` +
+    (got >= 3600 ? `  <- up to ${Math.round(got / 3600)}h stale for a returning visitor` : ""));
+
+const findings = dead.length + badStatus.length + mismatch.length + wrongType.length + leaked.length + cachePolicy.length;
 
 /* -------------------------------------------------- negative controls
  * Three ways this check could be quietly useless, each proven wrong against the live origin. */

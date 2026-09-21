@@ -642,7 +642,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   function save() {
     clearTimeout(saveTimer);
     try {
-      sessionStorage.setItem(STORE_KEY, JSON.stringify({ open: state.open, wide: state.wide, turns: state.turns.slice(-40) }));
+      sessionStorage.setItem(STORE_KEY, JSON.stringify({ wide: state.wide, turns: state.turns.slice(-40) }));
     } catch (_) {
       /* private mode or storage blocked: the conversation lives for this page only */
     }
@@ -657,7 +657,16 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       if (!d || !Array.isArray(d.turns)) return;
       state.turns = d.turns.filter((x) => x && (x.role === "user" || x.role === "assistant")).map((x) =>
         x.role === "assistant" && !x.done ? { ...x, done: true, error: x.text || x.handoff ? null : "network" } : x);
-      state.open = Boolean(d.open);
+      // A RELOAD LEAVES THE GUIDE CLOSED. The owner asked for this on 2026-09-21: refreshing
+      // the page and finding the panel still covering it reads as the widget refusing to go
+      // away, and on a phone it covers the whole screen, so the reader's own reload does not
+      // give them their page back.
+      //
+      // The CONVERSATION is still restored above, which is the part worth keeping: reopening
+      // the Guide shows the history rather than a blank panel, so nothing the reader typed is
+      // lost. Only the panel's visibility is dropped. `open` is no longer written either, a few
+      // lines up in save(), so nothing keeps a field that nothing reads.
+      state.open = false;
       state.wide = Boolean(d.wide);
     } catch (_) {
       /* unreadable: start fresh */
@@ -1292,11 +1301,51 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     else if (narrowPanel.addListener) narrowPanel.addListener(onWidthChange);
   }
 
+  /* HOW MUCH OF THE PANEL IS ACTUALLY HIDDEN BY BROWSER CHROME, MEASURED RATHER THAN ASSUMED.
+   *
+   * The owner photographed a band of dead space under the composer on Chrome for iOS, which went
+   * away when the browser's bottom bar hid itself. The cause was a rule of mine in guide.css:
+   * `padding-bottom: ... + (100lvh - 100dvh)`, the height of whatever chrome is showing. That
+   * reserves the right amount only if the panel's bottom edge sits BEHIND the chrome. In Safari
+   * it does, which is why it fixed the original bug of 'tokens' running off the bottom. In
+   * Chrome for iOS a fixed element already stops above the toolbar, so the same reservation was
+   * surplus and showed as a gap.
+   *
+   * CSS cannot distinguish those two cases; there is no query for 'is my bottom edge covered'.
+   * So ask the layout. visualViewport describes what the reader can actually see, and the panel
+   * knows where it is, so the overlap between them is the answer in both browsers and needs no
+   * knowledge of which one is running.
+   *
+   * This also handles the software keyboard for free, and that is intended rather than
+   * incidental: when the keyboard opens, the visible area shrinks from the bottom, the overlap
+   * grows, and the composer is lifted clear of it instead of being typed into from behind.
+   */
+  function fitFoot() {
+    if (!foot) return;
+    var vv = window.visualViewport;
+    if (!vv || !coversTheScreen() || panel.hidden) { foot.style.paddingBottom = ""; return; }
+    var r = panel.getBoundingClientRect();
+    // offsetTop matters when the page is pinch-zoomed or the keyboard has shifted the view.
+    var visibleBottom = vv.offsetTop + vv.height;
+    var hidden = Math.max(0, Math.round(r.bottom - visibleBottom));
+    foot.style.paddingBottom = hidden
+      ? "calc(12px + env(safe-area-inset-bottom) + " + hidden + "px)"
+      : "";
+  }
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", fitFoot);
+    window.visualViewport.addEventListener("scroll", fitFoot);
+  }
+  window.addEventListener("resize", fitFoot);
+  window.addEventListener("orientationchange", function () { setTimeout(fitFoot, 120); });
+
   function openPanel(focus = true) {
     if (consentUp()) return;
     state.open = true;
     panel.hidden = false;
     lockScroll();
+    fitFoot();
     panel.classList.toggle("bgd-wide", state.wide);
     requestAnimationFrame(() => scrollToEnd(true));
     if (focus) setTimeout(() => input.focus({ preventScroll: true }), 40);
@@ -1307,6 +1356,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     state.open = false;
     panel.hidden = true;
     unlockScroll();
+    if (foot) foot.style.paddingBottom = "";
     if (returnFocus) launch.focus({ preventScroll: true });
     save();
   }
@@ -1411,35 +1461,20 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   } catch (_) {
     /* CustomEvent is ancient; if it is missing the bar falls back to the launcher click */
   }
-  // A saved "open" from before a reload reopens the panel, but not over the consent banner.
+  // NOTHING REOPENS THE PANEL AFTER A RELOAD, and this note is what is left of the machinery
+  // that used to.
   //
-  // WHEN that question is asked decides the answer. app.js shows the banner from its own
-  // DOMContentLoaded handler, and this file is a module, so it runs BEFORE that: asked here, at
-  // boot, the answer was always "no banner", and the panel reopened on top of one that appeared a
-  // moment later. So the restore waits for the same event (app.js registered its handler first, so
-  // the banner is up by the time this runs), and the observer holds the rule for the rest of the
-  // page's life, including the footer's "Cookie preferences" link, which brings the banner back.
-  function restoreOpen() {
-    if (!state.open) return;
-    state.open = false;
-    openPanel(false);
-  }
-  // A deferred module runs while readyState is ALREADY "interactive", so asking for "loading" here
-  // meant the restore never waited for anything and the panel opened for a frame before the banner
-  // existed. DOMContentLoaded is the event app.js shows the banner from, and this handler is
-  // registered after its, so it runs after it. `load` is the way back for a copy of this file that
-  // is injected later, when DOMContentLoaded is already long gone.
-  let restored = false;
-  const restoreOnce = () => {
-    if (restored) return;
-    restored = true;
-    restoreOpen();
-  };
-  if (document.readyState === "complete") restoreOnce();
-  else {
-    document.addEventListener("DOMContentLoaded", restoreOnce);
-    window.addEventListener("load", restoreOnce);
-  }
+  // A saved `open` flag used to reopen the Guide on the next page load, and getting that right
+  // was surprisingly involved: it had to wait for DOMContentLoaded so it did not reopen on top
+  // of a consent banner that app.js had not shown yet, and a deferred module already runs at
+  // readyState "interactive", so an earlier version waited for nothing and flashed the panel
+  // open for a frame before the banner existed.
+  //
+  // The owner removed the behaviour on 2026-09-21: a reader who reloads is asking for their
+  // page back, and on a phone the panel covers all of it. The conversation is still restored,
+  // so reopening shows the history. The observer below stays, because a banner can still appear
+  // WHILE the Guide is open, from the footer's cookie preferences link.
+
 
   const bannerEl = document.getElementById("consentBanner");
   if (bannerEl) {

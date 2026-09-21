@@ -293,7 +293,14 @@ body:has(#consentBanner:not([hidden])) .bgd-launch{display:none}
   .bgd-launch{padding-inline:6px;width:58px;justify-content:center}
   .bgd-launch-label,.bgd-launch .bgd-kbd{display:none}
   .bgd-panel,.bgd-panel.bgd-wide{inset:auto 0 0 0;width:100%;height:calc(100dvh - 10px);border-radius:22px 22px 0 0;border-bottom:0}
-  .bgd-foot{padding-bottom:calc(12px + env(safe-area-inset-bottom) + (100lvh - 100dvh))}
+  /* The footer's clearance against browser chrome is MEASURED by guide.js, not computed here.
+     This rule used to add `(100lvh - 100dvh)`, the height of whatever chrome is showing. That
+     assumes the panel's bottom edge sits BEHIND that chrome, which is true in Safari and false
+     in Chrome on iOS, where fixed elements already stop above the toolbar. On Chrome the
+     reservation was pure surplus and showed as a band of dead space under the composer that
+     vanished when the toolbar hid itself. CSS cannot tell the two cases apart; a measurement
+     can. The value below is the floor, and guide.js adds whatever is actually hidden. */
+  .bgd-foot{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
   .bgd-expand{display:none}
   .bgd-cards{grid-template-columns:1fr}
   .bgd-row{grid-template-columns:1fr}

@@ -122,7 +122,10 @@ async function run({ engineName, engine, viewport, touch, where, expectFrozen, b
 
   let mutated = false;
   if (breakLock) {
-    await page.route("**/public/guide/guide.js", async (route) => {
+    // The Guide's code is content-hashed from 2026-09-21, so this pattern must not name the
+    // unhashed file. If it ever stops matching, the `mutated` flag below fails the run loudly
+    // rather than letting a control that applied nothing report success.
+    await page.route("**/public/guide/guide*.js", async (route) => {
       const res = await route.fetch();
       const body = await res.text();
       const cut = body.replace(/document\.body\.classList\.add\("bgd-locked"\);/g, "/* removed by the negative control */");
@@ -215,6 +218,30 @@ async function run({ engineName, engine, viewport, touch, where, expectFrozen, b
     }
   }
 
+  // ---- 7. no dead band under the composer ---------------------------------------
+  // The owner photographed a band of empty space between the disclaimer and the bottom of the
+  // panel on Chrome for iOS. THIS CANNOT REPRODUCE THAT BUG, and saying so is the point: the
+  // cause was a CSS reservation of `(100lvh - 100dvh)`, and in a Playwright viewport there is no
+  // collapsing browser chrome, so that expression is 0 and the gap never appears. What this DOES
+  // catch is the same band arriving from any source a headless viewport can see, which is the
+  // regression the fix could plausibly introduce. The device remains the only witness for the
+  // original report.
+  if (expectFrozen) {
+    const band = await page.evaluate(() => {
+      const foot = document.querySelector('.bgd-foot');
+      const panel = document.querySelector('#bgd-panel');
+      if (!foot || !panel) return null;
+      const last = foot.lastElementChild || foot;
+      return {
+        gap: Math.round(panel.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom),
+        pad: getComputedStyle(foot).paddingBottom,
+      };
+    });
+    if (!band) check(where, 'the Guide footer is present', false, 'not found');
+    else check(where, 'no dead band between the last footer row and the panel edge', band.gap <= 40,
+               `gap ${band.gap}px, padding-bottom ${band.pad}`);
+  }
+
   // ---- 3. closing puts the reader back on the same pixel -----------------------
   // Only where a lock was actually taken. On desktop nothing is frozen by design, so the page is
   // wherever the reader scrolled it to and there is nothing to restore.
@@ -225,6 +252,47 @@ async function run({ engineName, engine, viewport, touch, where, expectFrozen, b
     check(where, "closing the Guide restores the exact scroll position", Math.abs(afterClose - beforeOpen) <= 2,
           `${beforeOpen} -> ${afterClose}`);
   }
+
+  // ---- 8. a reload gives the reader their page back -----------------------------
+  // Reported by the owner on 2026-09-21: refreshing with the Guide open left it open. It was
+  // deliberate -- an `open` flag in sessionStorage -- and it reads as the widget refusing to go
+  // away, which on a phone means the reader's own reload does not return their page. The
+  // CONVERSATION is still kept, and that half is asserted too: dropping the panel is only
+  // acceptable if nothing the reader typed is lost with it.
+  await openGuide(page, touch);
+  await page.evaluate(() => {
+    // Put a turn in the store so the reload has something to preserve.
+    try {
+      const k = Object.keys(sessionStorage).find((n) => /guide/i.test(n));
+      if (!k) return;
+      const d = JSON.parse(sessionStorage.getItem(k) || '{}');
+      d.turns = [{ role: 'user', text: 'a question from before the reload' }];
+      // Written DELIBERATELY. The old build persisted this flag and reopened on it, so seeding
+      // it here makes the assertion below prove the flag is IGNORED rather than merely absent:
+      // a check that passes because nothing wrote the field would pass on a broken build too.
+      d.open = true;
+      sessionStorage.setItem(k, JSON.stringify(d));
+    } catch (e) {}
+  });
+  await page.reload({ waitUntil: 'load' });
+  await page.evaluate(() => document.getElementById('consentBanner')?.remove());
+  await page.waitForTimeout(700);
+  const afterReload = await page.evaluate(() => {
+    const panel = document.querySelector('#bgd-panel');
+    let kept = false;
+    try {
+      const k = Object.keys(sessionStorage).find((n) => /guide/i.test(n));
+      const d = k ? JSON.parse(sessionStorage.getItem(k) || '{}') : {};
+      kept = Array.isArray(d.turns) && d.turns.length > 0;
+    } catch (e) {}
+    return { open: !!panel && !panel.hidden, kept, locked: document.body.classList.contains('bgd-locked') };
+  });
+  check(where, 'a reload leaves the Guide closed', !afterReload.open,
+        afterReload.open ? 'the panel reopened itself' : 'panel hidden');
+  check(where, 'the page is not left frozen after that reload', !afterReload.locked,
+        `body.bgd-locked=${afterReload.locked}`);
+  check(where, 'the conversation survives the reload', afterReload.kept,
+        afterReload.kept ? 'turns restored' : 'the stored turns were lost with the panel');
 
   await browser.close();
 }

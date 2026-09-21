@@ -77,6 +77,15 @@
 # deploy that dropped /server.js from the build succeeded, the new deployment returned 404 for
 # it, and https://bugit.dev/server.js went on answering 200 with `cf-cache-status: REVALIDATED`
 # from this default. check-live-delivery.mjs now probes for exactly that.
+# 404.js is CONTENT-HASHED from 2026-09-21, so it earns the immutable treatment the three
+# assets above get. The bare path is kept below and short-lived on purpose: the build
+# deletes it, so anything still asking for it is a stale reference and must not be handed
+# a cacheable body. The previous max-age=0 rule here was correct and INERT -- measured
+# live on 2026-09-21, the edge served this path max-age=14400 regardless, because it
+# applies its own four hour browser TTL by extension. check-live-delivery.mjs now reads
+# the served header back and fails on exactly that gap.
+/404.*.js
+  Cache-Control: public, max-age=31536000, immutable
 /404.js
   Cache-Control: public, max-age=0, must-revalidate
 
@@ -107,8 +116,26 @@
 # treatment as /404.js and /verify.json above rather than a long TTL on a stable path: a corrected
 # answer, or a correction to the matching rules, must not sit at the edge for hours. They are
 # fetched once per visitor who opens the Guide, and an unchanged file costs a 304.
+# The Guide's CODE is content-hashed from 2026-09-21, so it gets the immutable treatment its
+# filename now earns. These come AFTER the general rule below deliberately: where two rules
+# match one path, the last one wins, and a hashed file must not inherit max-age=0.
+#
+# WHY THE HASH WAS NEEDED AT ALL, since the rule below already asks for the right thing. It is
+# overridden, and only on the files that matter. Measured live on 2026-09-21: sources.json and
+# the prepared answer bank are served max-age=0 exactly as written here, while guide.css and
+# guide.js come back max-age=14400, because the edge applies its own four hour browser TTL to
+# those two extensions. The owner saw two fixed bugs still broken on his phone for that reason,
+# after a deploy this repository had verified byte-identical at the edge. A header we do not
+# control cannot be argued with; a filename can. /404.js is served the same way and still has
+# this problem -- see the backlog.
 /public/guide/*
   Cache-Control: public, max-age=0, must-revalidate
+/public/guide/guide.*.css
+  Cache-Control: public, max-age=31536000, immutable
+/public/guide/guide.*.js
+  Cache-Control: public, max-age=31536000, immutable
+/public/guide/match.*.js
+  Cache-Control: public, max-age=31536000, immutable
 
 # Current web guides must revalidate after every release so version switches are
 # atomic across the website, portal, and update service. This covers the PDFs too
