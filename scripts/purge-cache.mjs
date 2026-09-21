@@ -31,20 +31,55 @@ import { readFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { execFileSync } from "node:child_process";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const API = "https://api.cloudflare.com/client/v4";
 const ZONE_NAME = "bugit.dev";
 
 /* ------------------------------------------------------------------ the credential
- * Searched in the order that puts the most explicit source first. The portal's file is last
- * and is the one that actually holds it today; it is reached by relative path because both
- * repositories live side by side in the workspace, and it is skipped silently elsewhere. */
+ * Searched in the order that puts the most explicit source first. The portal's file is the one
+ * that actually holds it today.
+ *
+ * THE SIBLING PATH IS NOT ENOUGH ON ITS OWN. `../bugit-portal` assumes this checkout sits
+ * beside the portal in the workspace, which is true of the live tree and false of every git
+ * worktree -- and a worktree is where an urgent purge gets run from, because that is where the
+ * fix was just built. On 2026-09-21 this reported "No Cloudflare API token found" while the
+ * token sat exactly where it has always sat, and the run was a purge of three files the edge
+ * was serving with an ambiguous cache header. That is the failure already recorded against
+ * env-status.mjs, repeated: a path mistake rendered as an ABSENT, so "I looked in the wrong
+ * place" and "the value does not exist" printed the same word, and the stronger one was
+ * reported.
+ *
+ * SO ASK GIT WHERE THE MAIN CHECKOUT IS. A worktree does not know, but git does:
+ * `rev-parse --git-common-dir` resolves to the ORIGINAL repository's .git even from a linked
+ * worktree, and the portal sits beside that. The first attempt at this fix pasted an absolute
+ * path from one machine instead, and check-ci-coverage.mjs rejected it on the same run for the
+ * reason it exists: this repository is public, and a path inside one person's home directory
+ * only ever works for that person. */
+function mainCheckoutSibling(name, file) {
+  try {
+    const common = execFileSync(
+      "git",
+      ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+    ).trim();
+    // .../bugit-website/.git -> .../bugit-website -> .../<workspace>/<name>/<file>
+    return common ? join(dirname(common), "..", name, file) : null;
+  } catch {
+    return null; // no git, or not a checkout: the other sources still apply
+  }
+}
+
+/* A null PATH means "the process environment" to the reader below, so a lookup that failed to
+ * resolve must be dropped rather than passed along as one -- otherwise a missing git would
+ * silently re-read the environment under a label claiming it read a file. */
 const SOURCES = [
   ["process env", null],
   [".env.deploy.local", join(ROOT, ".env.deploy.local")],
   ["../bugit-portal/.env.deploy.local", join(ROOT, "..", "bugit-portal", ".env.deploy.local")],
-];
+  ["<main checkout>/../bugit-portal/.env.deploy.local", mainCheckoutSibling("bugit-portal", ".env.deploy.local")],
+].filter(([label, p]) => label === "process env" || p !== null);
 const NAMES = ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_TOKEN_PURGE", "CLOUDFLARE_TOKEN_DEPLOY"];
 
 function findToken() {
