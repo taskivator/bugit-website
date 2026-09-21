@@ -100,6 +100,39 @@
 /verify.json
   Cache-Control: public, max-age=0, must-revalidate
 
+# THE FILES THAT SIT AT A FIXED PATH AND HAVE NO HASH TO CARRY.
+#
+# Each of these is named by something outside this repository -- a browser, a crawler, a
+# security researcher following RFC 9116 -- so the path cannot move and a content hash cannot
+# be added to it. That leaves revalidation as the only safe policy: an ETag makes an unchanged
+# file a 304, which costs a round trip and no bytes.
+#
+# They had NO rule until 2026-09-21 and inherited the platform default, which was the zone's
+# four hour browser TTL. That is also what Cloudflare Pages happens to send on its own now that
+# the zone respects our headers, so writing these rules changes nothing a reader can measure
+# TODAY. That is the point. What it changes is where the behaviour is decided: a default is
+# someone else's choice that can move without a commit here, and this file is ours. The whole
+# reason this block exists is that a setting outside this repository quietly overrode every
+# cache rule in it for months.
+#
+# Listed one by one rather than as a `/*` catch-all, because a catch-all would match every
+# hashed asset too and Cloudflare emits EVERY matching rule's value, joined. See the Guide
+# block below for the day that was measured.
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/404.html
+  Cache-Control: public, max-age=0, must-revalidate
+/robots.txt
+  Cache-Control: public, max-age=0, must-revalidate
+/sitemap.xml
+  Cache-Control: public, max-age=0, must-revalidate
+/favicon.ico
+  Cache-Control: public, max-age=0, must-revalidate
+/manifest.webmanifest
+  Cache-Control: public, max-age=0, must-revalidate
+/.well-known/security.txt
+  Cache-Control: public, max-age=0, must-revalidate
+
 /public/media/*
   Cache-Control: public, max-age=604800
 /public/brand/*
@@ -117,18 +150,34 @@
 # answer, or a correction to the matching rules, must not sit at the edge for hours. They are
 # fetched once per visitor who opens the Guide, and an unchanged file costs a 304.
 # The Guide's CODE is content-hashed from 2026-09-21, so it gets the immutable treatment its
-# filename now earns. These come AFTER the general rule below deliberately: where two rules
-# match one path, the last one wins, and a hashed file must not inherit max-age=0.
+# filename now earns.
 #
-# WHY THE HASH WAS NEEDED AT ALL, since the rule below already asks for the right thing. It is
-# overridden, and only on the files that matter. Measured live on 2026-09-21: sources.json and
-# the prepared answer bank are served max-age=0 exactly as written here, while guide.css and
-# guide.js come back max-age=14400, because the edge applies its own four hour browser TTL to
-# those two extensions. The owner saw two fixed bugs still broken on his phone for that reason,
-# after a deploy this repository had verified byte-identical at the edge. A header we do not
-# control cannot be argued with; a filename can. /404.js is served the same way and still has
-# this problem -- see the backlog.
-/public/guide/*
+# THE RULES BELOW DO NOT OVERLAP, AND THAT IS LOAD BEARING. This block used to read
+# `/public/guide/*` for the data and let the hashed patterns follow it, on the belief that
+# where two rules match one path the last one wins. THEY DO NOT. Measured live on 2026-09-21,
+# the moment the zone stopped overriding us: Cloudflare emits BOTH values, joined, so a hashed
+# file came back `max-age=0, must-revalidate, public, max-age=31536000, immutable` -- two
+# max-age directives in one header, which no client is obliged to resolve our way. The
+# catch-all is narrowed to `*.json`, since sources.json and prepared/<lang>.json are the only
+# unhashed files here, so exactly one rule matches any path. check-cache-headers.mjs now walks
+# every built file and fails if two Cache-Control rules ever match one of them again.
+#
+# WHY THE HASH WAS NEEDED AT ALL, since the rule below already asks for the right thing. It was
+# being overridden, and only on the files that mattered. Measured live on 2026-09-21:
+# sources.json and the prepared answer bank were served max-age=0 exactly as written here,
+# while guide.css and guide.js came back max-age=14400, because the zone applied its own four
+# hour browser TTL to those two extensions and every other extension Cloudflare treats as
+# static. The owner saw two fixed bugs still broken on his phone for that reason, after a
+# deploy this repository had verified byte-identical at the edge. A header we do not control
+# cannot be argued with; a filename can.
+#
+# THE OVERRIDE ITSELF IS GONE TOO, as of the same day: the zone's Browser Cache TTL was set to
+# 14400 and is now Respect Existing Headers, so what this file asks for is what a reader gets.
+# That is what made the 22 customer PDFs correctable, since their URLs are public and cannot be
+# hashed. The hashing stays regardless. It is the half that does not depend on a setting outside
+# this repository staying the way someone left it, and a hashed URL also reaches a reader who is
+# still holding a stale copy, which no header change can do.
+/public/guide/*.json
   Cache-Control: public, max-age=0, must-revalidate
 /public/guide/guide.*.css
   Cache-Control: public, max-age=31536000, immutable

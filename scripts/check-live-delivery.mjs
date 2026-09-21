@@ -28,7 +28,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, sep, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { parseHeadersFile, promisedCacheControl, maxAgeOf } from "./lib/headers-file.mjs";
+import { parseHeadersFile, cacheControlRulesFor, maxAgeOf } from "./lib/headers-file.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -274,25 +274,47 @@ CANONICALISED (delivered, at the origin's own URL) -- ${redirected.length}`);
  */
 const headerRules = parseHeadersFile(ROOT);
 const cachePolicy = [];
+const ambiguous = [];
 for (const { t, r } of results) {
   if (!r.ok || r.status !== 200) continue;
-  const promise = promisedCacheControl(headerRules, t.label.split("  ")[0]);
-  if (!promise) continue;
-  const want = maxAgeOf(promise.cacheControl);
-  const got = maxAgeOf(r.cc);
+  const urlPath = t.label.split("  ")[0];
+
+  /* AMBIGUOUS ON THE WIRE. Two max-age directives in one Cache-Control header, which is what
+   * Cloudflare produces when two `_headers` rules match one path: it emits both values, joined.
+   * RFC 9111 does not say which one a client must take, so the answer is whatever that reader's
+   * browser does. check-cache-headers.mjs forbids the overlap statically; this catches the same
+   * thing from outside, which matters because the static check can only see rules THIS
+   * repository wrote, and anything the platform adds of its own would be invisible to it. */
+  const ages = [...(r.cc || "").matchAll(/max-age\s*=\s*(\d+)/gi)].map((m) => Number(m[1]));
+  if (ages.length > 1) ambiguous.push({ t, r, ages });
+
+  const matching = cacheControlRulesFor(headerRules, urlPath);
+  if (matching.length !== 1) continue; // an overlap is reported above, not compared
+  const want = maxAgeOf(matching[0].cacheControl);
+  const got = ages.length === 1 ? ages[0] : maxAgeOf(r.cc);
   if (want === null || got === null) continue;
   // Only one direction is a finding. The edge serving something SHORTER than asked costs a
   // revalidation; serving something LONGER means a correction cannot reach anyone, which is
   // the failure this exists for.
-  if (got > want) cachePolicy.push({ t, r, promise, want, got });
+  if (got > want) cachePolicy.push({ t, r, promise: matching[0], want, got });
 }
+
+say("SERVED WITH MORE THAN ONE max-age  (no client is obliged to resolve it our way)", ambiguous,
+  ({ t, r, ages }) => `${t.label}  ${ages.join(" and ")}  ->  ${r.cc}`);
 
 say("CACHED LONGER THAN _headers ASKS  (a fix cannot reach a reader who already has one)", cachePolicy,
   ({ t, promise, want, got }) =>
     `${t.label}  asked max-age=${want} via "${promise.pattern}", served max-age=${got}` +
     (got >= 3600 ? `  <- up to ${Math.round(got / 3600)}h stale for a returning visitor` : ""));
 
-const findings = dead.length + badStatus.length + mismatch.length + wrongType.length + leaked.length + cachePolicy.length;
+const findings =
+  dead.length +
+  badStatus.length +
+  mismatch.length +
+  wrongType.length +
+  leaked.length +
+  cachePolicy.length +
+  ambiguous.length;
 
 /* -------------------------------------------------- negative controls
  * Three ways this check could be quietly useless, each proven wrong against the live origin. */

@@ -54,15 +54,42 @@ export function maxAgeOf(cacheControl) {
 }
 
 /**
- * What `_headers` PROMISES for a path: the last matching rule wins, which is how Cloudflare
- * resolves two rules that both match. Returns null when nothing matches.
+ * EVERY Cache-Control rule that matches a path, in file order.
+ *
+ * THIS USED TO RETURN ONLY THE LAST ONE, on the stated belief that where two rules match one
+ * path the last wins. That belief was wrong, and it was wrong in the direction that hides: the
+ * zone's own four hour override was flattening the header, so the mistake could not be seen
+ * from outside. The hour the override was removed -- 2026-09-21 -- the Guide's hashed files
+ * came back carrying BOTH values joined into one header:
+ *
+ *   Cache-Control: public, max-age=0, must-revalidate, public, max-age=31536000, immutable
+ *
+ * Two max-age directives in one header. RFC 9111 does not say which a client must take, so the
+ * answer is whatever that client's parser happens to do, which is not a thing to ship.
+ *
+ * So the correct shape is to return all of them and let the caller judge, because "more than
+ * one rule matched" is itself the finding. A helper that silently picked a winner could only
+ * ever report the overlap as absent.
+ */
+export function cacheControlRulesFor(rules, urlPath) {
+  return rules
+    .filter((r) => matchesPattern(r.pattern, urlPath) && r.headers["cache-control"])
+    .map((r) => ({ pattern: r.pattern, cacheControl: r.headers["cache-control"] }));
+}
+
+/**
+ * The single rule that governs a path, or null. Throws when more than one matches, rather than
+ * choosing: there is no correct choice, and a caller that wants one value must first have
+ * established that only one rule applies. check-cache-headers.mjs is what establishes it.
  */
 export function promisedCacheControl(rules, urlPath) {
-  let found = null;
-  for (const r of rules) {
-    if (matchesPattern(r.pattern, urlPath) && r.headers["cache-control"]) {
-      found = { pattern: r.pattern, cacheControl: r.headers["cache-control"] };
-    }
+  const all = cacheControlRulesFor(rules, urlPath);
+  if (all.length > 1) {
+    throw new Error(
+      `_headers has ${all.length} Cache-Control rules matching ${urlPath} ` +
+        `(${all.map((r) => r.pattern).join(", ")}). Cloudflare emits all of them, joined. ` +
+        `Narrow the patterns so exactly one matches.`,
+    );
   }
-  return found;
+  return all[0] ?? null;
 }
