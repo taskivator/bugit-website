@@ -1224,10 +1224,79 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     return Boolean(el && !el.hidden && el.getClientRects().length > 0);
   }
 
+  /* THE PAGE BEHIND THE GUIDE DOES NOT SCROLL WHILE IT IS OPEN.
+   *
+   * The owner reported it on an iPhone: swiping up and down over the open Guide moved the
+   * marketing page underneath. `.bgd-scroll` already had overscroll-behavior:contain and
+   * that cannot help here -- a touch that starts on the header, the composer or the
+   * panel's padding is not inside the scroller, so the scroller's policy never applies to
+   * it. And at phone width the panel covers the screen, so the page being scrolled is one
+   * the reader cannot see.
+   *
+   * ONLY AT PHONE WIDTH. Above 560px the Guide is a 452px card floating over a page the
+   * reader can still see and may legitimately want to scroll; freezing it there would be a
+   * behaviour change nobody asked for.
+   *
+   * position:fixed, NOT overflow:hidden. iOS Safari honours overflow:hidden on body for
+   * programmatic scrolling and ignores it for touch, which is the whole bug. Pinning the
+   * body loses the scroll position, so it is recorded and written back as a negative top
+   * offset, then restored exactly on close -- a reader who closes the Guide is standing
+   * where they left. */
+  var lockedAt = null;
+  var narrowPanel = null;
+  try { narrowPanel = window.matchMedia("(max-width:560px)"); } catch (e) {}
+  function coversTheScreen() { return !!(narrowPanel && narrowPanel.matches); }
+
+  /* THE MOBILE MENU FREEZES THE PAGE THE SAME WAY, AND THE TWO MUST NOT CLOBBER EACH OTHER.
+   * app.js writes `body.menu-open` plus the same negative `top`. Two owners of one offset is a
+   * bug waiting to happen: whichever closes second would either clear an offset the other still
+   * needs, or read a scroll position of 0 because the body was already pinned. So this takes the
+   * offset ONLY when nobody else holds it, and gives it back only if it still owns it. */
+  function someoneElseHoldsIt() {
+    return document.body.classList.contains("menu-open");
+  }
+
+  function lockScroll() {
+    if (lockedAt !== null || !coversTheScreen()) return;
+    if (someoneElseHoldsIt()) {
+      // The page is already frozen at the right place. Mark our interest and touch nothing.
+      document.body.classList.add("bgd-locked");
+      lockedAt = "borrowed";
+      return;
+    }
+    lockedAt = window.scrollY || window.pageYOffset || 0;
+    document.body.style.top = -lockedAt + "px";
+    document.body.classList.add("bgd-locked");
+  }
+
+  function unlockScroll() {
+    if (lockedAt === null) return;
+    var y = lockedAt;
+    lockedAt = null;
+    document.body.classList.remove("bgd-locked");
+    if (y === "borrowed" || someoneElseHoldsIt()) return;
+    document.body.style.top = "";
+    // Instant, not smooth: this is a restore, not a journey. Matches app.js's close().
+    window.scrollTo({ top: y, left: 0, behavior: "instant" });
+  }
+
+  // Rotating a phone, or a desktop window crossing 560px, changes whether the panel covers
+  // the screen. Without this the lock would either stay on over a visible page or stay off
+  // over a hidden one.
+  if (narrowPanel) {
+    var onWidthChange = function () {
+      if (!state.open) { unlockScroll(); return; }
+      if (coversTheScreen()) lockScroll(); else unlockScroll();
+    };
+    if (narrowPanel.addEventListener) narrowPanel.addEventListener("change", onWidthChange);
+    else if (narrowPanel.addListener) narrowPanel.addListener(onWidthChange);
+  }
+
   function openPanel(focus = true) {
     if (consentUp()) return;
     state.open = true;
     panel.hidden = false;
+    lockScroll();
     panel.classList.toggle("bgd-wide", state.wide);
     requestAnimationFrame(() => scrollToEnd(true));
     if (focus) setTimeout(() => input.focus({ preventScroll: true }), 40);
@@ -1237,6 +1306,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   function closePanel(returnFocus = true) {
     state.open = false;
     panel.hidden = true;
+    unlockScroll();
     if (returnFocus) launch.focus({ preventScroll: true });
     save();
   }

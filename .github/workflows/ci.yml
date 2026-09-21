@@ -515,6 +515,15 @@ jobs:
       - name: Verify the Guide works on every engine and every screen size
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-guide-devices.mjs
+      # Reported by the owner from an iPhone on 2026-09-21: with the Guide open, swiping moved
+      # the marketing page behind it. `.bgd-scroll` had overscroll-behavior:contain and that
+      # cannot help -- a touch starting on the header, the composer or the padding is not inside
+      # the scroller, so its policy never applies. Both of that day's reports were invisible in
+      # the source and plain on screen, so this one measures a live layout rather than reading a
+      # rule, and removes the lock at the wire to prove it can fail.
+      - name: Verify the page behind the Guide holds still, and the mark wears no plate
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-guide-scroll-lock.mjs
       - name: Verify Windows High Contrast still shows focus and every control's edge
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-forced-colors.mjs

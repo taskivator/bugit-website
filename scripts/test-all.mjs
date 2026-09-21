@@ -138,6 +138,11 @@ const SUITES = [
   // repository in Firefox, in WebKit (which is every browser on iOS), on a phone or on a
   // tablet. Thorough in one configuration reads as coverage for all of them.
   "check-guide-devices.mjs",
+  // And the owner found two more things on a real iPhone that neither of those could see:
+  // the page behind the open Guide scrolled with the swipe, and the mark wore a plate. Both
+  // are rendered facts -- the stylesheet was correct in each case -- so this measures a live
+  // layout, and proves itself by removing the lock and watching the check go red.
+  "check-guide-scroll-lock.mjs",
   // check-docs proves the served guides match guides-manifest.json. check-guides-fresh proves
   // that manifest is the agent's CURRENT publication -- a different question, and a stale sync
   // is perfectly self-consistent. On 2026-08-31 the site served the pre-fix guides all day with

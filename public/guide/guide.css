@@ -47,8 +47,13 @@
 .bgd-launch:hover{transform:translateY(-2px);box-shadow:0 22px 60px rgba(255,79,201,.32),0 10px 30px rgba(0,0,0,.5)}
 .bgd-launch:focus-visible{outline:2px solid var(--bgd-pink);outline-offset:3px}
 .bgd-launch[aria-expanded="true"]{opacity:0;pointer-events:none;transform:scale(.9)}
-.bgd-launch-avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(255,79,201,.28),rgba(139,69,255,.08) 70%)}
-.bgd-launch-avatar svg{width:40px;height:40px}
+/* No plate behind the mark, and the mark larger than the box that holds it. The owner
+   asked for both, matching the hero Ask bar. The margin is NOT decoration: this is a grid
+   container with place-items:center, and a grid item larger than its track resolves
+   centring to the START edge, so a 54px mark in a 44px box anchors top-left and clips.
+   The -5px pulls the box out to meet it. Removing the margin re-breaks the alignment. */
+.bgd-launch-avatar{width:44px;height:44px;display:grid;place-items:center}
+.bgd-launch-avatar svg{width:54px;height:54px;margin:-5px}
 .bgd-launch-label{font-weight:850;font-size:15px;letter-spacing:.01em;white-space:nowrap}
 .bgd-kbd{font:600 11px/1 var(--bgd-mono);color:var(--bgd-ink-2);border:1px solid var(--bgd-line);border-bottom-width:2px;border-radius:6px;padding:4px 6px;background:rgba(255,255,255,.05)}
 @keyframes bgd-orbit{to{--bgd-angle:360deg}}
@@ -58,6 +63,9 @@
   position:fixed;z-index:91;inset-inline-end:var(--bgd-edge);bottom:var(--bgd-edge);
   width:min(452px,calc(100vw - 32px));height:max(min(740px,calc(100dvh - var(--bgd-top) - 2*var(--bgd-edge))),min(420px,calc(100dvh - 2*var(--bgd-edge))));
   display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;
+  /* Belt and braces beside the body lock: a touch landing on the header or the composer is
+     not inside .bgd-scroll, so that element's overscroll policy never governs it. */
+  overscroll-behavior:none;
   border-radius:26px;border:1px solid var(--bgd-line);
   background:
     radial-gradient(120% 60% at 85% -10%,rgba(139,69,255,.30),transparent 60%),
@@ -77,8 +85,11 @@
 .bgd-head::after{content:"";position:absolute;inset-inline:0;bottom:0;height:1px;background:var(--bgd-line-soft)}
 .bgd-busy .bgd-head::after{background:linear-gradient(90deg,transparent,var(--bgd-purple),var(--bgd-pink),var(--bgd-cyan),transparent);background-size:50% 100%;background-repeat:no-repeat;animation:bgd-scan 1.3s ease-in-out infinite}
 @keyframes bgd-scan{from{background-position:-50% 0}to{background-position:150% 0}}
-.bgd-avatar{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(160deg,rgba(255,79,201,.2),rgba(139,69,255,.12));border:1px solid rgba(255,79,201,.25)}
-.bgd-avatar svg{width:36px;height:36px}
+/* Same treatment in the panel header, same reason for the margin. The 5px of overflow
+   sits inside .bgd-head's own 14px/16px padding, so nothing reaches the panel edge and
+   .bgd-panel{overflow:hidden} has nothing to clip. */
+.bgd-avatar{width:42px;height:42px;display:grid;place-items:center}
+.bgd-avatar svg{width:52px;height:52px;margin:-5px}
 .bgd-title{font-size:16px;font-weight:850;letter-spacing:-.01em;line-height:1.15}
 .bgd-status{display:flex;align-items:center;gap:7px;margin-top:3px;font:500 11.5px/1.2 var(--bgd-mono);color:var(--bgd-ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bgd-status span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -92,6 +103,14 @@
 .bgd-icon svg{width:18px;height:18px}
 
 /* body */
+/* THE PAGE BEHIND DOES NOT MOVE WHILE THE GUIDE IS OPEN.
+   Set by guide.js, and only at the width where the panel covers the screen -- on desktop
+   the Guide is a 452px floating card and freezing the whole page there would be a
+   behaviour change nobody asked for. `position:fixed` rather than `overflow:hidden`
+   because iOS Safari ignores overflow:hidden on body for touch scrolling; the negative
+   `top` guide.js writes alongside this class is what stops the page jumping to 0. */
+body.bgd-locked{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+
 .bgd-scroll{overflow-y:auto;overscroll-behavior:contain;padding:20px 18px 12px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.14) transparent}
 .bgd-thread{display:flex;flex-direction:column;gap:22px;max-width:680px;margin-inline:auto}
 

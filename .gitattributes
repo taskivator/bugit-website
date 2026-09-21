@@ -1,0 +1,37 @@
+# Line endings, deliberately NARROW.
+#
+# THIS FILE DOES NOT SAY `* text=auto eol=lf`, and that is the whole point of it.
+# The agent repo does say that, correctly: it ships a ZIP whose integrity hashes must not
+# depend on the seller's OS. This repo is different. Its build copies source files into dist
+# byte-for-byte and `npm run verify:live` then asserts that every one of them arrives from
+# bugit.dev byte-identical. On 2026-09-21, 103 of the 123 text files live on bugit.dev held
+# CRLF. A blanket normalisation would therefore have rewritten 103 published files, turned the
+# live-delivery check red until a redeploy, and bought nothing a customer can see.
+#
+# So only the files that actually caused a failure are pinned. The failure was this: a
+# generator writes verify.json with LF, git checks it back out as CRLF because core.autocrlf
+# is true here, and a checker that compares the whole file byte-for-byte reports a release as
+# stale while every field in it matches. That cost a false red on 2026-09-20 and is the only
+# line-ending class git itself is responsible for here. (The other CRLF failures that night
+# were mine: literal CR characters written into a regex by a patch script.)
+#
+# A checker should also not care -- sync-release-identity.mjs now compares values with the
+# carriage returns stripped -- but a pin costs nothing and the next checker will not have to
+# remember.
+*.json  text eol=lf
+
+# Never diffed or normalised, whatever a heuristic thinks. No file's bytes change from this;
+# it only removes the chance that git ever decides one of these is text.
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.mp4   binary
+*.webm  binary
+*.zip   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary

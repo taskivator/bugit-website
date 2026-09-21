@@ -25,6 +25,7 @@
     "test:security-headers": "node scripts/check-security-headers.mjs",
     "test:guide": "node scripts/check-guide.mjs",
     "test:guide-answers": "node scripts/check-guide-answers.mjs",
+    "test:scroll-lock": "node scripts/check-guide-scroll-lock.mjs",
     "test:csp": "node scripts/check-csp-telemetry.mjs",
     "test:billing": "node scripts/check-billing-copy.mjs",
     "test:team-paused": "node scripts/check-team-paused.mjs",
