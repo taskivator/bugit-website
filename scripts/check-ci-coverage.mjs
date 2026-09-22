@@ -30,6 +30,13 @@ const SELF = "check-ci-coverage.mjs";
  * exact shape this file exists to prevent. Each one therefore has to say what it needs that CI
  * has not got, so the next reader can tell an honest exemption from a parked failure. */
 const POST_DEPLOY = new Map([
+  ["check-deploy-safety.mjs",
+   "compares the build about to be published against what the LIVE site already is: it reads " +
+   "production's source commit from the Cloudflare API and the live homepage over the network, " +
+   "neither of which exists in CI, and it needs a deploy credential CI must not be given. It is " +
+   "a PRE-deploy gate, wired into `npm run deploy` so the documented publish path cannot skip " +
+   "it. It exists because on 2026-09-23 a deploy from main removed the Ask bar and the Guide's " +
+   "mark from bugit.dev while every CI gate passed."],
   ["check-live-delivery.mjs",
    "measures what a deployed origin SERVES. CI has no deployed site, and running it before " +
    "the deploy would assert that the deploy had not happened yet. Run by hand after every " +

@@ -9,6 +9,8 @@
     "purge": "node scripts/purge-cache.mjs",
     "test": "node scripts/test-all.mjs",
     "build": "node build.js",
+    "predeploy": "node build.js && node scripts/check-deploy-safety.mjs",
+    "deploy": "npm run predeploy && wrangler pages deploy dist --project-name=bugit-website --branch=main --commit-dirty=true && npm run verify:live",
     "preview": "node server.js",
     "test:docs": "node scripts/check-doc-links.mjs",
     "test:guides": "node scripts/check-docs.mjs",
