@@ -289,6 +289,10 @@ try {
     ["credentials inside a tracker URL", "our jira is https://svcacct:hunter22xyz@jira.example.com"],
     ["an Authorization header", "Authorization: Bearer 8f3a9c2e1b7d4f6a0c5e"],
     ["a private key", "-----BEGIN OPENSSH PRIVATE KEY-----"],
+    // Synthetic. The two tracker tokens this net did not know until the second round of
+    // 2026-09-22, both of which BugIt files to.
+    ["a YouTrack permanent token", "perm:YWRtaW4=.NDItMQ==.abcdefGHIJKL1234567890mnop"],
+    ["an Asana personal access token", "1/1204553456789:abcdef0123456789abcdef0123456789"],
   ]) {
     check(`the composer refuses ${what}`, await composerRefuses(text), text.slice(0, 30));
   }
@@ -298,6 +302,10 @@ try {
     ["the word authorization in a sentence", "Authorization: required before the device appears"],
     ["the word basic in a sentence", "I need basic troubleshooting steps for the tracker"],
     ["an order number and a date", "my order number is 4471 and I paid on 12/28"],
+    // The two the loose YouTrack and Asana rules would have eaten. A visitor writing either of
+    // these and being told their question looks like a secret is the failure this pair guards.
+    ["a hyphenated phrase that begins perm-", "perm-denied-error-code-12345 keeps appearing"],
+    ["a ratio that looks like an Asana id", "the ratio is 1/200000 which seems wrong"],
   ]) {
     check(`the composer accepts ${what}`, !(await composerRefuses(text)), text.slice(0, 40));
   }

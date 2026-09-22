@@ -474,6 +474,26 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     /\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{10,}/g, /\bwhsec_[A-Za-z0-9+/=]{10,}/g, /\bAIza[0-9A-Za-z_-]{30,}/g,
     /\beyJ[\w-]{6,}\.eyJ[\w-]{6,}\.[\w-]{6,}/g, /\b[a-z2-7]{52}\b/g, /\b[A-Za-z0-9]{76}AZDO[A-Za-z0-9]{4}\b/g,
     /\bBUGIT(?:-[0-9A-Z]{5}){4}\b/gi, /\b[A-Z2-7.=]{6}(?:-[A-Z2-7.=]{1,6}){7,}/g,
+    // THE TWO TRACKER TOKENS THIS LIST DID NOT KNOW. Added 2026-09-22 (second round). BugIt
+    // files to ELEVEN trackers and this net knew the token format of seven of them. The agent's
+    // own redactor has carried both of these since August, so this was the two-lists problem
+    // again rather than a new shape. The Portal's lib/assistant/redact.ts carries the identical
+    // pair and the reasoning in full.
+    //
+    // The YouTrack rule is DELIBERATELY STRICTER THAN THE AGENT'S: copying it verbatim gives
+    // `perm[:-]...{16,}`, which removes `perm-denied-error-code-12345` and
+    // `perm-check-failed-on-startup` -- phrases a person writes in a bug report. Here a false
+    // positive replaces the visitor's own words in front of them, so the hyphen form must show
+    // the base64 group separator a real 2024+ token always carries. The colon form stays loose,
+    // because English writes `perm-anent` and never `perm:anent`.
+    /\bperm:[A-Za-z0-9+/=._-]{16,}/g,
+    /\bperm-[A-Za-z0-9+/=_-]{4,}\.[A-Za-z0-9+/=._-]{10,}/g,
+    // Asana PAT: `1/<user id>:<hex>` and `2/<id>/<id>:<hex>`. The six-digit floor on the id is
+    // what keeps this off `1/2024:` and every other date somebody writes.
+    /\b[12]\/\d{6,}(?:\/\d{6,})?:[A-Za-z0-9]{20,}\b/g,
+    // Bugzilla, Trello and Shortcut stay absent ON PURPOSE: their keys are a bare alphanumeric
+    // run and a plain UUID, which is also every sha1 and every id in every log a visitor
+    // pastes. They are caught on context by the URL and Authorization rules instead.
     // THE SHAPES A CREDENTIAL TAKES WHEN IT BELONGS TO NO PARTICULAR VENDOR. Added 2026-09-22,
     // carried from the Portal's lib/assistant/redact.ts, where the full reasoning and the tests
     // live (a-credential-is-not-only-a-vendors-token.test.ts). Every shape above is some named
