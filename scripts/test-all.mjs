@@ -107,17 +107,31 @@ srv.on("exit", (code, signal) => {
 });
 
 // 3. Wait for readiness (poll, never a fixed sleep). Fail loudly if the server never comes up.
+//
+// PROBE THE ADDRESS THE SERVER ACTUALLY BOUND, NOT A NAME THAT RESOLVES SOMEWHERE ELSE.
+// `server.js` listens on 127.0.0.1 and nothing else. This loop used to ask `localhost`, and on
+// this machine `dns.lookup('localhost', {all:true})` answers ::1 FIRST and 127.0.0.1 second --
+// so the first address tried is one nothing is listening on. Node's happy-eyeballs usually wins
+// the race anyway, which is exactly what made this intermittent rather than broken, and on
+// 2026-09-22 it lost: the whole run exited 1 with `server did not become ready`, which reads as
+// the site being broken rather than as the harness failing to find it. Nothing had been measured.
+//
+// The budget is also raised. Fifteen seconds is generous for a warm machine and tight for one
+// that has just finished a build while a second suite is running, which is the normal state here.
+// `serverDied` below already separates a dead server from a slow one, so a longer wait cannot
+// hide a crash -- it only stops a slow start being reported as a failure.
+const probeBase = `http://127.0.0.1:${port}`;
 let ready = false;
-for (let i = 0; i < 60; i++) {
+for (let i = 0; i < 240; i++) {
   if (serverDied) {
     console.error(`the server we started ${serverDied} before answering. Nothing was measured.`);
     shutdown();
     process.exit(1);
   }
-  try { const r = await fetch(base + "/"); if (r.ok) { ready = true; break; } } catch { /* not up yet */ }
+  try { const r = await fetch(probeBase + "/"); if (r.ok) { ready = true; break; } } catch { /* not up yet */ }
   await new Promise((r) => setTimeout(r, 250));
 }
-if (!ready) { console.error(`server did not become ready at ${base}`); shutdown(); process.exit(1); }
+if (!ready) { console.error(`server did not become ready at ${probeBase} (60s)`); shutdown(); process.exit(1); }
 
 // 4. Run every declared suite against the served site.
 const SUITES = [
