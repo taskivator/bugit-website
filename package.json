@@ -23,6 +23,7 @@
     "test:ads-tag": "node scripts/check-ads-tag.mjs",
     "test:cache": "node scripts/check-cache-headers.mjs",
     "test:security-headers": "node scripts/check-security-headers.mjs",
+    "test:seo": "node scripts/check-seo.mjs",
     "test:guide": "node scripts/check-guide.mjs",
     "test:guide-answers": "node scripts/check-guide-answers.mjs",
     "test:scroll-lock": "node scripts/check-guide-scroll-lock.mjs",

@@ -106,9 +106,13 @@ fs.rmSync(dist,{recursive:true,force:true}); fs.mkdirSync(dist,{recursive:true})
 // So absence is a decision rather than an accident: the required ones stop the build and the
 // optional ones are named as skipped, which is the same distinction `attachment` and `sidecar`
 // handling makes everywhere else in this project.
-const REQUIRED_AT_ROOT = new Set(['index.html','styles.css','app.js','consent.js','404.html','_headers']);
+// `_redirects` joined this set on 2026-09-23. It is the same shape of file as `_headers`:
+// a Cloudflare Pages control file whose absence is completely silent. Without it every
+// clean URL on this site answers 404 again -- /pricing, /privacy, /terms, /support and
+// twenty more -- and nothing in the build, the gates or the deploy would say a word.
+const REQUIRED_AT_ROOT = new Set(['index.html','styles.css','app.js','consent.js','404.html','_headers','_redirects']);
 const skippedOptional = [];
-for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','.well-known','verify.json']) {
+for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','_redirects','.well-known','verify.json']) {
   const src = path.join(root,item);
   if (!fs.existsSync(src)) {
     if (REQUIRED_AT_ROOT.has(item)) {

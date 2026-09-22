@@ -167,6 +167,13 @@ jobs:
       - name: Verify the security contact is present and not about to lapse
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-security-txt.mjs
+      # The first search-visibility guard this site has had. Offline on purpose, so it runs on a
+      # branch and before a deploy rather than after one. It holds _redirects to the routes that
+      # actually exist, keeps the raw /public/docs sources out of the index, and refuses a
+      # structured-data claim about a feature the site does not have.
+      - name: Verify the site is reachable, indexable and correctly described
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-seo.mjs
       - name: Verify billing copy states a one-time payment in every locale
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-billing-copy.mjs

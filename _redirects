@@ -1,0 +1,58 @@
+# Clean URLs for a single-page site, added 2026-09-23.
+#
+# WHY. bugit.dev routes entirely through hash fragments (/#pricing, /#/docs/privacy). A hash is
+# never sent to the server, so every address a person would actually type, paste, link or cite
+# answered 404. Measured on 2026-09-23 against production, seventeen of seventeen obvious entry
+# points failed: /pricing /features /docs /download /privacy /terms /faq /support /contact
+# /changelog /blog /integrations /ja/ /de/ /en/ /legal /security. Two of those are the legal
+# surfaces a customer or a regulator is most likely to try by hand.
+#
+# WHY 302 AND NOT 301. A 301 is cached hard by browsers and is effectively permanent; these
+# mappings have never run in production. Nothing is lost by starting reversible: every
+# destination is a hash route on this same origin, and every hash route already canonicalises
+# to https://bugit.dev/, so there is no link equity for a 301 to consolidate that a 302 would
+# forfeit. Promote these to 301 once they have been observed working, not before.
+#
+# A DESTINATION HERE IS A CLAIM THAT A ROUTE EXISTS. `docRoutes` in app.js is the authority for
+# the /#/... targets and the section ids in index.html are the authority for the /#... ones.
+# scripts/check-seo.mjs reads both and fails if any destination below has stopped existing,
+# because a redirect that quietly points at a renamed route is worse than the 404 it replaced:
+# it answers 200 and shows the wrong page.
+#
+# `#` is a comment only at the start of a line in this format, so the fragments below parse.
+# Cloudflare's own documented example is `/page/ /page2/#fragment 301`.
+
+# --- homepage sections -------------------------------------------------------
+/pricing          /#pricing             302
+/features         /#features            302
+/integrations     /#integrations        302
+/faq              /#faq                 302
+/demo             /#demo                302
+/download         /#pricing             302
+
+# --- documentation -----------------------------------------------------------
+/docs             /#/docs               302
+/documentation    /#/docs               302
+/legal            /#/docs               302
+/guide            /#/docs/user-guide    302
+/user-guide       /#/docs/user-guide    302
+/getting-started  /#/docs/user-guide    302
+/overview         /#/docs/overview      302
+
+# --- legal surfaces ----------------------------------------------------------
+# The four a customer or a regulator types by hand. /terms and /eula both resolve to the licence
+# agreement because that is the document this product actually publishes under those names.
+/privacy          /#/docs/privacy       302
+/privacy-policy   /#/docs/privacy       302
+/terms            /#/docs/license       302
+/eula             /#/docs/license       302
+/license          /#/docs/license       302
+/licence          /#/docs/license       302
+/refund           /#/docs/refund        302
+/refunds          /#/docs/refund        302
+/commerce         /#/docs/commerce      302
+
+# --- support -----------------------------------------------------------------
+/support          /#/support            302
+/contact          /#/support            302
+/help             /#/support            302
