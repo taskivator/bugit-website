@@ -169,7 +169,7 @@ const SUITES = [
   // the asset it renders is the one the brand pipeline produced and was not
   // hand-edited afterwards. The two are complements, not duplicates.
   "check-brand-sync.mjs",
-  "check-trust-icons.mjs", "check-tracker-claims.mjs", "check-attachment-claim.mjs", "check-ads-tag.mjs", "check-cache-headers.mjs", "check-csp-telemetry.mjs",
+  "check-trust-icons.mjs", "check-tracker-claims.mjs", "check-attachment-claim.mjs", "check-ads-tag.mjs", "check-cache-headers.mjs", "check-csp-telemetry.mjs", "check-security-txt.mjs",
   // check-tracker-claims asks whether the site names the right trackers. This asks whether any
   // locale states a REQUIREMENT that is not real: Arabic required GitHub Copilot, and French
   // required it one sentence after saying the Claude extension works.

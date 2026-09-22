@@ -453,7 +453,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     return I18N.en.docs[key];
   }
 
-  // A net for pasted secrets: the same shapes the server removes (prototype-chatbot/lib/redact.mjs),
+  // A net for pasted secrets: the same shapes the server removes (the Portal's lib/assistant/redact.ts),
   // so the widget warns before sending exactly what the server would strip.
   function luhn(digits) {
     let sum = 0;

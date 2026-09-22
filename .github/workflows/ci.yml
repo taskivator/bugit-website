@@ -163,6 +163,10 @@ jobs:
       - name: Verify the CSP grants no unused or undisclosed telemetry destination
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-csp-telemetry.mjs
+
+      - name: Verify the security contact is present and not about to lapse
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-security-txt.mjs
       - name: Verify billing copy states a one-time payment in every locale
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-billing-copy.mjs
