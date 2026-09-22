@@ -149,8 +149,8 @@ test("the starter cards the Guide offers can all be answered by the bank it read
   // own suggestion. They are the first thing a visitor sees, in every language.
   const widget = readFileSync(here("../public/guide/guide.js"), "utf8");
   const table = widget.slice(widget.indexOf("const I18N = {"), widget.indexOf("---------- helpers"));
-  const langs = [...table.matchAll(/\n    "?([a-z-]+)"?: \{/g)].map((m) => m[1]);
-  const cardSets = [...table.matchAll(/cards: \[(.*?)\],\n/gs)].map((m) => [...m[1].matchAll(/q: "((?:[^"\\]|\\.)*)"/g)].map((x) => x[1]));
+  const langs = [...table.matchAll(/\r?\n    "?([a-z-]+)"?: \{/g)].map((m) => m[1]);
+  const cardSets = [...table.matchAll(/cards: \[(.*?)\],\r?\n/gs)].map((m) => [...m[1].matchAll(/q: "((?:[^"\\]|\\.)*)"/g)].map((x) => x[1]));
   assert.equal(langs.length, 11);
   assert.equal(cardSets.length, 11);
   for (const [i, lang] of langs.entries()) {
@@ -224,9 +224,9 @@ test("a long question cannot lock up the page it runs in", () => {
 test("every label the widget asks for exists in all eleven languages", () => {
   const widget = readFileSync(here("../public/guide/guide.js"), "utf8");
   const table = widget.slice(widget.indexOf("const I18N = {"), widget.indexOf("---------- helpers"));
-  const langs = [...table.matchAll(/\n    "?([a-z-]+)"?: \{\n/g)].map((m) => m[1]);
+  const langs = [...table.matchAll(/\r?\n    "?([a-z-]+)"?: \{\r?\n/g)].map((m) => m[1]);
   const asked = new Set([...widget.matchAll(/\bt\("([a-zA-Z]+)"/g)].map((m) => m[1]));
-  const sections = table.split(/\n    "?[a-z-]+"?: \{\n/).slice(1);
+  const sections = table.split(/\r?\n    "?[a-z-]+"?: \{\r?\n/).slice(1);
   assert.equal(sections.length, 11, `${sections.length} language sections`);
   for (const [i, section] of sections.entries()) {
     for (const key of asked) {
