@@ -164,6 +164,13 @@ const SUITES = [
   // because the site shipped with no Cross-Origin-Opener-Policy at all, and an absence is
   // invisible to a guard that only inspects what is written.
   "check-security-headers.mjs",
+  // ...and this one asks the question none of the eighty-five guards before it asked: can a
+  // search engine reach, fetch and correctly describe this site at all? It was written on
+  // 2026-09-23 after an audit found seventeen of seventeen obvious entry points answering 404
+  // and forty raw .md sources indexable as duplicates of the pages they feed. Its load-bearing
+  // assertion is that every destination in _redirects still names a route that exists: a
+  // redirect to a renamed route answers 200 with the wrong page, which is worse than the 404.
+  "check-seo.mjs",
   // The Guide answers from prepared text in the visitor's browser and calls no model and no server.
   // That claim is made to every visitor and in the privacy policy, and only a browser can check it:
   // this one asks real questions and fails if anything leaves the origin.

@@ -113,7 +113,25 @@
 # Current web guides must revalidate after every release so version switches are
 # atomic across the website, portal, and update service. This covers the PDFs too
 # — see below for why they get no exemption.
+# NOINDEX, added 2026-09-23 after the first search-visibility audit this project has run.
+# These are the RAW SOURCES the documentation pages fetch and render: forty-odd .md and .txt
+# files, eleven languages of the privacy statement, the licence and the guides. robots.txt
+# allows everything, nothing here carried a canonical, and Google indexes text/markdown, so
+# every one of them was a candidate search result competing with the page it came from --
+# unstyled, unbranded, no navigation and no language switcher. A buyer searching for the
+# privacy policy could land on raw markdown.
+#
+# THE TRADE IS STATED ON PURPOSE. The documentation lives at hash routes that all canonicalise
+# to https://bugit.dev/, so noindex here means this content is not separately findable at all.
+# That is not a loss today: on 2026-09-23 four separate searches, including an exact-phrase
+# search for this site's own meta description, returned bugit.dev nowhere -- the public GitHub
+# repository outranks the product. The real fix is real URLs per document, which changes the
+# language-selection model and is an owner decision, not an overnight one. Until then, not
+# being found beats being found as raw markdown.
+#
+# noindex does NOT block fetching. app.js loads these same files over XHR and is unaffected.
 /public/docs/*
+  X-Robots-Tag: noindex
   Content-Disposition: inline
   Cache-Control: public, max-age=0, must-revalidate
 

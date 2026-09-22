@@ -34,10 +34,29 @@
   <meta name="twitter:title" content="BugIt | QA Bug-Filing Agent for VS Code" />
   <meta name="twitter:description" content="BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval." />
   <meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png" />
+  <!-- Structured data. The WebSite node was added 2026-09-23 and is the node Google reads to
+       decide what NAME to print above a result for this domain. On that date four searches,
+       including an exact-phrase search for this page's own meta description, put the public
+       GitHub repository above the product and returned bugit.dev nowhere at all.
+       It deliberately carries no potentialAction/SearchAction: Google retired the sitelinks
+       searchbox in 2023 and this site has no search endpoint, so declaring one would claim a
+       feature that does not exist. There is deliberately no FAQPage node either, although the
+       page has an FAQ: Google restricted FAQ rich results to government and health sites in
+       2023 and removed the search appearance entirely in June 2026, so marking it up would be
+       work that changes nothing. scripts/check-seo.mjs holds this block to its shape. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://bugit.dev/#website",
+        "name": "BugIt",
+        "alternateName": "BugIt by Taskivator",
+        "url": "https://bugit.dev/",
+        "inLanguage": "en",
+        "publisher": { "@id": "https://bugit.dev/#org" }
+      },
       {
         "@type": "Organization",
         "@id": "https://bugit.dev/#org",

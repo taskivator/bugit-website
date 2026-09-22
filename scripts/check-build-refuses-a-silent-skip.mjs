@@ -118,7 +118,7 @@ function build(dir, env = {}) {
 }
 
 // --- 4. F07: a missing REQUIRED root file stops the build ------------------------------------
-for (const required of ["index.html", "_headers", "404.html"]) {
+for (const required of ["index.html", "_headers", "404.html", "_redirects"]) {
   const dir = sandbox((d) => fs.rmSync(path.join(d, required), { force: true }));
   const r = build(dir);
   check(
