@@ -30,7 +30,7 @@
 ## نطاق الإصدار
 
 - <bdi dir="ltr">BugIt</bdi> هو الإصدار التجاري المنشور الحالي، ويخضع للصيانة النشطة.
-- يُعد <bdi dir="ltr">Windows 11</bdi> و<bdi dir="ltr">VS Code</bdi> و<bdi dir="ltr">GitHub Copilot</bdi> و<bdi dir="ltr">Python 3.10</bdi> إلى <bdi dir="ltr">3.14</bdi> البيئة المعتمدة للإصدار.
+- <bdi dir="ltr">Windows 11</bdi> مدعوم بالكامل مع <bdi dir="ltr">VS Code</bdi> و<bdi dir="ltr">Python 3.10</bdi> إلى <bdi dir="ltr">3.14</bdi>، و<bdi dir="ltr">macOS</bdi> و<bdi dir="ltr">Linux</bdi> في مرحلة <bdi dir="ltr">Preview</bdi>. يعمل <bdi dir="ltr">BugIt</bdi> مع <bdi dir="ltr">GitHub Copilot Chat</bdi> وإضافة <bdi dir="ltr">Claude</bdi> ومساعدين آخرين، وحتى مع طرفية عادية.
 - يتوفر دليل المستخدم الكامل والنظرة العامة بصيغة <bdi dir="ltr">PDF</bdi> بالإنجليزية وبكل لغة مدعومة؛ يمكنك معاينتهما أو تنزيلهما أدناه.
 
 ## السياسات

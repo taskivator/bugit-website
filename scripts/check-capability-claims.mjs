@@ -140,6 +140,32 @@ for (const [locale, text] of [...claims].sort()) {
   }
 }
 
+/* RULE C — THE ONLINE GUIDES, the pages at /docs. Rules A and B read one dictionary key, and the
+   Getting Started and Overview pages said "Windows 11 with VS Code and GitHub Copilot is the
+   release-qualified client path" in all eleven locales, naming no alternative, while the homepage
+   and the buyer's own guides said the Claude extension and a terminal work the same (full-project
+   review, 2026-09-23). Each page must name Claude, and no sentence may pair Copilot with
+   "Windows 11" (the platform claim) without naming Claude too. Pages are discovered, not listed. */
+const DOCS = path.join(ROOT, "public", "docs");
+const guidePages = fs.readdirSync(DOCS).filter((n) => /^(GETTING_STARTED|OVERVIEW)(\.[a-z-]+)?\.web\.md$/.test(n));
+if (guidePages.length < 2 * EXPECTED_LOCALES) {
+  problems.push(`only ${guidePages.length} online Getting Started / Overview pages found (expected ` +
+                `${2 * EXPECTED_LOCALES}); the reader lost its subject`);
+}
+for (const name of guidePages.sort()) {
+  const text = fs.readFileSync(path.join(DOCS, name), "utf8");
+  if (!text.includes(CLAUDE)) {
+    problems.push(`[${name}] never names ${CLAUDE}; the online guide reads as Copilot-only`);
+  }
+  for (const line of text.split(/\r?\n/)) {
+    for (const sentence of sentences(line)) {
+      if (sentence.includes(COPILOT) && sentence.includes("Windows 11") && !sentence.includes(CLAUDE)) {
+        problems.push(`[${name}] a platform sentence names ${COPILOT} as the only path:\n        ${sentence}`);
+      }
+    }
+  }
+}
+
 if (problems.length) {
   for (const p of problems) console.error(`FAIL: ${p}`);
   console.error(`\ncheck-capability-claims: ${problems.length} problem(s). The site states a ` +

@@ -225,18 +225,18 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     zh: {
       launch: "询问 BugIt", title: "BugIt Guide", status: "基于 BugIt 文档回答", statusBusy: "正在处理",
       newChat: "新对话", expand: "展开", collapse: "收起", close: "关闭",
-      eyebrow: "用您的语言提问", h1: "有什么可以", h2: "帮您？",
-      helloSub: "我根据 BugIt 的文档，用预先写好的回答作答。无法确认的内容，我会帮您写一封发给团队的邮件。",
+      eyebrow: "用你的语言提问", h1: "有什么可以", h2: "帮你？",
+      helloSub: "我根据 BugIt 的文档，用预先写好的回答作答。无法确认的内容，我会帮你写一封发给团队的邮件。",
       cards: [
         { tag: "快速上手", q: "如何安装 BugIt？" },
         { tag: "跟踪工具", q: "BugIt 支持 Jira 和 Azure DevOps 吗？" },
         { tag: "许可证", q: "Solo 和 Team 有什么区别？" },
         { tag: "隐私", q: "BugIt 会把我的代码发送到别处吗？" },
       ],
-      placeholder: "询问设置、跟踪工具、许可证等问题…", inputLabel: "您的问题", send: "发送", disclaimer: "回答可能有误。切勿粘贴密码或令牌。", human: "联系人工客服",
+      placeholder: "询问设置、跟踪工具、许可证等问题…", inputLabel: "你的问题", send: "发送", disclaimer: "回答可能有误。切勿粘贴密码或令牌。", human: "联系人工客服",
       searching: "正在搜索 BugIt 文档", searched: "已查阅 BugIt 文档", found: "相关文章：{n}篇", noMatch: "没有匹配的文章",
-      sources: "来源", related: "您还可以问",
-      copy: "复制回答", copied: "已复制", good: "有帮助", bad: "没有帮助", thanks: "感谢您的反馈",
+      sources: "来源", related: "你还可以问",
+      copy: "复制回答", copied: "已复制", good: "有帮助", bad: "没有帮助", thanks: "感谢你的反馈",
       ticketTitle: "发送给 BugIt 团队", errNetwork: "连接已中断。请检查网络后重试。",
       errSecret: "这看起来像密码、令牌或银行卡号。请删除后再发送。",
       retry: "重试", langsLabel: "可以用以下任一语言提问",
@@ -297,7 +297,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     ar: "ليست لدي إجابة مؤكدة عن ذلك، لذا لن أخمّن. يفتح الزر أدناه رسالة بريد إلكتروني إلى فريق BugIt تتضمن سؤالك، وسيرد عليك شخص عبر البريد الإلكتروني.",
     ja: "この件については確かな回答がないため、推測ではお答えしません。下のボタンを押すと、ご質問を記載した BugIt チーム宛てのメールが開きます。担当者がメールでご返信いたします。",
     ko: "이 질문에 대해서는 확인된 답변이 없어 추측으로 답하지 않겠습니다. 아래 버튼을 누르면 질문이 담긴 BugIt 팀 앞 메일이 열리고, 담당자가 이메일로 답장드립니다.",
-    zh: "关于这个问题，我没有经过确认的答案，所以不做猜测。点击下方按钮会打开一封写好您问题的邮件，发送给 BugIt 团队，专人会通过电子邮件回复您。",
+    zh: "关于这个问题，我没有经过确认的答案，所以不做猜测。点击下方按钮会打开一封写好你问题的邮件，发送给 BugIt 团队，专人会通过电子邮件回复你。",
   };
 
   const MAIL_LABEL = {
@@ -317,7 +317,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
     ar: "يفتح هذا تطبيق البريد لديك وسؤالك مكتوب فيه بالفعل. يقرأ شخص كل رسالة ويرد عبر البريد الإلكتروني.",
     ja: "メールアプリが開き、ご質問がすでに入力されています。すべてのメッセージを担当者が確認し、メールで返信します。",
     ko: "메일 앱이 열리고 질문이 이미 입력되어 있습니다. 모든 메시지는 담당자가 직접 읽고 이메일로 답장합니다.",
-    zh: "这会打开您的邮件应用，其中已写好您的问题。每条消息都会由专人阅读并通过电子邮件回复。",
+    zh: "这会打开你的邮件应用，其中已写好你的问题。每条消息都会由专人阅读并通过电子邮件回复。",
   };
 
   // Above the questions offered when the Guide is not sure which was meant. "You might also ask",
@@ -325,7 +325,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   const SUGGEST_LABEL = {
     en: "Did you mean", de: "Meinten Sie", es: "¿Quisiste decir?", fr: "Vouliez-vous dire",
     it: "Intendevi", "pt-br": "Você quis dizer", ru: "Вы имели в виду", ar: "هل تقصد",
-    ja: "もしかして", ko: "혹시 이 질문인가요", zh: "您是想问",
+    ja: "もしかして", ko: "혹시 이 질문인가요", zh: "你是想问",
   };
 
   const HAND_LABEL = {
@@ -350,7 +350,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       "ko": "어떤 항목을 말씀하시는지 확실하지 않습니다. 질문과 가장 가까운 항목을 선택하시거나, 다른 방식으로 다시 질문해 주세요.",
       "pt-br": "Não tenho certeza de qual dessas opções você quer dizer. Toque na que mais se aproxima da sua pergunta, ou pergunte de outra forma.",
       "ru": "Не получилось точно понять, что вы имеете в виду. Выберите вариант, который ближе всего к вашему вопросу, или сформулируйте его по-другому.",
-      "zh": "不确定您想问的是哪一项，请点击最接近您问题的选项，或换一种方式提问。"
+      "zh": "不确定你想问的是哪一项，请点击最接近你问题的选项，或换一种方式提问。"
   };
 
   /* ...AND THE SAME LINE WHEN THERE IS ONLY ONE THING TO TAP.
@@ -384,7 +384,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       "ko": "이 질문을 말씀하시는 것인지 확실하지 않습니다. 맞으면 선택하시고, 아니면 다른 방식으로 다시 질문해 주세요.",
       "pt-br": "Não tenho certeza se é isso que você quer dizer. Toque nela se for, ou pergunte de outra forma.",
       "ru": "Не уверен, что вы имеете в виду именно это. Нажмите, если да, или сформулируйте вопрос по-другому.",
-      "zh": "不确定您想问的是不是这个。如果是，请点击；或者换一种方式提问。"
+      "zh": "不确定你想问的是不是这个。如果是，请点击；或者换一种方式提问。"
   };
 
   // ---------------------------------------------------------------- helpers

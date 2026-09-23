@@ -1,8 +1,8 @@
 # Primeros pasos con BugIt
 
-> **Aviso sobre la traducción.** Este documento se ha traducido automáticamente y no ha sido revisado por hablantes nativos. La versión en inglés es la que prevalece: en caso de discrepancia, rige el texto en inglés. Para consultar la redacción más precisa y actualizada, acuda al documento en inglés.
+> **Aviso sobre la traducción.** Este documento se ha traducido automáticamente y no ha sido revisado por hablantes nativos. La versión en inglés es la que prevalece: en caso de discrepancia, rige el texto en inglés. Para consultar la redacción más precisa y actualizada, acude al documento en inglés.
 
-BugIt convierte notas de prueba preliminares en informes de errores revisados dentro de VS Code. Windows 11 con VS Code y GitHub Copilot es la ruta de cliente cualificada para la versión.
+BugIt convierte notas de prueba preliminares en informes de errores revisados dentro de VS Code. Funciona con GitHub Copilot Chat, la extensión de Claude, otros asistentes e incluso una terminal normal. Windows 11 es totalmente compatible; macOS y Linux están en Preview.
 
 ## Antes de empezar
 

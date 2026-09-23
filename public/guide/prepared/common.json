@@ -10,7 +10,7 @@
     "ko": "어떤 항목을 말씀하시는지 확실하지 않습니다. 질문과 가장 가까운 항목을 선택하시거나, 다른 방식으로 다시 질문해 주세요.",
     "pt-br": "Não tenho certeza de qual dessas opções você quer dizer. Toque na que mais se aproxima da sua pergunta, ou pergunte de outra forma.",
     "ru": "Не получилось точно понять, что вы имеете в виду. Выберите вариант, который ближе всего к вашему вопросу, или сформулируйте его по-другому.",
-    "zh": "不确定您想问的是哪一项，请点击最接近您问题的选项，或换一种方式提问。"
+    "zh": "不确定你想问的是哪一项，请点击最接近你问题的选项，或换一种方式提问。"
   },
   "did_you_mean_one": {
     "en": "I'm not sure this is what you meant. Tap it if it is, or ask your question another way.",
@@ -23,6 +23,6 @@
     "ko": "이 질문을 말씀하시는 것인지 확실하지 않습니다. 맞으면 선택하시고, 아니면 다른 방식으로 다시 질문해 주세요.",
     "pt-br": "Não tenho certeza se é isso que você quer dizer. Toque nela se for, ou pergunte de outra forma.",
     "ru": "Не уверен, что вы имеете в виду именно это. Нажмите, если да, или сформулируйте вопрос по-другому.",
-    "zh": "不确定您想问的是不是这个。如果是，请点击；或者换一种方式提问。"
+    "zh": "不确定你想问的是不是这个。如果是，请点击；或者换一种方式提问。"
   }
 }

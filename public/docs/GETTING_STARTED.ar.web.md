@@ -2,7 +2,7 @@
 
 > **تنويه بشأن الترجمة.** تُرجم هذا المستند آليًا ولم يخضع لمراجعة متحدثين أصليين باللغة. النسخة الإنجليزية هي المرجع المعتمد: وعند وجود أي اختلاف يُعتد بالنص الإنجليزي. وللاطلاع على أدق صياغة وأحدثها، يُرجى الرجوع إلى المستند <bdi dir="ltr">الإنجليزي</bdi>.
 
-يحوّل <bdi dir="ltr">BugIt</bdi> ملاحظات الاختبار الأولية إلى تقارير خلل خاضعة للمراجعة داخل <bdi dir="ltr">VS Code</bdi>. يُعد نظام <bdi dir="ltr">Windows 11</bdi> مع <bdi dir="ltr">VS Code</bdi> و<bdi dir="ltr">GitHub Copilot</bdi> المسار المعتمد للإصدار.
+يحوّل <bdi dir="ltr">BugIt</bdi> ملاحظات الاختبار الأولية إلى تقارير خلل خاضعة للمراجعة داخل <bdi dir="ltr">VS Code</bdi>. يعمل مع <bdi dir="ltr">GitHub Copilot Chat</bdi> وإضافة <bdi dir="ltr">Claude</bdi> ومساعدين آخرين، وحتى مع طرفية عادية. <bdi dir="ltr">Windows 11</bdi> مدعوم بالكامل، و<bdi dir="ltr">macOS</bdi> و<bdi dir="ltr">Linux</bdi> في مرحلة <bdi dir="ltr">Preview</bdi>.
 
 ## قبل أن تبدأ
 

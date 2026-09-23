@@ -139,8 +139,15 @@ function joinCompounds(s) {
 export const MATCH_LIMIT = 600;
 
 /** Terms for one text in one language. A Set: the similarity counts a term once. */
+/** The formal and direct Chinese "you" are one word to a matcher. The answers use 你 (owner decision,
+ * LQA-0001) and a visitor may type either; without this, a question typed with 您 matched an answer
+ * phrased with 你 slightly worse than the same question typed with 你 (full-project review, 2026-09-23). */
+export function foldAddress(s) {
+  return s.replace(/您/gu, "你");
+}
+
 export function termsOf(text, lang) {
-  let s = String(text || "").normalize("NFKC").toLowerCase();
+  let s = foldAddress(String(text || "").normalize("NFKC").toLowerCase());
   const out = new Set();
   const stop = STOPS[lang] ?? STOPS.en;
   // Commands and file names first, whole and in parts: `bugit_activate`, `.bugit/config.json`. Taken
@@ -218,7 +225,7 @@ export function termsOf(text, lang) {
  * name's edges made those two different keys.
  */
 export function normalizeExact(text) {
-  const s = String(text || "").normalize("NFKC").toLowerCase();
+  const s = foldAddress(String(text || "").normalize("NFKC").toLowerCase());
   let out = "";
   for (const m of s.match(/[\p{L}\p{N}]+(?:[._/-][\p{L}\p{N}]+)*/gu) ?? []) {
     out += /[._/]/.test(m) ? m : m.replace(/-/g, "");

@@ -111,6 +111,26 @@ async function openGuide(page, touch) {
   if (touch) await page.tap(".bgd-launch"); else await page.click(".bgd-launch");
   await page.waitForSelector("#bgd-panel", { state: "visible", timeout: 15000 });
   await page.waitForTimeout(400);
+  // WAIT FOR THE OPENING ANIMATION TO END, not for a guess at how long it takes. The panel rises in
+  // with `bgd-rise`, from scale(.965): measured mid-animation, the 42px header box reads 41 and its
+  // 52px mark reads 50. The fixed 400ms above was enough on this machine and not on GitHub's slower
+  // Linux runner, which failed "the header mark renders at 52px -- measured 50x50 inside a 41x41
+  // box" on c554eec while the site itself was correct (full-project review, 2026-09-23). Infinite
+  // animations (the orbit, the pulse, the caret) never finish and are ignored, and so is anything
+  // outside the panel: the marketing page has animations of its own that are not what is measured.
+  await page.waitForFunction(
+    () => {
+      const panel = document.querySelector("#bgd-panel");
+      return document.getAnimations().every((a) => {
+        const target = a.effect && a.effect.target;
+        if (!panel || !target || !(target === panel || panel.contains(target))) return true;
+        const iterations = a.effect.getTiming ? a.effect.getTiming().iterations : 1;
+        return iterations === Infinity || a.playState !== "running";
+      });
+    },
+    null,
+    { timeout: 10000 },
+  );
 }
 
 /** One run. `breakLock` strips the body lock out of guide.js on the way to the browser, which is

@@ -94,7 +94,15 @@ const offences = (text) => {
 
 // The subject is COMPUTED: the dictionary plus every Korean document served under public/docs,
 // so a new Korean page is covered the day it is added rather than when someone remembers.
-const targets = [path.join(root, "app.js")];
+// THE GUIDE IS KOREAN COPY TOO. Its answer bank and interface strings are what the BugIt Guide shows
+// a Korean visitor, and they were outside this list: 17 wrong particles sat in the bank while this
+// guard reported clean (full-project review, 2026-09-23).
+const targets = [
+  path.join(root, "app.js"),
+  path.join(root, "public", "guide", "prepared", "ko.json"),
+  path.join(root, "public", "guide", "prepared", "common.json"),
+  path.join(root, "public", "guide", "guide.js"),
+];
 const docs = path.join(root, "public", "docs");
 for (const name of fs.readdirSync(docs).sort()) {
   if (/\.ko\.(web\.)?(md|txt)$/i.test(name)) targets.push(path.join(docs, name));

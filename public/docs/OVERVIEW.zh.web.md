@@ -30,7 +30,7 @@ BugIt 是一款商用的 VS Code Copilot 代理，可将零散的测试记录转
 ## 发布范围
 
 - BugIt 是当前已发布并持续维护的商用版本。
-- Windows 11、VS Code、GitHub Copilot 以及 Python 3.10 至 3.14 是通过发布验证的运行环境。
+- Windows 11 搭配 VS Code 与 Python 3.10 至 3.14 已获完全支持，macOS 与 Linux 目前为预览（Preview）状态。BugIt 可以在 GitHub Copilot Chat、Claude 扩展、其他助手，甚至普通终端中使用。
 - 完整的用户指南与概览提供英文及所有受支持语言的 PDF 版本，可在下方预览或下载。
 
 ## 政策

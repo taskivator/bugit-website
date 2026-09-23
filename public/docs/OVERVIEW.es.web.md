@@ -1,6 +1,6 @@
 # Agente de QA de BugIt: Visión general
 
-> **Aviso sobre la traducción.** Este documento se ha traducido automáticamente y no ha sido revisado por hablantes nativos. La versión en inglés es la que prevalece: en caso de discrepancia, rige el texto en inglés. Para consultar la redacción más precisa y actualizada, acuda al documento en inglés.
+> **Aviso sobre la traducción.** Este documento se ha traducido automáticamente y no ha sido revisado por hablantes nativos. La versión en inglés es la que prevalece: en caso de discrepancia, rige el texto en inglés. Para consultar la redacción más precisa y actualizada, acude al documento en inglés.
 
 BugIt es un agente comercial de Copilot para VS Code que convierte notas de prueba sin procesar en informes de errores coherentes. Redacta borradores localmente en tu espacio de trabajo y escribe en los servicios conectados solo tras la vista previa y la confirmación.
 
@@ -30,7 +30,7 @@ BugIt es un agente comercial de Copilot para VS Code que convierte notas de prue
 ## Alcance de la versión
 
 - BugIt es la versión comercial publicada actual, con mantenimiento activo.
-- Windows 11, VS Code, GitHub Copilot y Python 3.10 a 3.14 constituyen el entorno cualificado para la versión.
+- Windows 11 es totalmente compatible, con VS Code y Python 3.10 a 3.14; macOS y Linux están en Preview. BugIt funciona con GitHub Copilot Chat, la extensión de Claude, otros asistentes e incluso una terminal normal.
 - La Guía del usuario completa y la Visión general están disponibles en PDF en inglés y en todos los idiomas admitidos: previsualízalas o descárgalas a continuación.
 
 ## Políticas

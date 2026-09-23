@@ -2,7 +2,7 @@
 
 > **翻译说明。** 本文档由机器翻译生成，未经母语者审校。以英文版本为准：如有出入，以英文文本为准。如需最准确、最新的表述，请参阅英文文档。
 
-BugIt 可在 VS Code 内将粗略的测试记录转化为经过审阅的缺陷报告。搭配 VS Code 与 GitHub Copilot 的 Windows 11 是通过发布验证的客户端环境。
+BugIt 可在 VS Code 内将粗略的测试记录转化为经过审阅的缺陷报告。它可以在 GitHub Copilot Chat、Claude 扩展、其他助手，甚至普通终端中使用。Windows 11 已获完全支持，macOS 与 Linux 目前为预览（Preview）状态。
 
 ## 开始之前
 

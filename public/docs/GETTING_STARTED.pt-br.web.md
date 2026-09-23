@@ -2,7 +2,7 @@
 
 > **Aviso sobre a tradução.** Este documento foi traduzido automaticamente e não passou por revisão de falantes nativos. A versão em inglês é a que prevalece: em caso de divergência, vale o texto em inglês. Para a redação mais precisa e atual, consulte o documento em inglês.
 
-O BugIt transforma anotações informais de teste em relatórios de bug revisados dentro do VS Code. Windows 11 com VS Code e GitHub Copilot é o caminho de cliente qualificado para a versão.
+O BugIt transforma anotações informais de teste em relatórios de bug revisados dentro do VS Code. Ele funciona com o GitHub Copilot Chat, a extensão do Claude, outros assistentes e até um terminal comum. O Windows 11 é totalmente compatível; macOS e Linux estão em Preview.
 
 ## Antes de começar
 

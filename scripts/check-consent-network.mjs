@@ -143,8 +143,13 @@ try {
 
   // ---- 2: Reject ----
   reqs.length = 0;
-  await page.click("#consentReject", { timeout: 5000 }).catch(() => {});
+  // A CLICK THAT DID NOT HAPPEN IS NOT A REJECTION. The page already sends nothing before a choice,
+  // so if #consentReject were renamed the swallowed click left that state in place and every "zero
+  // requests after Reject" line below still passed (full-project review, 2026-09-23). Record it.
+  const rejected = await page.click("#consentReject", { timeout: 5000 }).then(() => true, () => false);
+  ok(rejected, "2-pre. the Reject control exists and was clicked");
   await settle(page);
+  ok(!(await page.isVisible("#consentBanner").catch(() => true)), "2-pre. the banner closed after Reject");
   ok(reqs.length === 0, "2. after Reject: zero Google requests", reqs.join(", "));
 
   // ---- 3: Reject + navigation/reload ----
@@ -181,11 +186,15 @@ try {
   await settle(page, 3000);            // tag now loaded (granted)
   reqs.length = 0;
   // Reopen preferences, turn Advertising OFF, save -> consent.js reloads to purge runtime.
-  await page.click("#consentManage", { timeout: 5000 }).catch(async () => {
-    await page.click("#cookiePrefsLink", { timeout: 3000 }).catch(() => {});
-  });
-  await page.uncheck("#consentAdvertising", { timeout: 5000 }).catch(() => {});
-  await page.click("#consentSave", { timeout: 5000 }).catch(() => {});
+  // Each step of the revoke must actually happen, or "zero further requests" below measures a page
+  // on which advertising was never turned off at all.
+  const opened = await page.click("#consentManage", { timeout: 5000 }).then(() => true, async () =>
+    page.click("#cookiePrefsLink", { timeout: 3000 }).then(() => true, () => false));
+  ok(opened, "5-pre. the consent preferences opened");
+  const unchecked = await page.uncheck("#consentAdvertising", { timeout: 5000 }).then(() => true, () => false);
+  ok(unchecked, "5-pre. the Advertising switch was turned off");
+  const saved = await page.click("#consentSave", { timeout: 5000 }).then(() => true, () => false);
+  ok(saved, "5-pre. the preferences were saved");
   await page.waitForTimeout(2000);
   await page.reload({ waitUntil: "networkidle", timeout: 30000 }).catch(() => {});
   await settle(page, 3000);

@@ -30,7 +30,7 @@ BugIt은 정리되지 않은 테스트 메모를 일관된 버그 보고서로 �
 ## 릴리스 범위
 
 - BugIt은 현재 게시된 상용 릴리스로, 활발히 유지 관리되고 있습니다.
-- Windows 11, VS Code, GitHub Copilot, Python 3.10부터 3.14까지가 릴리스 검증 환경입니다.
+- Windows 11은 VS Code, Python 3.10부터 3.14까지와 함께 완전히 지원되며, macOS와 Linux는 현재 프리뷰 상태입니다. BugIt은 GitHub Copilot Chat, Claude 확장, 다른 어시스턴트, 심지어 일반 터미널에서도 동작합니다.
 - 전체 사용자 가이드와 개요는 영어 및 지원되는 모든 언어의 PDF로 제공됩니다. 아래에서 미리 보거나 다운로드하세요.
 
 ## 정책

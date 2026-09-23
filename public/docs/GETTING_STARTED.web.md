@@ -1,6 +1,6 @@
 # Getting Started with BugIt
 
-BugIt turns rough testing notes into reviewed bug reports inside VS Code. Windows 11 with VS Code and GitHub Copilot is the release-qualified client path.
+BugIt turns rough testing notes into reviewed bug reports inside VS Code. It works with GitHub Copilot Chat, the Claude extension, other assistants, and even a plain terminal. Windows 11 is fully supported; macOS and Linux are in Preview.
 
 ## Before you begin
 

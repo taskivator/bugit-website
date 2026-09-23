@@ -119,7 +119,22 @@ if (pages.size === 0) {
  * would need per-locale segmentation of the dictionary, which this does not attempt. That is a
  * real gap and it is written down rather than papered over.
  */
-const DICTIONARY_FILES = ["app.js", "index.html"];
+/* THE GUIDE IS A SURFACE TOO. Its prepared answers (public/guide/prepared/<locale>.json) and its
+   interface strings (public/guide/guide.js, prepared/common.json) are what the BugIt Guide shows
+   a visitor, and none of them was in this guard's subject: on 2026-09-23 the Chinese answers used
+   the retired 您 1,307 times while this file reported OK (full-project review). The two mixed-
+   language files join the dictionary files below; each per-locale bank is scanned with its own
+   locale's full rules in scanGuideBanks(). */
+const DICTIONARY_FILES = ["app.js", "index.html", "public/guide/guide.js", "public/guide/prepared/common.json"];
+const GUIDE_BANKS = join(root, "public", "guide", "prepared");
+
+/**
+ * Arabic إيداع was retired as the FILING noun. The Guide also uses it where it is the right word:
+ * "ضمان إيداع الشيفرة المصدرية" is source-code ESCROW, a contract term, and a visitor asking whether
+ * config.json is safe to share or الإيداع means committing it to a repository. Exact phrases, so the
+ * word anywhere else in the bank is still a finding (reviewed 2026-09-23).
+ */
+const GUIDE_ALLOWED = [/ضمان إيداع الشيفرة المصدرية/gu, /آمن للمشاركة أو الإيداع/gu];
 const isNonLatin = (re) => /[^\x00-\x7F]/.test(re.source) && !/[A-Za-z]/.test(re.source);
 
 /**
@@ -173,9 +188,39 @@ function scanDictionary() {
   return out;
 }
 
+function scanGuideBanks() {
+  const out = [];
+  let banks = 0;
+  for (const [locale, rules] of Object.entries(RETIRED)) {
+    let text;
+    try {
+      text = readFileSync(join(GUIDE_BANKS, `${locale}.json`), "utf8");
+    } catch {
+      continue;
+    }
+    banks++;
+    // INLINE CODE IS NOT PROSE. The answers quote commands and config keys the buyer types,
+    // `python tools/connect.py <tracker>` and `trackers.primary`, and translating those would
+    // break them. Blanked (not removed) so column positions and line numbers stay true.
+    text.split(/\r?\n/).forEach((raw, i) => {
+      let line = raw.replace(/`[^`\n]*`/g, (m) => " ".repeat(m.length));
+      for (const allow of GUIDE_ALLOWED) line = line.replace(allow, (m) => " ".repeat(m.length));
+      for (const [pattern, replacement, why] of rules) {
+        for (const hit of line.matchAll(pattern)) {
+          out.push(`guide/prepared/${locale}.json:${i + 1}  "${hit[0]}"  ->  ${replacement}\n      ${why}`);
+        }
+      }
+    });
+  }
+  // A bank directory that yielded nothing is a reader that lost its subject, not a clean Guide.
+  if (banks === 0) out.push("guide/prepared: no per-locale answer bank was read, so the Guide was not checked");
+  return out;
+}
+
 const findings = [];
 let scanned = 0;
 findings.push(...scanDictionary());
+findings.push(...scanGuideBanks());
 for (const [locale, names] of [...pages].sort()) {
   const rules = RETIRED[locale];
   if (!rules) continue;

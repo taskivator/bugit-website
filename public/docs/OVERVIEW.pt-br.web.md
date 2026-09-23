@@ -30,7 +30,7 @@ O BugIt é um agente comercial do Copilot para VS Code que transforma anotaçõe
 ## Escopo da versão
 
 - O BugIt é a versão comercial publicada atualmente, com manutenção ativa.
-- Windows 11, VS Code, GitHub Copilot e Python 3.10 a 3.14 compõem o ambiente qualificado para a versão.
+- O Windows 11 é totalmente compatível, com VS Code e Python 3.10 a 3.14; macOS e Linux estão em Preview. O BugIt funciona com o GitHub Copilot Chat, a extensão do Claude, outros assistentes e até um terminal comum.
 - O Guia do Usuário completo e a Visão geral estão disponíveis em PDF, em inglês e em todos os idiomas com suporte; pré-visualize ou baixe-os abaixo.
 
 ## Políticas
