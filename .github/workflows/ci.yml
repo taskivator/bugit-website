@@ -15,6 +15,15 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Least privilege, stated rather than inherited. This repository is PUBLIC, so its workflow
+# file and its logs are world-readable and the token's scope is worth being explicit about.
+# The repository default is already `read` (checked 2026-09-23 via
+# /actions/permissions/workflow); pinning it here means a later settings change cannot widen
+# it silently. Nothing in this job writes to the repository: CI build-verifies only, and the
+# deploy is a separate manual `npm run deploy`.
+permissions:
+  contents: read
+
 # Marketing site is static and dependency-free: prove it builds, its assets
 # resolve, and the deployable output is produced.
 jobs:
@@ -29,18 +38,26 @@ jobs:
     timeout-minutes: 240
     steps:
       - uses: actions/checkout@v7
-      # Committed-secret scan (zero-dependency, deterministic). High-confidence
-      # patterns + length anchors so nothing in this static site false-positives.
-      - name: Secret scan
-        run: |
-          if git grep -nIE 'sk_live_[0-9a-zA-Z]{20}|sk-ant-api[0-9a-zA-Z_-]{20}|-----BEGIN [A-Z ]*PRIVATE KEY-----|sbp_[0-9a-f]{40}|re_[0-9a-zA-Z]{24}'; then
-            echo "::error::Potential committed secret detected (see matches above)"; exit 1
-          fi
-          echo "No committed secrets detected."
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
+      # Committed-secret scan. It lives in scripts/ rather than in an inline `run:` block here,
+      # and that IS the fix. An inline CI step has no local counterpart, and
+      # scripts/check-ci-coverage.mjs -- the guard whose entire job is to stop this list and
+      # `npm test` drifting apart -- is directional: it requires every scripts/check-*.mjs to
+      # appear in this file, and cannot see a CI step that has no script. So on 2026-09-23 the
+      # full local suite ran 29 guards, passed, and the commit it passed on went red here. As a
+      # scripts/check-*.mjs it is now run by `npm test` AND required by check-ci-coverage to
+      # stay wired into this file.
+      #
+      # It runs after setup-node because it is a node script, and still before `npm ci` because
+      # it has no dependencies. It names files and never prints the matching text (this
+      # repository is PUBLIC, and a build log is durable), and it reads git grep's exit status
+      # so a scan that could not run cannot report a clean tree. It also plants a synthetic
+      # credential and requires itself to find it before believing a zero.
+      - name: Secret scan
+        run: node scripts/check-committed-secrets.mjs
       # Build-time devDependency only (esbuild, for asset minification). The
       # shipped site stays dependency-free at runtime.
       - name: Install build tooling

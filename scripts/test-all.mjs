@@ -138,6 +138,11 @@ const SUITES = [
   // FIRST, and static: if a guard is not wired, say so in a second rather than after a
   // twenty-minute browser sweep that was never the full sweep it looked like.
   "check-ci-coverage.mjs",
+  // SECOND, and also static. This one was an inline `run:` block in ci.yml and nothing else,
+  // so it ran in CI and nowhere locally -- and check-ci-coverage could not report the gap,
+  // because it checks that every guard in scripts/ reaches ci.yml, not that every CI step has
+  // a guard. On 2026-09-23 this list passed on the exact tree that then went red in CI.
+  "check-committed-secrets.mjs",
   // check-assets and check-chrome-a11y used to run only in CI, or nowhere at all, so a local
   // `npm test` could pass while CI failed and vice versa. Both lists are now checked against
   // each other by scripts/check-ci-coverage.mjs.

@@ -288,7 +288,15 @@ try {
     ["a card number", "4111 1111 1111 1111"],
     ["credentials inside a tracker URL", "our jira is https://svcacct:hunter22xyz@jira.example.com"],
     ["an Authorization header", "Authorization: Bearer 8f3a9c2e1b7d4f6a0c5e"],
-    ["a private key", "-----BEGIN OPENSSH PRIVATE KEY-----"],
+    // Assembled from two pieces, exactly like the Anthropic key five lines above, and for the
+    // same reason: this repo's own committed-secret scan greps for
+    // `-----BEGIN [A-Z ]*PRIVATE KEY-----` and matched THIS LINE -- a synthetic fixture in a
+    // test that exists to prove the composer REFUSES such strings. CI went red on bd981cb with
+    // "Potential committed secret detected" pointing at a file that contains no secret.
+    // Splitting the literal keeps the string this test sends byte-identical and leaves the
+    // scan at full strength; the alternative, an exemption for this path, would have carved a
+    // hole in the scan to accommodate a test.
+    ["a private key", "-----BEGIN " + "OPENSSH PRIVATE KEY-----"],
     // Synthetic. The two tracker tokens this net did not know until the second round of
     // 2026-09-22, both of which BugIt files to.
     ["a YouTrack permanent token", "perm:YWRtaW4=.NDItMQ==.abcdefGHIJKL1234567890mnop"],
