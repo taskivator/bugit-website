@@ -64,6 +64,21 @@
     document.cookie = name + dead + domainAttr() + secureAttr();
     document.cookie = name + dead + secureAttr();
   }
+  // GOOGLE WRITES ITS OWN COOKIE, AND REVOCATION HAS TO REMOVE THAT TOO. The Ads tag sets
+  // `_gcl_au` (and sometimes other `_gcl_*` names) itself while ad_storage is granted; nothing
+  // in this file ever wrote it, so `deleteCookie(GCLID_COOKIE)` alone leaves it behind for its
+  // own lifetime -- documented as up to 90 days -- after a visitor rejects. Found by name rather
+  // than listed, so a `_gcl_` cookie this file never named is still cleared: `document.cookie`
+  // is read for every `_gcl_` prefix present right now, and each one is expired at both scopes
+  // through the existing `deleteCookie`, the same host-only-plus-Domain=.bugit.dev pair used
+  // for `bugit_gclid`.
+  function clearGoogleAdCookies() {
+    var seen = document.cookie.split(';');
+    for (var i = 0; i < seen.length; i++) {
+      var name = seen[i].split('=')[0].replace(/^\s+/, '');
+      if (/^_gcl_/.test(name)) deleteCookie(name);
+    }
+  }
 
   // --- Consent state (read/normalize/write).
   function readConsent() {
@@ -106,7 +121,7 @@
     // Cleared BEFORE the reload below, which does not return. Ordered this way deliberately:
     // the revocation path is exactly the one where the stored click id must not survive, and
     // it is also the only path that leaves this function early.
-    if (!payload.ad_storage) deleteCookie(GCLID_COOKIE);
+    if (!payload.ad_storage) { deleteCookie(GCLID_COOKIE); clearGoogleAdCookies(); }
     captureAttribution(payload);
     // STRICT GATING (owner policy 2026-07-27): the Google tag loads ONLY when advertising
     // is granted. If a prior grant is being REVOKED this session (the tag is already
@@ -190,6 +205,7 @@
     applyToGtag(now || { ad_storage: false, analytics_storage: false,
                          ad_user_data: false, ad_personalization: false });
     deleteCookie(GCLID_COOKIE);
+    clearGoogleAdCookies();
     try { location.reload(); } catch (e) {}
   }
   if (document.addEventListener) {

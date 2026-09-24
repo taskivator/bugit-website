@@ -199,6 +199,15 @@ try {
   await page.reload({ waitUntil: "networkidle", timeout: 30000 }).catch(() => {});
   await settle(page, 3000);
   ok(reqs.length === 0, "5. after revoke + reload: zero further Google requests", reqs.join(", "));
+  // WITHDRAWING CONSENT HAS TO REMOVE WHAT CONSENT PUT THERE, and that is not only
+  // `bugit_gclid`: the Ads tag can write its own `_gcl_au` (and other `_gcl_*` names) while
+  // ad_storage is granted, at both the host-only and the Domain=.bugit.dev scope. A revoke
+  // that only deletes the site's own cookie and reloads a page making zero requests would
+  // still leave Google's cookie sitting on the visitor for its own lifetime.
+  const gclCookiesAfter = (await ctx.cookies()).filter((c) => /^_gcl/.test(c.name));
+  ok(gclCookiesAfter.length === 0,
+     "5b. after revoke + reload: no _gcl cookie remains, at any scope",
+     gclCookiesAfter.map((c) => `${c.name} (domain=${c.domain})`).join(", "));
   await ctx.close();
 } finally {
   await browser.close();
