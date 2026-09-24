@@ -39,6 +39,7 @@ const ROUTES = [
   ["#/docs", "the index"],
   ["#/docs/license", "the licence"],
   ["#/docs/privacy", "the privacy statement"],
+  ["#/docs/security", "the security page"],
   ["#/docs/refund", "the refund policy"],
   ["#/docs/commerce", "the commercial disclosure"],
   ["#/docs/faq", "the FAQ"],

@@ -42,6 +42,7 @@ const ROUTES = [
   "#/docs/overview",
   "#/docs/license",
   "#/docs/privacy",
+  "#/docs/security",
   "#/docs/refund",
   "#/docs/commerce",
   "#/docs/faq",
