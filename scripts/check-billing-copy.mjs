@@ -139,6 +139,53 @@ for (const [name, src] of [['app.js', app], ['index.html', index]]) {
     `${name} must not describe automatic renewal`);
 }
 
+// --- the hero's "free updates" claim must be qualified, same as the price card -----
+// W1 F5 (2026-09-24 audit): under.updates ("✓ Free software updates") was unqualified
+// in every locale, while pricing.updates on the price card already said "while active"
+// (or that locale's own equivalent). A buyer who read only the hero could expect
+// updates past the 1-year term and be refused. Scoped to the "under" and "pricing"
+// object literals specifically, because "updates" is also a key name elsewhere and a
+// bare key match would mix unrelated values together. Every DEFINITION is scanned, not
+// only the one that wins at runtime, for the same reason keyValues() above checks both
+// quote styles: a stale copy left unqualified is still wrong, even if unreachable today.
+function scopedKeyValues(objectKey, innerKey) {
+  const objRe = new RegExp('["\']?' + objectKey + '["\']?\\s*:\\s*\\{([^}]*)\\}', 'g');
+  const innerRe = new RegExp('["\']?' + innerKey + '["\']?\\s*:\\s*["\']([^"\']*)["\']');
+  const out = [];
+  for (const m of app.matchAll(objRe)) {
+    const im = innerRe.exec(m[1]);
+    if (im) out.push(im[1]);
+  }
+  return out;
+}
+
+const underUpdates = scopedKeyValues('under', 'updates');
+const pricingUpdatesAll = scopedKeyValues('pricing', 'updates');
+check(underUpdates.length >= 10, 'every locale defines under.updates', `found ${underUpdates.length}`);
+check(pricingUpdatesAll.length >= 10, 'every locale defines pricing.updates', `found ${pricingUpdatesAll.length}`);
+
+// The same qualifier wording the price card already uses, per shipped language.
+const ACTIVE_MARKERS = [
+  'while active', 'year',              // en — either wording states the limit
+  '有効期間中',                          // ja
+  'mientras esté activa', 'activa',    // es
+  'tant que la licence est active',    // fr
+  'während der laufzeit',              // de
+  'enquanto ativa',                    // pt-br
+  'durante la licenza',                // it
+  '활성 기간',                          // ko
+  '有效期',                             // zh
+  'активной лицензии',                 // ru
+  'أثناء فترة الترخيص',                  // ar
+];
+for (const value of underUpdates) {
+  check(
+    ACTIVE_MARKERS.some((m) => value.toLowerCase().includes(m.toLowerCase())),
+    `under.updates "${value}" is not qualified the way the pricing card is`,
+    'The hero must not claim unconditional free updates; reuse the pricing-card wording.',
+  );
+}
+
 // The prices themselves are commercial truth and must not drift.
 for (const price of ['39.99', '199', '59.99', '249.99']) {
   check(index.includes(price) || app.includes(price), `the price ${price} is still present`);
