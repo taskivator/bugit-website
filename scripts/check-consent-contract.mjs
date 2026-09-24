@@ -98,10 +98,37 @@ check(
   "setCookie only ever takes a positive lifetime, so nothing could remove stored attribution",
 );
 
+// Brace-tolerant: writeConsent's denial branch started as a bare statement
+// (`if (...) deleteCookie(...);`) and grew a second call alongside it
+// (W1 F2, 2026-09-24 audit) as `if (...) { deleteCookie(...); clearGoogleAdCookies(); }`.
+// Pinning the exact old text would have made a correct second call to a hollow guard.
 check(
-  /if \(!payload\.ad_storage\) deleteCookie\(GCLID_COOKIE\);/.test(websiteSrc),
+  /if \(!payload\.ad_storage\) \{?\s*deleteCookie\(GCLID_COOKIE\);/.test(websiteSrc),
   "writing a denial must delete the stored click id",
   "refusing to write a new one leaves the old one in place for ninety days",
+);
+
+// --- GOOGLE'S OWN COOKIE, not only the site's (W1 F2, 2026-09-24 audit).
+//
+// bugit_gclid is this file's own cookie; the Ads tag can write its own _gcl_au (and other
+// _gcl_* names) itself while ad_storage is granted, and nothing here ever wrote those, so
+// deleting bugit_gclid alone left them for their own ~90-day lifetime after a refusal. Pinned
+// the same way the deletion above is: a denial must clear them, from both paths that write one.
+check(
+  /function clearGoogleAdCookies\(\)/.test(websiteSrc) && /\/\^_gcl_\//.test(websiteSrc),
+  "consent.js must be able to clear every _gcl_* cookie by name, not a fixed list",
+  "the Ads tag can write a _gcl_ name this file never listed; matching by prefix still clears it",
+);
+check(
+  /if \(!payload\.ad_storage\) \{?\s*deleteCookie\(GCLID_COOKIE\);\s*clearGoogleAdCookies\(\);/.test(websiteSrc),
+  "writing a denial must also clear Google's own _gcl_* cookies",
+  "bugit_gclid going away is not the same promise as removing what Google itself wrote",
+);
+check(
+  /deleteCookie\(GCLID_COOKIE\);\s*clearGoogleAdCookies\(\);\s*try \{ location\.reload/.test(websiteSrc),
+  "a tab reconciling a revoked decision must also clear Google's own _gcl_* cookies",
+  "a background tab that revokes on refocus must leave the visitor in the same state a " +
+    "same-tab revoke does",
 );
 
 check(
