@@ -48,8 +48,32 @@ for (const p of panels) {
   }
 }
 
+// W1 F4 (2026-09-24 audit): the language and account buttons show a short visible
+// word, or the signed-in user's name, and their accessible name must CONTAIN that
+// visible text (WCAG 2.5.3, Label in Name) -- not name the control instead, the way
+// aria-label="Language" and aria-label="Account menu" used to. Neither button may
+// carry an aria-label any more (that would make the visible text irrelevant to the
+// accessible name again), and each must hold a visually-hidden prefix span directly
+// ahead of its visible label span, so the accessible name -- built from text content
+// alone once aria-label is gone -- is the prefix followed by whatever the visible
+// span currently shows, including a name nobody wrote at build time.
+const HEADER_BUTTONS = [
+  { id: "langButton", visible: "langLabel", prefixKey: "a11y.language" },
+  { id: "acctButton", visible: "acctLabel", prefixKey: "account.menu" },
+];
+for (const { id, visible, prefixKey } of HEADER_BUTTONS) {
+  const btn = (html.match(new RegExp(`<button[^>]*id="${id}"[\\s\\S]*?</button>`)) || [""])[0];
+  if (!btn) { fail.push(`no <button id="${id}"> found`); continue; }
+  if (/\saria-label=/.test(btn))
+    fail.push(`#${id} still carries aria-label, so its visible text (#${visible}) is not part of its accessible name`);
+  const prefix = new RegExp(`<span class="sr-only" data-t="${prefixKey.replace(".", "\\.")}"[^>]*>[^<]*</span>\\s+<span id="${visible}"`);
+  if (!prefix.test(btn))
+    fail.push(`#${id} has no sr-only "${prefixKey}" prefix immediately before #${visible}, so its accessible name is not built from the visible text`);
+}
+
 if (fail.length) {
   console.error("check-a11y FAILED:\n - " + fail.join("\n - "));
   process.exit(1);
 }
-console.log(`check-a11y OK: demo tablist has ${tabs.length} tabs, ${panels.length} panels, 1 selected.`);
+console.log(`check-a11y OK: demo tablist has ${tabs.length} tabs, ${panels.length} panels, 1 selected; ` +
+            `${HEADER_BUTTONS.length} header controls build their accessible name from their visible text.`);
