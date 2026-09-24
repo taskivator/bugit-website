@@ -6,7 +6,7 @@
   <meta name="description" content="BugIt turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval." />
   <!-- Every page load checks the portal session cross-origin (account menu);
        warm the TLS connection early so that fetch isn't cold. -->
-  <link rel="preconnect" href="https://portal.bugit.dev" crossorigin />
+  <link rel="preconnect" href="https://portal.bugit.dev" crossorigin="use-credentials" />
   <!-- Consent Mode v2 defaults (denied) + the Google tag, loaded once BEFORE app.js.
        External + served from 'self' so the CSP needs no inline-script allowance. -->
   <script src="/consent.js"></script>

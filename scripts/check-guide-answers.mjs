@@ -344,7 +344,12 @@ test("the widget's fetches may read, and may not speak", () => {
   for (const call of calls) {
     const comma = call.indexOf(",");
     if (comma === -1) continue;                       // fetch(url) alone reads and nothing more
-    const init = call.slice(comma + 1).trim();
+    // An abort signal is the one other thing allowed, spelled exactly: it lets the Guide give up on
+    // a stalled download (2026-09-24) and carries nothing to anybody. Anything else still fails.
+    const init = call
+      .slice(comma + 1)
+      .trim()
+      .replace(/,\s*signal: ctrl \? ctrl\.signal : undefined,?\s*\}$/, " }");
     assert.equal(init, '{ headers: { accept: "application/json" } }', `a fetch does more than read: ${call.slice(0, 120)}`);
   }
 });

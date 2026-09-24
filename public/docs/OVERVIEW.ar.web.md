@@ -35,5 +35,5 @@
 
 ## السياسات
 
-- اقرأ [بيان الخصوصية](/public/docs/PRIVACY.ar.md).
+- اقرأ [بيان الخصوصية](#/docs/privacy).
 - راجع [إرشادات الأمان](/public/docs/SECURITY.md).

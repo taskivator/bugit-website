@@ -35,5 +35,5 @@ O BugIt é um agente comercial do Copilot para VS Code que transforma anotaçõe
 
 ## Políticas
 
-- Leia a [declaração de privacidade](/public/docs/PRIVACY.md).
+- Leia a [declaração de privacidade](#/docs/privacy).
 - Consulte as [orientações de segurança](/public/docs/SECURITY.md).

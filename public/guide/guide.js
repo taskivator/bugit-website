@@ -1116,9 +1116,24 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
 
   async function ensureLanguage(code) {
     if (docs.has(code)) return;
-    const res = await fetch(BANK_BASE + code + ".json", { headers: { accept: "application/json" } });
-    if (!res.ok) throw new Error("prepared answers " + res.status);
-    const doc = await res.json();
+    // A STALLED DOWNLOAD MUST END. With no timeout, a connection that stopped mid-answer left the
+    // bubble on "Looking into it" and, because a busy Guide takes no new question, the visitor
+    // could not ask again until the browser gave up. Aborting hands it to the ordinary
+    // "connection dropped" answer and its Try again.
+    const ctrl = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), 15000) : null;
+    // The body is inside the deadline too: headers can arrive promptly and the answers then stall.
+    let doc;
+    try {
+      const res = await fetch(BANK_BASE + code + ".json", {
+        headers: { accept: "application/json" },
+        signal: ctrl ? ctrl.signal : undefined,
+      });
+      if (!res.ok) throw new Error("prepared answers " + res.status);
+      doc = await res.json();
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
     docs.set(code, { lang: code, items: Array.isArray(doc.items) ? doc.items : [] });
     bank = buildPreparedBank([...docs.values()], DID_YOU_MEAN);
   }
