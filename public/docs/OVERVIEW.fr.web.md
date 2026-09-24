@@ -36,4 +36,4 @@ BugIt est un agent commercial VS Code Copilot qui transforme des notes de test b
 ## Politiques
 
 - Consultez la [déclaration de confidentialité](#/docs/privacy).
-- Prenez connaissance des [consignes de sécurité](/public/docs/SECURITY.md).
+- Prenez connaissance des [consignes de sécurité](#/docs/security).

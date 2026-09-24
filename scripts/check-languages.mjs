@@ -157,23 +157,25 @@ if (!/\/\^#\\\/\.\+\/\.test\(location\.hash\)/.test(app))
 
 // THE DOCUMENT-LOAD FAILURE MESSAGES (CR-08-F03), AND THE PROPERTY THAT MATTERS.
 //
-// Five sentences appear when a guide, the licence, the privacy statement, the refund policy or
-// the commerce disclosure fails to fetch. They were hard-coded English on a site that ships in
+// Six sentences appear when a guide, the licence, the privacy statement, the security page, the
+// refund policy or the commerce disclosure fails to fetch (five until 2026-09-24). They were hard-coded English on a site that ships in
 // eleven languages, so the one moment a reader most needed to understand the page was the moment
 // it stopped being in theirs.
 //
-// The guarantee asked for here is not a spelling: it is that every shipped locale has all five,
+// The guarantee asked for here is not a spelling: it is that every shipped locale has all of them,
 // that lookup falls back to English rather than rendering undefined, and -- the part that stops
-// this coming back -- that no English sentence survives OUTSIDE the table. A sixth document route
+// this coming back -- that no English sentence survives OUTSIDE the table. Another document route
 // added later cannot quietly reintroduce a literal.
 //
 // The locale list is DERIVED from the catalogue above rather than restated, because a restated
 // list goes stale and this file has no way to notice when an eleventh language becomes a twelfth.
-const DOC_ERROR_KEYS = ["guide", "license", "privacy", "refund", "commerce"];
+// `security` joined on 2026-09-24, when SECURITY.md became a document page of its own.
+const DOC_ERROR_KEYS = ["guide", "license", "privacy", "security", "refund", "commerce"];
 const DOC_ERROR_EN = {
   guide: "This guide is temporarily unavailable",
   license: "The license text is temporarily unavailable",
   privacy: "The privacy statement is temporarily unavailable",
+  security: "The security page is temporarily unavailable",
   refund: "The refund policy is temporarily unavailable",
   commerce: "This disclosure is temporarily unavailable",
 };

@@ -36,4 +36,4 @@ BugIt은 정리되지 않은 테스트 메모를 일관된 버그 보고서로 �
 ## 정책
 
 - [개인정보 처리방침](#/docs/privacy)을 읽어 보세요.
-- [보안 안내](/public/docs/SECURITY.md)를 검토하세요.
+- [보안 안내](#/docs/security)를 검토하세요.

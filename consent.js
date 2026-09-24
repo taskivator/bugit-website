@@ -79,7 +79,10 @@
       return {
         v: CONSENT_VERSION,
         ad_storage: o.ad_storage === true,
-        analytics_storage: o.analytics_storage === true,
+        // A cookie saved while the Analytics switch still existed can carry `true`. The switch is
+        // gone, so the visitor could never withdraw it; it is read as denied and never replayed
+        // to Google. Mirrors parseConsentCookie in lib/analytics/consent.ts.
+        analytics_storage: false,
         ad_user_data: o.ad_user_data === true,
         ad_personalization: o.ad_personalization === true,
         ts: o.ts || 0
@@ -90,7 +93,9 @@
     var payload = {
       v: CONSENT_VERSION,
       ad_storage: !!c.ad_storage,
-      analytics_storage: !!c.analytics_storage,
+      // Always false: nothing on this site is analytics a visitor can grant (see app.js,
+      // initConsent). The field stays because every reader of the shared cookie parses it.
+      analytics_storage: false,
       ad_user_data: !!c.ad_user_data,
       ad_personalization: !!c.ad_personalization,
       ts: Math.floor(Date.now() / 1000)

@@ -16,7 +16,7 @@
 //  - Commercial Transactions stays reachable from the footer, from the purchase
 //    flow, and — since the owner's 2026-08-07 decision — from a Documentation card,
 //    with a short card blurb rather than the full page paragraph;
-//  - every supported Privacy Policy and License translation exists and is complete;
+//  - every supported Privacy Policy, License and Security translation exists and is complete;
 //  - no document makes a FALSE legal-certification claim, and no FAQ answer is
 //    written in the wrong language.
 
@@ -281,6 +281,27 @@ for (const [, code, json] of generated) {
     check(false, `public/docs/REFUND.${code}.md is missing but locale "${code}" links to it`);
   }
 
+  // Security page chrome (2026-09-24). Same shape as the refund block above: a label for the
+  // footer and sidebar, a short card blurb, and a page title tied to the document's own H1.
+  check(!!dict.docs?.security,
+    `app.js locale "${code}" has no docs.security label, so its footer link would fall back to English`);
+  const secDesc = dict.docs?.securityDesc;
+  check(!!secDesc,
+    `app.js locale "${code}" has no docs.securityDesc, so its shelf card would fall back to English`);
+  check(!secDesc || secDesc.length <= 80,
+    `app.js locale "${code}" has a ${secDesc?.length}-character security card blurb (max 80)`);
+  check(!!dict.docPages?.securityTitle,
+    `app.js locale "${code}" has no docPages.securityTitle, so the security page would show an English heading`);
+  const securityDoc = path.join(docs, `SECURITY.${code}.md`);
+  if (fs.existsSync(securityDoc) && dict.docPages?.securityTitle) {
+    const h1 = fs.readFileSync(securityDoc, "utf8").split("\n")[0].replace(/^#\s*/, "").trim();
+    check(h1 === dict.docPages.securityTitle,
+      `app.js locale "${code}" securityTitle does not match the SECURITY.${code}.md heading`,
+      `page title "${dict.docPages.securityTitle}" vs document heading "${h1}"`);
+  } else if (dict.docPages?.securityTitle) {
+    check(false, `public/docs/SECURITY.${code}.md is missing but locale "${code}" links to it`);
+  }
+
   if (code === "ja") {
     // The Japanese label and heading must stay legally recognizable.
     check(dict.docs.commerce === JA_TITLE,
@@ -314,12 +335,61 @@ for (const loc of LOCALES) {
   }
 }
 
+// --- 5b. The Security page, in every language (2026-09-24) ---------------------
+// SECURITY.md was a raw file linked from the Overview until it became #/docs/security. It is
+// much shorter than the privacy statement or the licence, and a CJK translation of it is about
+// half the English character count, so the 1500-character floor used above would fail a
+// complete Chinese page. Completeness is measured by STRUCTURE instead, against the English
+// source: the same number of sections, bullets and numbered steps, and the same inline code
+// spans (commands, file names and the environment variable a reader has to type exactly).
+// A translation that drops a limit or a hardening step, or "translates" a command, fails here.
+// The typed confirmation phrase FILE IT and the reporting address must survive verbatim.
+const securitySpans = (t) => (t.match(/`[^`\n]+`/g) || []).sort().join("\n");
+const securityShape = (t) => [
+  (t.match(/^## /gm) || []).length,
+  (t.match(/^- /gm) || []).length,
+  (t.match(/^\d+\. /gm) || []).length,
+].join("/");
+const securityEn = fs.existsSync(path.join(docs, "SECURITY.md")) ? read("public/docs/SECURITY.md") : "";
+check(!!securityEn, "public/docs/SECURITY.md (the English source) is missing");
+for (const loc of LOCALES) {
+  const f = loc ? `SECURITY.${loc}.md` : "SECURITY.md";
+  const p = path.join(docs, f);
+  check(fs.existsSync(p), `${f} is missing, so locale "${loc || "en"}" would fall back to English`);
+  if (!fs.existsSync(p) || !securityEn) continue;
+  const text = fs.readFileSync(p, "utf8");
+  check(text.trim().length > 1000, `${f} looks truncated`, `${text.trim().length} chars`);
+  check(text.includes("support@bugit.dev"), `${f} does not give support@bugit.dev as the reporting address`);
+  check(text.includes("FILE IT"), `${f} no longer names the typed confirmation phrase FILE IT verbatim`);
+  check(securityShape(text) === securityShape(securityEn),
+    `${f} does not have the English source's sections/bullets/steps`,
+    `${securityShape(text)} vs ${securityShape(securityEn)} in SECURITY.md`);
+  check(securitySpans(text) === securitySpans(securityEn),
+    `${f} does not carry exactly the English source's inline code spans`,
+    "a command, file name or variable was dropped, added or translated");
+}
+// The route, the sidebar and the footer, mirroring the commerce checks in section 4.
+check(/docRoutes=\[[^\]]*'docs\/security'/.test(app),
+  "app.js docRoutes does not register docs/security");
+check(/\['#\/docs\/security',labels\.security\]/.test(app),
+  "app.js docs sidebar does not list the Security page");
+check(!!footer && /#\/docs\/security/.test(footer[0]),
+  "the footer does not link the Security page");
+{
+  const enTitle = (app.match(/securityTitle:'([^']*)'/) || [])[1];
+  const enH1 = securityEn.split("\n")[0].replace(/^#\s*/, "").trim();
+  check(!!enTitle && enTitle === enH1,
+    "the English securityTitle does not match the SECURITY.md heading",
+    `page title "${enTitle}" vs document heading "${enH1}"`);
+}
+
 // --- 6. No em/en dash punctuation in the rewritten legal copy ------------------
 const REWRITTEN = [
   "TOKUSHOHO.md", "TOKUSHOHO.ja.md",
   ...Object.keys(COMMERCE_DISCLOSURE).map((l) => `TOKUSHOHO.${l}.md`),
   ...LOCALES.map((l) => (l ? `PRIVACY.${l}.md` : "PRIVACY.md")),
   ...LOCALES.map((l) => (l ? `LICENSE.${l}.txt` : "LICENSE.txt")),
+  ...LOCALES.map((l) => (l ? `SECURITY.${l}.md` : "SECURITY.md")),
 ];
 for (const f of REWRITTEN) {
   const p = path.join(docs, f);

@@ -49,7 +49,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       ticketTitle: "Send this to the BugIt team", errNetwork: "The connection dropped. Check your network and try again.",
       errSecret: "That looks like a password, token or card number. Remove it, then send again.",
       retry: "Try again", langsLabel: "Ask in any of these languages",
-      docs: { userGuide: "User guide", overview: "Product overview", license: "License terms", privacy: "Privacy policy", refund: "Refund policy", commerce: "Commercial disclosure", faq: "FAQ", support: "Support" },
+      docs: { userGuide: "User guide", overview: "Product overview", license: "License terms", privacy: "Privacy policy", security: "Security", refund: "Refund policy", commerce: "Commercial disclosure", faq: "FAQ", support: "Support" },
     },
     ar: {
       launch: "اسأل BugIt", title: "BugIt Guide", status: "إجابات من وثائق BugIt", statusBusy: "جارٍ العمل على ذلك",
@@ -432,7 +432,7 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
   }
 
   // The site already names its document pages in every language; use its words when they exist.
-  const DOC_KEYS = { "#/docs/getting-started": "userGuide", "#/docs/user-guide": "userGuide", "#/docs/overview": "overview", "#/docs/license": "license", "#/docs/privacy": "privacy", "#/docs/refund": "refund", "#/docs/commerce": "commerce", "#/docs/faq": "faq", "#/support": "support" };
+  const DOC_KEYS = { "#/docs/getting-started": "userGuide", "#/docs/user-guide": "userGuide", "#/docs/overview": "overview", "#/docs/license": "license", "#/docs/privacy": "privacy", "#/docs/security": "security", "#/docs/refund": "refund", "#/docs/commerce": "commerce", "#/docs/faq": "faq", "#/support": "support" };
   function docLabel(href) {
     const key = DOC_KEYS[href];
     if (!key) return href;

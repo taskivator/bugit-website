@@ -44,6 +44,7 @@
 # agreement because that is the document this product actually publishes under those names.
 /privacy          /#/docs/privacy       302
 /privacy-policy   /#/docs/privacy       302
+/security         /#/docs/security      302
 /terms            /#/docs/license       302
 /eula             /#/docs/license       302
 /license          /#/docs/license       302

@@ -36,4 +36,4 @@ BugIt è un agente commerciale VS Code Copilot che trasforma appunti di test gre
 ## Policy
 
 - Leggi l'[informativa sulla privacy](#/docs/privacy).
-- Consulta le [indicazioni sulla sicurezza](/public/docs/SECURITY.md).
+- Consulta le [indicazioni sulla sicurezza](#/docs/security).

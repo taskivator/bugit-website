@@ -36,4 +36,4 @@ BugIt 是一款商用的 VS Code Copilot 代理，可将零散的测试记录转
 ## 政策
 
 - 阅读[隐私声明](#/docs/privacy)。
-- 查看[安全指南](/public/docs/SECURITY.md)。
+- 查看[安全指南](#/docs/security)。

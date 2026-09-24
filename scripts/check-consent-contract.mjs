@@ -54,13 +54,29 @@ check(
   "ignoring `v` means a stale record keeps granting advertising after the contract changes",
 );
 
-for (const field of CONSENT_FIELDS) {
+// analytics_storage is not in this list on purpose. Since 2026-09-24 nothing can grant it (see
+// the Analytics-switch block below), and a `true` stored while the switch existed must NOT be
+// replayed: the visitor has no control left to withdraw it. So both parsers read it as the
+// constant false, and that is pinned separately below.
+const GRANTABLE_FIELDS = CONSENT_FIELDS.filter((f) => f !== "analytics_storage");
+const READS_ANALYTICS_AS_DENIED = /analytics_storage: false,/;
+
+for (const field of GRANTABLE_FIELDS) {
   check(
     new RegExp(`${field}: o\\.${field} === true`).test(websiteSrc),
     `readConsent must require a literal true for ${field}`,
     "`!!o.field` treats 1, \"false\" and any object as a grant",
   );
 }
+check(
+  READS_ANALYTICS_AS_DENIED.test(websiteSrc) && !/analytics_storage: o\.analytics_storage/.test(websiteSrc),
+  "readConsent must read analytics_storage as denied, whatever the cookie says",
+  "a stored grant from the retired Analytics switch would otherwise be replayed with no way to withdraw it",
+);
+check(
+  !/analytics_storage: !!c\.analytics_storage/.test(websiteSrc),
+  "writeConsent must not copy analytics_storage from its caller",
+);
 
 check(
   /hasDecision: function \(\) \{ return readConsent\(\) !== null; \}/.test(websiteSrc),
@@ -111,6 +127,45 @@ check(
   "without that guard the reload condition stays true after the reload and the page loops",
 );
 
+// --- THERE IS NO ANALYTICS SWITCH, and there must not be one again (2026-09-24).
+//
+// The preferences panel offered an "Analytics" toggle that controlled nothing. Nothing on this
+// site is analytics the visitor can switch: the only Google tag is the Ads tag, gated on
+// ad_storage, and there is no Google Analytics. The Cloudflare Web Analytics beacon is
+// cookieless, injected at the edge, allowed before consent on purpose (check-consent-network)
+// and disclosed in the privacy policy as always on, so a toggle could not have stopped it. A
+// switch that changes nothing is a false promise of choice, so this asserts its ABSENCE.
+//
+// The analytics_storage FIELD is a different matter and stays: it is part of the cookie
+// contract above, and the Portal's parser requires it. So the banner must still write it, and
+// write it as false, from every path (Accept all, Reject, Save).
+const indexSrc = readFileSync(path.join(root, "index.html"), "utf8");
+const appSrc = readFileSync(path.join(root, "app.js"), "utf8");
+check(
+  !indexSrc.includes('id="consentAnalytics"') && !indexSrc.includes('data-t="consent.analytics'),
+  "index.html must not offer an Analytics consent switch",
+  "no visitor-switchable analytics exists on this site; the toggle would control nothing",
+);
+check(
+  !appSrc.includes("getElementById('consentAnalytics')"),
+  "the consent controller must not read an Analytics switch",
+);
+const consentTable = (appSrc.match(/const consentI18n = \{([\s\S]*?)\n\};/) || [])[1];
+check(consentTable !== undefined, "app.js consentI18n table not found");
+check(
+  consentTable === undefined || !/\banalytics(?:Desc)?\s*:/.test(consentTable),
+  "consentI18n must not carry analytics/analyticsDesc labels for a switch that does not exist",
+);
+check(
+  appSrc.includes("analytics_storage:false});"),
+  "the banner must still write analytics_storage, always false",
+  "the field is part of the shared cookie contract even though nothing grants it",
+);
+check(
+  !/analytics_storage:(?!false\})/.test(appSrc),
+  "analytics_storage must never be written from a variable or as true",
+);
+
 // --- And now the same questions of the portal, which is the other half of the contract.
 if (!existsSync(portalConsent)) {
   console.log(
@@ -137,12 +192,17 @@ check(
   "if the portal relaxed instead, this guard would be pinning the wrong behaviour",
 );
 
-for (const field of CONSENT_FIELDS) {
+for (const field of GRANTABLE_FIELDS) {
   check(
     new RegExp(`${field}: o\\.${field} === true`).test(portalSrc),
     `the portal must still require a literal true for ${field}`,
   );
 }
+check(
+  READS_ANALYTICS_AS_DENIED.test(portalSrc) && !/analytics_storage: o\.analytics_storage/.test(portalSrc),
+  "the portal must read analytics_storage as denied too",
+  "if one surface replays a stored analytics grant and the other does not, the shared cookie means two things",
+);
 
 // The field list itself is part of the contract: one side gaining a category the other ignores is
 // the same defect in a new place.
