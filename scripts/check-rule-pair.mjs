@@ -90,27 +90,50 @@ function readPNG(file) {
   return { w, h, px: (x, y) => { const i = (y * w + x) * bpp; return [out[i], out[i + 1], out[i + 2]]; } };
 }
 
-/* How many device rows of the rule's own colour there are, on each side of the clip. */
+/* How many device rows of ink each rule carries, on each side of the clip.
+ *
+ * FOUND by a colour gate (a run of at least 8 pixels that is clearly the rule's pink), MEASURED
+ * against the backdrop. The first version counted each row that passed the gate at its mean red,
+ * so a faint anti-aliased edge row either counted in full or not at all. On 2026-09-25 the two
+ * edge rows of an identical pair read (64,24,61) and (66,24,63): red minus green 40 against 42,
+ * either side of the `> 40` cut, because the card behind them is translucent over a backdrop two
+ * levels brighter on the right. One rule gained a row the other lost, 1.39 against 1.68, and the
+ * page had not changed. Now every row in the rule's own columns counts by how far its red rises
+ * above the backdrop measured just above the rule, as a fraction of the rule's full rise. A pale
+ * rule still reads pale; a backdrop two levels off no longer reads as a missing row. */
 function coverage(png) {
   const { w, h, px } = png;
-  const side = { left: 0, right: 0 };
+  const pink = (x, y) => { const [r, g, b] = px(x, y); return r - g > 40 && b - g > 25; };
+  const spans = { left: null, right: null };
   for (let y = 0; y < h; y++) {
     let x = 0;
     while (x < w) {
-      const [r, g, b] = px(x, y);
-      if (r - g > 40 && b - g > 25) {
-        const x0 = x;
-        let sum = 0, n = 0;
-        while (x < w) {
-          const [r2, g2, b2] = px(x, y);
-          if (!(r2 - g2 > 40 && b2 - g2 > 25)) break;
-          sum += r2; n++; x++;
-        }
-        if (x - x0 >= 8) side[(x0 + x) / 2 < w / 2 ? "left" : "right"] += (sum / n) / 255;
-      } else x++;
+      if (!pink(x, y)) { x++; continue; }
+      const x0 = x;
+      while (x < w && pink(x, y)) x++;
+      if (x - x0 < 8) continue;
+      const side = (x0 + x) / 2 < w / 2 ? "left" : "right";
+      const cur = spans[side];
+      spans[side] = cur ? { x0: Math.max(cur.x0, x0), x1: Math.min(cur.x1, x), ys: [...cur.ys, y] }
+                        : { x0, x1: x, ys: [y] };
     }
   }
-  return side;
+  const out = { left: 0, right: 0 };
+  for (const side of ["left", "right"]) {
+    const sp = spans[side];
+    if (!sp || sp.x1 - sp.x0 < 4) continue;
+    // Inset by one pixel so the rule's own anti-aliased ends do not count.
+    const xs = []; for (let x = sp.x0 + 1; x < sp.x1 - 1; x++) xs.push(x);
+    const meanRed = (y) => xs.reduce((a, x) => a + px(x, y)[0], 0) / xs.length;
+    const top = Math.min(...sp.ys), bottom = Math.max(...sp.ys);
+    const above = Math.max(0, top - 3);
+    const bg = meanRed(above);
+    const rise = Math.max(1, 255 - bg);
+    for (let y = Math.max(0, top - 2); y <= Math.min(h - 1, bottom + 2); y++) {
+      out[side] += Math.max(0, meanRed(y) - bg) / rise;
+    }
+  }
+  return out;
 }
 
 /* ---------- harness ------------------------------------------------------ */
