@@ -128,6 +128,29 @@ for (const item of ['index.html','styles.css','app.js','consent.js','public','ro
   fs.cpSync(src,path.join(dist,item),{recursive:true});
 }
 
+// ---------------------------------------------------------- internal build notes are not a customer surface
+//
+// W1 F7 (2026-09-24 audit). `public/` is copied to dist WHOLESALE above, and four files in it
+// are read by OTHER check scripts (check-brand-sync, check-channel, check-docs, guides-fresh)
+// from the SOURCE tree, not from dist -- they have to stay in public/ for those checks to keep
+// working. Nothing on the site itself reads them: no <script>, no fetch, no link. Shipped as
+// part of dist they are internal detail with no reason to be on bugit.dev -- SYNC-RECEIPT.json
+// and MANIFEST.json name Logo.tsx and internal check scripts, channel.json cites
+// "scratchpad/yt_orient.py", and guides-manifest.json lists toolchain versions and internal
+// agent-repo paths. So this removes the dist COPIES only, after they have already served their
+// purpose (nothing downstream of this point reads dist/public), leaving the source files alone.
+const INTERNAL_ONLY = [
+  'public/brand/SYNC-RECEIPT.json',
+  'public/brand/MANIFEST.json',
+  'public/media/youtube/channel.json',
+  'public/docs/guides/guides-manifest.json',
+];
+for (const rel of INTERNAL_ONLY) {
+  const p = path.join(dist, ...rel.split('/'));
+  if (fs.existsSync(p)) fs.rmSync(p);
+}
+console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of dist (still read from public/ by other checks).`);
+
 // ---------------------------------------------------------------- localized /404.html
 //
 // A MISTYPED URL LANDED EVERY READER ON AN ENGLISH PAGE. The site ships eleven languages and
@@ -445,5 +468,23 @@ for (const html of ['index.html','404.html']) {
 // should see once, at the end, rather than discover from a 404 in production.
 if (skippedOptional.length) {
   console.log(`build: not present in the source tree, so not copied: ${skippedOptional.join(', ')}`);
+}
+// PROVE THE REMOVAL ABOVE ACTUALLY HAPPENED. `fs.existsSync` in that loop makes the removal a
+// silent no-op if a path is ever renamed there without renaming it here, or vice versa, and
+// "build: 4 internal build note(s) kept out of dist" would keep printing whatever the number
+// actually is. So the end of the build asserts the real state of dist, not the loop's own count:
+// none of the four files may exist in dist, and each has to still be in the SOURCE tree, because
+// a source file removed by accident would make dist "clean" for the wrong reason.
+for (const rel of INTERNAL_ONLY) {
+  if (!fs.existsSync(path.join(root, ...rel.split('/')))) {
+    console.error(`build: ${rel} is missing from the SOURCE tree. check-brand-sync, check-channel, ` +
+      'check-docs and guides-fresh read it from public/, not from dist, so this is not the removal ' +
+      'above working -- it is the file gone from both places.');
+    process.exit(1);
+  }
+  if (fs.existsSync(path.join(dist, ...rel.split('/')))) {
+    console.error(`build: ${rel} shipped to dist. It is internal build detail, not a customer surface.`);
+    process.exit(1);
+  }
 }
 console.log(`Build complete: dist (${built['styles.css']}, ${built['app.js']}, ${built['consent.js']})`);
