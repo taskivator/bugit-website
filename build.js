@@ -130,8 +130,8 @@ for (const item of ['index.html','styles.css','app.js','consent.js','public','ro
 
 // ---------------------------------------------------------- internal build notes are not a customer surface
 //
-// W1 F7 (2026-09-24 audit). `public/` is copied to dist WHOLESALE above, and four files in it
-// are read by OTHER check scripts (check-brand-sync, check-channel, check-docs, guides-fresh)
+// W1 F7 (2026-09-24 audit). `public/` is copied to dist WHOLESALE above, and three files in it
+// are read by OTHER check scripts (check-brand-sync, check-channel)
 // from the SOURCE tree, not from dist -- they have to stay in public/ for those checks to keep
 // working. Nothing on the site itself reads them: no <script>, no fetch, no link. Shipped as
 // part of dist they are internal detail with no reason to be on bugit.dev -- SYNC-RECEIPT.json
@@ -139,15 +139,27 @@ for (const item of ['index.html','styles.css','app.js','consent.js','public','ro
 // "scratchpad/yt_orient.py", and guides-manifest.json lists toolchain versions and internal
 // agent-repo paths. So this removes the dist COPIES only, after they have already served their
 // purpose (nothing downstream of this point reads dist/public), leaving the source files alone.
+//
+// NOT guides-manifest.json, although the audit named it too. It is a PUBLIC CONTRACT: the agent
+// repo's release checklist (`check_the_website_actually_serves_the_current_guides`) fetches
+// https://bugit.dev/public/docs/guides/guides-manifest.json to prove the edge serves the current
+// buyer PDFs, and a 404 there fails every release. Removing it was caught in review before any
+// deploy (2026-09-25). What it discloses (toolchain versions, source paths) is a question for
+// sync-guides.mjs, which writes it, not for this list.
 const INTERNAL_ONLY = [
   'public/brand/SYNC-RECEIPT.json',
   'public/brand/MANIFEST.json',
   'public/media/youtube/channel.json',
-  'public/docs/guides/guides-manifest.json',
 ];
 for (const rel of INTERNAL_ONLY) {
   const p = path.join(dist, ...rel.split('/'));
   if (fs.existsSync(p)) fs.rmSync(p);
+}
+// The one file here that other systems fetch from the live site. check-deploy-safety inventories
+// what the HOME PAGE references, so it would not have refused a build that dropped this.
+if (!fs.existsSync(path.join(dist, 'public', 'docs', 'guides', 'guides-manifest.json'))) {
+  throw new Error('build: dist lost public/docs/guides/guides-manifest.json, which the agent release '
+    + 'checklist fetches from bugit.dev to prove the edge serves the current buyer PDFs');
 }
 console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of dist (still read from public/ by other checks).`);
 
