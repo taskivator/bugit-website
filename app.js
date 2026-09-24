@@ -1269,7 +1269,10 @@ function initDemo(){
   const order=vids.map(v=>v.dataset.video);
   const rm=window.matchMedia('(prefers-reduced-motion: reduce)');
   let cur=0, visible=false;
-  const safePlay=v=>{try{const p=v.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}};
+  // Reduced motion means no autoplay, from any caller: the intersection observer, a tab
+  // click, a source swap at the portrait breakpoint, and the rotation timer all route
+  // through safePlay, so one guard here covers every path instead of one per caller.
+  const safePlay=v=>{if(rm.matches)return;try{const p=v.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}};
 
   // Cross-fade to clip i. Only the incoming clip is reset to frame 0, so the
   // outgoing clip holds its last frame while it fades (no jump, no flash).
@@ -1342,8 +1345,10 @@ function initDemo(){
   // Don't decode/play the clips while the section is off-screen (perf + battery).
   new IntersectionObserver(es=>es.forEach(e=>{visible=e.isIntersecting;if(visible)safePlay(vids[cur]);else{cancelHold();vids[cur].pause();}}),{threshold:.25}).observe(stack);
 
-  // Reduced motion: no auto-rotation, no fades — show only the first clip (looping).
-  function apply(){applySources();vids.forEach((v,idx)=>{v.loop=rm.matches&&idx===0;});show(rm.matches?0:cur,false);}
+  // Reduced motion: no auto-rotation, no fades, no autoplay. safePlay already declines to
+  // play, so this just makes the still first clip a normal, pausable video: no loop, and
+  // native controls so the visitor can choose to play it.
+  function apply(){applySources();vids.forEach(v=>{v.loop=false;v.controls=rm.matches;});show(rm.matches?0:cur,false);}
   rm.addEventListener?.('change',apply);
   apply();
 }

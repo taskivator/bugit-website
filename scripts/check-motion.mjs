@@ -18,6 +18,10 @@
 //      video, a dimmed window control) is not mistaken for one the animation stranded.
 //   5. The system is a system. A page that claims a motion design and runs two keyframes is
 //      not one, and the count is read from the rendered page rather than from the source.
+//   6. The demo video never autoplays under reduced motion. `play()` is not a decoration the
+//      reveal system owns; it is media that keeps running once started, and WCAG 2.2.2 requires
+//      a way to stop it. Reduced motion must mean it never started, and controls must be on the
+//      element so a visitor can start it themselves.
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -199,6 +203,30 @@ try {
     note("reduced motion: nothing animates, and nothing is left faded");
   }
 
+  // ---- 6. reduced motion never autoplays the demo video ------------------
+  const demoIndex = await rm.evaluate(() =>
+    [...document.querySelectorAll("#homeView > section")].findIndex((s) => s.id === "demo"));
+  if (demoIndex < 0) {
+    fail.push("no #demo section found: the demo video reduced-motion check did not run");
+  } else {
+    await rm.evaluate(scrollToSection, demoIndex);
+    await rm.waitForTimeout(1000);
+    const demo = await rm.evaluate(() => {
+      const v = document.getElementById("demopanel-core");
+      return v ? { paused: v.paused, controls: v.controls, loop: v.loop } : null;
+    });
+    if (!demo) {
+      fail.push("no #demopanel-core video to measure under reduced motion");
+    } else {
+      if (demo.paused !== true) fail.push("reduced motion: the demo video autoplayed (paused is not true)");
+      if (demo.controls !== true) fail.push("reduced motion: the demo video has no controls, so a visitor cannot start or stop it");
+      if (demo.loop !== false) fail.push("reduced motion: the demo video is still set to loop");
+      if (demo.paused === true && demo.controls === true && demo.loop === false) {
+        note("reduced motion: the demo video is paused, unlooped and offers controls");
+      }
+    }
+  }
+
   // ---- 5. it is a system, not an effect ----------------------------------
   const inv = await page.evaluate(() => {
     const names = new Set();
@@ -242,5 +270,6 @@ if (fail.length) {
   process.exit(1);
 }
 console.log("check-motion OK: the opening plays and finishes, every reveal settles, reduced " +
-            "motion removes the motion without hiding anything, and the scan was proven able " +
-            "to see a stranded element.");
+            "motion removes the motion without hiding anything, the demo video does not " +
+            "autoplay or loop under reduced motion and offers controls, and the scan was " +
+            "proven able to see a stranded element.");
