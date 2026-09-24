@@ -22,11 +22,11 @@
 //
 // LEGAL PAGES ARE OUT OF SCOPE, by the same rule the applier uses. LICENSE, PRIVACY, REFUND,
 // SECURITY and TOKUSHOHO are flag-only: their wording is constrained by law and by what the
-// payment processor requires. (This line used to add that the Chinese ones use the formal 您
-// on purpose. By 2026-09-24 that was true only of the licence: REFUND and TOKUSHOHO already used
-// 你, and PRIVACY and SECURITY do now. Register in a legal page is decided per document, by the
-// owner, and never by this guard.) Sweeping them would either produce a permanent red or invite
-// somebody to "fix" legal text to silence a guard.
+// payment processor requires. (On 2026-09-24 a commit swept PRIVACY.zh.md from 您 to 你, which
+// was wrong and was reverted on 2026-09-25: privacy, licence, refund and commercial-transactions
+// pages deliberately keep the formal 您. Register in a legal page is decided per document, by
+// the owner, and never by this guard.) Sweeping them would either produce a permanent red or
+// invite somebody to "fix" legal text to silence a guard.
 //
 // Run: `node scripts/check-retired-vocabulary.mjs`. No dependencies.
 
