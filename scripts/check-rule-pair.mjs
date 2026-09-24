@@ -104,30 +104,32 @@ function readPNG(file) {
 function coverage(png) {
   const { w, h, px } = png;
   const pink = (x, y) => { const [r, g, b] = px(x, y); return r - g > 40 && b - g > 25; };
-  const spans = { left: null, right: null };
+  const runs = [];
   for (let y = 0; y < h; y++) {
     let x = 0;
     while (x < w) {
       if (!pink(x, y)) { x++; continue; }
       const x0 = x;
       while (x < w && pink(x, y)) x++;
-      if (x - x0 < 8) continue;
-      const side = (x0 + x) / 2 < w / 2 ? "left" : "right";
-      const cur = spans[side];
-      spans[side] = cur ? { x0: Math.max(cur.x0, x0), x1: Math.min(cur.x1, x), ys: [...cur.ys, y] }
-                        : { x0, x1: x, ys: [y] };
+      if (x - x0 >= 8) runs.push({ side: (x0 + x) / 2 < w / 2 ? "left" : "right", x0, x1: x, y });
     }
   }
   const out = { left: 0, right: 0 };
   for (const side of ["left", "right"]) {
-    const sp = spans[side];
-    if (!sp || sp.x1 - sp.x0 < 4) continue;
-    // Inset by one pixel so the rule's own anti-aliased ends do not count.
-    const xs = []; for (let x = sp.x0 + 1; x < sp.x1 - 1; x++) xs.push(x);
-    const meanRed = (y) => xs.reduce((a, x) => a + px(x, y)[0], 0) / xs.length;
-    const top = Math.min(...sp.ys), bottom = Math.max(...sp.ys);
-    const above = Math.max(0, top - 3);
-    const bg = meanRed(above);
+    const mine = runs.filter((r) => r.side === side);
+    if (!mine.length) continue;
+    // THE RULE IS THE LONGEST RUN ON ITS SIDE. A capital's crossbar is the same pink and can be a
+    // run too; anchoring on the longest keeps a letter from narrowing the columns measured.
+    const anchor = mine.reduce((a, r) => (r.x1 - r.x0 > a.x1 - a.x0 ? r : a));
+    const len = anchor.x1 - anchor.x0;
+    const rows = mine.filter((r) => Math.min(r.x1, anchor.x1) - Math.max(r.x0, anchor.x0) >= len / 2);
+    const x0 = anchor.x0 + 1, x1 = anchor.x1 - 1;   // inset: the rule's own anti-aliased ends
+    if (x1 - x0 < 4) continue;
+    const meanRed = (y) => { let t = 0; for (let x = x0; x < x1; x++) t += px(x, y)[0]; return t / (x1 - x0); };
+    const top = Math.min(...rows.map((r) => r.y)), bottom = Math.max(...rows.map((r) => r.y));
+    // The backdrop, from both sides of the rule: behind a translucent card it is a gradient, and
+    // one row above alone read a different backdrop for two identical rules (review, 2026-09-25).
+    const bg = (meanRed(Math.max(0, top - 3)) + meanRed(Math.min(h - 1, bottom + 3))) / 2;
     const rise = Math.max(1, 255 - bg);
     for (let y = Math.max(0, top - 2); y <= Math.min(h - 1, bottom + 2); y++) {
       out[side] += Math.max(0, meanRed(y) - bg) / rise;
@@ -202,11 +204,18 @@ for (const dpr of [1, 1.25, 1.5, 2]) {
     const file = join(shots, `${s.key}-${dpr}.png`);
     await page.screenshot({
       path: file,
-      clip: { x: Math.max(0, Math.round(box.x + box.w / 2 - 200)), y: Math.round(box.y - 4), width: 400, height: 24 },
+      // As tall as the label and a margin: a label that wraps puts its rules mid-height, and a
+      // fixed 24px strip missed them, which was then skipped as "not a finding".
+      clip: { x: Math.max(0, Math.round(box.x + box.w / 2 - 200)), y: Math.round(box.y - 4), width: 400, height: Math.ceil(box.h + 8) },
     });
     let cov;
     try { cov = coverage(readPNG(file)); } catch (e) { fail.push(`${dpr}x "${s.label}": ${e.message}`); continue; }
-    if (!cov.left || !cov.right) continue;   // the clip did not catch both rules; not a finding
+    // A rule the capture cannot find is a finding, not a skip: the subject was computed as a
+    // label whose ::before and ::after are both rules, and the capture covers the whole label.
+    if (!cov.left || !cov.right) {
+      fail.push(`${dpr}x "${s.label}": ${!cov.left && !cov.right ? "neither rule" : (!cov.left ? "the left rule" : "the right rule")} could not be found in the capture`);
+      continue;
+    }
     measured++;
     if (Math.abs(cov.left - cov.right) > TOLERANCE) {
       fail.push(`${dpr}x "${s.label}": the two rules carry ${cov.left.toFixed(2)} and ${cov.right.toFixed(2)} device rows of ink -- one is visibly paler than the other`);
@@ -217,13 +226,13 @@ for (const dpr of [1, 1.25, 1.5, 2]) {
 }
 await browser.close();
 done();
-if (measured < 4) {
-  console.error(`check-rule-pair: only ${measured} pairs were photographed, so nothing was really measured.`);
-  process.exit(1);
-}
 if (fail.length) {
   console.error(`\ncheck-rule-pair: FAIL (${fail.length})`);
   for (const f of fail) console.error("  - " + f);
+  process.exit(1);
+}
+if (measured < 4) {
+  console.error(`check-rule-pair: only ${measured} pairs were photographed, so nothing was really measured.`);
   process.exit(1);
 }
 console.log(`check-rule-pair: OK (${measured} photographed pairs across 4 display scalings)`);
