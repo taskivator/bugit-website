@@ -27,7 +27,7 @@
 
 // EXPORTED so the guard can assert the number rather than only the mechanism. The incident
 // was a ceiling of 12s (80 polls x 150ms); anything back under ~30s reopens it.
-import { readFileSync } from "node:fs";
+import { readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 
 export const DEFAULT_TIMEOUT_MS = 60_000;
@@ -182,4 +182,23 @@ export async function waitForDevTools(child, port, opts = {}) {
     (lastError ? ` (last attempt: ${lastError.message})` : "") +
     (stderr.trim() ? `\nChrome said:\n${stderr.trim()}` : ""),
   );
+}
+// REMOVE A THROWAWAY CHROME PROFILE ONLY AFTER CHROME HAS EXITED, AND KEEP TRYING (2026-09-25).
+// check-overflow and check-mission-pause each did a single rmSync straight after kill(), inside an
+// empty catch. kill() only SIGNALS Chrome, and on Windows the profile's 1,500-odd files stay locked
+// for a while after it exits (measured: still EPERM after rmSync's own ~11 s of retries, deletable a
+// few seconds later; the antivirus scanning the new files is the likely holder). Every run left its
+// profile behind: 104 of them, about 6 GB, in %TEMP% over eleven days, and nothing said so.
+// Call it BEFORE kill(). The pending timer keeps the process alive until the folder is gone, for at
+// most `tries` seconds, and a folder that still cannot be removed is named, not swallowed.
+export function removeProfileAfterExit(child, dir, name, tries = 60) {
+  const attempt = (left) => {
+    try { rmSync(dir, { recursive: true, force: true }); }
+    catch (e) {
+      if (left > 0) { setTimeout(() => attempt(left - 1), 1000); return; }
+      console.warn(`${name}: could not remove the Chrome profile ${dir}: ${e.code || e.message}`);
+    }
+  };
+  if (child.exitCode === null && child.signalCode === null) child.once("exit", () => attempt(tries));
+  else attempt(tries);
 }

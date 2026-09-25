@@ -30,7 +30,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { waitForDevTools } from './lib/chrome-devtools.mjs';
+import { waitForDevTools, removeProfileAfterExit } from './lib/chrome-devtools.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = 3216;
@@ -99,9 +99,9 @@ const watchdog = setTimeout(() => {
 
 function cleanup(code) {
   clearTimeout(watchdog);
+  removeProfileAfterExit(chrome, udir, 'check-mission-pause');   // before kill(): see the helper
   try { chrome.kill(); } catch {}
   try { server.close(); } catch {}
-  try { fs.rmSync(udir, { recursive: true, force: true }); } catch {}
   process.exitCode = code;
   if (code !== 0) throw new Error('check-mission-pause aborted before completing its assertions.');
 }
