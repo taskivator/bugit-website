@@ -21,8 +21,7 @@ BugIt 以 Taskivator 商号销售。
 
 ## 产品与价格
 
-BugIt 是在 Visual Studio Code 中运行的可下载软件，帮助 QA 团队起草、审阅缺陷报告并提交到
-所用的缺陷跟踪系统。
+BugIt 是可下载软件，可配合所选的 AI 助手在 Visual Studio Code 或终端中运行，帮助 QA 团队起草、审阅缺陷报告并提交到所用的缺陷跟踪系统。
 
 - BugIt Solo：39.99 美元
 - BugIt Team：199.00 美元
@@ -56,10 +55,7 @@ BugIt 是在 Visual Studio Code 中运行的可下载软件，帮助 QA 团队�
 
 ## 系统要求
 
-BugIt 在 Visual Studio Code 中运行，需要你自行提供 AI 服务方（GitHub Copilot，或你自己的
-OpenAI 或 Anthropic 密钥），以及受支持版本的 Python。提交到缺陷跟踪系统时使用的 API 令牌，
-由你在自己的跟踪系统账户中创建并粘贴到 BugIt 中。激活以及定期校验许可需要联网。在两次校验
-之间，BugIt 可继续离线工作最长 72 小时。
+BugIt 需要自行提供的、能够运行命令的 AI 助手（例如 Visual Studio Code 中的 GitHub Copilot Chat 或 Claude 扩展，或其他助手），以及受支持版本的 Python。也可以使用自己的 OpenAI 或 Anthropic API 密钥在终端中独立运行，用于起草和导出报告。提交到缺陷跟踪系统时使用的 API 令牌，由你在自己的跟踪系统账户中创建并粘贴到 BugIt 中。激活以及定期校验许可需要联网。在两次校验之间，BugIt 可继续离线工作最长 72 小时。
 
 ## 取消与退款
 

@@ -23,7 +23,7 @@ BugIt 是 Taskivator 提供的授权产品。本政策说明在哪些情况下�
 - 未满足所记载的系统要求
 - 超过 7 天期限后提交的申请
 
-购买前请查看要求：Visual Studio Code、一个 AI 提供方（GitHub Copilot 或你自己的 OpenAI 或 Anthropic 密钥）以及受支持的 Python 版本。BugIt 不含 AI 模型或订阅。
+购买前请查看要求：能够运行命令的 AI 助手（例如 Visual Studio Code 中的 GitHub Copilot Chat 或 Claude 扩展，或其他助手），或用于独立模式的自有 OpenAI 或 Anthropic API 密钥，以及受支持的 Python 版本。BugIt 不含 AI 模型或订阅。
 
 ## 退款获批后会发生什么
 

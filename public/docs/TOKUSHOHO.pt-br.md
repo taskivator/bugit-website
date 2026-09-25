@@ -25,8 +25,7 @@ suporte. O suporte é prestado em inglês.
 
 ## Produtos e preços
 
-O BugIt é um software para download que roda dentro do Visual Studio Code e ajuda equipes de
-QA a redigir, revisar e registrar relatórios de bugs no rastreador delas.
+O BugIt é um software para download que funciona com o assistente de IA que você escolher, no Visual Studio Code ou em um terminal, e ajuda equipes de QA a redigir, revisar e registrar relatórios de bugs no rastreador delas.
 
 - BugIt Solo: US$ 39,99
 - BugIt Team: US$ 199,00
@@ -65,12 +64,7 @@ pelo navegador no BugIt Portal ficam disponíveis na sua conta.
 
 ## Requisitos de sistema
 
-O BugIt roda dentro do Visual Studio Code e precisa de um provedor de IA fornecido por você,
-seja o GitHub Copilot, seja sua própria chave da OpenAI ou da Anthropic, além de uma versão
-compatível do Python. O registro no rastreador usa um token de API que você cria na sua
-própria conta do rastreador e cola no BugIt. É necessário acesso à internet para ativar e
-para verificar a licença periodicamente. Entre essas verificações, o BugIt continua
-funcionando offline por até 72 horas.
+O BugIt precisa de um assistente de IA fornecido por você e capaz de executar comandos, como o GitHub Copilot Chat ou a extensão do Claude no Visual Studio Code, ou outro assistente, além de uma versão compatível do Python. Ele também pode rodar de forma independente em um terminal com sua própria chave de API da OpenAI ou da Anthropic, para redigir e exportar relatórios. O registro no rastreador usa um token de API que você cria na sua própria conta do rastreador e cola no BugIt. É necessário acesso à internet para ativar e para verificar a licença periodicamente. Entre essas verificações, o BugIt continua funcionando offline por até 72 horas.
 
 ## Cancelamentos e reembolsos
 

@@ -23,7 +23,7 @@ Em geral, não há reembolso para:
 - Não atender aos requisitos de sistema documentados
 - Solicitações enviadas após o prazo de 7 dias
 
-Antes de comprar, revise os requisitos: Visual Studio Code, um provedor de IA (GitHub Copilot ou sua própria chave da OpenAI ou Anthropic) e uma versão compatível do Python. O BugIt não inclui modelo de IA nem assinatura.
+Antes de comprar, revise os requisitos: um assistente de IA capaz de executar comandos (como o GitHub Copilot Chat ou a extensão do Claude no Visual Studio Code, ou outro assistente), ou sua própria chave de API da OpenAI ou Anthropic para o modo independente, e uma versão compatível do Python. O BugIt não inclui modelo de IA nem assinatura.
 
 ## O que acontece quando um reembolso é aprovado
 

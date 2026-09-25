@@ -23,7 +23,7 @@ En général, aucun remboursement pour :
 - Non-respect des prérequis système documentés
 - Demandes envoyées après le délai de 7 jours
 
-Avant d’acheter, vérifiez les prérequis : Visual Studio Code, un fournisseur d’IA (GitHub Copilot ou votre propre clé OpenAI ou Anthropic) et une version prise en charge de Python. BugIt n’inclut ni modèle d’IA ni abonnement.
+Avant d’acheter, vérifiez les prérequis : un assistant d’IA capable d’exécuter des commandes (par exemple GitHub Copilot Chat ou l’extension Claude dans Visual Studio Code, ou un autre assistant), ou votre propre clé d’API OpenAI ou Anthropic pour le mode autonome, et une version prise en charge de Python. BugIt n’inclut ni modèle d’IA ni abonnement.
 
 ## Ce qui se passe lorsqu’un remboursement est approuvé
 

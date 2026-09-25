@@ -23,8 +23,7 @@ BugIt은 Taskivator라는 상호로 판매됩니다.
 
 ## 제품 및 가격
 
-BugIt은 Visual Studio Code 안에서 실행되는 다운로드형 소프트웨어로, QA 팀이 버그 리포트를
-작성하고 검토한 뒤 트래커에 등록하도록 돕습니다.
+BugIt은 고객이 선택한 AI 어시스턴트와 함께 Visual Studio Code 또는 터미널에서 작동하는 다운로드형 소프트웨어로, QA 팀이 버그 리포트를 작성하고 검토한 뒤 트래커에 등록하도록 돕습니다.
 
 - BugIt Solo: 39.99 USD
 - BugIt Team: 199.00 USD
@@ -59,11 +58,7 @@ BugIt은 Visual Studio Code 안에서 실행되는 다운로드형 소프트웨�
 
 ## 시스템 요구 사항
 
-BugIt은 Visual Studio Code 안에서 실행되며, 고객이 직접 준비한 AI 제공자(GitHub Copilot
-또는 본인의 OpenAI·Anthropic 키)와 지원되는 버전의 Python이 필요합니다. 트래커 등록에는
-고객이 자신의 트래커 계정에서 발급해 BugIt에 붙여 넣은 API 토큰을 사용합니다. 활성화와
-주기적인 라이선스 확인에는 인터넷 연결이 필요합니다. 확인과 확인 사이에는 최대 72시간까지
-오프라인으로 계속 사용할 수 있습니다.
+BugIt에는 고객이 직접 준비한, 명령을 실행할 수 있는 AI 어시스턴트(Visual Studio Code의 GitHub Copilot Chat이나 Claude 확장 프로그램, 또는 다른 어시스턴트)와 지원되는 버전의 Python이 필요합니다. 본인의 OpenAI 또는 Anthropic API 키로 터미널에서 독립 실행하여 리포트를 작성하고 내보낼 수도 있습니다. 트래커 등록에는 고객이 자신의 트래커 계정에서 발급해 BugIt에 붙여 넣은 API 토큰을 사용합니다. 활성화와 주기적인 라이선스 확인에는 인터넷 연결이 필요합니다. 확인과 확인 사이에는 최대 72시간까지 오프라인으로 계속 사용할 수 있습니다.
 
 ## 청약철회 및 환불
 

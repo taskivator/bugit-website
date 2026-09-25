@@ -23,7 +23,7 @@ BugIt은 Taskivator의 라이선스 제품입니다. 이 정책은 구매를 환
 - 문서화된 시스템 요구 사항을 충족하지 못한 경우
 - 7일 기간이 지난 후의 요청
 
-구매 전에 요구 사항을 확인하세요: Visual Studio Code, AI 제공자(GitHub Copilot 또는 직접 준비한 OpenAI나 Anthropic 키), 지원되는 버전의 Python. BugIt에는 AI 모델이나 구독이 포함되어 있지 않습니다.
+구매 전에 요구 사항을 확인하세요: 명령을 실행할 수 있는 AI 어시스턴트(Visual Studio Code의 GitHub Copilot Chat이나 Claude 확장 프로그램, 또는 다른 어시스턴트) 또는 독립 실행 모드용으로 직접 준비한 OpenAI나 Anthropic API 키, 그리고 지원되는 버전의 Python. BugIt에는 AI 모델이나 구독이 포함되어 있지 않습니다.
 
 ## 환불이 승인되면 어떻게 되나요
 

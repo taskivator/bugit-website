@@ -23,9 +23,7 @@ Refunds are generally **not** available for:
 - Failure to meet the documented system requirements
 - Requests submitted after the 7-day window has passed
 
-Before buying, please review the system requirements: Visual Studio Code, an AI
-provider (GitHub Copilot or your own OpenAI or Anthropic key), and a supported
-version of Python. BugIt does not include an AI model or subscription.
+Before buying, please review the system requirements: an AI assistant that can run a command (such as GitHub Copilot Chat or the Claude extension in Visual Studio Code, or another assistant), or your own OpenAI or Anthropic API key for standalone mode, and a supported version of Python. BugIt does not include an AI model or subscription.
 
 ## What Happens When a Refund Is Approved
 

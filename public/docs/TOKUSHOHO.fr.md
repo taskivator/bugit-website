@@ -25,8 +25,7 @@ licences, aux remboursements et à l’assistance. L’assistance est fournie en
 
 ## Produits et prix
 
-BugIt est un logiciel téléchargeable qui s’exécute dans Visual Studio Code et aide les
-équipes QA à rédiger, relire et transmettre des rapports de bogue à leur outil de suivi.
+BugIt est un logiciel téléchargeable qui fonctionne avec l’assistant d’IA de votre choix, dans Visual Studio Code ou dans un terminal, et aide les équipes QA à rédiger, relire et transmettre des rapports de bogue à leur outil de suivi.
 
 - BugIt Solo : 39,99 USD
 - BugIt Team : 199,00 USD
@@ -67,13 +66,7 @@ compte.
 
 ## Configuration requise
 
-BugIt s’exécute dans Visual Studio Code et nécessite un fournisseur d’IA que vous
-fournissez vous-même, soit GitHub Copilot, soit votre propre clé OpenAI ou Anthropic, ainsi
-qu’une version prise en charge de Python. La transmission vers un outil de suivi utilise un
-jeton d’API que vous créez dans votre propre compte de suivi et collez dans BugIt. Un accès
-à internet est nécessaire pour l’activation et pour la vérification périodique de la
-licence. Entre ces vérifications, BugIt continue de fonctionner hors ligne pendant 72 heures
-au maximum.
+BugIt nécessite un assistant d’IA que vous fournissez vous-même et qui peut exécuter des commandes, par exemple GitHub Copilot Chat ou l’extension Claude dans Visual Studio Code, ou un autre assistant, ainsi qu’une version prise en charge de Python. Il peut aussi fonctionner de manière autonome dans un terminal avec votre propre clé d’API OpenAI ou Anthropic, pour rédiger et exporter des rapports. La transmission vers un outil de suivi utilise un jeton d’API que vous créez dans votre propre compte de suivi et collez dans BugIt. Un accès à internet est nécessaire pour l’activation et pour la vérification périodique de la licence. Entre ces vérifications, BugIt continue de fonctionner hors ligne pendant 72 heures au maximum.
 
 ## Annulations et remboursements
 

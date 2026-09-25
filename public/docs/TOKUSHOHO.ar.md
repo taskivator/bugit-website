@@ -20,7 +20,7 @@
 
 ## المنتجات والأسعار
 
-<bdi dir="ltr">BugIt</bdi> برنامج قابل للتنزيل يعمل داخل <bdi dir="ltr">Visual Studio Code</bdi> ويساعد فرق ضمان الجودة في صياغة تقارير الخلل ومراجعتها وإيداعها في نظام التتبع.
+<bdi dir="ltr">BugIt</bdi> برنامج قابل للتنزيل يعمل مع مساعد الذكاء الاصطناعي الذي تختاره داخل <bdi dir="ltr">Visual Studio Code</bdi> أو في طرفية، ويساعد فرق ضمان الجودة في صياغة تقارير الخلل ومراجعتها وإيداعها في نظام التتبع.
 
 - <bdi dir="ltr">BugIt Solo</bdi>: <bdi dir="ltr">US$39.99</bdi>
 - <bdi dir="ltr">BugIt Team</bdi>: <bdi dir="ltr">US$199.00</bdi>
@@ -48,7 +48,7 @@
 
 ## متطلبات النظام
 
-يعمل <bdi dir="ltr">BugIt</bdi> داخل <bdi dir="ltr">Visual Studio Code</bdi> ويحتاج إلى مزوّد ذكاء اصطناعي توفره أنت، إما <bdi dir="ltr">GitHub Copilot</bdi> أو مفتاح <bdi dir="ltr">OpenAI</bdi> أو <bdi dir="ltr">Anthropic</bdi> خاص بك، إلى جانب إصدار مدعوم من <bdi dir="ltr">Python</bdi>. يستخدم الإيداع في نظام التتبع رمز وصول إلى واجهة <bdi dir="ltr">API</bdi> تنشئه في حسابك على نظام التتبع وتلصقه في <bdi dir="ltr">BugIt</bdi>. يلزم الاتصال بالإنترنت للتفعيل والتحقق الدوري من الترخيص. بين تلك الفحوصات يستمر <bdi dir="ltr">BugIt</bdi> في العمل دون اتصال لمدة تصل إلى 72 ساعة.
+يحتاج <bdi dir="ltr">BugIt</bdi> إلى مساعد ذكاء اصطناعي توفره أنت ويستطيع تشغيل الأوامر، مثل <bdi dir="ltr">GitHub Copilot Chat</bdi> أو إضافة <bdi dir="ltr">Claude</bdi> داخل <bdi dir="ltr">Visual Studio Code</bdi> أو مساعد آخر، إلى جانب إصدار مدعوم من <bdi dir="ltr">Python</bdi>. ويمكنه أيضًا العمل بشكل مستقل في طرفية باستخدام مفتاح <bdi dir="ltr">API</bdi> خاص بك من <bdi dir="ltr">OpenAI</bdi> أو <bdi dir="ltr">Anthropic</bdi>، لصياغة التقارير وتصديرها. يستخدم الإيداع في نظام التتبع رمز وصول إلى واجهة <bdi dir="ltr">API</bdi> تنشئه في حسابك على نظام التتبع وتلصقه في <bdi dir="ltr">BugIt</bdi>. يلزم الاتصال بالإنترنت للتفعيل والتحقق الدوري من الترخيص. بين تلك الفحوصات يستمر <bdi dir="ltr">BugIt</bdi> في العمل دون اتصال لمدة تصل إلى 72 ساعة.
 
 ## الإلغاءات وعمليات الاسترداد
 

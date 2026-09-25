@@ -25,8 +25,7 @@ assistenza. L’assistenza è fornita in inglese.
 
 ## Prodotti e prezzi
 
-BugIt è un software scaricabile che viene eseguito all’interno di Visual Studio Code e aiuta
-i team QA a redigere, revisionare e inviare segnalazioni di bug al proprio tracker.
+BugIt è un software scaricabile che funziona con l’assistente di IA che scegli, in Visual Studio Code o in un terminale, e aiuta i team QA a redigere, revisionare e inviare segnalazioni di bug al proprio tracker.
 
 - BugIt Solo: 39,99 USD
 - BugIt Team: 199,00 USD
@@ -65,12 +64,7 @@ via browser nel BugIt Portal diventano disponibili nel tuo account.
 
 ## Requisiti di sistema
 
-BugIt viene eseguito all’interno di Visual Studio Code e richiede un provider di IA fornito
-da te, GitHub Copilot oppure una tua chiave OpenAI o Anthropic, insieme a una versione
-supportata di Python. L’invio al tracker utilizza un token API che crei nel tuo account del
-tracker e incolli in BugIt. L’accesso a internet è necessario per l’attivazione e per la
-verifica periodica della licenza. Tra una verifica e l’altra BugIt continua a funzionare
-offline fino a 72 ore.
+BugIt richiede un assistente di IA fornito da te e in grado di eseguire comandi, come GitHub Copilot Chat o l’estensione Claude in Visual Studio Code, o un altro assistente, insieme a una versione supportata di Python. Può anche funzionare in modo autonomo in un terminale con una tua chiave API OpenAI o Anthropic, per redigere ed esportare segnalazioni. L’invio al tracker utilizza un token API che crei nel tuo account del tracker e incolli in BugIt. L’accesso a internet è necessario per l’attivazione e per la verifica periodica della licenza. Tra una verifica e l’altra BugIt continua a funzionare offline fino a 72 ore.
 
 ## Recesso e rimborsi
 

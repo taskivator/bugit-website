@@ -23,7 +23,7 @@
 - عدم استيفاء متطلبات النظام الموثّقة
 - تقديم الطلب بعد انقضاء نافذة الـ 7 أيام
 
-قبل الشراء، يُرجى مراجعة متطلبات النظام: <bdi dir="ltr">Visual Studio Code</bdi>، ومزوّد ذكاء اصطناعي (<bdi dir="ltr">GitHub Copilot</bdi> أو مفتاح <bdi dir="ltr">OpenAI</bdi> أو <bdi dir="ltr">Anthropic</bdi> خاص بك)، وإصدار مدعوم من <bdi dir="ltr">Python</bdi>. لا يتضمن <bdi dir="ltr">BugIt</bdi> نموذج ذكاء اصطناعي أو اشتراكًا.
+قبل الشراء، يُرجى مراجعة متطلبات النظام: مساعد ذكاء اصطناعي يستطيع تشغيل الأوامر (مثل <bdi dir="ltr">GitHub Copilot Chat</bdi> أو إضافة <bdi dir="ltr">Claude</bdi> داخل <bdi dir="ltr">Visual Studio Code</bdi>، أو مساعد آخر)، أو مفتاح <bdi dir="ltr">API</bdi> خاص بك من <bdi dir="ltr">OpenAI</bdi> أو <bdi dir="ltr">Anthropic</bdi> للوضع المستقل، وإصدار مدعوم من <bdi dir="ltr">Python</bdi>. لا يتضمن <bdi dir="ltr">BugIt</bdi> نموذج ذكاء اصطناعي أو اشتراكًا.
 
 ## ما يحدث عند الموافقة على الاسترداد
 

@@ -23,7 +23,7 @@ In der Regel nicht erstattungsfähig sind:
 - Nichterfüllung der dokumentierten Systemanforderungen
 - Anfragen nach Ablauf der 7-Tage-Frist
 
-Bitte prüfen Sie vor dem Kauf die Voraussetzungen: Visual Studio Code, einen KI-Anbieter (GitHub Copilot oder Ihren eigenen OpenAI- oder Anthropic-Schlüssel) und eine unterstützte Python-Version. BugIt enthält kein KI-Modell und kein Abo.
+Bitte prüfen Sie vor dem Kauf die Voraussetzungen: einen KI-Assistenten, der Befehle ausführen kann (etwa GitHub Copilot Chat oder die Claude-Erweiterung in Visual Studio Code oder einen anderen Assistenten), oder Ihren eigenen OpenAI- oder Anthropic-API-Schlüssel für den eigenständigen Modus, und eine unterstützte Python-Version. BugIt enthält kein KI-Modell und kein Abo.
 
 ## Was bei einer genehmigten Rückerstattung geschieht
 

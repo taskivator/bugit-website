@@ -436,6 +436,33 @@ for (const [name, text] of docFiles) {
   check(!m, `${name} still describes a license-key flow`, m ? `matched: "${m[0]}"` : "");
 }
 
+// --- 11. The purchase requirements name every advertised way to run BugIt ------
+// The refund and commercial-disclosure pages made "Visual Studio Code with GitHub Copilot or your
+// own OpenAI or Anthropic key" read as mandatory, while the site advertises the Claude extension,
+// other assistants and a standalone terminal mode, and the refund page excludes buyers who do not
+// meet "the documented system requirements" (external audit of 1.4.2, 2026-09-25). Every locale's
+// requirement paragraph must now name the Claude extension, and the old English clauses are
+// negative controls.
+const OLD_REQUIREMENTS = [
+  "Visual Studio Code, an AI provider (GitHub Copilot or your own OpenAI or Anthropic key)",
+  "runs inside Visual Studio Code and needs an AI provider that you supply",
+];
+const reqLocales = ["", "ar", "de", "es", "fr", "it", "ja", "ko", "pt-br", "ru", "zh"];
+for (const base of ["REFUND", "TOKUSHOHO"]) {
+  for (const loc of reqLocales) {
+    const file = `${base}${loc ? "." + loc : ""}.md`;
+    const text = flat(fs.readFileSync(path.join(docs, file), "utf8"));
+    const hasReq = /Python/.test(text);
+    check(!hasReq || /Claude/.test(text), `${file} states requirements without the Claude extension`,
+      "the requirements must name every advertised route, not only GitHub Copilot or a personal key");
+    for (const old of OLD_REQUIREMENTS) {
+      check(!text.includes(old), `${file} still carries the old exclusive requirement`, old);
+    }
+  }
+}
+// Negative control, run by hand on 2026-09-25: with the old REFUND.md and TOKUSHOHO.ja.md
+// restored this section reported three failures; with the new copy it passes.
+
 if (fails) {
   console.error(`\nLegal-copy check FAILED with ${fails} problem(s).`);
   process.exit(1);
