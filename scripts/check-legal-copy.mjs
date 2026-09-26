@@ -16,7 +16,10 @@
 //  - Commercial Transactions stays reachable from the footer, from the purchase
 //    flow, and — since the owner's 2026-08-07 decision — from a Documentation card,
 //    with a short card blurb rather than the full page paragraph;
-//  - every supported Privacy Policy, License and Security translation exists and is complete;
+//  - every supported Privacy Policy, License, Refund, Commercial Transactions and Security
+//    translation exists and has the English source's STRUCTURE: every numbered licence clause
+//    with a body, the same sections and bullets. That is a mechanical completeness check. It
+//    does not review a translation's meaning and it is not a legal review;
 //  - no document makes a FALSE legal-certification claim, and no FAQ answer is
 //    written in the wrong language.
 
@@ -148,6 +151,23 @@ const COMMERCE_DISCLOSURE = {
   ru: "без промедления по запросу до покупки",
   zh: "将在购买前应请求不迟延地提供",
 };
+// Every shipped language must be in that table (English and Japanese are checked above with
+// their own wording). The table was typed, so a twelfth language would otherwise have had its
+// commercial disclosure outside this guard from the day it shipped, the same way Arabic was once
+// outside the privacy and licence checks.
+for (const loc of LOCALES) {
+  if (loc === "" || loc === "ja") continue;
+  check(Object.prototype.hasOwnProperty.call(COMMERCE_DISCLOSURE, loc),
+    `locale "${loc}" has no disclosure-on-request sentence recorded in COMMERCE_DISCLOSURE`,
+    "add this language's wording of the promise, so its TOKUSHOHO page is checked at all");
+}
+// The English source's shape: sections and bullets. A translation must have the same, rather
+// than "at least 11 sections", which a page that dropped its last section and split another one
+// in two would satisfy. Wrapped-line differences do not matter; counts of structural lines do.
+const docShape = (t) => [(t.match(/^## /gm) || []).length, (t.match(/^- /gm) || []).length].join("/");
+const tokushohoEnShape = docShape(read("public/docs/TOKUSHOHO.md"));
+check(docShape(tkJa) === tokushohoEnShape, "TOKUSHOHO.ja.md does not have the English source's sections/bullets",
+  `${docShape(tkJa)} vs ${tokushohoEnShape} (sections/bullets) in TOKUSHOHO.md`);
 for (const [loc, phrase] of Object.entries(COMMERCE_DISCLOSURE)) {
   const file = `TOKUSHOHO.${loc}.md`;
   const p = path.join(docs, file);
@@ -162,9 +182,9 @@ for (const [loc, phrase] of Object.entries(COMMERCE_DISCLOSURE)) {
   // Every locale's body must answer the same statutory headings as the English
   // source. A short translation that quietly drops "cancellations and refunds" or
   // "delivery timing" is worse than an English page, because it looks complete.
-  const headings = (text.match(/^##\s+/gm) || []).length;
-  check(headings >= 11,
-    `${file} has ${headings} sections, expected at least 11 as in TOKUSHOHO.md`);
+  check(docShape(text) === tokushohoEnShape,
+    `${file} does not have the English source's sections/bullets`,
+    `${docShape(text)} vs ${tokushohoEnShape} (sections/bullets) in TOKUSHOHO.md`);
 }
 
 // The Privacy Policy discloses the operator on request rather than naming them.
@@ -311,26 +331,89 @@ for (const [, code, json] of generated) {
   }
 }
 
-// --- 5. Every supported translation exists and is complete ---------------------
+// --- 5. Every supported translation exists and is structurally complete ---------
+// WHAT "COMPLETE" MEANS HERE (CR-08-F19). This section used to say every licence translation
+// "must carry all 15 clauses" and then test for seven of them by number (7, 8, 10, 11, 13, 14,
+// 15), with a 1500-character floor and the support address standing in for the rest. A licence
+// that lost clause 12 (Termination) or clause 1 (the Grant itself) passed. The privacy
+// statement was held only to the length floor. Now the subject is the English source's own
+// structure, never a typed list: the licence's numbered clauses are read out of LICENSE.txt, and
+// every translation must have exactly that sequence, each clause with a body of its own (at
+// least 20 visible characters and a fifth of the English clause's length, which the most compact
+// script this site ships, Chinese, clears by a wide margin). The Privacy Policy and the Refund
+// Policy must have the English source's sections and bullets. This establishes that nothing
+// was dropped. It does NOT establish that a clause says the same thing as the English one; that
+// is a translation review, and nothing here claims to have done it.
+const licenceClauses = (text) => {
+  const out = [];
+  const re = /(^|\n)(\d+)\.\s/g;
+  const heads = [...text.matchAll(re)].map((m) => ({ n: Number(m[2]), at: m.index + m[1].length }));
+  heads.forEach((h, i) => {
+    const body = text.slice(h.at, i + 1 < heads.length ? heads[i + 1].at : text.length)
+      .replace(/^\d+\.\s*/, "").replace(/\s+/g, "");
+    out.push({ n: h.n, size: body.length });
+  });
+  return out;
+};
+function licenceProblems(file, text, en) {
+  const out = [];
+  const got = licenceClauses(text);
+  const want = en.map((c) => c.n).join(",");
+  if (got.map((c) => c.n).join(",") !== want) {
+    out.push(`${file} does not have the English licence's clauses in order`
+      + ` (has ${got.map((c) => c.n).join(",") || "none"}, LICENSE.txt has ${want})`);
+  }
+  for (const c of got) {
+    const ref = en.find((e) => e.n === c.n);
+    if (ref && (c.size < 20 || c.size < ref.size * 0.2)) {
+      out.push(`${file} clause ${c.n} has almost no body (${c.size} visible characters, `
+        + `the English clause has ${ref.size})`);
+    }
+  }
+  return out;
+}
+const licenseEnText = fs.existsSync(path.join(docs, "LICENSE.txt")) ? read("public/docs/LICENSE.txt") : "";
+const licenseEn = licenceClauses(licenseEnText);
+check(licenseEn.length >= 10, "LICENSE.txt (the English source) has no readable numbered clauses",
+  `found ${licenseEn.length}`);
+check(licenseEn.every((c, i) => c.n === i + 1), "LICENSE.txt clauses are not numbered 1..N in order");
+// The predicate proves itself on every run: a licence with one clause removed, and one with a
+// clause emptied, must both be reported. A check that has never failed has not been seen to work.
+{
+  const minus12 = licenseEnText.replace(/\n12\.\s[\s\S]*?(?=\n13\.\s)/, "\n");
+  const empty1 = licenseEnText.replace(/(^|\n)1\.\s[\s\S]*?(?=\n2\.\s)/, "$11. Grant.");
+  if (minus12 === licenseEnText || empty1 === licenseEnText
+    || licenceProblems("planted", minus12, licenseEn).length === 0
+    || licenceProblems("planted", empty1, licenseEn).length === 0
+    || licenceProblems("LICENSE.txt", licenseEnText, licenseEn).length !== 0) {
+    console.error("SELF-TEST FAILED: the licence clause check accepts a licence with a clause "
+      + "removed or emptied, or rejects the English source itself. It proves nothing.");
+    process.exit(2);
+  }
+}
+const privacyEnShape = docShape(read("public/docs/PRIVACY.md"));
+const refundEnShape = docShape(read("public/docs/REFUND.md"));
 for (const loc of LOCALES) {
   const privacyFile = loc ? `PRIVACY.${loc}.md` : "PRIVACY.md";
   const licenseFile = loc ? `LICENSE.${loc}.txt` : "LICENSE.txt";
-  for (const f of [privacyFile, licenseFile]) {
+  const refundFile = loc ? `REFUND.${loc}.md` : "REFUND.md";
+  for (const f of [privacyFile, licenseFile, refundFile]) {
     const p = path.join(docs, f);
     check(fs.existsSync(p), `${f} is missing`);
     if (!fs.existsSync(p)) continue;
     const text = fs.readFileSync(p, "utf8");
-    check(text.trim().length > 1500, `${f} looks truncated`, `${text.trim().length} chars`);
-    check(text.includes("support@bugit.dev"), `${f} does not give the support address`);
-  }
-  // Each License translation must carry all 15 clauses, so no locale silently
-  // drops the consumer-rights, liability, or package-identifier terms.
-  const licPath = path.join(docs, licenseFile);
-  if (fs.existsSync(licPath)) {
-    const lic = fs.readFileSync(licPath, "utf8");
-    for (const n of [7, 8, 10, 11, 13, 14, 15]) {
-      check(new RegExp(`(^|\\n)${n}\\.\\s`).test(lic),
-        `${licenseFile} is missing clause ${n}`);
+    if (f !== refundFile) {
+      check(text.trim().length > 1500, `${f} looks truncated`, `${text.trim().length} chars`);
+      check(text.includes("support@bugit.dev"), `${f} does not give the support address`);
+    }
+    if (f === licenseFile) for (const p2 of licenceProblems(f, text, licenseEn)) check(false, p2);
+    if (f === privacyFile) {
+      check(docShape(text) === privacyEnShape, `${f} does not have the English source's sections/bullets`,
+        `${docShape(text)} vs ${privacyEnShape} (sections/bullets) in PRIVACY.md`);
+    }
+    if (f === refundFile) {
+      check(docShape(text) === refundEnShape, `${f} does not have the English source's sections/bullets`,
+        `${docShape(text)} vs ${refundEnShape} (sections/bullets) in REFUND.md`);
     }
   }
 }
@@ -447,10 +530,15 @@ const OLD_REQUIREMENTS = [
   "Visual Studio Code, an AI provider (GitHub Copilot or your own OpenAI or Anthropic key)",
   "runs inside Visual Studio Code and needs an AI provider that you supply",
 ];
-const reqLocales = ["", "ar", "de", "es", "fr", "it", "ja", "ko", "pt-br", "ru", "zh"];
+// The locales are the site's own table, not a typed list, and a missing file is a failure
+// reported here rather than a crash (existence is also checked in sections 2b and 5).
 for (const base of ["REFUND", "TOKUSHOHO"]) {
-  for (const loc of reqLocales) {
+  for (const loc of LOCALES) {
     const file = `${base}${loc ? "." + loc : ""}.md`;
+    if (!fs.existsSync(path.join(docs, file))) {
+      check(false, `${file} is missing, so its purchase requirements cannot be checked`);
+      continue;
+    }
     const text = flat(fs.readFileSync(path.join(docs, file), "utf8"));
     const hasReq = /Python/.test(text);
     check(!hasReq || /Claude/.test(text), `${file} states requirements without the Claude extension`,

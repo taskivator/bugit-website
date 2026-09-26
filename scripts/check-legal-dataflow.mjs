@@ -61,10 +61,17 @@ const FORBIDDEN = [
 const distJs = exists("dist")
   ? fs.readdirSync(path.join(ROOT, "dist")).filter((f) => /^app\.[0-9a-f]+\.js$/.test(f)).map((f) => `dist/${f}`)
   : [];
-const SCAN = [
-  ...LOCALES.map(privacyFile), ...LOCALES.map(licenseFile),
-  "app.js", ...distJs,
-].filter(exists);
+/* A MISSING DOCUMENT IS A FAILURE, NOT A SMALLER SCAN (CR-08-F19). This list used to end in
+   `.filter(exists)`, and the parity loop below skipped any file that was not there, so a locale
+   whose privacy statement or licence had gone missing simply dropped out of both, and the final
+   line still reported the model "consistent across" every locale. Every shipped language must
+   have both documents. Only the built dist bundle is optional: it exists after `node build.js`
+   and not before, and the source it is built from is scanned either way. */
+const REQUIRED_DOCS = [...LOCALES.map(privacyFile), ...LOCALES.map(licenseFile)];
+for (const rel of REQUIRED_DOCS) {
+  if (!exists(rel)) fail(`${rel} is missing, so this locale's data-flow disclosure cannot be checked at all`);
+}
+const SCAN = [...REQUIRED_DOCS.filter(exists), "app.js", ...distJs];
 
 for (const rel of SCAN) {
   const src = read(rel);
@@ -76,7 +83,7 @@ for (const rel of SCAN) {
 // ---------------------------------------------------------------------------
 // REQUIRED (English source of truth): browser-entitlement fields present.
 // ---------------------------------------------------------------------------
-const enPrivacy = read(privacyFile(""));
+const enPrivacy = exists(privacyFile("")) ? read(privacyFile("")) : "";
 for (const [needle, why] of [
   ["no license key", "browser activation (no key)"],
   ["installation identifier", "installation id field"],
@@ -97,7 +104,7 @@ for (const [needle, why] of [
 // (An earlier revision of this guard demanded literals the document never used, so it failed on
 // clauses that were present and correct. See the same trap in the agent repo's locale checks:
 // an absence found by substring match is not evidence of an absence.)
-const enLicense = read(licenseFile("")).replace(/\s+/g, " ");
+const enLicense = (exists(licenseFile("")) ? read(licenseFile("")) : "").replace(/\s+/g, " ");
 for (const [why, accepted] of [
   ["the Portal is named", ["BugIt Portal"]],
   ["entitlements/accounts clause", ["Entitlements, accounts", "Accounts and seats"]],
@@ -122,12 +129,23 @@ const PORTAL_TERM = { ar: "بوابة" };  // بوابة — "portal"
 for (const l of LOCALES) {
   const term = PORTAL_TERM[l] || "Portal";
   for (const f of [privacyFile(l), licenseFile(l)]) {
+    // A missing file was already reported above; it is never a pass here.
     if (exists(f) && !read(f).includes(term)) fail(`${f}: not migrated to browser model (no "${term}" reference)`);
   }
 }
 
+/* WHAT THE OK LINE MAY CLAIM. The field needles above are substrings of the English privacy
+   statement, typed here. They show that the statement still NAMES each field; they are not a
+   comparison with what the activation request actually sends, which lives in the agent repo and
+   cannot be imported from this one (the payload-versus-disclosure comparison is that repo's
+   gate). And "Portal" in a translation shows it was migrated, not that it says the same as the
+   English. So the result line says what was checked and no more: it used to say the model was
+   "consistent across" every locale, which is a claim about meaning this guard never tested. */
 if (failures) {
   console.error(`\ncheck-legal-dataflow: ${failures} failure(s).`);
   process.exit(1);
 }
-console.log(`check-legal-dataflow: OK — browser-entitlement model consistent across ${SCAN.length} source/dist files + ${LOCALES.length} locales.`);
+console.log(`check-legal-dataflow: OK. All ${REQUIRED_DOCS.length} privacy/licence documents for ${LOCALES.length} ` +
+  `locales exist; no retired-model fragment in them, app.js or dist (${SCAN.length} files); the English ` +
+  `privacy statement names every activation field; every locale references the Portal. ` +
+  `(Presence checks, not a legal or translation review.)`);
