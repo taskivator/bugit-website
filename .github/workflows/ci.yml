@@ -526,6 +526,13 @@ jobs:
       - name: Verify the rules either side of a label are the same line
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-rule-pair.mjs
+      # A documentation page's contents list puts six listeners on the window, and a route
+      # change used to rewrite the list's container before anything detached it: six more
+      # listeners left behind on every documentation click (CR-08-F02). Counted, with a
+      # negative control that restores the late teardown.
+      - name: Verify a document that has gone stops listening
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-toc-teardown.mjs
       # WINDOWS HIGH CONTRAST, and the only step here that runs GECKO. `forced-colors: active`
       # is what a Windows reader with High Contrast on gets: the UA replaces colour, and it
       # replaces every box-shadow and every gradient with NOTHING rather than with a colour.

@@ -713,6 +713,11 @@ function renderNotFound(){
   // docs link threw "Cannot read properties of null (reading 'classList')" and re-rendered
   // the 404, with only F5 as a way out. (External LQA report FUNC-001.)
   const nav=document.getElementById('docNav'),content=document.getElementById('docContent');
+  // BEFORE either innerHTML below: the contents list lives inside one of these two
+  // containers, and once they are rewritten nothing can find it to detach it (CR-08-F02).
+  // The token bump retires any document fetch still in flight, so it cannot build a new
+  // list over the not-found page when it lands.
+  docRenderToken++;docTeardownToc();
   nav.hidden=true;nav.innerHTML='';
   content.innerHTML='<section class="doc-notfound" style="padding:96px 0;text-align:center">'
     +'<h1>'+nf.title+'</h1><p>'+nf.body+'</p>'
@@ -769,6 +774,9 @@ function renderDocRoute(){
   const isSpaRoute=/^#\/.+/.test(location.hash);
   if(!docRoutes.includes(r)){
     if(r!==''&&isSpaRoute){renderNotFound();return}      // unknown SPA route -> localized not-found
+    // Back to the homepage: the document is hidden, and its contents list must stop listening.
+    // The token bump stops a fetch still in flight from building a new one behind the homepage.
+    docRenderToken++;docTeardownToc();
     const lang=i18n[currentLang]?currentLang:'en';
     const _md=(i18n[lang].meta)||i18n.en.meta;
     home.hidden=false;doc.hidden=true;
@@ -783,6 +791,9 @@ function renderDocRoute(){
   const dl=docDownloadLabels[lang]||docDownloadLabels.en;
   const ui={...docUiText.en,...(docUiText[lang]||{})};
   const nav=[['#/docs',i18n[lang].nav.docs],['#/docs/license',labels.license],['#/docs/privacy',labels.privacy],['#/docs/security',labels.security],['#/docs/refund',labels.refund],['#/docs/commerce',labels.commerce],['#/docs/faq','FAQ'],['#/support',labels.support]];
+  // The previous page's contents list is inside #docNav (narrow) or #docContent (wide), and
+  // both are rewritten below. Detach it FIRST, while it can still be found (CR-08-F02).
+  docTeardownToc();
   const _dn=document.getElementById('docNav');_dn.hidden=false;/* the 404 view hides it */
   _dn.classList.remove('open');/* every render starts collapsed on mobile */
   const _activeLabel=(nav.find(([h])=>h.slice(2)===r)||nav[0])[1];
@@ -969,6 +980,29 @@ function docSkeleton(){
    lands. A token guards it: click through three documents quickly and three fetches are in
    flight, and only the newest one is allowed to touch the sidebar. */
 let docRenderToken=0;
+/* THE LIVE CONTENTS LIST IS HELD HERE, NOT FOUND IN THE PAGE (CR-08-F02).
+
+   docSpy() puts six listeners on the WINDOW (scroll, resize, wheel, touchmove, mousedown,
+   keydown), and the only thing that removes them is the list's own __detach. The teardown used
+   to be a DOM query run from docBuildToc(), and every route change reached it too late:
+   renderDocRoute() had already rewritten #docNav (where the list lives below 1200px) and
+   #docContent (where it lives above), so the old list was gone from the document, the query
+   found nothing, and its listeners stayed. Six more on every documentation click, each one
+   reading the headings of a page that was no longer there, for the rest of the visit.
+
+   So the list that is listening is remembered here, and docTeardownToc() is called BEFORE any
+   write that could remove it: at the top of renderDocRoute() and renderNotFound(), on the way
+   back to the homepage, and by docBuildToc() itself. It also cancels a frame the spy had
+   already asked for, so a read cannot land after its document has gone. Idempotent: a second
+   call finds nothing to do. scripts/check-toc-teardown.mjs counts the window's listeners
+   across route changes and fails if they grow. */
+let docActiveToc=null;
+function docTeardownToc(){
+  const t=docActiveToc;docActiveToc=null;
+  if(t){if(t.__detach)t.__detach();t.remove();}
+  /* And any list the handle does not know about, wherever it is. */
+  document.querySelectorAll('#docView .doc-toc').forEach((o)=>{if(o.__detach)o.__detach();o.remove();});
+}
 /* WHICH SIDE THE CONTENTS LIST LIVES ON.
 
    Owner: "there is a large empty space in the right side of each body box which is unused in all
@@ -1021,7 +1055,7 @@ function docBuildToc(ui){
   if(!nav||!content)return;
   /* Wherever it is: the host changes with the viewport, so a lookup scoped to one of them
      would leave the other's list behind and run two scroll spies over one document. */
-  document.querySelectorAll('#docView .doc-toc').forEach((o)=>{if(o.__detach)o.__detach();o.remove();});
+  docTeardownToc();
   /* An empty rail is a reserved column with nothing in it, which is the thing being fixed. */
   document.querySelectorAll('#docContent .docs-toc-rail:empty').forEach((r)=>{ if(r!==nav) r.remove(); });
   // What divides THIS document: its headings, or -- for the licence, which has one heading
@@ -1071,6 +1105,7 @@ function docBuildToc(ui){
     el.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   });
   docSpy(toc,heads);
+  docActiveToc=toc;
 }
 /* Which section is being read. Driven by the scroll position rather than by intersection
    events: the last section of a document is often shorter than the window, so its heading
@@ -1160,7 +1195,8 @@ function docSpy(toc,heads){
   /* Every route change builds a new list; without this the old one's listener would live on
      for the rest of the session, reading a document that is no longer on the page. */
   toc.__detach=()=>{removeEventListener('scroll',onScroll);removeEventListener('resize',onScroll);
-    GESTURES.forEach(([ev,fn])=>removeEventListener(ev,fn));};
+    GESTURES.forEach(([ev,fn])=>removeEventListener(ev,fn));
+    if(raf){cancelAnimationFrame(raf);raf=0;}};
   read();
 }
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}

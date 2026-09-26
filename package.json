@@ -72,6 +72,7 @@
     "test:dim-on-screen": "node scripts/check-dim-on-screen.mjs",
     "test:docs-chrome": "node scripts/check-docs-chrome.mjs",
     "test:rule-pair": "node scripts/check-rule-pair.mjs",
+    "test:toc-teardown": "node scripts/check-toc-teardown.mjs",
     "test:zoomed-overlay": "node scripts/check-zoomed-overlay.mjs"
   },
   "devDependencies": {
