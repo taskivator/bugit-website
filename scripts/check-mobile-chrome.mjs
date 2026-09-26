@@ -47,6 +47,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { readFileSync } from "node:fs";
 import net from "node:net";
+import { readRouteIdentity, judgeRouteIdentities, selfTestRouteIdentity } from "./lib/browser-proof-route-identity.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const fail = [];
@@ -335,15 +336,17 @@ async function sweep(browser, engine, inject, dom) {
       await page.waitForTimeout(250);
       /* THE ROUTE HAS TO HAVE GONE SOMEWHERE. A hash route is applied by the router after the
          document loads, so `goto` succeeding proves only that index.html was served. Record
-         what actually rendered; assertRoutesAreDistinct() below fails the run if the routes
-         turn out to be the same page under different names, which is the defect this list
-         carried for as long as it existed. */
-      rendered.push({
-        engine, device: d.name, route,
-        shape: await page.evaluate(() =>
-          document.body.innerText.replace(/\s+/g, " ").length + ":" +
-          document.querySelectorAll("a[href]").length + ":" + (location.hash || "")),
-      });
+         what actually rendered; the route check below fails the run if a route did not render
+         the view it routes to, or if two routes turn out to be the same page under different
+         names, which is the defect this list carried for as long as it existed.
+
+         READ FROM THE PAGE, NOT THE ADDRESS. This used to record text length, link count AND
+         `location.hash`, and then call two different fingerprints two different documents. The
+         hash is whatever was requested, so it made every fingerprint distinct by construction: a
+         router rendering one page under every hash passed the check built to catch it
+         (CR-08-F20). The identity is now which view is showing and the heading inside it, and
+         the requested route is used only to decide what was expected. */
+      rendered.push({ engine, device: d.name, route, id: await readRouteIdentity(page, route) });
       const noticeSeen = await page.evaluate(NOTICE_PROBE);
       try { await page.click("#consentReject", { timeout: 1200 }); } catch {}
       await page.waitForTimeout(250);
@@ -436,37 +439,37 @@ note(`${results.reduce((a, r) => a + r.cells, 0)} render(s) swept: ${DEVICES.len
  * URLs on a hash router all served index.html, so the line read "3 routes" over fifty-four
  * renders of the home page and every rule below passed on a page it had already checked.
  *
- * This is the assertion that could have caught it: for each device and engine, the routes must
- * render measurably different documents. It compares what actually rendered rather than what
- * was requested, because requesting three URLs is exactly the part that already worked.
+ * This is the assertion that could have caught it: for each device and engine, every route must
+ * have rendered the view it routes to, finished loading, and -- unless it is a declared alias --
+ * be a different document from every other route. All of it is judged on what RENDERED; the
+ * judge itself is run over inert records first (selfTestRouteIdentity), so a fingerprint that
+ * starts depending on the requested URL again fails here rather than passing everything.
  */
 {
-  const shapesByRoute = new Map();
+  for (const w of selfTestRouteIdentity()) fail.push(`ROUTES the route-identity judge is broken: ${w}`);
+  const byCell = new Map();
   for (const r of results)
     for (const row of r.rendered) {
       const key = `${row.engine} ${row.device}`;
-      if (!shapesByRoute.has(key)) shapesByRoute.set(key, new Map());
-      shapesByRoute.get(key).set(row.route, row.shape);
+      if (!byCell.has(key)) byCell.set(key, []);
+      byCell.get(key).push({ route: row.route, id: row.id });
     }
   let collapsed = 0;
-  for (const [cell, byRoute] of shapesByRoute) {
-    const distinct = new Set(byRoute.values());
-    if (distinct.size < byRoute.size) {
-      collapsed++;
-      if (collapsed <= 3) {
-        const detail = [...byRoute].map(([rt, sh]) => `${rt} -> ${sh}`).join("; ");
-        fail.push(`[${cell}] ROUTES ${byRoute.size} routes rendered only ${distinct.size} ` +
-                  `distinct document(s), so this cell measured the same page more than once. ` +
-                  `Each shape is chars:links:hash -- ${detail}`);
-      }
+  for (const [cell, rows] of byCell) {
+    const wrong = judgeRouteIdentities(rows);
+    if (!wrong.length) continue;
+    collapsed++;
+    if (collapsed <= 3) {
+      fail.push(`[${cell}] ROUTES ${wrong.length} route problem(s), so this cell did not measure ` +
+                `the documents it claims to: ${wrong.join("; ")}`);
     }
   }
   if (collapsed > 3)
-    fail.push(`ROUTES ...and ${collapsed - 3} further cell(s) with the same collapse.`);
+    fail.push(`ROUTES ...and ${collapsed - 3} further cell(s) with the same problem.`);
   note(collapsed === 0
-    ? `every one of the ${ROUTES.length} routes rendered its own document, in all ` +
-      `${shapesByRoute.size} device/engine cells`
-    : `${collapsed} device/engine cell(s) rendered fewer documents than routes`);
+    ? `every one of the ${ROUTES.length} routes rendered its own document (view + heading), in all ` +
+      `${byCell.size} device/engine cells`
+    : `${collapsed} device/engine cell(s) did not render the documents their routes name`);
 }
 
 /* ---------- the negative controls ---------------------------------------- */

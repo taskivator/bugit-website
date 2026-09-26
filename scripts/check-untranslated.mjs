@@ -51,15 +51,23 @@ const ALLOWED = [
   /^BugIt$/i, /^Taskivator$/i, /^BugIt by Taskivator$/i,   // the product and the parent brand
   /^FILE IT$/,                                            // a literal the agent matches, not a word
   /^(Jira|GitHub|GitLab|Bugzilla|YouTrack|Linear|Asana|Trello|ClickUp|Azure DevOps|Confluence|Zephyr|Notion|Slack|Stripe|Visual Studio Code|VS Code|GitHub Copilot|Claude|Gemini|GPT|Python|Windows|macOS|Linux)$/i,
-  /^https?:\/\//, /@/,                                    // URLs and e-mail addresses
+  /^https?:\/\//,                                         // URLs
+  /* AN ADDRESS, NOT ANY STRING WITH AN AT-SIGN IN IT. This was `/@/`, which excused every
+     sentence that happened to MENTION support@bugit.dev -- "Write to support@bugit.dev and we
+     will reply within two days" could stay English in ten languages and pass (CR-08-F33). */
+  /^(mailto:)?[^\s@]+@[^\s@]+\.[a-z]{2,}$/i,
   /^[\s\d.,:$€¥%+\-/()·—–]+$/,                            // prices, versions, counts, separators
   /^(English|日本語|Français|Deutsch|Español|Português BR|Italiano|한국어|中文|Русский|العربية)$/,
   /^(EN|JA|FR|DE|ES|PT-BR|IT|KO|ZH|RU|AR)$/,              // the language menu's own tags
   /^v?\d+\.\d+/,                                          // version strings
   /^by Taskivator$/,                                      // the byline under the wordmark
   /^(\u00a9|Copyright \(c\))\s*\d{4}\s+Taskivator\b/,       // the copyright notice, a legal identifier
-  /^[A-Za-z][A-Za-z .]*(\u00b7[A-Za-z .]*)+$/,               // a list of product names: "Jira \u00b7 ADO \u00b7 GitHub"
 ];
+/* A LIST OF PRODUCT NAMES: "Jira \u00b7 ADO \u00b7 GitHub". It used to be any run of Latin words
+   separated by a middle dot, which also excused "Fast \u00b7 Private \u00b7 Reviewed" left in English
+   (CR-08-F33). Now every segment has to be a name this file already accepts on its own. */
+const PRODUCT = /^(BugIt|Taskivator|ADO|Jira|GitHub|GitLab|Bugzilla|YouTrack|Linear|Asana|Trello|ClickUp|Azure DevOps|Confluence|Zephyr|Notion|Slack|Stripe|Visual Studio Code|VS Code|GitHub Copilot|Claude|Gemini|GPT|Python|Windows|macOS|Linux)$/i;
+const productList = (s) => s.includes("\u00b7") && s.split("\u00b7").every((seg) => PRODUCT.test(seg.trim()));
 
 /* WORDS THAT ARE GENUINELY THE SAME WORD IN THAT LANGUAGE. Allowed per LOCALE, never globally:
    "Documentation" is correct French and would be a real defect in German, and a global entry
@@ -69,8 +77,28 @@ const SAME_WORD = {
   it: [/^Documentation$/],
   es: [/^Documentation$/],
 };
-const allowed = (s, lang) => ALLOWED.some((re) => re.test(s.trim()))
+const allowed = (s, lang) => ALLOWED.some((re) => re.test(s.trim())) || productList(s.trim())
   || (SAME_WORD[lang] || []).some((re) => re.test(s.trim()));
+
+/* A PASSAGE THAT IS SIMPLY NOT THERE (external code review CR-08-F33).
+   Both passes below iterated what the LOCALIZED page had. The equality pass looked at each
+   translated string and asked whether it was English; the omission pass looked up each English
+   passage and, when the translated one was missing, did `continue`. So a locale that dropped a
+   passage entirely -- removed, emptied, or hidden by a stylesheet -- was absent from both, and the
+   guard printed that it compared every route. The one way to lose a claim that neither pass could
+   see was to lose all of it.
+
+   So the site's own translation identity is used: every element the app localizes carries a
+   `data-t`, `data-html` or `data-t-aria` key, and that key is the same in every language. What
+   English SHOWS under a key, every locale must show too, visible and non-empty. The positions
+   used by the equality pass drift when a translated page has a different shape; the keys do not.
+
+   EXCEPTIONS ARE NAMED AND PRINTED. A locale that legitimately does not show a passage English
+   shows goes here, with its key and the reason, and every run prints each exception it used, so a
+   hole is visible in the log rather than silent in the code. There are none today. */
+const OMISSION_EXCEPTIONS = {
+  // "ja": { "t:some.key": "why Japanese deliberately does not show this passage" },
+};
 
 const PORT = await new Promise((res, rej) => { const p = net.createServer(); p.on("error", rej); p.listen(0, "127.0.0.1", () => { const { port } = p.address(); p.close(() => res(port)); }); });
 const server = spawn(process.execPath, ["server.js"], { cwd: ROOT, env: { ...process.env, PORT: String(PORT) }, stdio: "ignore" });
@@ -115,7 +143,34 @@ const COLLECT = `(() => {
     const name = (el.getAttribute("aria-label") || "").trim();
     if (name) out["aria@" + pathOf(el)] = name;
   }
-  return out;
+
+  /* THE SAME STRINGS, KEYED BY TRANSLATION IDENTITY, WHETHER OR NOT THEY ARE SHOWING. The walk
+     above skips anything hidden, which is right for "is this English?" and exactly wrong for "is
+     this missing?", so this inventory records every localized element with whether a reader can
+     see it. A key used twice (the nav in the header and in the menu) is numbered in DOM order. */
+  const shown = (el) => {
+    if (el.checkVisibility) return el.checkVisibility({ visibilityProperty: true, opacityProperty: false });
+    for (let n = el; n && n !== document.documentElement; n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      if (n.hidden || cs.display === "none" || cs.visibility === "hidden") return false;
+    }
+    return true;
+  };
+  const keyed = {};
+  const count = {};
+  for (const el of document.querySelectorAll("[data-t],[data-html],[data-t-aria]")) {
+    for (const [attr, kind] of [["data-t", "t"], ["data-html", "html"], ["data-t-aria", "aria"]]) {
+      const k = el.getAttribute(attr);
+      if (!k) continue;
+      const base = kind + ":" + k;
+      count[base] = (count[base] || 0) + 1;
+      const id = count[base] > 1 ? base + "#" + count[base] : base;
+      const text = kind === "aria" ? (el.getAttribute("aria-label") || "").trim()
+        : (el.textContent || "").replace(/\\s+/g, " ").trim();
+      keyed[id] = { text, shown: shown(el) };
+    }
+  }
+  return { pos: out, keyed, lang: document.documentElement.lang || "" };
 })()`;
 
 const browser = await chromium.launch();
@@ -126,14 +181,15 @@ const browser = await chromium.launch();
    contexts and a hash change per route does the same work in a couple of minutes, and it is
    also a truer reproduction: the router is client-side, so a hash change is exactly what a
    reader's click does. */
-const readAll = async (lang) => {
+const readAll = async (lang, { routes = ROUTES, injure = null } = {}) => {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await ctx.addCookies([{ name: "bugitLang", value: lang, url: base }]);
   const page = await ctx.newPage();
   await page.goto(base, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(900);
+  if (injure) await page.evaluate(injure);
   const out = {};
-  for (const route of ROUTES) {
+  for (const route of routes) {
     await page.evaluate((r) => { location.hash = r ? "#" + r : ""; }, route);
     await page.waitForTimeout(route ? 800 : 500);
     out[route] = await page.evaluate(COLLECT);
@@ -142,23 +198,51 @@ const readAll = async (lang) => {
   return out;
 };
 
-const en = await readAll("en");
-const fail = [];
-for (const lang of LANGS) {
-  if (lang === "en") continue;
-  const mine = await readAll(lang);
-  for (const route of ROUTES) {
+/* ONE JUDGE for the real locales and the planted one below. Returns the problems, never throws. */
+function compareLocale(lang, en, mine, routes, used) {
+  const problems = [];
+  for (const route of routes) {
+    const where = "[" + lang + "] " + (route || "/home");
+    const E = en[route] || { pos: {}, keyed: {} };
+    const M = mine[route] || { pos: {}, keyed: {} };
+    /* THE PAGE HAS TO BE IN THE LANGUAGE ASKED FOR, or every comparison below is English against
+       English and a clean result means nothing. */
+    if (M.lang !== lang) {
+      problems.push(where + " -- the page rendered as \"" + M.lang + "\", not \"" + lang + "\", so nothing here was compared");
+      continue;
+    }
     const same = [];
-    for (const [where, text] of Object.entries(mine[route] || {})) {
+    for (const [pos, text] of Object.entries(M.pos)) {
       if (text.length < MIN) continue;
       if (allowed(text, lang)) continue;
-      if (en[route] && en[route][where] === text) same.push(text);
+      if (E.pos[pos] === text) same.push(text);
+    }
+    // The same question by key, which does not drift when a translated page changes shape.
+    for (const [id, e] of Object.entries(E.keyed)) {
+      const m = M.keyed[id];
+      if (!m || !m.shown || !e.shown || m.text.length < MIN || allowed(m.text, lang)) continue;
+      if (m.text === e.text && !same.includes(m.text)) same.push(m.text);
     }
     if (same.length) {
       const shown = [...new Set(same)].slice(0, 6);
-      fail.push("[" + lang + "] " + (route || "/home") + " \u2014 " + same.length +
+      problems.push(where + " -- " + same.length +
         " string(s) still in English:\n      " +
         shown.map((s) => '"' + s.slice(0, 74) + '"').join("\n      "));
+    }
+
+    /* EVERY PASSAGE ENGLISH SHOWS, THIS LOCALE SHOWS. Missing, hidden and empty are three ways to
+       drop a claim, and each is reported as what it is. */
+    for (const [id, e] of Object.entries(E.keyed)) {
+      if (!e.shown || !e.text) continue;
+      const m = M.keyed[id];
+      const how = !m ? "is not on the page at all" : !m.shown ? "is on the page but hidden"
+        : !m.text ? "is shown EMPTY" : "";
+      if (!how) continue;
+      const ex = OMISSION_EXCEPTIONS[lang] || {};
+      const why = Object.prototype.hasOwnProperty.call(ex, id) ? ex[id] : "";
+      if (why) { used.push("[" + lang + "] " + id + ": " + why); continue; }
+      problems.push(where + " -- the passage " + id + " " + how + ", where English shows it:\n      EN: \"" +
+        e.text.slice(0, 74) + "\"");
     }
 
     /* A TRANSLATION CAN BE WRONG BY OMISSION.
@@ -178,31 +262,72 @@ for (const lang of LANGS) {
        Chinese at ~50%, so 0.30 flags a stub without touching a dense-but-complete translation,
        and the European languages, which run LONGER than English, get 0.50.
 
-       ONLY THE TEMPLATE ROUTES. The comparison is position-keyed, which is sound where the DOM
-       is fixed by index.html and every string arrives through a data-t key. It is NOT sound on
-       the document routes: those are fetched files whose paragraph COUNT differs by language,
-       so the keys slide and clause 3 of the Japanese licence gets compared with clause 4 of the
-       English one. The first version of this check reported 56 such pairs, every one of them a
-       misalignment rather than an omission. A guard that cries wolf on a correct translation
-       teaches people to ignore it, so it stays where its assumption actually holds -- which is
-       also where the real defect was. */
+       KEYED, NOT POSITIONAL. This compared DOM positions, which is why it was confined to the
+       home route: the fetched documents have a different paragraph COUNT per language, so the
+       positions slide and clause 3 of the Japanese licence met clause 4 of the English one. The
+       translation keys do not slide, and a passage that is missing outright is reported by the
+       inventory above instead of being skipped here. */
     const DENSE = new Set(["ja", "zh", "ko"]);
     const floor = DENSE.has(lang) ? 0.30 : 0.50;
-    if (route !== "") continue;
-    for (const [where, enText] of Object.entries(en[route] || {})) {
-      if (enText.length < 150) continue;
-      const mineText = (mine[route] || {})[where];
-      if (!mineText) continue;
-      const ratio = mineText.length / enText.length;
+    for (const [id, e] of Object.entries(E.keyed)) {
+      if (!e.shown || e.text.length < 150) continue;
+      const m = M.keyed[id];
+      if (!m || !m.shown || !m.text) continue;   // reported above as missing, hidden or empty
+      const ratio = m.text.length / e.text.length;
       if (ratio >= floor) continue;
-      fail.push("[" + lang + "] " + (route || "/home") + " \u2014 a translated passage is " +
-        Math.round(ratio * 100) + "% the length of its English source (" + mineText.length +
-        " vs " + enText.length + " characters), which is a dropped claim, not a shorter language:\n      \"" +
-        mineText.slice(0, 74) + "\"\n      EN: \"" + enText.slice(0, 74) + "\"");
+      problems.push(where + " -- a translated passage (" + id + ") is " +
+        Math.round(ratio * 100) + "% the length of its English source (" + m.text.length +
+        " vs " + e.text.length + " characters), which is a dropped claim, not a shorter language:\n      \"" +
+        m.text.slice(0, 74) + "\"\n      EN: \"" + e.text.slice(0, 74) + "\"");
     }
   }
+  return problems;
+}
+
+const en = await readAll("en");
+const fail = [];
+const exceptionsUsed = [];
+if (!Object.keys(en[""].keyed).length) fail.push("the English home page has no localized elements at all, so there was nothing to hold a locale to");
+for (const lang of LANGS) {
+  if (lang === "en") continue;
+  const mine = await readAll(lang);
+  fail.push(...compareLocale(lang, en, mine, ROUTES, exceptionsUsed));
   process.stdout.write("  " + lang.padEnd(6) + " " + ROUTES.length + " routes compared against English\n");
 }
+
+/* PROVE THE OMISSION PASS CAN FAIL. One locale is read again with three passages injured the
+   three ways a translation loses one -- removed from the page, hidden, emptied -- and the judge
+   must report each of them by key. The old omission pass skipped all three. The passages are the
+   three longest English ones, chosen at run time, so nothing here goes stale when copy changes. */
+{
+  const lang = LANGS.find((l) => l !== "en");
+  const longest = Object.entries(en[""].keyed)
+    .filter(([id, e]) => e.shown && e.text.length >= 40 && !id.includes("#") && !id.startsWith("aria:"))
+    .sort((a, b) => b[1].text.length - a[1].text.length).slice(0, 3).map(([id]) => id);
+  const sel = (id) => {
+    const [kind, key] = [id.slice(0, id.indexOf(":")), id.slice(id.indexOf(":") + 1)];
+    return "[" + (kind === "t" ? "data-t" : kind === "html" ? "data-html" : "data-t-aria") + "=" + JSON.stringify(key) + "]";
+  };
+  const injure = "(() => { const s = " + JSON.stringify(longest.map(sel)) + ";" +
+    "const a = document.querySelector(s[0]); if (a) a.remove();" +
+    "const b = document.querySelector(s[1]); if (b) b.style.setProperty('display', 'none', 'important');" +
+    "const c = document.querySelector(s[2]); if (c) c.textContent = ''; })()";
+  if (longest.length < 3) {
+    fail.push("NEGATIVE CONTROL could not be built: English shows fewer than three localized passages");
+  } else {
+    const planted = await readAll(lang, { routes: [""], injure });
+    const found = compareLocale(lang, en, planted, [""], []);
+    const want = [[longest[0], "is not on the page at all"], [longest[1], "is on the page but hidden"], [longest[2], "is shown EMPTY"]];
+    const missed = want.filter(([id, how]) => !found.some((f) => f.includes(" " + id + " " + how)));
+    if (missed.length) {
+      fail.push("NEGATIVE CONTROL DID NOT FIRE: with passages removed, hidden and emptied in [" + lang + "], the judge " +
+        "did not report " + missed.map(([id, how]) => id + " (" + how + ")").join(", ") + ", so it cannot see a dropped passage");
+    } else {
+      process.stdout.write("  negative control: a removed, a hidden and an emptied passage in [" + lang + "] were all reported by key\n");
+    }
+  }
+}
+for (const u of exceptionsUsed) process.stdout.write("  EXCEPTION USED " + u + "\n");
 await browser.close();
 server.kill();
 
@@ -210,4 +335,4 @@ if (fail.length) {
   console.error(`\ncheck-untranslated FAILED (${fail.length}):\n - ` + fail.join("\n - "));
   process.exit(1);
 }
-console.log(`\ncheck-untranslated OK: nothing on any of ${ROUTES.length} routes renders the English string in another language`);
+console.log(`\ncheck-untranslated OK: nothing on any of ${ROUTES.length} routes renders the English string in another language, and every localized passage English shows is shown in every language (${exceptionsUsed.length} named exception(s) used)`);

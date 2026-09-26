@@ -39,6 +39,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import net from "node:net";
+import { violation, runError, controlVerdict, selfTestControlVerdict } from "./lib/browser-proof-control.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const fail = [];
@@ -172,8 +173,12 @@ const applyBreaks = (body, pairs) => {
 const browser = await chromium.launch();
 let measured = 0, sawNarrow = false;
 
+/* WHAT WENT WRONG IS RECORDED WITH WHAT KIND OF WRONG IT WAS. An ordinary case sends every
+   finding to `fail` as before. The injured cases send them to their own sink with a KIND, because
+   only one kind -- the close control measured outside the viewport -- is the defect the injury
+   reproduces; an exception is `error`, and an error is not proof of anything (CR-08-F14). */
 async function one({ w, h, zoom, rtl, rotate, broken, sink }) {
-  const out = sink || fail;
+  const out = { push: (kind, msg) => { if (sink) sink.push(kind === "error" ? runError(msg) : violation(kind, msg)); else fail.push(msg); } };
   const where = `${w}x${h}${zoom > 1 ? ` zoomed ${zoom}x while open` : ""}` +
     `${rotate ? ` rotated to ${rotate[0]}x${rotate[1]} while open` : ""}${rtl ? " RTL" : ""}`;
   const ctx = await browser.newContext({
@@ -207,7 +212,7 @@ async function one({ w, h, zoom, rtl, rotate, broken, sink }) {
     await page.waitForTimeout(150);
 
     const found = await page.evaluate(FIND);
-    if (!found) { out.push(`${where}: no control on the page declares an overlay through aria-controls`); return; }
+    if (!found) { out.push("error", `${where}: no control on the page declares an overlay through aria-controls`); return; }
 
     await page.evaluate(() => document.querySelector("[data-close-probe]").click());
     await page.waitForTimeout(350);
@@ -237,20 +242,20 @@ async function one({ w, h, zoom, rtl, rotate, broken, sink }) {
     // A menu that closed itself rather than trap the reader is a pass, not a finding: the page
     // is not locked and the control is back where it was.
     if (!s.open) {
-      if (s.locked) out.push(`${where}: the overlay closed but the page is still locked`);
-      if (s.inert) out.push(`${where}: the overlay closed and left ${s.inert} element(s) inert`);
+      if (s.locked) out.push("locked-after-self-close", `${where}: the overlay closed but the page is still locked`);
+      if (s.inert) out.push("inert-after-self-close", `${where}: the overlay closed and left ${s.inert} element(s) inert`);
       if (!broken) measured++;
       return;
     }
 
     if (!s.inside) {
-      out.push(`${where}: the page is locked and the control that closes it is ${s.over}px outside ` +
+      out.push("outside", `${where}: the page is locked and the control that closes it is ${s.over}px outside ` +
         `the viewport (box ${JSON.stringify(s.box)} in ${s.vw}x${s.vh}) -- a reader cannot scroll to it, ` +
         `and Escape is a key a phone does not have`);
       return;
     }
     if (!s.reached) {
-      out.push(`${where}: the control that closes the overlay is on screen but a press at ` +
+      out.push("unreached", `${where}: the control that closes the overlay is on screen but a press at ` +
         `${JSON.stringify(s.point)} does not reach it`);
       return;
     }
@@ -258,13 +263,13 @@ async function one({ w, h, zoom, rtl, rotate, broken, sink }) {
     await page.evaluate(() => document.querySelector("[data-close-probe]").click());
     await page.waitForTimeout(400);
     const after = await page.evaluate(LOOK);
-    if (after.open) out.push(`${where}: the overlay is still open after its own close control was pressed`);
-    if (after.locked) out.push(`${where}: the page is still locked after the close: the reader cannot scroll`);
-    if (after.inert) out.push(`${where}: ${after.inert} element(s) left inert after the close: that part of the page is dead to touch and to a screen reader`);
-    if (after.expanded !== "false") out.push(`${where}: the control still reports aria-expanded=${after.expanded}`);
+    if (after.open) out.push("still-open", `${where}: the overlay is still open after its own close control was pressed`);
+    if (after.locked) out.push("still-locked", `${where}: the page is still locked after the close: the reader cannot scroll`);
+    if (after.inert) out.push("inert-left", `${where}: ${after.inert} element(s) left inert after the close: that part of the page is dead to touch and to a screen reader`);
+    if (after.expanded !== "false") out.push("expanded", `${where}: the control still reports aria-expanded=${after.expanded}`);
     if (!broken) measured++;
   } catch (e) {
-    out.push(`${where}: ${String(e).split("\n")[0]}`);
+    out.push("error", `${where}: ${String(e).split("\n")[0]}`);
   } finally {
     await ctx.close();
   }
@@ -281,12 +286,27 @@ await one({ w: 844, h: 390, zoom: 3, rotate: [390, 844] });
 
 /* Two cases, chosen because they are the two shapes the defect took: a viewport too narrow for
    the row to fit at all, and a normal phone zoomed until it is. */
+/* EACH CASE MUST PRODUCE THE DEFECT ITSELF, MEASURED. Until 2026-09-26 any entry in one shared
+   list counted, so a timed-out navigation or a page with no script on it read as "the control
+   fired" (CR-08-F14). Now each case is judged on its own, it must have completed, and what it
+   found must be the X measured outside the viewport -- the one thing this injury reproduces. */
+const CONTROL_CASES = [
+  { w: 100, h: 400, zoom: 1, what: "a 100px viewport" },
+  { w: 390, h: 844, zoom: 5, what: "a 390px phone zoomed 5x while open" },
+];
+const EXPECTED = ["outside"];
 const control = [];
-await one({ w: 100, h: 400, zoom: 1, rtl: false, broken: true, sink: control });
-await one({ w: 390, h: 844, zoom: 5, rtl: false, broken: true, sink: control });
+for (const c of CONTROL_CASES) {
+  const sink = [];
+  await one({ w: c.w, h: c.h, zoom: c.zoom, rtl: false, broken: true, sink });
+  control.push({ ...c, sink, verdict: controlVerdict(sink, EXPECTED) });
+}
 
 await browser.close();
 stop();
+
+const judgeWrong = selfTestControlVerdict();
+for (const w of judgeWrong) fail.push(`NEGATIVE CONTROL JUDGE IS BROKEN: ${w}`);
 
 if (staleMutations.length) {
   for (const m of [...new Set(staleMutations)]) {
@@ -295,11 +315,15 @@ if (staleMutations.length) {
         `it rewrites, so that mutation changed nothing and proved nothing`,
     );
   }
-} else if (!control.length) {
-  fail.push(
-    "NEGATIVE CONTROL DID NOT FIRE: with the header row unable to shrink and the overlay's " +
-      "self-close removed -- the build this guard was written against -- it still passed",
-  );
+} else {
+  for (const c of control) {
+    if (c.verdict.ok) continue;
+    fail.push(
+      `NEGATIVE CONTROL DID NOT PROVE ANYTHING at ${c.what}: with the header row unable to shrink ` +
+        `and the overlay's self-close removed -- the build this guard was written against -- ` +
+        c.verdict.reason,
+    );
+  }
 }
 
 if (!sawNarrow) {
@@ -315,4 +339,4 @@ if (fail.length) {
   for (const f of fail) console.error("  - " + f);
   process.exit(1);
 }
-console.log(`check-close-control: OK (${measured} viewport/zoom/direction cases; the overlay's close control is on screen and works in all of them; negative control fired with ${control.length} finding(s))`);
+console.log(`check-close-control: OK (${measured} viewport/zoom/direction cases; the overlay's close control is on screen and works in all of them; negative control measured the X off screen in both injured cases: ${control.map((c) => c.verdict.matched).join(" + ")} finding(s))`);

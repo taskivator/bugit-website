@@ -8406,6 +8406,11 @@
       outline:3px solid Highlight;
       outline-offset:2px;
     }
+    /* The guide's "Download PDF" button is drawn by a gradient and has border:0.
+       Forced colours delete the gradient, so it rendered as bare text with no edge.
+       Found 2026-09-26, the first time check-forced-colors reached a documentation
+       route: until then it navigated by pathname and measured the homepage. */
+    .doc-btn-download{border:1px solid ButtonText}
   }
 
 

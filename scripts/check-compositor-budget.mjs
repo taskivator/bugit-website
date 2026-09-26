@@ -36,6 +36,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import net from "node:net";
+import { violation, runError, controlVerdict, selfTestControlVerdict } from "./lib/browser-proof-control.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const fail = [];
@@ -134,6 +135,9 @@ const COST = ({ dpr, zoom }) => {
 const browser = await chromium.launch();
 let measured = 0;
 
+/* Every finding carries the rule it broke, and an exception is `error`. The ordinary states only
+   need the text; the injured one is judged on the KIND, because an injured run that threw has
+   measured nothing and must not read as a budget the guard watched go over (CR-08-F14). */
 async function state({ menuOpen, zoom, broken }) {
   const found = [];
   const ctx = await browser.newContext({
@@ -166,18 +170,18 @@ async function state({ menuOpen, zoom, broken }) {
     const where = `iPhone 390pt DPR3, zoom ${zoom}x, menu ${menuOpen ? "open" : "closed"}`;
     if (r.total > BUDGET_TOTAL_MB[zoom]) {
       const top = r.rows.slice(0, 4).map((x) => `${x.what} ${x.mb}MB (${x.why})`).join("; ");
-      found.push(`${where}: the page asks the compositor for ${r.total} MB, over its ${BUDGET_TOTAL_MB[zoom]} MB budget. Largest: ${top}`);
+      found.push(violation("over-total", `${where}: the page asks the compositor for ${r.total} MB, over its ${BUDGET_TOTAL_MB[zoom]} MB budget. Largest: ${top}`));
     }
     for (const x of r.rows) {
       if (x.mb > BUDGET_ONE_MB[zoom]) {
-        found.push(`${where}: ${x.what} alone asks for ${x.mb} MB (${x.box[0]}x${x.box[1]}, ${x.why}), over the ${BUDGET_ONE_MB[zoom]} MB a single element may take`);
+        found.push(violation("over-one", `${where}: ${x.what} alone asks for ${x.mb} MB (${x.box[0]}x${x.box[1]}, ${x.why}), over the ${BUDGET_ONE_MB[zoom]} MB a single element may take`));
       }
       if (x.wastedBackdrop) {
-        found.push(`${where}: ${x.what} has a backdrop-filter behind an OPAQUE background (${x.bg}), so it renders nothing at all and costs ${x.mb} MB`);
+        found.push(violation("wasted-backdrop", `${where}: ${x.what} has a backdrop-filter behind an OPAQUE background (${x.bg}), so it renders nothing at all and costs ${x.mb} MB`));
       }
     }
   } catch (e) {
-    found.push(`zoom ${zoom}x menu ${menuOpen}: ${String(e).split("\n")[0]}`);
+    found.push(runError(`zoom ${zoom}x menu ${menuOpen}: ${String(e).split("\n")[0]}`));
   }
   await ctx.close();
   return found;
@@ -185,7 +189,7 @@ async function state({ menuOpen, zoom, broken }) {
 
 for (const menuOpen of [false, true]) {
   for (const zoom of [1, 3]) {
-    for (const f of await state({ menuOpen, zoom, broken: false })) fail.push(f);
+    for (const f of await state({ menuOpen, zoom, broken: false })) fail.push(f.msg);
   }
 }
 
@@ -193,15 +197,19 @@ for (const menuOpen of [false, true]) {
    over budget with the blurs back, the guard can see; a control that needs the worst case to
    fire would be proving something weaker than it looks. */
 const control = await state({ menuOpen: false, zoom: 1, broken: true });
+/* The budget kinds are the only proof. The backdrop-filters come back, so the page must be
+   measured over budget or carrying a filter behind an opaque fill; a thrown navigation is not that. */
+const verdict = controlVerdict(control, ["over-total", "over-one", "wasted-backdrop"]);
+for (const w of selfTestControlVerdict()) fail.push(`NEGATIVE CONTROL JUDGE IS BROKEN: ${w}`);
 if (!mutationBit) {
   fail.push(
     "NEGATIVE CONTROL NEVER APPLIED: this file's copy of the suppression block no longer appears " +
       "in styles.css, so the mutation changed nothing and proved nothing",
   );
-} else if (!control.length) {
+} else if (!verdict.ok) {
   fail.push(
-    "NEGATIVE CONTROL DID NOT FIRE: with the backdrop-filters put back exactly as the page " +
-      "shipped them, this check still found the page inside its budget, so it is not measuring the page",
+    "NEGATIVE CONTROL DID NOT PROVE ANYTHING: with the backdrop-filters put back exactly as the page " +
+      "shipped them, " + verdict.reason + ", so this run cannot show that it measures the page",
   );
 }
 
@@ -217,4 +225,4 @@ if (fail.length) {
   for (const f of [...new Set(fail)]) console.error("  - " + f);
   process.exit(1);
 }
-console.log(`check-compositor-budget: OK (4 phone states measured; the page stays inside its buffer budget at 1x and 3x zoom; negative control fired with ${control.length} finding(s))`);
+console.log(`check-compositor-budget: OK (4 phone states measured; the page stays inside its buffer budget at 1x and 3x zoom; negative control measured ${verdict.matched} budget violation(s))`);

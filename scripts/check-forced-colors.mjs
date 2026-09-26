@@ -43,6 +43,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { readFileSync } from "node:fs";
 import net from "node:net";
+import { readRouteIdentity, judgeOne, judgeRouteIdentities, selfTestRouteIdentity, docRoutesFrom } from "./lib/browser-proof-route-identity.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const fail = [];
@@ -50,11 +51,18 @@ const note = (m) => console.log("  " + m);
 
 /* Routes and languages from the app's own tables, never a list kept in step by hand. */
 const app = readFileSync(join(ROOT, "app.js"), "utf8");
-const DOC_ROUTES = JSON.parse(app.match(/const docRoutes=(\[.*?\]);/s)[1].replace(/'/g, '"'));
+const DOC_ROUTES = docRoutesFrom(app);
 const LANGS = JSON.parse(app.match(/const languages=(\[\[.*?\]\]);/s)[1].replace(/'/g, '"')).map(([c]) => c);
 /* One route of each kind, and one right-to-left language: the rule is about colour, not about
-   content, so breadth here buys less than the two engines and the two modes do. */
-const ROUTES = ["/", "/" + DOC_ROUTES[2], "/" + DOC_ROUTES[DOC_ROUTES.length - 1]];
+   content, so breadth here buys less than the two engines and the two modes do.
+
+   HASH ROUTES, because the router reads `location.hash`. These were PATHNAMES until 2026-09-26
+   ("/docs/user-guide"), and server.js answers any unknown path with index.html, so both
+   "documents" were the home page rendered again and this sweep counted three renders of one page
+   as three templates (external code review CR-08-F34). Each render now also reads back what it
+   actually rendered (view, heading, language) and a render that is not the document its route
+   names fails BEFORE anything is measured on it. */
+const ROUTES = ["/", "/#/" + DOC_ROUTES[2], "/#/" + DOC_ROUTES[DOC_ROUTES.length - 1]];
 const PROBE_LANGS = ["en", LANGS.includes("ar") ? "ar" : LANGS[1]];
 const TABS = 14;
 
@@ -168,9 +176,12 @@ async function render(browser, { forced, lang, route, inject }) {
     forcedColors: forced ? "active" : "none",
     locale: lang,
   });
-  await ctx.addCookies([{ name: "lang", value: lang, url: base }]);
+  /* `bugitLang` is the cookie app.js reads. This wrote `lang`, which nothing reads; Arabic was
+     reached only through the context locale falling back, which is luck rather than a setting. */
+  await ctx.addCookies([{ name: "bugitLang", value: lang, url: base }]);
   const page = await ctx.newPage();
   await page.goto(base + route, { waitUntil: "load" });
+  const id = await readRouteIdentity(page, route);
   if (inject) await page.addStyleTag({ content: inject });
   await page.waitForTimeout(350);
 
@@ -187,7 +198,14 @@ async function render(browser, { forced, lang, route, inject }) {
     focused.push(r);
   }
   await ctx.close();
-  return { controls, focused };
+  return { controls, focused, id };
+}
+
+/* A render is only a measurement of the document its route names, in the language asked for. */
+function reached(where, route, lang, r) {
+  const wrong = judgeOne(route, r.id);
+  if (r.id && r.id.lang !== lang) wrong.push(`the page rendered in "${r.id.lang}", not "${lang}"`);
+  return wrong.map((w) => `${where}: ROUTE ${w}, so nothing here was measured`);
 }
 
 /* ---------- the two rules ------------------------------------------------ */
@@ -208,14 +226,19 @@ function score(where, normal, forcedRender) {
 
 /* ---------- measure ------------------------------------------------------ */
 let cells = 0, controlsSeen = 0, focusedSeen = 0;
+for (const w of selfTestRouteIdentity()) fail.push(`ROUTE the route-identity judge is broken: ${w}`);
 const ENGINES = [["chromium", chromium], ["firefox", firefox]];
 for (const [engineName, engine] of ENGINES) {
   const browser = await engine.launch();
+  const byLang = new Map(PROBE_LANGS.map((l) => [l, []]));
   for (const route of ROUTES) {
     for (const lang of PROBE_LANGS) {
       const where = `[${engineName} ${lang}] ${route}`;
       const normal = await render(browser, { forced: false, lang, route });
       const forcedRender = await render(browser, { forced: true, lang, route });
+      byLang.get(lang).push({ route, id: forcedRender.id });
+      const off = [...reached(where + " (ordinary)", route, lang, normal), ...reached(where + " (forced)", route, lang, forcedRender)];
+      if (off.length) { fail.push(...off); continue; }
       cells++;
       controlsSeen += Object.keys(forcedRender.controls).length;
       focusedSeen += forcedRender.focused.length;
@@ -224,6 +247,12 @@ for (const [engineName, engine] of ENGINES) {
         continue;
       }
       fail.push(...score(where, normal, forcedRender));
+    }
+  }
+  /* The routes must also be DIFFERENT documents, judged on what rendered and never on the URL. */
+  for (const [lang, rows] of byLang) {
+    for (const w of judgeRouteIdentities(rows)) {
+      if (!fail.some((f) => f.includes(w))) fail.push(`[${engineName} ${lang}] ROUTES ${w}`);
     }
   }
   await browser.close();
