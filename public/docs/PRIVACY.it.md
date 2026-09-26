@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Ultimo aggiornamento: 20 settembre 2026**
+**Ultimo aggiornamento: 26 settembre 2026**
 
 La presente informativa spiega quali dati personali trattiamo quando utilizza il sito
 web di BugIt (bugit.dev), il BugIt Portal (gestione dell'account, degli acquisti e
@@ -112,6 +112,10 @@ informative sulla privacy: La invitiamo a consultarli prima di collegare un serv
 - **Le Sue scelte di consenso** su cookie e misurazione pubblicitaria, inclusa la
   revoca, nonché la conferma raccolta in fase di pagamento dove un mercato la
   richiede
+- **Dati di rete registrati con alcune richieste**: l'indirizzo IP e lo user agent del
+  browser memorizzati con la conferma che Lei fornisce in fase di pagamento, l'indirizzo
+  IP da cui proviene una richiesta di attivazione, e l'indirizzo IP e lo user agent di
+  ogni download del software
 
 Utilizziamo questi dati per fornire e supportare il prodotto acquistato, incassare il
 pagamento e adempiere agli obblighi fiscali e contabili, mantenere sicuri account e
@@ -125,13 +129,26 @@ del servizio oppure il Suo consenso.
 Il Portal include «Chiedi a BugIt», un assistente che risponde alle domande su BugIt e
 sul Suo account. Molte risposte sono preparate in anticipo e vengono scritte senza un
 modello di IA. Quando l'assistente scrive una risposta con il suo modello di IA, la Sua
-domanda, la conversazione fino a quel momento e un riepilogo del Suo account (le Sue
-licenze, i dispositivi, il Team e i ticket di assistenza aperti) vengono inviati ad
-Anthropic, che li tratta per nostro conto per scrivere la risposta. Non aggiungiamo mai
-chiavi di licenza o dati di pagamento a tale riepilogo, ma il testo che Lei digita viene
-inviato così come lo ha scritto: La preghiamo quindi di non inserire nell'assistente dati
-della carta, bancari o altre informazioni sensibili. L'assistente rimuove le password e i
-token di accesso riconoscibili prima di qualsiasi invio, ma non può riconoscere tutto.
+domanda, la conversazione fino a quel momento e un riepilogo del Suo account vengono
+inviati ad Anthropic, che li tratta per nostro conto per scrivere la risposta. Il
+riepilogo contiene:
+
+- il Suo nome e l'indirizzo e-mail con cui accede
+- le Sue licenze: piano, stato, date di acquisto e di scadenza, postazioni, l'eventuale
+  nome che ha dato loro e la chiave di licenza nascosta tranne l'ultimo gruppo
+- i Suoi dispositivi: nome, sistema operativo, versione di BugIt e quando ciascuno è
+  stato visto l'ultima volta
+- il Suo Team, se ne fa parte: nome, il Suo ruolo, stato e scadenza della sua licenza
+- i Suoi ordini: importi, date di pagamento, rimborsi e storni
+- i Suoi ticket di assistenza: quanti sono aperti e i cinque ticket aggiornati più di
+  recente, qualunque sia il loro stato, ciascuno con oggetto, stato, categoria e i primi
+  600 caratteri del messaggio
+
+Il riepilogo non contiene mai una chiave di licenza completa né i dati della Sua carta o
+del Suo conto bancario. Il testo che Lei digita viene inviato così come lo ha scritto:
+La preghiamo quindi di non inserire nell'assistente dati della carta, bancari o altre
+informazioni sensibili. L'assistente rimuove le password e i token di accesso
+riconoscibili prima di qualsiasi invio, ma non può riconoscere tutto.
 
 La conversazione viene conservata nella scheda del Suo browser e cancellata quando esce
 dall'account. Non la memorizziamo sui nostri server, a meno che Lei non invii un ticket
@@ -196,9 +213,10 @@ determinati trattamenti, di riceverli in un formato portabile e di revocare il
 consenso in qualsiasi momento, senza pregiudicare i trattamenti già effettuati.
 
 Per esercitare uno di questi diritti scriva a
-[support@bugit.dev](mailto:support@bugit.dev) dall'indirizzo del Suo account. Può
-anche eliminare l'account dalla Sua dashboard. Risponderemo entro il termine previsto
-dalla legge applicabile.
+[support@bugit.dev](mailto:support@bugit.dev) dall'indirizzo del Suo account. Dalla Sua
+dashboard può anche scaricare in autonomia una copia dei dati del Suo account, in PDF o
+in un file JSON leggibile da una macchina, ed eliminare l'account. Risponderemo entro il
+termine previsto dalla legge applicabile.
 
 Se non è soddisfatto, può presentare reclamo all'autorità per la protezione dei dati:
 nel SEE, all'autorità del Suo Paese; nel Regno Unito, all'Information Commissioner's

@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Zuletzt aktualisiert: 20. September 2026**
+**Zuletzt aktualisiert: 26. September 2026**
 
 Diese Erklärung beschreibt, welche personenbezogenen Daten wir verarbeiten, wenn Sie
 die BugIt Website (bugit.dev), das BugIt Portal (Konto, Kauf und Lizenzverwaltung)
@@ -113,6 +113,10 @@ Sie einen Dienst verbinden.
   in diesen Werkzeugen.
 - **Ihre Einwilligungsentscheidungen** zu Cookies und Werbemessung, einschließlich
   Widerruf, sowie die im Checkout erfasste Bestätigung, wo ein Markt sie verlangt
+- **Netzwerkdaten, die bei bestimmten Anfragen erfasst werden**: die IP-Adresse und der
+  User-Agent des Browsers, die mit der Bestätigung im Checkout gespeichert werden, die
+  IP-Adresse, von der eine Aktivierungsanfrage kommt, sowie IP-Adresse und User-Agent
+  jedes Software-Downloads
 
 Wir nutzen diese Daten, um das gekaufte Produkt bereitzustellen und zu unterstützen,
 Zahlungen entgegenzunehmen und unsere steuerlichen und buchhalterischen Pflichten zu
@@ -123,16 +127,30 @@ berechtigtes Interesse an der Sicherheit des Dienstes oder Ihre Einwilligung.
 
 ## Der Assistent „BugIt fragen“ im Portal
 
-Das Portal enthält „BugIt fragen“, einen Assistenten, der Fragen zu BugIt und zu Ihrem Konto
-beantwortet. Viele Antworten sind vorbereitet und entstehen ohne KI-Modell. Wenn der Assistent
-eine Antwort mit seinem KI-Modell schreibt, werden Ihre Frage, der bisherige Gesprächsverlauf
-und eine Zusammenfassung Ihres Kontos (Ihre Lizenzen, Geräte, Ihr Team und offene
-Support-Tickets) an Anthropic gesendet, das sie in unserem Auftrag verarbeitet, um die Antwort
-zu schreiben. Lizenzschlüssel oder Zahlungsdaten fügen wir dieser Zusammenfassung niemals
-hinzu, aber Text, den Sie selbst eingeben, wird so gesendet, wie Sie ihn geschrieben haben.
-Geben Sie daher bitte keine Karten-, Bank- oder anderen sensiblen Daten in den Assistenten
-ein. Der Assistent entfernt erkennbare Passwörter und Zugangstoken, bevor etwas gesendet wird,
-kann aber nicht alles erkennen.
+Das Portal enthält „BugIt fragen“, einen Assistenten, der Fragen zu BugIt und zu Ihrem
+Konto beantwortet. Viele Antworten sind vorbereitet und entstehen ohne KI-Modell. Wenn
+der Assistent eine Antwort mit seinem KI-Modell schreibt, werden Ihre Frage, der
+bisherige Gesprächsverlauf und eine Zusammenfassung Ihres Kontos an Anthropic gesendet,
+das sie in unserem Auftrag verarbeitet, um die Antwort zu schreiben. Die Zusammenfassung
+enthält:
+
+- Ihren Namen und die E-Mail-Adresse, mit der Sie sich anmelden
+- Ihre Lizenzen: Plan, Status, Kauf- und Enddatum, Plätze, einen von Ihnen vergebenen
+  Namen und den Lizenzschlüssel, bei dem alles außer der letzten Gruppe verborgen ist
+- Ihre Geräte: Name, Betriebssystem, BugIt-Version und wann jedes Gerät zuletzt gesehen
+  wurde
+- Ihr Team, falls Sie einem angehören: Name, Ihre Rolle, Status und das Ende seiner
+  Lizenz
+- Ihre Bestellungen: Beträge, Zahlungsdaten, Erstattungen und Rückbuchungen
+- Ihre Support-Tickets: wie viele offen sind, und Ihre fünf zuletzt aktualisierten
+  Tickets unabhängig von ihrem Status, jeweils mit Betreff, Status, Kategorie und den
+  ersten 600 Zeichen der Nachricht
+
+Die Zusammenfassung enthält niemals einen vollständigen Lizenzschlüssel oder Ihre
+Karten- oder Bankdaten. Text, den Sie selbst eingeben, wird so gesendet, wie Sie ihn
+geschrieben haben. Geben Sie daher bitte keine Karten-, Bank- oder anderen sensiblen
+Daten in den Assistenten ein. Der Assistent entfernt erkennbare Passwörter und
+Zugangstoken, bevor etwas gesendet wird, kann aber nicht alles erkennen.
 
 Das Gespräch wird in Ihrem Browser-Tab gespeichert und beim Abmelden gelöscht. Wir speichern
 es nicht auf unseren Servern, es sei denn, Sie senden aus dem Assistenten ein Support-Ticket
@@ -200,9 +218,10 @@ Einwilligung jederzeit zu widerrufen, ohne dass die bereits erfolgte Verarbeitun
 davon berührt wird.
 
 Um eines dieser Rechte auszuüben, schreiben Sie bitte von Ihrer Kontoadresse an
-[support@bugit.dev](mailto:support@bugit.dev). Sie können Ihr Konto auch selbst über
-Ihr Dashboard löschen. Wir antworten innerhalb der für Sie geltenden gesetzlichen
-Frist.
+[support@bugit.dev](mailto:support@bugit.dev). Über Ihr Dashboard können Sie außerdem
+selbst eine Kopie Ihrer Kontodaten herunterladen, als PDF oder als maschinenlesbare
+JSON-Datei, und Ihr Konto löschen. Wir antworten innerhalb der für Sie geltenden
+gesetzlichen Frist.
 
 Wenn Sie nicht zufrieden sind, können Sie sich bei Ihrer Datenschutzbehörde
 beschweren: im EWR bei Ihrer örtlichen Behörde, im Vereinigten Königreich beim

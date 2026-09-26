@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Última actualización: 20 de septiembre de 2026**
+**Última actualización: 26 de septiembre de 2026**
 
 Esta política explica qué datos personales tratamos cuando utiliza el sitio web de
 BugIt (bugit.dev), el BugIt Portal (gestión de cuenta, compra y licencias) y el
@@ -111,6 +111,10 @@ servicio.
 - **Sus decisiones de consentimiento** sobre cookies y medición publicitaria,
   incluida su retirada, así como la confirmación registrada en el proceso de compra
   cuando un mercado lo exige
+- **Datos de red registrados con algunas solicitudes**: la dirección IP y el agente de
+  usuario del navegador que se guardan con la confirmación que usted da en el proceso de
+  compra, la dirección IP desde la que llega una solicitud de activación, y la dirección
+  IP y el agente de usuario de cada descarga del software
 
 Utilizamos estos datos para prestar y dar soporte al producto que ha comprado, cobrar
 y cumplir nuestras obligaciones fiscales y contables, mantener seguras las cuentas y
@@ -121,16 +125,29 @@ servicio o su consentimiento.
 
 ## El asistente «Pregunta a BugIt» del Portal
 
-El Portal incluye «Pregunta a BugIt», un asistente que responde preguntas sobre BugIt y sobre
-su cuenta. Muchas respuestas están preparadas de antemano y se redactan sin un modelo de IA.
-Cuando el asistente redacta una respuesta con su modelo de IA, su pregunta, la conversación
-hasta ese momento y un resumen de su cuenta (sus licencias, dispositivos, Team y tickets de
-soporte abiertos) se envían a Anthropic, que los trata por cuenta nuestra para redactar la
-respuesta. Nunca añadimos claves de licencia ni datos de pago a ese resumen, pero el texto
-que usted escribe se envía tal como lo escribió, así que le rogamos que no escriba en el
-asistente datos de su tarjeta, de su banco ni otros datos sensibles. El asistente elimina las
-contraseñas y los tokens de acceso reconocibles antes de enviar nada, pero no puede
-reconocerlo todo.
+El Portal incluye «Pregunta a BugIt», un asistente que responde preguntas sobre BugIt y
+sobre su cuenta. Muchas respuestas están preparadas de antemano y se redactan sin un
+modelo de IA. Cuando el asistente redacta una respuesta con su modelo de IA, su
+pregunta, la conversación hasta ese momento y un resumen de su cuenta se envían a
+Anthropic, que los trata por cuenta nuestra para redactar la respuesta. El resumen
+contiene:
+
+- su nombre y la dirección de correo electrónico con la que inicia sesión
+- sus licencias: plan, estado, fechas de compra y de fin, puestos, el nombre que les
+  haya dado y la clave de licencia oculta salvo su último grupo
+- sus dispositivos: su nombre, sistema operativo, versión de BugIt y cuándo se vio cada
+  uno por última vez
+- su Team, si pertenece a uno: su nombre, su rol, su estado y cuándo termina su licencia
+- sus pedidos: importes, fechas de pago, reembolsos y contracargos
+- sus tickets de soporte: cuántos están abiertos y sus cinco tickets actualizados más
+  recientemente, sea cual sea su estado, cada uno con su asunto, estado, categoría y los
+  primeros 600 caracteres de su mensaje
+
+El resumen nunca contiene una clave de licencia completa ni los datos de su tarjeta o de
+su banco. El texto que usted escribe se envía tal como lo escribió, así que le rogamos
+que no escriba en el asistente datos de su tarjeta, de su banco ni otros datos
+sensibles. El asistente elimina las contraseñas y los tokens de acceso reconocibles
+antes de enviar nada, pero no puede reconocerlo todo.
 
 La conversación se guarda en la pestaña de su navegador y se borra al cerrar la sesión. No la
 almacenamos en nuestros servidores, salvo que envíe un ticket de soporte desde el asistente y
@@ -193,9 +210,10 @@ tratamientos, recibirlos en un formato portátil y retirar su consentimiento en
 cualquier momento sin que ello afecte al tratamiento ya realizado.
 
 Para ejercer cualquiera de estos derechos, escriba a
-[support@bugit.dev](mailto:support@bugit.dev) desde la dirección de su cuenta.
-También puede eliminar su cuenta desde su panel. Responderemos dentro del plazo que
-exija la ley aplicable en su caso.
+[support@bugit.dev](mailto:support@bugit.dev) desde la dirección de su cuenta. Desde su
+panel también puede descargar usted mismo una copia de los datos de su cuenta, en PDF o
+en un archivo JSON legible por máquina, y eliminar su cuenta. Responderemos dentro del
+plazo que exija la ley aplicable en su caso.
 
 Si no queda satisfecho, puede presentar una reclamación ante su autoridad de
 protección de datos: en el EEE, ante su autoridad local; en el Reino Unido, ante la

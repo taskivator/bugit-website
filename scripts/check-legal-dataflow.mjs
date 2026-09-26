@@ -134,6 +134,75 @@ for (const l of LOCALES) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// THE PORTAL ASSISTANT'S ACCOUNT SUMMARY, THE SELF-SERVE EXPORT, AND IP ADDRESSES (2026-09-26).
+//
+// The privacy statement said the Ask BugIt summary sent to Anthropic covered "your licenses,
+// devices, Team, and open support tickets". Since portal 5e4401b (2026-09-22) it also carries the
+// account's name and email, its orders with refunds and chargebacks, and up to five recent tickets
+// of ANY status with the first 600 characters of each message. The data went out four days before
+// the sentence describing it changed, and nothing here could notice, because nothing here knew
+// what the summary contained. The same review found two facts the statement did not mention at
+// all: the self-serve export (PDF and JSON) on the Portal account page, and the IP address and
+// user agent stored with the checkout acknowledgement, with each activation request (IP only) and
+// with each download.
+//
+// THE AUTHORITY is the portal repo, which this one cannot import: lib/assistant/account.ts
+// (readAccountSnapshot), lib/assistant/facts.ts (accountFactsText: five tickets, 600 characters,
+// the masked key), app/actions/privacy.ts (exportMyDataAction), lib/checkout/withdrawal-consent.ts,
+// the activation_start client_ip column and app/api/download/route.ts. What is mirrored below is
+// what the English statement must say about them. If the portal's summary grows again, this list
+// and the policy move together, which is the moment to re-read the authority.
+//
+// Every locale is held to the tokens that do not need translating (600, PDF, JSON, IP, the date)
+// in the section where they belong, and to the same number of summary items as English, so a
+// locale left on the old sentence fails even though this file cannot read its language.
+// ---------------------------------------------------------------------------
+const sectionsOf = (md) => md.replace(/\r\n/g, "\n").split(/\n(?=## )/);
+const bulletsIn = (text) => text.split("\n").filter((l) => /^- /.test(l)).length;
+const ASK = 7, RIGHTS = 11, DATA = 6;   // positions; check-legal-copy holds every locale to English's section order
+const enSecs = sectionsOf(enPrivacy);
+const enAsk = (enSecs[ASK] || "").replace(/\s+/g, " ");
+for (const [needle, why] of [
+  ["your name and the email address you sign in with", "the summary carries the account's name and email"],
+  ["your orders: amounts, payment dates, refunds, and chargebacks", "the summary carries orders, refunds and chargebacks"],
+  ["five most recently updated tickets, whatever their status", "the summary carries five recent tickets of any status"],
+  ["the first 600 characters of its message", "each ticket's message is sent, truncated to 600 characters"],
+  ["the license key with all but its last group hidden", "the summary carries the MASKED licence key"],
+  ["never contains a full license key or your card or bank details", "what the summary never carries"],
+]) {
+  if (!enAsk.includes(needle)) fail(`PRIVACY.md, Ask BugIt section: missing "${needle}" (${why}; portal lib/assistant/facts.ts)`);
+}
+if (/\(your licenses, devices, Team, and\s+open support tickets\)/.test(enPrivacy)) {
+  fail(`PRIVACY.md still describes the assistant's summary as "licenses, devices, Team, and open support tickets", which it outgrew in portal 5e4401b`);
+}
+const enRights = (enSecs[RIGHTS] || "").replace(/\s+/g, " ");
+if (!/download a copy of your account data yourself, as a PDF or as a machine-readable JSON file/.test(enRights)) {
+  fail("PRIVACY.md, Your rights: the self-serve data export (PDF and JSON, portal app/actions/privacy.ts) is not mentioned");
+}
+const enData = (enSecs[DATA] || "").replace(/\s+/g, " ");
+for (const needle of ["IP address and browser user agent stored with the acknowledgement you give at checkout",
+                      "the IP address an activation request comes from",
+                      "the IP address and user agent of each software download"]) {
+  if (!enData.includes(needle)) fail(`PRIVACY.md, personal data list: missing "${needle}"`);
+}
+const enAskItems = bulletsIn(enSecs[ASK] || "");
+const enDate = (enPrivacy.match(/^\*\*[^*]*\*\*/m) || [""])[0].match(/\d+/g) || [];
+for (const l of LOCALES) {
+  const f = privacyFile(l);
+  if (!l || !exists(f)) continue;   // English is checked above; a missing file is reported above
+  const secs = sectionsOf(read(f));
+  const ask = secs[ASK] || "";
+  if (!ask.includes("Anthropic")) { fail(`${f}: section ${ASK} is not the Ask BugIt section, so its summary cannot be checked`); continue; }
+  if (!ask.includes("600")) fail(`${f}: the Ask BugIt section does not state the 600-character limit on each ticket message`);
+  if (bulletsIn(ask) !== enAskItems) fail(`${f}: the Ask BugIt summary lists ${bulletsIn(ask)} items, English lists ${enAskItems}`);
+  const rights = secs[RIGHTS] || "";
+  if (!/PDF/.test(rights) || !/JSON/.test(rights)) fail(`${f}: the rights section does not mention the self-serve export (PDF and JSON)`);
+  if (!/\bIP\b/.test(secs[DATA] || "")) fail(`${f}: the personal data list does not mention the IP addresses stored`);
+  const date = (read(f).match(/^\*\*[^*]*\*\*/m) || [""])[0];
+  for (const n of enDate) if (!date.includes(n)) fail(`${f}: its "last updated" line (${date}) does not carry ${n} from the English date`);
+}
+
 /* WHAT THE OK LINE MAY CLAIM. The field needles above are substrings of the English privacy
    statement, typed here. They show that the statement still NAMES each field; they are not a
    comparison with what the activation request actually sends, which lives in the agent repo and
@@ -147,5 +216,6 @@ if (failures) {
 }
 console.log(`check-legal-dataflow: OK. All ${REQUIRED_DOCS.length} privacy/licence documents for ${LOCALES.length} ` +
   `locales exist; no retired-model fragment in them, app.js or dist (${SCAN.length} files); the English ` +
-  `privacy statement names every activation field; every locale references the Portal. ` +
+  `privacy statement names every activation field; every locale references the Portal and ` +
+  `describes the assistant's account summary, the self-serve export and the stored IP addresses. ` +
   `(Presence checks, not a legal or translation review.)`);

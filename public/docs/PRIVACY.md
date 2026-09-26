@@ -2,7 +2,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Last updated: 20 September 2026**
+**Last updated: 26 September 2026**
 
 This policy explains what personal data we handle when you use the BugIt website
 (bugit.dev), the BugIt Portal (your account, purchase, and license management), and
@@ -100,6 +100,9 @@ and privacy policies, so please review those before connecting a service.
 - **Your consent choices** for cookies and advertising measurement, including
   withdrawal, and the acknowledgement recorded at checkout where a market requires
   one
+- **Network details recorded with some requests**: the IP address and browser user agent
+  stored with the acknowledgement you give at checkout, the IP address an activation
+  request comes from, and the IP address and user agent of each software download
 
 We use this data to provide and support the product you bought, to take payment and
 meet our tax and accounting obligations, to keep accounts and licenses secure, and,
@@ -110,16 +113,28 @@ consent.
 
 ## The Ask BugIt assistant in the Portal
 
-The Portal includes Ask BugIt, an assistant that answers questions about BugIt and
-your account. Many answers are prepared in advance and are written without an AI
-model. When the assistant writes an answer with its AI model, your question, the
-conversation so far, and a summary of your account (your licenses, devices, Team, and
-open support tickets) are sent to Anthropic, which processes them on our behalf to
-write the reply. We never add license keys or payment details to that summary, but
-text you type yourself is sent as you wrote it, so please do not type card, bank, or
-other sensitive details into the assistant. The assistant removes recognisable
-passwords and access tokens before anything is sent, but it cannot recognise
-everything.
+The Portal includes Ask BugIt, an assistant that answers questions about BugIt and your
+account. Many answers are prepared in advance and are written without an AI model. When
+the assistant writes an answer with its AI model, your question, the conversation so
+far, and a summary of your account are sent to Anthropic, which processes them on our
+behalf to write the reply. The summary contains:
+
+- your name and the email address you sign in with
+- your licenses: plan, status, purchase and end dates, seats, any name you gave them,
+  and the license key with all but its last group hidden
+- your devices: their names, operating system, BugIt version, and when each was last
+  seen
+- your Team, if you belong to one: its name, your role, its status, and when its license
+  ends
+- your orders: amounts, payment dates, refunds, and chargebacks
+- your support tickets: how many are open, and your five most recently updated tickets,
+  whatever their status, each with its subject, status, category, and the first 600
+  characters of its message
+
+The summary never contains a full license key or your card or bank details. Text you
+type yourself is sent as you wrote it, so please do not type card, bank, or other
+sensitive details into the assistant. The assistant removes recognisable passwords and
+access tokens before anything is sent, but it cannot recognise everything.
 
 The conversation is kept in your browser tab and is cleared when you sign out. We do
 not store it on our servers unless you send a support ticket from the assistant and
@@ -178,10 +193,10 @@ delete it, restrict or object to certain processing, receive it in a portable fo
 and withdraw consent at any time without affecting processing that already took
 place.
 
-To exercise any of these, email
-[support@bugit.dev](mailto:support@bugit.dev) from your account address. You can
-also delete your account from your dashboard. We will respond within the time
-required by the law that applies to you.
+To exercise any of these, email [support@bugit.dev](mailto:support@bugit.dev) from your
+account address. From your dashboard you can also download a copy of your account data
+yourself, as a PDF or as a machine-readable JSON file, and delete your account. We will
+respond within the time required by the law that applies to you.
 
 If you are not satisfied, you may complain to your data protection authority: in
 the EEA, your local authority; in the UK, the Information Commissioner's Office
