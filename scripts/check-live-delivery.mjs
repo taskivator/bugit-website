@@ -22,6 +22,17 @@
  *   node scripts/check-live-delivery.mjs                  # against https://bugit.dev
  *   node scripts/check-live-delivery.mjs --base=https://<preview>.pages.dev
  *   node scripts/check-live-delivery.mjs --self-test      # prove the checks can fail
+ *   node scripts/check-live-delivery.mjs --base=http://127.0.0.1:<port> --dist=<dir>
+ *                                                          # a local fixture origin and tree
+ *
+ * UNREACHABLE IS NOT ABSENT (CR-08-F18). The half of this check that asserts private paths are
+ * NOT served used to record only an HTTP 200 as a leak, so a transport error, a timeout, a 5xx
+ * or a redirect all counted as "not served", and a run against an origin that was down printed
+ * "none of the N unpublished repo paths is served". Every absence probe is now one of three
+ * outcomes: CONFIRMED not served (404/410, or 401/403 refused), SERVED, or UNVERIFIED, and an
+ * unverified one fails the run. Likewise an empty or near-empty dist, or a capped sweep, is an
+ * incomplete subject rather than a clean one. This runs AFTER the upload, so failing here can
+ * neither block nor alter a publish; it only stops a run from claiming what it did not see.
  */
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -31,7 +42,8 @@ import { fileURLToPath } from "node:url";
 import { parseHeadersFile, cacheControlRulesFor, maxAgeOf } from "./lib/headers-file.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DIST = join(ROOT, "dist");
+const argDist = process.argv.find((a) => a.startsWith("--dist="));
+const DIST = argDist ? argDist.slice(7) : join(ROOT, "dist");
 
 const argBase = process.argv.find((a) => a.startsWith("--base="));
 const BASE = (argBase ? argBase.slice(7) : process.env.LIVE_BASE || "https://bugit.dev").replace(/\/$/, "");
@@ -47,6 +59,10 @@ const NOT_SERVED = new Map([
 ]);
 
 const sha = (buf) => createHash("sha256").update(buf).digest("hex");
+const PROBE_TIMEOUT_MS = 30000;
+// Fewer targets than this means dist is unbuilt or gutted. It used to be asserted only under
+// --self-test, so an ordinary run over an empty dist verified zero files and passed.
+const MIN_TARGETS = 20;
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
@@ -61,7 +77,12 @@ function walk(dir, out = []) {
  * dead socket must not end the sweep and leave the rest unmeasured. */
 async function probe(url) {
   try {
-    const r = await fetch(url, { redirect: "manual", headers: { "user-agent": "bugit-delivery-check" } });
+    // A hung socket must become a verdict, not a run that never ends.
+    const r = await fetch(url, {
+      redirect: "manual",
+      headers: { "user-agent": "bugit-delivery-check" },
+      signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+    });
     const body = Buffer.from(await r.arrayBuffer());
     return {
       ok: true,
@@ -143,6 +164,12 @@ if (indexFile) targets.unshift({ ...indexFile, url: BASE + "/", label: "/  (bare
 
 console.log(`${targets.length} target(s) against ${BASE}  (${skipped.length} not served: ${skipped.map((s) => s.rel).join(", ") || "none"})`);
 
+const incomplete = [];
+if (!indexFile) incomplete.push("dist has no index.html; the site itself is not in the subject");
+if (targets.length < MIN_TARGETS) {
+  incomplete.push(`only ${targets.length} target(s) in ${DIST}; dist looks unbuilt (need at least ${MIN_TARGETS}). Run node build.js first`);
+}
+
 const results = await inBatches(targets, 6, async (t) => ({ t, r: await probeFollowingOneHop(t.url) }));
 
 const dead = [];
@@ -199,17 +226,57 @@ const absentTargets = [...new Set([...unpublished, ...ALWAYS_PROBE])];
 const PROBE_CAP = 60;
 const probing = absentTargets.slice(0, PROBE_CAP);
 if (absentTargets.length > PROBE_CAP) {
-  // NO SILENT CAPS. A sweep that stops at the fold prints the same green as one that finished.
-  console.log(`\nNOTE: ${absentTargets.length} unpublished paths, probing the first ${PROBE_CAP}; ` +
+  // NO SILENT CAPS. A sweep that stops at the fold used to print the same green as one that
+  // finished, with a NOTE above it. The unchecked remainder is now an incomplete result. The cap
+  // itself stays: this must not grow into a wider sweep of sensitive paths.
+  incomplete.push(`${absentTargets.length} unpublished paths, only the first ${PROBE_CAP} probed; ` +
     `${absentTargets.length - PROBE_CAP} NOT checked: ${absentTargets.slice(PROBE_CAP).join(", ")}`);
 }
 
+/* One request per sensitive path, never a retry. A redirect is followed exactly one same-origin
+ * hop (that second request is to the DESTINATION, not the private path), because a redirect is
+ * not proof of absence: Pages answers /x.html with 308 -> /x, and /x may then serve the bytes.
+ * A destination that answers 200 with the bytes of a file dist PUBLISHES (a clean-URL rule
+ * sending /license to the home page, say) is not a leak; any other 200 is. */
+const publishedHashes = new Set(local.map((f) => sha(f.bytes)));
+const REFUSED = [401, 403, 404, 410];
+function classifyAbsence(first, second) {
+  if (!first.ok) return { kind: "unverified", why: `unreachable: ${first.error}` };
+  if (REFUSED.includes(first.status)) return { kind: "absent" };
+  if (first.status === 200) return { kind: "served", r: first };
+  if (![301, 302, 303, 307, 308].includes(first.status)) {
+    return { kind: "unverified", why: `answered HTTP ${first.status}, which neither serves nor denies it` };
+  }
+  if (!second) return { kind: "unverified", why: `HTTP ${first.status} with no usable same-origin Location (${first.location || "none"})` };
+  if (!second.ok) return { kind: "unverified", why: `redirect destination unreachable: ${second.error}` };
+  if (REFUSED.includes(second.status)) return { kind: "absent" };
+  if (second.status === 200) {
+    return publishedHashes.has(second.hash)
+      ? { kind: "absent", note: "redirects to published content" }
+      : { kind: "served", r: second, via: first.location };
+  }
+  return { kind: "unverified", why: `redirect destination answered HTTP ${second.status}` };
+}
+async function probeAbsence(rel) {
+  const url = BASE + "/" + rel;
+  const first = await probe(url);
+  let second = null;
+  if (first.ok && [301, 302, 303, 307, 308].includes(first.status) && first.location) {
+    let next = null;
+    try { next = new URL(first.location, url); } catch { /* unparseable: stays unverified */ }
+    if (next && next.origin === new URL(url).origin) second = await probe(next.href);
+  }
+  return classifyAbsence(first, second);
+}
+
 const leaked = [];
-const leakResults = await inBatches(probing, 6, async (rel) => ({ rel, r: await probe(BASE + "/" + rel) }));
-for (const { rel, r } of leakResults) {
-  // 404 and 410 are the right answers. A 30x to the SPA shell is also fine: the path is not a
-  // file, it is a route the app will not resolve. Only a 200 means the bytes are being handed out.
-  if (r.ok && r.status === 200) leaked.push({ rel, r });
+const unverifiedAbsent = [];
+let confirmedAbsent = 0;
+const leakResults = await inBatches(probing, 6, async (rel) => ({ rel, c: await probeAbsence(rel) }));
+for (const { rel, c } of leakResults) {
+  if (c.kind === "served") leaked.push({ rel, r: c.r, via: c.via });
+  else if (c.kind === "unverified") unverifiedAbsent.push({ rel, why: c.why });
+  else confirmedAbsent++;
 }
 
 const say = (title, rows, fmt) => {
@@ -246,8 +313,11 @@ const cacheNote = (r) => {
 };
 
 say("SERVED BUT NOT PUBLISHED  (in the repo, not in dist, yet the origin hands it out)", leaked,
-  ({ rel, r }) => `/${rel}  HTTP 200  ${r.body.length} bytes  cf-cache:${r.cache}` +
-    cacheNote({ ...r, rel }));
+  ({ rel, r, via }) => `/${rel}  HTTP 200  ${r.body.length} bytes  cf-cache:${r.cache}` +
+    (via ? `  (after a redirect to ${via})` : "") + cacheNote({ ...r, rel }));
+say("ABSENCE UNVERIFIED  (no answer that shows these private paths are not served)", unverifiedAbsent,
+  ({ rel, why }) => `/${rel}  ${why}`);
+say("INCOMPLETE SUBJECT  (the sweep did not cover what it must)", incomplete, (m) => m);
 
 // Not a finding: the origin canonicalised the URL and delivered the right bytes there. Printed
 // so a redirect that appears for a NEW reason is visible rather than absorbed in silence.
@@ -313,11 +383,14 @@ const findings =
   mismatch.length +
   wrongType.length +
   leaked.length +
+  unverifiedAbsent.length +
+  incomplete.length +
   cachePolicy.length +
   ambiguous.length;
 
 /* -------------------------------------------------- negative controls
  * Three ways this check could be quietly useless, each proven wrong against the live origin. */
+let selfTestFailed = false;
 if (SELF_TEST) {
   console.log("\n--- self-test ---");
   const fails = [];
@@ -325,8 +398,11 @@ if (SELF_TEST) {
   // 1. A path that cannot exist must be caught by STATUS, and its body must not be mistaken
   //    for content. This is the exact failure the header comment describes.
   const ghost = await probeFollowingOneHop(BASE + "/__delivery_probe_that_cannot_exist__.txt");
-  if (ghost.status === 200) fails.push("an absent path answered 200; this origin cannot be verified by status");
-  else console.log(`  absent path answered HTTP ${ghost.status} (${ghost.body.length} bytes of page body) — caught by status, never hashed`);
+  // Exactly 404 or 410. "Anything but 200" let a transport failure (status 0) or a 5xx stand in
+  // for the negative answer this control exists to observe.
+  if (!ghost.ok || ![404, 410].includes(ghost.status)) {
+    fails.push(`an absent path answered ${ghost.ok ? "HTTP " + ghost.status : "nothing (" + ghost.error + ")"}, not 404/410; absence cannot be verified against this origin`);
+  } else console.log(`  absent path answered HTTP ${ghost.status} (${ghost.body.length} bytes of page body) -- caught by status, never hashed`);
 
   // 2. A byte that differs must be seen. Mutate a real local file's expected hash.
   const sample = served.find((f) => f.rel === "index.html") || served[0];
@@ -336,21 +412,49 @@ if (SELF_TEST) {
     if (mutated === live.hash) fails.push("a mutated file hashed identically; the comparison is not comparing");
     else console.log(`  one added byte to ${sample.rel} changes its hash — the comparison fires`);
   } else {
-    console.log(`  skipped byte control: ${sample.rel} answered HTTP ${live.status}`);
+    // A skipped control is not a passed one.
+    fails.push(`byte control could not run: ${sample.rel} answered ${live.ok ? "HTTP " + live.status : "nothing"}`);
   }
 
   // 3. The sweep must actually have a subject. An empty dist would sail through every check
   //    above and print a confident zero.
-  if (targets.length < 20) fails.push(`only ${targets.length} target(s) — dist looks unbuilt; run node build.js first`);
-  else console.log(`  ${targets.length} targets enumerated from dist — the sweep has a subject`);
+  // (The subject minimum is now enforced in every mode, above; this line only reports it.)
+  console.log(`  ${targets.length} targets enumerated from dist (minimum ${MIN_TARGETS}, enforced on every run)`);
+
+  // 4. The absence classifier, over inert records: failures must never read as absence.
+  const rec = (status, extra = {}) => ({ ok: true, status, body: Buffer.alloc(0), hash: "", location: "", ...extra });
+  const dead = { ok: false, status: 0, error: "ECONNRESET" };
+  const cases = [
+    ["transport error", classifyAbsence(dead, null), "unverified"],
+    ["HTTP 500", classifyAbsence(rec(500), null), "unverified"],
+    ["HTTP 429", classifyAbsence(rec(429), null), "unverified"],
+    ["redirect with no Location", classifyAbsence(rec(308), null), "unverified"],
+    ["redirect to a dead destination", classifyAbsence(rec(308, { location: "/x" }), dead), "unverified"],
+    ["redirect to a 200 that is not published", classifyAbsence(rec(308, { location: "/x" }), rec(200, { hash: "f".repeat(64) })), "served"],
+    ["HTTP 404", classifyAbsence(rec(404), null), "absent"],
+    ["HTTP 200", classifyAbsence(rec(200), null), "served"],
+  ];
+  for (const [what, got, want] of cases) {
+    if (got.kind !== want) fails.push(`absence classifier called ${what} "${got.kind}", expected "${want}"`);
+  }
+  if (!fails.some((f) => f.startsWith("absence classifier"))) {
+    console.log(`  absence classifier: ${cases.length} inert cases, transport/5xx/redirect never read as absent`);
+  }
 
   for (const f of fails) console.log("  SELF-TEST FAILED: " + f);
-  if (fails.length) process.exit(1);
+  if (fails.length) selfTestFailed = true;
 }
 
-if (findings) {
-  console.log(`\n${findings} DELIVERY FINDING(S) — ${BASE} is not serving what dist holds`);
-  process.exit(1);
+/* process.exitCode, not process.exit(): on Windows, Node aborts with a libuv assertion (exit 127)
+ * when process.exit() runs while fetch's keep-alive sockets are still open. Still non-zero, but
+ * an operator reading a native crash after a deploy would be right to distrust the whole run. */
+if (findings || selfTestFailed) {
+  if (findings) {
+    console.log(`\n${findings} DELIVERY FINDING(S) -- ${BASE} is not verified as serving what dist holds and nothing more`);
+  }
+  process.exitCode = 1;
+} else {
+  console.log(`\ncheck-live-delivery OK: all ${targets.length} files in dist arrive from ${BASE} with HTTP 200, ` +
+    `byte-identical and correctly typed; all ${confirmedAbsent} of the ${probing.length} unpublished repo paths ` +
+    `were CONFIRMED not served (404/410/401/403).`);
 }
-console.log(`\ncheck-live-delivery OK: all ${targets.length} files in dist arrive from ${BASE} with HTTP 200, ` +
-  `byte-identical and correctly typed; none of the ${probing.length} unpublished repo paths is served.`);

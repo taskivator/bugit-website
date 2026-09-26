@@ -36,6 +36,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { REVIEWED_CSP_HOSTS, parseCsp } from './lib/headers-policy.mjs';
+
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const read = (f) => fs.readFileSync(path.join(root, f), 'utf8');
 
@@ -95,33 +97,42 @@ check(
 // --- nothing else may appear ---------------------------------------------
 // Any destination not on this list is either an accident or an undisclosed
 // processor, and both should stop a build.
-const APPROVED = [
-  'static.cloudflareinsights.com',
-  'cloudflareinsights.com',
-  'www.googletagmanager.com',
-  'www.google.com',
-  'google.com',
-  'www.google.co.jp',
-  'www.googleadservices.com',
-  'googleads.g.doubleclick.net',
-  'td.doubleclick.net',
-  'ad.doubleclick.net',
-  'pagead2.googlesyndication.com',
-  'www.google-analytics.com',
-  'region1.google-analytics.com',
-  'portal.bugit.dev',
-  // The channel section's player. Approved deliberately, and only in this form: see the
-  // three checks below, which assert that the tracking host is NOT granted and that the
-  // embed is click-gated rather than loaded with the page.
-  'www.youtube-nocookie.com',
-];
-for (const h of new Set([...csp.matchAll(/https:\/\/([a-z0-9.-]+)/g)].map((m) => m[1]))) {
+// The list lives in scripts/lib/headers-policy.mjs, shared with check-security-headers.mjs, so
+// the two guards over one CSP cannot keep two lists that drift.
+const APPROVED = REVIEWED_CSP_HOSTS;
+
+// EVERY SOURCE TOKEN, NOT EVERY `https://host` SUBSTRING (CR-08-F22). This used to enumerate
+// only tokens shaped like `https://host`, so the broadest grants of all were invisible to it:
+// `*`, a bare `https:` scheme, `https://*.example.com`, a scheme-less `evil.example` or an
+// `http://` host each admit destinations no one approved, and none of them matched the regex.
+// Now every source in every directive must be a keyword or `data:` (whose placement
+// check-security-headers.mjs judges) or exactly `https://<approved host>`.
+function unapprovedSources(policy) {
+  const out = [];
+  for (const [name, sources] of parseCsp(policy).directives) {
+    for (const src of sources) {
+      if (/^'[^']*'$/.test(src) || src.toLowerCase() === 'data:') continue;
+      const m = src.match(/^https:\/\/([a-z0-9.-]+)\/?$/i);
+      if (!m || !APPROVED.includes(m[1].toLowerCase())) out.push(`${name} ${src}`);
+    }
+  }
+  return out;
+}
+for (const g of unapprovedSources(csp.replace(/^Content-Security-Policy:\s*/i, ''))) {
   check(
-    APPROVED.includes(h),
-    `${h} is granted by the CSP but is not an approved destination`,
-    'Add it here deliberately, with a privacy disclosure, or remove it from _headers.',
+    false,
+    `${g} is granted by the CSP but is not an approved destination`,
+    'Add the exact https host deliberately, with a privacy disclosure, or remove it from _headers. ' +
+      'Wildcards, bare schemes and http hosts are never approved.',
   );
 }
+// Negative control, every run: broad grants the old regex could not see must be reported here.
+for (const planted of ["connect-src 'self' *", "img-src https:", "script-src https://*.google.com",
+  "connect-src evil.example", "img-src http://www.google.com", "connect-src https://unreviewed.example"]) {
+  check(unapprovedSources(planted).length > 0, `self-test: the allowlist accepted "${planted}"`);
+}
+check(unapprovedSources("img-src 'self' data: https://www.google.com").length === 0,
+  'self-test: the allowlist rejected an approved host');
 
 // --- the embedded player: the right host, and only after a click ----------
 // An allowlist entry says a host MAY be reached. These three say how, because the

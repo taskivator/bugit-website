@@ -5,6 +5,7 @@
  *   npm run purge -- https://bugit.dev/public/docs/guide.pdf [more urls...]
  *   npm run purge -- --everything
  *   npm run purge -- --check https://bugit.dev/server.js     (measure only, purge nothing)
+ *   node scripts/purge-cache.mjs --self-test                    (the verdict over inert records)
  *
  * WHY THIS EXISTS. For three weeks this repository's notes recorded that the estate could
  * publish but not evict, and that a stale asset therefore had only two remedies: wait for the
@@ -74,7 +75,9 @@ function mainCheckoutSibling(name, file) {
 /* A null PATH means "the process environment" to the reader below, so a lookup that failed to
  * resolve must be dropped rather than passed along as one -- otherwise a missing git would
  * silently re-read the environment under a label claiming it read a file. */
-const SOURCES = [
+/* Built on first use, not at import: even LOCATING the credential files (the git call above) is
+ * credential discovery, and --check must do none of it (CR-08-F26). */
+const credentialSources = () => [
   ["process env", null],
   [".env.deploy.local", join(ROOT, ".env.deploy.local")],
   ["../bugit-portal/.env.deploy.local", join(ROOT, "..", "bugit-portal", ".env.deploy.local")],
@@ -83,7 +86,11 @@ const SOURCES = [
 const NAMES = ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_TOKEN_PURGE", "CLOUDFLARE_TOKEN_DEPLOY"];
 
 function findToken() {
-  for (const [label, path] of SOURCES) {
+  // A tripwire, not a courtesy. --check branches before this is ever reached; if a later edit
+  // moves a credential read above that branch, the inspection fails loudly instead of quietly
+  // growing a secret prerequisite again.
+  if (CHECK_ONLY) throw new Error("--check reached credential discovery; it must never need a credential");
+  for (const [label, path] of credentialSources()) {
     if (path === null) {
       for (const n of NAMES) if (process.env[n]) return { label: `${label}:${n}`, value: process.env[n] };
       continue;
@@ -105,9 +112,10 @@ const fp = (v) => createHash("sha256").update("bugit-env-fingerprint-v1:").updat
 const argv = process.argv.slice(2);
 const EVERYTHING = argv.includes("--everything");
 const CHECK_ONLY = argv.includes("--check");
+const SELF_TEST = argv.includes("--self-test");
 const urls = argv.filter((a) => !a.startsWith("--"));
 
-if (!EVERYTHING && !urls.length) {
+if (!EVERYTHING && !urls.length && !SELF_TEST) {
   console.error("usage: npm run purge -- <url> [url...]   |   --everything   |   --check <url>");
   process.exit(2);
 }
@@ -123,9 +131,23 @@ for (const u of urls) {
 /* ------------------------------------------------------------------ probing
  * Status FIRST, then bytes. A 404 body hashes just as happily as a real one, and reading the
  * body before the status is how a missing file once passed as a delivered one. */
+/* Every record carries a KIND, because "the request failed" and "the URL answered" are different
+ * facts (CR-08-F27). A transport error used to be status 0 with an empty digest, which differs
+ * from any real answer, so a successful BEFORE followed by a dead socket AFTER counted as
+ * "CHANGED" and the run ended "evicted, verified at the edge". Now:
+ *   observed     -- the origin answered with a status below 500 (200, a redirect, a 404 or 410)
+ *   server-error -- it answered 5xx: something is wrong, nothing about the cache is learned
+ *   unreachable  -- no answer at all (DNS, reset, timeout)
+ * Only two OBSERVED records can be compared. */
+const PROBE_TIMEOUT_MS = 30000;
+const kindOf = (p) => (p.status === 0 ? "unreachable" : p.status >= 500 ? "server-error" : "observed");
 async function probe(url) {
   try {
-    const res = await fetch(url, { redirect: "manual", headers: { "User-Agent": "bugit-purge-check" } });
+    const res = await fetch(url, {
+      redirect: "manual",
+      headers: { "User-Agent": "bugit-purge-check" },
+      signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+    });
     const body = res.status === 200 ? Buffer.from(await res.arrayBuffer()) : Buffer.alloc(0);
     return {
       status: res.status,
@@ -139,7 +161,80 @@ async function probe(url) {
   }
 }
 
-const fmt = (p) => `HTTP ${p.status}  cf-cache:${p.cache}  age:${p.age}  ${p.bytes} bytes  ${p.sha}`;
+const fmt = (p) => p.status === 0
+  ? `UNREACHABLE  ${p.error}`
+  : `HTTP ${p.status}  cf-cache:${p.cache}  age:${p.age}  ${p.bytes} bytes  ${p.sha}` +
+    (kindOf(p) === "server-error" ? "  <- SERVER ERROR, not an observation of the cache" : "");
+
+/* The post-purge verdict for one URL, as a pure function of its BEFORE and AFTER records, so the
+ * self-test below can hold it to inert fixtures without purging anything. Only an OBSERVED after
+ * can clear a URL, and only an observed pair can differ: a before that was observed and an after
+ * that failed is the exact pair that used to read as "CHANGED". */
+function judge(b, a) {
+  const afterSeen = kindOf(a) === "observed";
+  const changed = afterSeen && kindOf(b) === "observed" && (a.status !== b.status || a.sha !== b.sha);
+  const age = a.age === "-" ? null : Number(a.age);
+  const freshMiss = afterSeen && a.cache === "MISS" && (age === null || age <= 60);
+  const staleMiss = afterSeen && a.cache === "MISS" && age !== null && age > 60;
+  let verdict;
+  if (!afterSeen) verdict = `UNVERIFIED -- the re-probe was ${kindOf(a)}; nothing is known about this URL`;
+  else if (changed) verdict = "CHANGED -- the URL now serves something different";
+  else if (freshMiss) verdict = "EVICTED -- refetched from origin; same bytes, which is correct";
+  else if (staleMiss) verdict = "NOT EVICTED -- served from ABOVE the zone cache";
+  else verdict = `NOT EVICTED -- still ${a.cache}`;
+  return { cleared: changed || freshMiss, staleMiss, verdict };
+}
+
+/* --self-test: no network, no credential, no purge. Each row is a before/after pair and whether
+ * it may count as evicted. The first two rows are the pairs the old `changed` accepted. */
+if (SELF_TEST) {
+  const ok200 = { status: 200, cache: "HIT", age: "3000", bytes: 10, sha: "aaaaaaaaaaaa" };
+  const rows = [
+    ["200 HIT, then a transport error", ok200, { status: 0, cache: "-", age: "-", bytes: 0, sha: "-", error: "ECONNRESET" }, false],
+    ["200 HIT, then HTTP 503", ok200, { status: 503, cache: "-", age: "-", bytes: 0, sha: "-" }, false],
+    ["200 HIT, then the same bytes still HIT", ok200, { ...ok200 }, false],
+    ["200 HIT, then a MISS already 34h old", ok200, { ...ok200, cache: "MISS", age: "124511" }, false],
+    ["unreachable before, then 200 HIT", { status: 0, cache: "-", age: "-", bytes: 0, sha: "-" }, { ...ok200 }, false],
+    ["200, then 404 (a removed file)", ok200, { status: 404, cache: "-", age: "-", bytes: 0, sha: "-" }, true],
+    ["200, then new bytes", ok200, { ...ok200, cache: "MISS", age: "0", sha: "bbbbbbbbbbbb" }, true],
+    ["200, then the same bytes on a fresh MISS", ok200, { ...ok200, cache: "MISS", age: "-" }, true],
+  ];
+  let bad = 0;
+  for (const [what, b, a, want] of rows) {
+    const got = judge(b, a).cleared;
+    console.log(`  ${got === want ? "ok  " : "FAIL"}  ${what}: ${got ? "counts as evicted" : "not evicted"}`);
+    if (got !== want) bad++;
+  }
+  console.log(bad ? `\npurge-cache self-test: ${bad} FAILED` : "\npurge-cache self-test: OK");
+  process.exit(bad ? 1 : 0);
+}
+
+/* ------------------------------------------------------------------ --check
+ * A PUBLIC INSPECTION NEEDS NO CREDENTIAL (CR-08-F26). This branch used to sit after findToken()
+ * and an authenticated `zones?name=` query, so measuring public URLs read a deploy token (from
+ * a SIBLING repository's env file if need be) and contacted the Cloudflare account, and on a
+ * clean reviewer machine it failed with "No Cloudflare API token found" before measuring
+ * anything. It also exited 0 when every probe had failed. It now runs first, touches only the
+ * public URLs it was given, and exits non-zero when any of them could not be observed. */
+if (CHECK_ONLY) {
+  if (!urls.length) {
+    console.error("--check needs at least one https://bugit.dev/ URL to measure");
+    process.exit(2);
+  }
+  let unobserved = 0;
+  for (const u of urls) {
+    const p = await probe(u);
+    if (kindOf(p) !== "observed") unobserved++;
+    console.log(`now     ${u}\n        ${fmt(p)}`);
+  }
+  console.log("");
+  if (unobserved) {
+    console.log(`--check: nothing purged. ${unobserved} of ${urls.length} URL(s) could NOT be observed; this is not a measurement of them.`);
+    process.exit(1);
+  }
+  console.log("--check: nothing purged. No credential was read and the Cloudflare API was not contacted.");
+  process.exit(0);
+}
 
 /* ------------------------------------------------------------------ run */
 const cred = findToken();
@@ -179,15 +274,12 @@ for (const u of urls) {
 }
 if (urls.length) console.log("");
 
-if (CHECK_ONLY) {
-  console.log("--check: nothing purged.");
-  process.exit(0);
-}
-
 const payload = EVERYTHING ? { purge_everything: true } : { files: urls };
 const res = await cf(`zones/${zoneId}/purge_cache`, { method: "POST", body: JSON.stringify(payload) });
-if (!res.ok) {
-  console.error(`purge REFUSED: HTTP ${res.status} ${errs(res.body)}`);
+// Cloudflare's envelope carries its own verdict. An HTTP 200 whose JSON says success:false, or
+// that is not JSON at all, is not an accepted purge.
+if (!res.ok || res.body?.success !== true) {
+  console.error(`purge REFUSED: HTTP ${res.status} success=${res.body?.success} ${errs(res.body)}`);
   if (res.status === 401 || res.status === 403) {
     console.error("This credential cannot purge. It needs Zone > Cache Purge on bugit.dev.");
   }
@@ -195,8 +287,10 @@ if (!res.ok) {
 }
 console.log(EVERYTHING ? "purge_everything accepted by Cloudflare" : `purge accepted by Cloudflare for ${urls.length} url(s)`);
 
-if (EVERYTHING || !urls.length) {
-  console.log("Nothing to verify by URL. Re-run with explicit URLs to prove an eviction.");
+// --everything with URLs used to skip verifying the URLs it had been given. Only a run with no
+// URL at all has nothing to verify, and it says so rather than claiming an eviction.
+if (!urls.length) {
+  console.log("ACCEPTED, NOT VERIFIED: nothing to verify by URL. Re-run with explicit URLs to prove an eviction.");
   process.exit(0);
 }
 
@@ -218,16 +312,7 @@ const failed = [];
 for (const u of urls) {
   const b = before.get(u);
   const a = await probe(u);
-  const changed = a.status !== b.status || a.sha !== b.sha;
-  const age = a.age === "-" ? null : Number(a.age);
-  const freshMiss = a.cache === "MISS" && (age === null || age <= 60);
-  const staleMiss = a.cache === "MISS" && age !== null && age > 60;
-
-  let verdict;
-  if (changed) verdict = "CHANGED -- the URL now serves something different";
-  else if (freshMiss) verdict = "EVICTED -- refetched from origin; same bytes, which is correct";
-  else if (staleMiss) verdict = "NOT EVICTED -- served from ABOVE the zone cache";
-  else verdict = `NOT EVICTED -- still ${a.cache}`;
+  const { cleared, staleMiss, verdict } = judge(b, a);
 
   console.log(`after   ${u}\n        ${fmt(a)}\n        ${verdict}`);
   if (staleMiss) {
@@ -237,13 +322,13 @@ for (const u of urls) {
     console.log(`        ABOVE the zone cache, which purge_cache does not reach. It leaves when`);
     console.log(`        its own TTL expires, or when the origin stops being asked for that path.`);
   }
-  if (!changed && !freshMiss) failed.push(u);
+  if (!cleared) failed.push(u);
 }
 
 console.log("");
 if (failed.length) {
-  console.log(`${failed.length} of ${urls.length} URL(s) were NOT evicted. Cloudflare accepted the purge; ` +
-    `the object did not move. Do not record these as purged:`);
+  console.log(`${failed.length} of ${urls.length} URL(s) were NOT evicted or could not be verified. Cloudflare ` +
+    `accepted the purge; the edge did not show it. Do not record these as purged:`);
   for (const u of failed) console.log(`  - ${u}`);
   process.exit(1);
 }

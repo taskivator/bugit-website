@@ -13,7 +13,7 @@
  * Each case below is written so that the PRE-FIX behaviour is a hang, and a hang here is a
  * recorded failure rather than a stopped clock: every case runs under its own deadline.
  */
-import { browserSession, withDeadline } from "./lib/browser-session.mjs";
+import { browserSession, disposeWithin, withDeadline } from "./lib/browser-session.mjs";
 
 const fail = [];
 const ok = (m) => console.log(`  ok    ${m}`);
@@ -126,6 +126,80 @@ await within(5_000, "when the replacement is dead too, it reports rather than wa
   } else ok("a second dead browser is a reported failure, not a second infinite wait");
 });
 
+/* --- 7. THE RECOVERY IS BOUNDED TOO (CR-08-F29) -------------------------
+ * Only the first open used to be under a clock. The recovery then awaited `close()` and
+ * `launch()` with none, and a wedged browser's close is exactly as likely to never answer as its
+ * newContext. Before the fix this case is a hang, which `within` records as a failure. */
+const wedgedBrowser = (name) => ({
+  name,
+  closeCalls: 0,
+  newContext() { return new Promise(() => {}); },
+  close() { this.closeCalls += 1; return new Promise(() => { /* never settles */ }); },
+});
+
+await within(3_000, "a close that never settles does not stop the relaunch", async () => {
+  const wedged = wedgedBrowser("wedged");
+  const session = browserSession({
+    browser: wedged, timeoutMs: 120, recoveryMs: 600, closeMs: 100,
+    launch: async () => liveBrowser("fresh"),
+    open: (b) => b.newContext(),
+  });
+  const ctx = await session.context("newContext");
+  if (!ctx || ctx.on !== "fresh") fail.push(`expected a context on the relaunched browser, got ${JSON.stringify(ctx)}`);
+  if (wedged.closeCalls !== 1) fail.push(`the wedged browser's close should be attempted once, saw ${wedged.closeCalls}`);
+  else ok("a never-settling close is abandoned at its slice of the budget and the relaunch proceeds");
+});
+
+await within(3_000, "a launch that never settles is a named failure inside the budget", async () => {
+  const started = Date.now();
+  const session = browserSession({
+    browser: deadRendererBrowser("dead"), timeoutMs: 100, recoveryMs: 400,
+    launch: () => new Promise(() => { /* never settles */ }),
+    open: (b) => b.newContext(),
+  });
+  let raised = null;
+  try { await session.context("newContext"); } catch (e) { raised = e; }
+  const took = Date.now() - started;
+  if (!raised) fail.push("a launch that never answered produced a context");
+  else if (!/relaunch/.test(raised.message) || !/first failure/.test(raised.message)) {
+    fail.push(`the failure must name the relaunch stage and keep the first failure: ${raised.message}`);
+  } else if (took > 100 + 400 + 300) fail.push(`recovery overran its budget: ${took}ms`);
+  else ok(`a never-settling launch fails in ${took}ms, naming the stage and the original failure`);
+});
+
+/* --- 8. resources that arrive after their deadline are disposed, once ---- */
+await within(3_000, "late contexts and late browsers are closed when they arrive", async () => {
+  // The first open answers, but only after its deadline: that context has no owner.
+  const lateCtx = { closes: 0, close() { this.closes += 1; return Promise.resolve(); } };
+  const slow = {
+    name: "slow",
+    closed: false,
+    newContext() { return new Promise((r) => setTimeout(() => r(lateCtx), 200)); },
+    async close() { this.closed = true; },
+  };
+  // The relaunch also answers only after the whole recovery budget has gone.
+  const lateBrowser = { closes: 0, close() { this.closes += 1; return Promise.resolve(); } };
+  const session = browserSession({
+    browser: slow, timeoutMs: 80, recoveryMs: 150, closeMs: 50,
+    launch: () => new Promise((r) => setTimeout(() => r(lateBrowser), 400)),
+    open: (b) => b.newContext(),
+  });
+  try { await session.context("newContext"); } catch { /* expected: the relaunch overran */ }
+  await new Promise((r) => setTimeout(r, 600)); // let both late arrivals land
+  if (lateCtx.closes !== 1) fail.push(`a context that arrived after its deadline was closed ${lateCtx.closes} time(s), expected 1`);
+  if (lateBrowser.closes !== 1) fail.push(`a browser that arrived after the budget was closed ${lateBrowser.closes} time(s), expected 1`);
+  if (lateCtx.closes === 1 && lateBrowser.closes === 1) ok("a late context and a late browser are each disposed exactly once");
+});
+
+/* --- 9. disposeWithin itself never waits past its clock ------------------ */
+await within(2_000, "disposeWithin gives up on a close that never settles", async () => {
+  const started = Date.now();
+  const closed = await disposeWithin(wedgedBrowser("w"), 100, "close");
+  if (closed !== false) fail.push("disposeWithin reported a never-settling close as completed");
+  else if (Date.now() - started > 1_000) fail.push("disposeWithin waited far past its deadline");
+  else ok("disposeWithin returns false at its deadline instead of waiting");
+});
+
 /* --- 6. check-routing must actually USE this ---------------------------- */
 await within(5_000, "check-routing opens every session through the seam", async () => {
   const { readFileSync } = await import("node:fs");
@@ -142,7 +216,12 @@ await within(5_000, "check-routing opens every session through the seam", async 
     if (/const newSession|function |=>\s*b\./.test(line)) continue;  // the helper's own definition
     fail.push(`check-routing opens a session with no deadline, which can wait forever: ${line.slice(0, 100)}`);
   }
-  if (!fail.length) ok("check-routing has no unguarded session opener and no isConnected() guard");
+  // And every close must be under a clock: `await x.close().catch(...)` waits forever on a
+  // close that never settles (CR-08-F29).
+  for (const m of src.matchAll(/^(?!\s*(?:\/\/|\/?\*)).*\bawait\s+[\w.()]+\.close\(\)/gm)) {
+    fail.push(`check-routing awaits a close with no deadline, which can wait forever: ${m[0].trim().slice(0, 100)}`);
+  }
+  if (!fail.length) ok("check-routing has no unguarded session opener, close, or isConnected() guard");
 });
 
 if (fail.length) {

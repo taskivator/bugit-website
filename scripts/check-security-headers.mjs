@@ -22,23 +22,23 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const raw = fs.readFileSync(path.join(ROOT, "_headers"), "utf8");
+import {
+  ALLOWED_ACAO, cspProblems, parseHeadersRules, routeProblems,
+} from "./lib/headers-policy.mjs";
 
-// --- Parse _headers into [{ pattern, headers }]. Same grammar check-cache-headers.mjs uses:
-//     an unindented line opens a rule, an indented "Name: value" adds a header to it, and a
-//     line whose first non-space character is '#' is a comment even when indented.
-const rules = [];
-let current = null;
-for (const line of raw.split(/\r?\n/)) {
-  if (!line.trim() || line.trim().startsWith("#")) continue;
-  if (!/^\s/.test(line)) {
-    current = { pattern: line.trim(), headers: {} };
-    rules.push(current);
-  } else if (current) {
-    const m = line.trim().match(/^([^:]+):\s*(.*)$/);
-    if (m) current.headers[m[1].toLowerCase()] = m[2].trim();
-  }
+const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+// HEADERS_FILE points the guard at a planted copy, so a weakened policy can be proven to fail
+// without editing the real _headers. Unset, it reads the repository's own file.
+const HEADERS_PATH = process.env.HEADERS_FILE ? path.resolve(process.env.HEADERS_FILE) : path.join(ROOT, "_headers");
+const raw = fs.readFileSync(HEADERS_PATH, "utf8");
+
+// --- Parse _headers. An unindented line opens a rule, an indented "Name: value" adds a header to
+//     it, "! Name" detaches one, and a line whose first non-space character is '#' is a comment
+//     even when indented. Every occurrence is kept: see scripts/lib/headers-policy.mjs.
+const rules = parseHeadersRules(raw);
+for (const r of rules) {
+  r.byName = {};
+  for (const { name, value } of r.headers) if (!(name in r.byName)) r.byName[name] = value;
 }
 
 const catchAll = rules.find((r) => r.pattern === "/*");
@@ -88,12 +88,13 @@ const REQUIRED = [
   ],
   [
     "content-security-policy",
-    (v) =>
-      /default-src\s+'self'/.test(v) &&
-      /object-src\s+'none'/.test(v) &&
-      /base-uri\s+'self'/.test(v) &&
-      /frame-ancestors/.test(v),
-    "must set default-src 'self', object-src 'none', base-uri 'self' and frame-ancestors",
+    // Parsed and judged per directive and per source (CR-08-F22). This used to test four
+    // substrings, so `frame-ancestors *`, `script-src *` or `'unsafe-inline'` on scripts all
+    // passed as long as the four words survived. See scripts/lib/headers-policy.mjs.
+    (v) => cspProblems(v).length === 0,
+    "default-src 'self', object-src 'none', base-uri 'self', frame-ancestors 'self' or 'none', " +
+      "script-src and form-action stated; every source 'self', a reviewed https host, " +
+      "'unsafe-inline' only on style-src and data: only on img-src/font-src",
   ],
   [
     "cross-origin-opener-policy",
@@ -105,17 +106,63 @@ const REQUIRED = [
   ],
   [
     "access-control-allow-origin",
-    (v) => v !== "*",
-    "Cloudflare's default is '*'; public marketing content needs no cross-origin sharing",
+    // Exactly the site origin. `v !== "*"` also passed `null` and any foreign origin.
+    (v) => ALLOWED_ACAO.includes(v),
+    `Cloudflare's default is '*'; public marketing content needs no cross-origin sharing, so it must be exactly ${ALLOWED_ACAO.join(" or ")}`,
   ],
 ];
 
-for (const [header, ok, description] of REQUIRED) {
-  const value = catchAll.headers[header];
-  if (value === undefined) {
-    check(false, `/* does not send ${header}`, description);
-  } else {
-    check(ok(value), `/* sends ${header}, but the value is wrong`, `${description}\n      got: ${value}`);
+/** Every problem with one parsed _headers, as strings. Pure, so the negative controls below can
+ *  run it over planted inputs. */
+function headerProblems(ruleSet) {
+  const out = [];
+  const all = ruleSet.find((r) => r.pattern === "/*");
+  if (!all) return ["_headers must have a /* rule that every response inherits"];
+  for (const [header, ok, description] of REQUIRED) {
+    const value = all.byName[header];
+    if (value === undefined) out.push(`/* does not send ${header}\n      ${description}`);
+    else if (!ok(value)) {
+      const extra = header === "content-security-policy" ? cspProblems(value).map((p) => `\n      - ${p}`).join("") : "";
+      out.push(`/* sends ${header}, but the value is wrong\n      ${description}\n      got: ${value}${extra}`);
+    }
+  }
+  // Cloudflare applies EVERY matching rule, so the catch-all is not the whole answer: a later
+  // rule can set a second copy or detach one with "! Name" for the paths it matches.
+  out.push(...routeProblems(ruleSet));
+  return out;
+}
+
+for (const p of headerProblems(rules)) check(false, p);
+
+/* NEGATIVE CONTROLS, run every time. Each plants one weakening into an in-memory copy of the real
+ * rules and requires headerProblems to see it. If the predicate ever goes soft again, the guard
+ * fails on its own reach instead of printing a PASS it cannot back. */
+{
+  const csp = catchAll.byName["content-security-policy"] || "";
+  const withCsp = (next) => rules.map((r) => r === catchAll
+    ? { ...r, headers: r.headers.map((h) => h.name === "content-security-policy" ? { ...h, value: next } : h),
+        byName: { ...r.byName, "content-security-policy": next } }
+    : r);
+  const setDir = (name, val) => csp.replace(new RegExp(`(^|;\\s*)${name}\\s[^;]*`), `$1${name} ${val}`);
+  const dropDir = (name) => csp.replace(new RegExp(`(^|;)\\s*${name}\\s[^;]*;?`), "$1");
+  const planted = [
+    ["frame-ancestors *", withCsp(setDir("frame-ancestors", "*"))],
+    ["frame-ancestors with a foreign host", withCsp(setDir("frame-ancestors", "'self' https://evil.example"))],
+    ["script-src *", withCsp(setDir("script-src", "*"))],
+    ["script-src 'self' https:", withCsp(setDir("script-src", "'self' https:"))],
+    ["script-src 'unsafe-inline'", withCsp(setDir("script-src", "'self' 'unsafe-inline'"))],
+    ["an unreviewed wildcard host in connect-src", withCsp(setDir("connect-src", "'self' https://*.google.com"))],
+    ["object-src 'self'", withCsp(setDir("object-src", "'self'"))],
+    ["base-uri missing", withCsp(dropDir("base-uri"))],
+    ["form-action missing", withCsp(dropDir("form-action"))],
+    ["script-src missing", withCsp(dropDir("script-src"))],
+    ["a looser duplicate default-src first", withCsp(`default-src *; ${csp}`)],
+    ["ACAO null", rules.map((r) => r === catchAll ? { ...r, byName: { ...r.byName, "access-control-allow-origin": "null" } } : r)],
+    ["a route rule detaching the CSP", [...rules, { pattern: "/public/*", headers: [], detached: ["content-security-policy"], byName: {} }]],
+    ["a route rule adding a second ACAO", [...rules, { pattern: "/x/*", headers: [{ name: "access-control-allow-origin", value: "*" }], detached: [], byName: {} }]],
+  ];
+  for (const [what, ruleSet] of planted) {
+    check(headerProblems(ruleSet).length > 0, `self-test: the guard ACCEPTED a planted weakening (${what})`);
   }
 }
 
@@ -137,5 +184,5 @@ if (fails) {
 
 console.log(
   `check-security-headers: PASS — /* sends all ${REQUIRED.length} required security headers ` +
-    `(COOP: ${catchAll.headers["cross-origin-opener-policy"]}).`,
+    `(COOP: ${catchAll.byName["cross-origin-opener-policy"]}; CSP judged per directive; every planted weakening refused).`,
 );

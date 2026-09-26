@@ -21,7 +21,7 @@
  * meet in renderDocRoute() and a route can render in English and not in Japanese.
  */
 import { chromium } from "playwright";
-import { browserSession, withDeadline } from "./lib/browser-session.mjs";
+import { browserSession, disposeWithin, withDeadline } from "./lib/browser-session.mjs";
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import net from "node:net";
@@ -100,6 +100,9 @@ const okDoc = (s) => s.docHidden === false && s.homeHidden === true && !s.notFou
  * three fixes here because nothing can ask Chromium to die on cue; behind that seam a fake
  * that never answers reproduces it in milliseconds (scripts/check-browser-session.mjs). */
 const CONTEXT_TIMEOUT_MS = 30_000;
+/* Cleanup is under a clock too (CR-08-F29). `await ctx.close().catch(...)` handles a close that
+   REJECTS and waits forever on one that never settles, which is what a wedged browser does. */
+const CLOSE_TIMEOUT_MS = 10_000;
 const newSession = (b) => b.newContext({ viewport: { width: 1280, height: 900 } });
 const session = browserSession({
   browser: firstBrowser,
@@ -139,7 +142,7 @@ for (const lang of LANGS) {
     page = await withDeadline(ctx.newPage(), CONTEXT_TIMEOUT_MS, `newPage [${lang}]`);
   } catch (e3) {
     fail.push(`SETUP  [${lang}] could not open a page: ${String(e3).slice(0, 120)}`);
-    await ctx.close().catch(() => { /* a crashed context cannot be closed cleanly */ });
+    await disposeWithin(ctx, CLOSE_TIMEOUT_MS, `close context [${lang}]`);
     continue;
   }
   page.setDefaultNavigationTimeout(NAV_TIMEOUT_MS);
@@ -247,7 +250,7 @@ for (const lang of LANGS) {
     fail.push(`CRASH  [${lang}] the page did not survive this language: ${why}`);
     process.stdout.write(`  ${lang.padEnd(6)} FAILED: ${why}\n`);
   } finally {
-    await ctx.close().catch(() => { /* a crashed context cannot be closed cleanly */ });
+    await disposeWithin(ctx, CLOSE_TIMEOUT_MS, `close context [${lang}]`);
   }
 }
 
@@ -287,8 +290,8 @@ try {
   } else {
     console.log("  (skipped the HTTP-404 check: set LIVE_ORIGIN to ask the deployed host)");
   }
-  await page.close();
-  await ctx404.close().catch(() => { /* a crashed context cannot be closed cleanly */ });
+  await disposeWithin(page, CLOSE_TIMEOUT_MS, "close page [404 route]");
+  await disposeWithin(ctx404, CLOSE_TIMEOUT_MS, "close context [404 route]");
 } catch (e) {
   /* This block had no handler at all, so anything thrown here skipped the verdict entirely
      and the run ended with a stack trace instead of a list of findings. It is a finding like
@@ -298,7 +301,7 @@ try {
 
 /* CLOSE THE BROWSER WE ARE ACTUALLY HOLDING. After a relaunch the original handle is
    stale, and closing that one leaks the live Chromium and its temp profile. */
-await session.current().close().catch(() => { /* nothing left to close is the success case */ });
+await session.dispose(CLOSE_TIMEOUT_MS);
 server.kill();
 
 if (fail.length) { console.error(`\ncheck-routing FAILED (${fail.length}):\n - ` + fail.join("\n - ")); process.exit(1); }

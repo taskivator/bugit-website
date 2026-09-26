@@ -60,16 +60,76 @@ for (const lang of langs) {
 // HTML source it was printed from. Comparing against it proves the served bytes are the ones that
 // were synced; running `node scripts/sync-guides.mjs --agent <path> --check` proves those are
 // still what the agent publishes (it needs the agent repo, so it is a seller step, not a CI one).
+//
+// A COUNT IS NOT COVERAGE (CR-08-F17). This used to check only that the manifest listed
+// languages x 2 entries and that each LISTED entry hashed correctly. The presence loop above and
+// this hash loop never compared path identities, so a manifest that listed en/overview.pdf twice
+// and fr/user-guide.pdf not at all had the right count, every listed hash matched, and the
+// unlisted guide was served with no integrity check at all. The manifest's path set must now equal
+// the expected set exactly: no duplicate, no missing, no extra, and no path that is not one of the
+// literal expected identities (which also rules out "../" escapes and absolute paths, since only
+// "<lang>/<file>.pdf" strings drawn from docGuideLangs can match). Every entry needs a 64-hex digest.
+const GUIDE_PDFS = ["user-guide.pdf", "overview.pdf"];
+function manifestCoverageProblems(entries, langList) {
+  const problems = [];
+  if (!Array.isArray(entries)) return ["guides-manifest.json has no `guides` array"];
+  const expectedSet = new Set(langList.flatMap((l) => GUIDE_PDFS.map((p) => `${l}/${p}`)));
+  const seen = new Set();
+  for (const g of entries) {
+    const file = g?.file;
+    if (typeof file !== "string" || !expectedSet.has(file)) {
+      problems.push(`guides-manifest.json lists an unexpected or unsafe path ${JSON.stringify(file)}`);
+      continue;
+    }
+    if (seen.has(file)) problems.push(`guides-manifest.json lists ${file} more than once`);
+    seen.add(file);
+    if (typeof g.sha256 !== "string" || !/^[0-9a-f]{64}$/.test(g.sha256)) {
+      problems.push(`guides-manifest.json entry ${file} has no valid sha256`);
+    }
+  }
+  for (const want of expectedSet) {
+    if (!seen.has(want)) problems.push(`guides-manifest.json has no integrity entry for ${want}`);
+  }
+  return problems;
+}
+
+// Negative control, run every time: the exact shape that used to pass (right count, one guide
+// duplicated, one missing) must be reported, and a complete unique set must not be. If the
+// predicate ever stops seeing the planted defect, this gate refuses to believe its own zero.
+{
+  const h = "0".repeat(64);
+  const good = ["en", "fr"].flatMap((l) => GUIDE_PDFS.map((p) => ({ file: `${l}/${p}`, sha256: h })));
+  const dup = good.map((g) => ({ ...g }));
+  dup[3] = { ...dup[0] }; // fr/overview.pdf replaced by a second en/user-guide.pdf; count unchanged
+  const escape = good.map((g) => ({ ...g }));
+  escape[1] = { file: "en/../../../secret.pdf", sha256: h };
+  if (manifestCoverageProblems(good, ["en", "fr"]).length) {
+    fail("self-test: coverage predicate rejects a complete unique manifest");
+  }
+  if (!manifestCoverageProblems(dup, ["en", "fr"]).some((p) => /fr\/overview\.pdf/.test(p))) {
+    fail("self-test: coverage predicate accepted a duplicate entry hiding a missing guide");
+  }
+  if (!manifestCoverageProblems(escape, ["en", "fr"]).some((p) => /unsafe/.test(p))) {
+    fail("self-test: coverage predicate accepted a path outside the expected guide set");
+  }
+}
+
 const manifestPath = join(guides, "guides-manifest.json");
 if (!existsSync(manifestPath)) {
   fail("guides-manifest.json (run scripts/sync-guides.mjs)");
 } else {
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-  const expected = langs.length * 2;
+  const expected = langs.length * GUIDE_PDFS.length;
   if (manifest.guides?.length !== expected) {
     fail(`guides-manifest.json lists ${manifest.guides?.length} guides, expected ${expected}`);
   }
-  for (const g of manifest.guides ?? []) {
+  const coverage = manifestCoverageProblems(manifest.guides, langs);
+  for (const p of coverage) fail(p);
+  if (!coverage.length) ok(`guides-manifest.json covers exactly the ${expected} expected guides`);
+  const expectedSet = new Set(langs.flatMap((l) => GUIDE_PDFS.map((p) => `${l}/${p}`)));
+  for (const g of Array.isArray(manifest.guides) ? manifest.guides : []) {
+    // Only literal expected identities are ever joined onto the guide tree.
+    if (!expectedSet.has(g?.file)) continue;
     const path = join(guides, g.file);
     if (!existsSync(path)) {
       fail(`guides-manifest.json references a missing ${g.file}`);
