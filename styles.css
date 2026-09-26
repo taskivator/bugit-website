@@ -8463,7 +8463,7 @@
      over a looping product film is the "cheap" the owner removed in section 111. Moving content
      that starts automatically and lasts more than five seconds needs a way to pause it.
 
-     One control, ON the stage, in the corner a player puts its own: the same mono uppercase
+     One control, ON the stage, at the bottom corner a player puts its own: the same mono uppercase
      label the channel names use, on a solid plate so it reads over any frame of any clip. A
      solid colour and not a backdrop-filter, because a blur behind an opaque plate renders
      nothing and costs a phone a compositor layer (check-compositor-budget). It has a real border
@@ -8472,7 +8472,10 @@
      browser's own controls instead. */
   .demo-pause{
     position:absolute;
-    inset-block-end:var(--s2);inset-inline-end:var(--s2);
+    /* The START corner, not the end: the Guide's launcher is pinned to the end corner of the
+       window in both directions, and on a phone the stage is as wide as the window, so an
+       end-corner control sits under the launcher whenever the stage reaches the bottom. */
+    inset-block-end:var(--s2);inset-inline-start:var(--s2);
     z-index:2;
     display:inline-flex;align-items:center;gap:8px;
     min-height:44px;min-width:44px;

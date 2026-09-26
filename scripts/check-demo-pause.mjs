@@ -19,7 +19,11 @@
 //   4. the channel does not rotate while paused, measured past the full hold interval;
 //   5. pressing it again resumes (play() is called) and relabels it as Pause;
 //   6. under reduced motion the control is hidden, because nothing moves there and the clip
-//      carries the browser's own controls (check-motion step 6).
+//      carries the browser's own controls (check-motion step 6);
+//   7. nothing covers it. The Guide's launcher is pinned to a bottom corner of the window, and
+//      with the stage's bottom edge at the bottom of the window (the worst case, and the normal
+//      one on a phone, where the stage is as tall as the screen) a control in the same corner
+//      is under it. Hit-tested at a desktop and a phone width, left to right and right to left.
 //
 // POSITIVE CONTROL for 4: with the control NOT pressed, the same simulated clip end must rotate
 // the channel. Without it, "did not rotate while paused" is equally consistent with a
@@ -102,6 +106,16 @@ const state = (page) => page.evaluate(() => {
 });
 const scrollToDemo = (page) => page.evaluate(() => document.getElementById("demo").scrollIntoView({ block: "center", behavior: "instant" }));
 const scrollAway = (page) => page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+// Put the stage's bottom edge on the bottom of the window, then ask the browser what a tap at the
+// control's centre would land on.
+const hitTest = (page) => page.evaluate(() => {
+  const frame = document.querySelector(".video-frame");
+  const r0 = frame.getBoundingClientRect();
+  window.scrollBy({ top: r0.bottom - document.documentElement.clientHeight + 2, behavior: "instant" });
+  const b = document.getElementById("demoPause").getBoundingClientRect();
+  const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+  return { onTop: !!(hit && hit.closest("#demoPause")), what: hit ? (hit.id || hit.getAttribute("class") || hit.tagName) + (hit.closest("[id]") ? " in #" + hit.closest("[id]").id : "") : "nothing" };
+});
 // A clip reaching its end, as the rotation code sees it.
 const endActive = (page) => page.evaluate(() => {
   const v = document.querySelector("#demoStack .demo-video.is-active");
@@ -181,6 +195,24 @@ try {
     if (s.plays <= playsAtPause) fail.push(`${lang}: resuming did not ask the clip to play`);
     if (s.text !== L.pause) fail.push(`${lang}: after resuming the control reads "${s.text}", expected "${L.pause}"`);
     note(`${lang}: "${L.pause}" pauses by keyboard, holds through scroll, clip end and channel change, "${L.play}" resumes`);
+    await ctx.close();
+  }
+
+  // 7. Nothing covers it.
+  for (const [w, h, lang] of [[1440, 900, "en"], [390, 844, "en"], [390, 844, "ar"]]) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: h } });
+    await ctx.addCookies([{ name: "bugitLang", value: lang, url: base }]);
+    const page = await ctx.newPage();
+    await page.goto(base + "/", { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(1200);
+    try { await page.locator("#consentReject").click({ timeout: 2500 }); } catch {}
+    await scrollToDemo(page);
+    await page.waitForTimeout(600);
+    const r = await hitTest(page);
+    await page.waitForTimeout(300);
+    const again = await hitTest(page);
+    if (!r.onTop || !again.onTop) fail.push(`${w}px ${lang}: a tap on the pause control lands on ${again.onTop ? r.what : again.what}, not the control`);
+    else note(`${w}px ${lang}: nothing covers the control with the stage at the bottom of the window`);
     await ctx.close();
   }
 
