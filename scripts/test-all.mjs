@@ -435,6 +435,10 @@ const SUITES = [
   //                 before its container is rewritten; otherwise its six window listeners
   //                 outlive it, six more per click (CR-08-F02).
   "check-toc-teardown.mjs",
+  // check-demo-pause     the demo clips autoplay and rotate; a reader must be able to pause
+  //                 them by keyboard, and nothing may restart them while paused (WCAG 2.2.2,
+  //                 CR-08-F08).
+  "check-demo-pause.mjs",
   // check-forced-colors  Windows High Contrast, which nothing above renders in. `forced-colors`
   //                 is not a theme: the UA replaces colour, and it replaces `box-shadow` and
   //                 every gradient with NOTHING rather than with a colour. The focus ring on

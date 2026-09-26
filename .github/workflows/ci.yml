@@ -533,6 +533,12 @@ jobs:
       - name: Verify a document that has gone stops listening
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: node scripts/check-toc-teardown.mjs
+      # The demo clips start by themselves and rotate. WCAG 2.2.2 needs a way to stop them, and
+      # it has to hold: scrolling back, a clip ending and a channel change must not restart
+      # what the reader paused (CR-08-F08). Keyboard, two languages, reduced motion.
+      - name: Verify the demo can be paused and stays paused
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/check-demo-pause.mjs
       # WINDOWS HIGH CONTRAST, and the only step here that runs GECKO. `forced-colors: active`
       # is what a Windows reader with High Contrast on gets: the UA replaces colour, and it
       # replaces every box-shadow and every gradient with NOTHING rather than with a colour.

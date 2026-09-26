@@ -8456,6 +8456,55 @@
        twice and the block grows a third taller than it needs to. */
     .footer nav{gap:10px 18px}
   }
+  /* ---------- 121. The demo can be stopped ------------------------------- */
+  /* WCAG 2.2.2 (CR-08-F08). The demo clips start by themselves when the section scrolls into
+     view and rotate from one channel to the next, and nothing on the page could stop them: the
+     clips carry no native controls outside reduced motion, on purpose, because a player's chrome
+     over a looping product film is the "cheap" the owner removed in section 111. Moving content
+     that starts automatically and lasts more than five seconds needs a way to pause it.
+
+     One control, ON the stage, in the corner a player puts its own: the same mono uppercase
+     label the channel names use, on a solid plate so it reads over any frame of any clip. A
+     solid colour and not a backdrop-filter, because a blur behind an opaque plate renders
+     nothing and costs a phone a compositor layer (check-compositor-budget). It has a real border
+     so Windows High Contrast still draws its edge, and 44px of height for a thumb.
+     Hidden under reduced motion, where nothing starts or rotates and the clip shows the
+     browser's own controls instead. */
+  .demo-pause{
+    position:absolute;
+    inset-block-end:var(--s2);inset-inline-end:var(--s2);
+    z-index:2;
+    display:inline-flex;align-items:center;gap:8px;
+    min-height:44px;min-width:44px;
+    padding:0 14px;
+    border:1px solid var(--rule-hard,rgba(255,255,255,.2));
+    border-radius:999px;
+    background:rgba(12,10,21,.86);
+    color:var(--ink);
+    font-family:var(--mono);
+    font-size:var(--t-3xs);
+    font-weight:500;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:color .2s ease,border-color .2s ease;
+  }
+  .demo-pause[hidden]{display:none}
+  .demo-pause:hover{color:var(--sig);border-color:var(--sig)}
+  /* Two bars while playing (the control pauses), a triangle once paused (it plays). */
+  .demo-pause-icon{
+    flex:none;width:10px;height:12px;
+    background:linear-gradient(90deg,currentColor 0 35%,transparent 35% 65%,currentColor 65% 100%);
+  }
+  .demo-pause.is-paused .demo-pause-icon{
+    background:currentColor;
+    clip-path:polygon(0 0,100% 50%,0 100%);
+  }
+  @media (forced-colors:active){
+    .demo-pause{border-color:ButtonText;background:ButtonFace;color:ButtonText}
+    .demo-pause-icon{forced-color-adjust:none;background:linear-gradient(90deg,ButtonText 0 35%,transparent 35% 65%,ButtonText 65% 100%)}
+    .demo-pause.is-paused .demo-pause-icon{background:ButtonText}
+  }
 }
 
 @layer fixes {

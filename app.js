@@ -1305,10 +1305,17 @@ function initDemo(){
   const order=vids.map(v=>v.dataset.video);
   const rm=window.matchMedia('(prefers-reduced-motion: reduce)');
   let cur=0, visible=false;
+  // THE READER'S PAUSE (CR-08-F08, WCAG 2.2.2). The clips start by themselves and rotate, and
+  // until this there was no way to stop them short of scrolling the section away -- which only
+  // paused them until it came back. `userPaused` is the reader's decision and nothing else may
+  // overrule it: not the intersection observer, not the rotation timer, not a tab click (which
+  // changes the channel and leaves it still), not the portrait source swap. All of those play
+  // through safePlay, so it is honoured in one place.
+  let userPaused=false;
   // Reduced motion means no autoplay, from any caller: the intersection observer, a tab
   // click, a source swap at the portrait breakpoint, and the rotation timer all route
   // through safePlay, so one guard here covers every path instead of one per caller.
-  const safePlay=v=>{if(rm.matches)return;try{const p=v.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}};
+  const safePlay=v=>{if(rm.matches||userPaused)return;try{const p=v.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}};
 
   // Cross-fade to clip i. Only the incoming clip is reset to frame 0, so the
   // outgoing clip holds its last frame while it fades (no jump, no flash).
@@ -1354,9 +1361,9 @@ function initDemo(){
   vids.forEach((v,idx)=>{
     v.loop=false;
     v.addEventListener('ended',()=>{
-      if(rm.matches||idx!==cur)return;
+      if(rm.matches||userPaused||idx!==cur)return;
       cancelHold();
-      holdTimer=setTimeout(()=>{holdTimer=null;if(idx===cur&&visible)show((cur+1)%vids.length);},HOLD_MS);
+      holdTimer=setTimeout(()=>{holdTimer=null;if(idx===cur&&visible&&!userPaused)show((cur+1)%vids.length);},HOLD_MS);
     });
   });
 
@@ -1378,13 +1385,36 @@ function initDemo(){
     if(n!==null){e.preventDefault();tabs[n].focus();const i=order.indexOf(tabs[n].dataset.video);if(i>=0){cancelHold();show(i);}}
   });
 
+  // The control. Its label is the ACTION it will take (Pause while the clips move, Play once
+  // they are held), carried by data-t so a language change relabels it through applyLang like
+  // every other string. It is the accessible name too, so what is seen is what is announced.
+  const pauseBtn=document.getElementById('demoPause');
+  const pauseLabel=pauseBtn&&pauseBtn.querySelector('.demo-pause-label');
+  function renderPause(){
+    if(!pauseBtn)return;
+    pauseBtn.hidden=rm.matches;
+    pauseBtn.classList.toggle('is-paused',userPaused);
+    if(pauseLabel){
+      const key=userPaused?'play':'pause';
+      pauseLabel.dataset.t='demo.'+key;
+      const d=(i18n[currentLang]&&i18n[currentLang].demo)||{};
+      pauseLabel.textContent=d[key]||i18n.en.demo[key];
+    }
+  }
+  pauseBtn&&pauseBtn.addEventListener('click',()=>{
+    userPaused=!userPaused;
+    if(userPaused){cancelHold();vids.forEach(v=>v.pause());}
+    else if(visible)safePlay(vids[cur]);
+    renderPause();
+  });
+
   // Don't decode/play the clips while the section is off-screen (perf + battery).
   new IntersectionObserver(es=>es.forEach(e=>{visible=e.isIntersecting;if(visible)safePlay(vids[cur]);else{cancelHold();vids[cur].pause();}}),{threshold:.25}).observe(stack);
 
   // Reduced motion: no auto-rotation, no fades, no autoplay. safePlay already declines to
   // play, so this just makes the still first clip a normal, pausable video: no loop, and
   // native controls so the visitor can choose to play it.
-  function apply(){applySources();vids.forEach(v=>{v.loop=false;v.controls=rm.matches;});show(rm.matches?0:cur,false);}
+  function apply(){applySources();vids.forEach(v=>{v.loop=false;v.controls=rm.matches;});show(rm.matches?0:cur,false);renderPause();}
   rm.addEventListener?.('change',apply);
   apply();
 }
@@ -2648,6 +2678,29 @@ var watchCta = {
 };
 for(var _cc in i18n){
   i18n[_cc].cta = Object.assign({}, i18n[_cc].cta || {}, watchCta.en, watchCta[_cc] || {});
+}
+
+/* The demo stack's pause and play control (CR-08-F08). Merged per KEY into the demo namespace
+   here, at the end, for the same reason as the two tables above: a key set before the
+   generated add() overrides is rebuilt from the English base. Each label is the action the
+   control will take, and it is also the control's accessible name, so it is short: the
+   control sits on the stage it pauses, which says what it pauses. German and French use
+   their own verbs rather than the loanword "Pause", which would read as untranslated. */
+var demoMotion = {
+  en:{pause:'Pause',play:'Play'},
+  ja:{pause:'一時停止',play:'再生'},
+  es:{pause:'Pausar',play:'Reproducir'},
+  fr:{pause:'Mettre en pause',play:'Lire'},
+  de:{pause:'Anhalten',play:'Abspielen'},
+  'pt-br':{pause:'Pausar',play:'Reproduzir'},
+  it:{pause:'Metti in pausa',play:'Riproduci'},
+  ko:{pause:'일시 정지',play:'재생'},
+  zh:{pause:'暂停',play:'播放'},
+  ru:{pause:'Пауза',play:'Воспроизвести'},
+  ar:{pause:'إيقاف مؤقت',play:'تشغيل'}
+};
+for(var _dm in i18n){
+  i18n[_dm].demo = Object.assign({}, i18n[_dm].demo || {}, demoMotion.en, demoMotion[_dm] || {});
 }
 
 /* The film wall's own copy. Twelve tiles, a name and a line each, and until 2026-08-21

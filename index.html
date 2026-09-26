@@ -277,7 +277,12 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
         <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-saas" aria-labelledby="demotab-saas" tabindex="-1" aria-hidden="true" data-video="saas" muted playsinline preload="none" src="/public/media/BugIt-Demo-SaaS.mp4" data-landscape="/public/media/BugIt-Demo-SaaS.mp4" data-portrait="/public/media/BugIt-Demo-SaaS-portrait.mp4" data-t-aria="a11y.demoSaas" aria-label="Demo video: BugIt in a SaaS web app QA workflow"></video>
         <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-game" aria-labelledby="demotab-game" tabindex="-1" aria-hidden="true" data-video="game" muted playsinline preload="none" src="/public/media/BugIt-Demo-Game.mp4" data-landscape="/public/media/BugIt-Demo-Game.mp4" data-portrait="/public/media/BugIt-Demo-Game-portrait.mp4" data-t-aria="a11y.demoGame" aria-label="Demo video: BugIt in a game QA workflow"></video>
         <video controlsList="nodownload noremoteplayback" disablePictureInPicture class="demo-video" role="tabpanel" id="demopanel-mobile" aria-labelledby="demotab-mobile" tabindex="-1" aria-hidden="true" data-video="mobile" muted playsinline preload="none" src="/public/media/BugIt-Demo-Mobile.mp4" data-landscape="/public/media/BugIt-Demo-Mobile.mp4" data-portrait="/public/media/BugIt-Demo-Mobile-portrait.mp4" data-t-aria="a11y.demoMobile" aria-label="Demo video: BugIt in a mobile app QA workflow"></video>
-      </div></div>
+      </div>
+        <!-- Pause and play for the whole stack (WCAG 2.2.2). Hidden until app.js has decided
+             the clips will move at all: under reduced motion nothing starts or rotates and the
+             clip carries the browser's own controls instead. -->
+        <button type="button" class="demo-pause" id="demoPause" aria-controls="demoStack" hidden><span class="demo-pause-icon" aria-hidden="true"></span><span class="demo-pause-label" data-t="demo.pause">Pause</span></button>
+      </div>
     </section>
 
 
