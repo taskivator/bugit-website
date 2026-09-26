@@ -1,9 +1,22 @@
 // Self-contained aggregate test runner (AUD-1.1.0-011): one command that BUILDS, starts the
-// production server on a disposable port, waits for readiness, runs every declared suite against
-// that server, tears the server down, and exits non-zero on ANY failure — no pre-existing dist,
-// browser server, or CONSENT_TEST_URL required. Run with: npm test
+// site's dev server (server.js, serving THIS checkout's source tree) on a disposable port, proves
+// the server answering is the one it started, runs every declared suite, tears the server down,
+// and exits non-zero on ANY failure -- no pre-existing dist, browser server, or CONSENT_TEST_URL
+// required. Run with: npm test
+//
+// WHAT "AGAINST" MEANS HERE, stated because an audit (CR-08-F32) read it as more. The shared
+// server serves the SOURCE tree, not dist, and only the handful of suites that read BASE_URL or
+// CONSENT_TEST_URL use it; most browser suites start their own server.js, and the few that need
+// the BUILD read dist themselves (check-not-found via SITE_ROOT, check-team-paused from disk).
+// That split is deliberate: several suites carry negative controls that rewrite the unminified
+// app.js on the wire, which a dist-only run would silently turn into no-ops. So a green run here
+// is "every suite passed against this checkout", not "the built artifact was browser-tested".
 import { spawn, spawnSync } from "node:child_process";
 import { createServer } from "node:net";
+import { mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { randomBytes } from "node:crypto";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 /* A SUITE THAT WEDGES MUST BECOME A RECORDED FAILURE, NOT AN INFINITE WAIT.
  *
@@ -87,8 +100,22 @@ const base = `http://localhost:${port}`;
 // so the run looks like it is still going and its output is lost. That is how it was found.
 //
 // `node` is directly executable on all three platforms, so no shell is needed to launch it.
-const srv = spawn("node", ["server.js"], { stdio: "inherit", env: { ...process.env, PORT: String(port) } });
+// AN IDENTITY THE SERVER CAN ONLY SERVE IF IT IS SERVING THIS CHECKOUT. Probing a free port
+// first narrows the race above but does not close it: between the probe and the child's bind,
+// anything may take the port, and a readiness poll that accepts ANY 200 then measures whatever
+// answered -- server.js answers every unknown path with index.html and a 200, and so does a stale
+// server from another checkout. So a random token is written into this tree before the spawn, at
+// a path no other tree has, and readiness requires that exact token back. It lives under
+// node_modules/.cache, which is ignored by git and inventoried by no guard, and is removed on exit.
+const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
+const identityToken = randomBytes(16).toString("hex");
+const identityDir = join(REPO, "node_modules", ".cache", "test-all-identity");
+const identityPath = `/node_modules/.cache/test-all-identity/${identityToken}.txt`;
+mkdirSync(identityDir, { recursive: true });
+writeFileSync(join(identityDir, `${identityToken}.txt`), identityToken);
+const srv = spawn("node", ["server.js"], { cwd: REPO, stdio: "inherit", env: { ...process.env, PORT: String(port) } });
 const shutdown = () => {
+  try { rmSync(join(identityDir, `${identityToken}.txt`), { force: true }); } catch {}
   try { srv.kill(); } catch {}
   // Belt: if the child ever gains children of its own, kill the tree rather than the parent.
   if (process.platform === "win32" && srv.pid) {
@@ -128,10 +155,27 @@ for (let i = 0; i < 240; i++) {
     shutdown();
     process.exit(1);
   }
-  try { const r = await fetch(probeBase + "/"); if (r.ok) { ready = true; break; } } catch { /* not up yet */ }
+  let body = null;
+  try { const r = await fetch(probeBase + identityPath); if (r.ok) body = await r.text(); } catch { /* not up yet */ }
+  if (body === identityToken) { ready = true; break; }
+  if (body !== null) {
+    console.error(
+      `something answered on ${probeBase} with a 200, but not with this run's identity token: it is not ` +
+        `the server this run started, or not serving this checkout. Nothing was measured.`);
+    shutdown();
+    process.exit(1);
+  }
   await new Promise((r) => setTimeout(r, 250));
 }
 if (!ready) { console.error(`server did not become ready at ${probeBase} (60s)`); shutdown(); process.exit(1); }
+// A child that lost the bind to a stranger serving THIS SAME checkout would still have passed the
+// token check, and exits within moments with EADDRINUSE. Give that exit time to be seen.
+await new Promise((r) => setTimeout(r, 500));
+if (serverDied) {
+  console.error(`the server we started ${serverDied} after something else answered on its port. Nothing was measured.`);
+  shutdown();
+  process.exit(1);
+}
 
 // 4. Run every declared suite against the served site.
 const SUITES = [
@@ -456,5 +500,5 @@ for (const s of SUITES) {
 // 5. Tear down + propagate.
 shutdown();
 if (failed.length) { console.error("\nFAILED SUITES: " + failed.join(", ")); process.exit(1); }
-console.log("\nALL WEBSITE SUITES PASSED against " + base);
+console.log("\nALL WEBSITE SUITES PASSED (this checkout's source tree, shared server " + base + "; see the header for what that does and does not cover)");
 process.exit(0);
