@@ -42,6 +42,7 @@ import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { findCloudflareToken } from "./lib/cloudflare-token.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -58,31 +59,13 @@ const fail = (what, detail) => {
 };
 const ok = (what) => console.log(`  ok      ${what}`);
 
-/* ------------------------------------------------------------------ credential, as purge-cache does it */
-const SOURCES = [
-  ["process env", null],
-  [".env.deploy.local", join(ROOT, ".env.deploy.local")],
-  ["../bugit-portal/.env.deploy.local", join(ROOT, "..", "bugit-portal", ".env.deploy.local")],
-];
+/* ------------------------------------------------------------------ credential: lib/cloudflare-token.mjs
+ * This had its own copy of the search, and the 2026-09-21 worktree fix reached only the other
+ * copy: the 1.4.3 release deploy from a worktree was refused here for "no Cloudflare token". */
 const NAMES = ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_TOKEN_DEPLOY", "CLOUDFLARE_TOKEN_PURGE"];
 const ACCOUNT = process.env.CLOUDFLARE_ACCOUNT_ID || "dfea28143809bc2f7bc93880bcfa626f";
 
-function findToken() {
-  for (const [label, path] of SOURCES) {
-    if (path === null) {
-      for (const n of NAMES) if (process.env[n]) return { label: `${label}:${n}`, value: process.env[n] };
-      continue;
-    }
-    if (!existsSync(path)) continue;
-    const text = readFileSync(path, "utf8");
-    for (const n of NAMES) {
-      const m = new RegExp("^\\s*(?:export\\s+)?" + n + "\\s*=\\s*(.*)$", "m").exec(text);
-      const v = m?.[1]?.trim().replace(/^["']|["']$/g, "");
-      if (v) return { label: `${label}:${n}`, value: v };
-    }
-  }
-  return null;
-}
+const findToken = () => findCloudflareToken(ROOT, NAMES);
 
 /* ------------------------------------------------------------------ dist inventory */
 function walk(dir, acc = []) {

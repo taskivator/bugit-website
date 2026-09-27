@@ -58,6 +58,10 @@ jobs:
       # credential and requires itself to find it before believing a zero.
       - name: Secret scan
         run: node scripts/check-committed-secrets.mjs
+      # The Cloudflare token is looked up in ONE module, and found from a linked git worktree
+      # (a fabricated token in a throwaway workspace; nothing real is read).
+      - name: Token lookup works from a worktree
+        run: node scripts/check-token-lookup.mjs
       # Build-time devDependency only (esbuild, for asset minification). The
       # shipped site stays dependency-free at runtime.
       - name: Install build tooling

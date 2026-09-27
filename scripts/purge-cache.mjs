@@ -33,6 +33,7 @@ import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+import { findCloudflareToken } from "./lib/cloudflare-token.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const API = "https://api.cloudflare.com/client/v4";
@@ -58,31 +59,11 @@ const ZONE_NAME = "bugit.dev";
  * path from one machine instead, and check-ci-coverage.mjs rejected it on the same run for the
  * reason it exists: this repository is public, and a path inside one person's home directory
  * only ever works for that person. */
-function mainCheckoutSibling(name, file) {
-  try {
-    const common = execFileSync(
-      "git",
-      ["-C", ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir"],
-      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
-    ).trim();
-    // .../bugit-website/.git -> .../bugit-website -> .../<workspace>/<name>/<file>
-    return common ? join(dirname(common), "..", name, file) : null;
-  } catch {
-    return null; // no git, or not a checkout: the other sources still apply
-  }
-}
-
-/* A null PATH means "the process environment" to the reader below, so a lookup that failed to
- * resolve must be dropped rather than passed along as one -- otherwise a missing git would
- * silently re-read the environment under a label claiming it read a file. */
-/* Built on first use, not at import: even LOCATING the credential files (the git call above) is
- * credential discovery, and --check must do none of it (CR-08-F26). */
-const credentialSources = () => [
-  ["process env", null],
-  [".env.deploy.local", join(ROOT, ".env.deploy.local")],
-  ["../bugit-portal/.env.deploy.local", join(ROOT, "..", "bugit-portal", ".env.deploy.local")],
-  ["<main checkout>/../bugit-portal/.env.deploy.local", mainCheckoutSibling("bugit-portal", ".env.deploy.local")],
-].filter(([label, p]) => label === "process env" || p !== null);
+/* The search itself, git's answer included, lives in lib/cloudflare-token.mjs, the ONE copy:
+ * this fix once reached only this file, and check-deploy-safety.mjs kept the old search until a
+ * release deploy from a worktree was refused by it (2026-09-27). The sources are built on first
+ * use, not at import: even LOCATING the credential files is credential discovery, and --check
+ * must do none of it (CR-08-F26). */
 const NAMES = ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_TOKEN_PURGE", "CLOUDFLARE_TOKEN_DEPLOY"];
 
 function findToken() {
@@ -90,20 +71,7 @@ function findToken() {
   // moves a credential read above that branch, the inspection fails loudly instead of quietly
   // growing a secret prerequisite again.
   if (CHECK_ONLY) throw new Error("--check reached credential discovery; it must never need a credential");
-  for (const [label, path] of credentialSources()) {
-    if (path === null) {
-      for (const n of NAMES) if (process.env[n]) return { label: `${label}:${n}`, value: process.env[n] };
-      continue;
-    }
-    if (!existsSync(path)) continue;
-    const text = readFileSync(path, "utf8");
-    for (const n of NAMES) {
-      const m = new RegExp("^\\s*(?:export\\s+)?" + n + "\\s*=\\s*(.*)$", "m").exec(text);
-      const v = m?.[1]?.trim().replace(/^["']|["']$/g, "");
-      if (v) return { label: `${label}:${n}`, value: v };
-    }
-  }
-  return null;
+  return findCloudflareToken(ROOT, NAMES);
 }
 
 const fp = (v) => createHash("sha256").update("bugit-env-fingerprint-v1:").update(v).digest("hex").slice(0, 8);
