@@ -8810,3 +8810,33 @@
     .tk-family-eyebrow,.tk-family-here{ color:CanvasText; border-color:CanvasText }
   }
 }
+
+/* ---------- Centred (owner, 2026-09-30) ------------------------------------------------------
+   "i like things to be centered in all websites if possible not leaning to left or right".
+   Section heads were already centred; this centres the cards and, where the hero is one column,
+   the hero. Kept start-aligned on purpose (start, not left, so Arabic still reads from the right):
+   the pricing checklists, FAQ answers, the docs and support pages, Mission Control, and running
+   text. On desktop the hero copy stays beside its report panel, because that is a pairing.
+   Agreed with the BugIt session; layout only, no copy change. */
+@layer fixes {
+  /* Trust cells: icon and title centred over the line. */
+  .trust>div{ text-align:center }
+  .trust>div strong{ justify-content:center }
+  /* Documentation cards. */
+  .doc-cards>a{ text-align:center; align-items:center }
+  /* Integration groups: the heading centred over its logo row. */
+  .groups>div>h3{ text-align:center }
+  /* Price cards: plan, price, introductory line and term centred; the checklist stays start. */
+  .price-card>h3,.price-card .regular,.price-card>small{ text-align:center }
+  .price-card .price,.price-card .regular{ justify-content:center; flex-wrap:wrap }
+  .price-card ul{ text-align:start }
+  /* One-column hero (1160px and below, where the report panel moves under the copy). */
+  @media (max-width:1160px){
+    .hero-copy{ text-align:center }
+    .hero-copy .askbar{ margin-inline:auto }
+    .hero-title,.hero-copy>p{ margin-inline:auto }
+    .metrics>div strong{ justify-content:center }
+    .actions{ justify-content:center }
+    .under{ justify-items:center }
+  }
+}
