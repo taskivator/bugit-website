@@ -8718,3 +8718,95 @@
     .askbar-caret{ background:ButtonText }
   }
 }
+
+/* ---------- The Taskivator family band (2026-09-30) ---------------------------------------
+   Owner: "add the taskivator website there in a modern way as the parent website so the visitors
+   would have a chance to visit taskivator too". One band above the footer on every view, never
+   in the hero or pricing: bugit.dev is the Ads landing page and the path to buying stays first
+   (BugIt session's condition). Centred throughout (owner: "i like things to be centered in all
+   websites"): the parent's mark and line on top, the family as three equal cards beneath, each
+   Blip above its name. The parent brand speaks in Taskivator's champagne gold; BugIt's own card
+   keeps its pink. Appended in `fixes` so no earlier generic rule can reach into it. */
+@layer fixes {
+  .tk-family{ margin-block:var(--s8) var(--s5) }
+  .tk-family-card{
+    position:relative; isolation:isolate; overflow:hidden;
+    display:grid; grid-template-columns:minmax(0,1fr); justify-items:center; text-align:center;
+    gap:clamp(28px,3.4vw,48px); padding:clamp(28px,4vw,60px) clamp(16px,3vw,48px);
+    border:1px solid var(--rule); border-radius:var(--r-lg);
+    background:
+      radial-gradient(70% 90% at 50% 0%,rgba(242,200,107,.12),transparent 62%),
+      linear-gradient(180deg,var(--raise-2),var(--raise-1));
+  }
+  /* One gold-to-pink hairline across the top: the parent handing over to the product. */
+  .tk-family-card::before{
+    content:""; position:absolute; inset:0 0 auto; height:1px; z-index:-1;
+    background:linear-gradient(90deg,transparent,rgba(242,200,107,.75) 30%,rgba(255,79,201,.55) 70%,transparent);
+  }
+  .tk-family-intro{ display:grid; justify-items:center; gap:var(--s4); min-width:0; max-width:100% }
+  .tk-family-mark{ display:block; width:88px; height:88px; filter:drop-shadow(0 10px 28px rgba(242,200,107,.28)) }
+  .tk-family-eyebrow{ margin:0; color:#f2c86b; font-size:var(--t-xs); font-weight:600; letter-spacing:.12em; text-transform:uppercase }
+  .tk-family-title{ margin:0; font-size:var(--t-2xl); line-height:1.05; letter-spacing:-.02em; max-width:20ch; text-wrap:balance }
+  .tk-family-lede{ margin:0; font-size:var(--t-md); max-width:46ch; text-wrap:balance }
+  .tk-family-cta{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:44px; margin-top:var(--s2);
+    padding:10px 20px; border-radius:var(--r-pill); border:1px solid rgba(242,200,107,.45);
+    background:rgba(242,200,107,.08); color:var(--ink); font-size:var(--t-sm); font-weight:600;
+    transition:background-color .2s var(--ease),border-color .2s var(--ease);
+  }
+  .tk-family-cta:hover{ background:rgba(242,200,107,.16); border-color:rgba(242,200,107,.85) }
+  .tk-family-cta svg,.tk-family-go svg{ width:14px; height:14px; flex:none }
+  [dir="rtl"] .tk-family-cta svg,[dir="rtl"] .tk-family-go svg{ transform:scaleX(-1) }
+  .tk-family-cta:focus-visible,.tk-family-list a:focus-visible{ outline:2px solid var(--sig); outline-offset:3px }
+
+  /* The family: three equal cards on one centred row, the same height whatever each one says. */
+  .tk-family-list{
+    list-style:none; margin:0; padding:0; width:min(100%,940px);
+    display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--s4);
+  }
+  .tk-family-list>li{ display:flex; min-width:0 }
+  .tk-family-tile{
+    position:relative; flex:1; min-width:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:var(--s2);
+    padding:var(--s5) var(--s4); border:1px solid var(--rule-soft); border-radius:var(--r-md);
+    background:var(--raise-1); color:var(--ink); text-align:center;
+    transition:background-color .2s var(--ease),border-color .2s var(--ease),transform .2s var(--ease);
+  }
+  a.tk-family-tile:hover{ background:var(--raise-3); border-color:var(--rule-hard); transform:translateY(-2px) }
+  a.tk-family-tile:hover .tk-family-go{ color:var(--ink) }
+  .tk-family-tile img{ display:block; width:64px; height:64px; margin-bottom:var(--s1) }
+  .tk-family-tile>div{ display:grid; justify-items:center; gap:4px; min-width:0 }
+  .tk-family-tile b{ display:block; font-size:var(--t-lg); font-weight:600; line-height:1.2; overflow-wrap:anywhere }
+  .tk-family-tile small{ display:block; color:var(--ink-3); font-size:var(--t-xs); line-height:1.4; text-wrap:balance }
+  .tk-family-here{
+    white-space:nowrap; padding:3px 10px; border-radius:var(--r-pill);
+    border:1px solid rgba(255,79,201,.4); color:var(--sig); font-size:var(--t-xs); font-weight:600;
+  }
+  .tk-family-go{ position:absolute; top:var(--s3); inset-inline-end:var(--s3); color:var(--ink-3); transition:color .2s var(--ease) }
+
+  /* The footer's copyright names the parent; its name is now the way there. */
+  .foot-parent{ color:inherit; text-decoration:underline; text-decoration-color:rgba(242,200,107,.5); text-underline-offset:3px }
+  .foot-parent:hover{ color:#f2c86b }
+
+  /* The phone menu's last row. */
+  .mm-links a.mm-parent{ display:flex; align-items:center; gap:12px }
+  .mm-parent img{ width:30px; height:30px; flex:none }
+
+  /* Phones: the cards stack, still centred, each a little more compact. */
+  @media (max-width:680px){
+    .tk-family-list{ grid-template-columns:minmax(0,1fr); width:min(100%,420px); gap:var(--s3) }
+    .tk-family-tile{ padding:var(--s4) var(--s3) var(--s5) }
+    .tk-family-tile small{ text-wrap:pretty }
+    .tk-family-tile img{ width:56px; height:56px }
+    .tk-family-mark{ width:76px; height:76px }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .tk-family-cta,.tk-family-tile,.tk-family-go{ transition:none }
+    a.tk-family-tile:hover{ transform:none }
+  }
+  @media (forced-colors:active){
+    .tk-family-card,.tk-family-tile,.tk-family-cta{ border:1px solid CanvasText; background:Canvas }
+    .tk-family-card::before{ display:none }
+    .tk-family-eyebrow,.tk-family-here{ color:CanvasText; border-color:CanvasText }
+  }
+}

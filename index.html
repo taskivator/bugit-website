@@ -61,7 +61,8 @@
         "@type": "Organization",
         "@id": "https://bugit.dev/#org",
         "name": "Taskivator",
-        "url": "https://bugit.dev/",
+        "url": "https://taskivator.com/",
+        "sameAs": ["https://bugit.dev/"],
         "logo": "https://bugit.dev/public/brand/favicon-180.png",
         "brand": { "@type": "Brand", "name": "BugIt" }
       },
@@ -145,6 +146,7 @@
       <a class="mm-signin" href="https://portal.bugit.dev/login" data-t="cta.signin">Sign in</a>
       <div class="mm-acct" id="mmAcct" hidden></div>
       <a class="mm-cta" href="https://portal.bugit.dev/pricing"><span data-t="cta.early">Get BugIt</span></a>
+      <a class="mm-parent" href="https://taskivator.com/" target="_blank" rel="noopener noreferrer" data-t-aria="family.menuAria" aria-label="Taskivator, the company behind BugIt (opens in a new tab)"><img src="/public/brand/taskivator-mark.svg" alt="" width="30" height="30" /><span data-t="family.menu">Taskivator, the company behind BugIt</span></a>
       <div class="mm-social">
         <a href="https://www.linkedin.com/company/bugitdev" target="_blank" rel="noopener noreferrer" data-t-aria="a11y.linkedin" aria-label="BugIt on LinkedIn (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.44-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.26 2.36 4.26 5.44v6.3zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg><span>LinkedIn</span></a>
         <a href="https://www.youtube.com/@BugItByTaskivator" target="_blank" rel="noopener noreferrer" data-t-aria="a11y.youtube" aria-label="BugIt on YouTube (opens in a new tab)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.13-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg><span>YouTube</span></a>
@@ -388,7 +390,29 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
     <div class="docs-layout"><aside id="docNav" class="docs-sidebar"></aside><article id="docContent" class="docs-content"></article></div>
   </main>
 
-  <footer class="footer shell"><div class="foot-brand"><a class="foot-mark" href="/" data-t-aria="a11y.home" aria-label="BugIt home"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /></a><p>© 2026 Taskivator. <span data-t="footer.rights">All Rights Reserved.</span></p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/security" data-t="docs.security">Security</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/docs/commerce" data-t="docs.commerce">Commercial Transactions</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
+  <!-- THE TASKIVATOR FAMILY BAND (owner, 2026-09-30): BugIt's parent company and its sibling
+       products, on every view. Above the footer and never in the hero or pricing: this is the Ads
+       landing page and the path to buying stays first. Product statuses must match taskivator.com
+       exactly; when one changes there, change it here (and in familyI18n in app.js) together.
+       No tracking parameters: both sites say "no trackers". -->
+  <aside class="tk-family shell" aria-labelledby="tkFamilyTitle">
+    <div class="tk-family-card">
+      <div class="tk-family-intro">
+        <img class="tk-family-mark" src="/public/brand/taskivator-mark.svg" alt="" width="76" height="76" loading="lazy" decoding="async" />
+        <p class="tk-family-eyebrow" data-t="family.eyebrow">BugIt is made by Taskivator</p>
+        <h2 class="tk-family-title" id="tkFamilyTitle" data-t="family.title">Busywork, switched off.</h2>
+        <p class="tk-family-lede" data-t="family.lede">Taskivator makes focused software for everyday work.</p>
+        <a class="tk-family-cta" href="https://taskivator.com/" target="_blank" rel="noopener noreferrer" data-t-aria="family.ctaAria" aria-label="Visit taskivator.com (opens in a new tab)"><span data-t="family.cta">Visit taskivator.com</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <ul class="tk-family-list" data-t-aria="family.listAria" aria-label="Taskivator products">
+        <li><div class="tk-family-tile"><img src="/public/brand/blip-bugit.svg" alt="" width="48" height="48" loading="lazy" decoding="async" /><div><b>BugIt</b></div><span class="tk-family-here" data-t="family.here">You are here</span></div></li>
+        <li><a class="tk-family-tile" href="https://taskivator.com/peelstack/" target="_blank" rel="noopener noreferrer" data-t-aria="family.peelstackAria" aria-label="Peelstack Label Maker on taskivator.com (opens in a new tab)"><img src="/public/brand/blip-labelmaker.svg" alt="" width="48" height="48" loading="lazy" decoding="async" /><div><b>Peelstack Label Maker</b><small data-t="family.peelstack">Google Sheets add-on, coming soon</small></div><span class="tk-family-go"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
+        <li><a class="tk-family-tile" href="https://taskivator.com/giftproof/" target="_blank" rel="noopener noreferrer" data-t-aria="family.giftproofAria" aria-label="Giftproof on taskivator.com (opens in a new tab)"><img src="/public/brand/blip-freegift.svg" alt="" width="48" height="48" loading="lazy" decoding="async" /><div><b>Giftproof</b><small data-t="family.giftproof">Shopify app, coming soon</small></div><span class="tk-family-go"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <footer class="footer shell"><div class="foot-brand"><a class="foot-mark" href="/" data-t-aria="a11y.home" aria-label="BugIt home"><img class="blip-logo mini" src="/public/brand/blip-logo.svg" alt="" aria-hidden="true" /></a><p>© 2026 <a class="foot-parent" href="https://taskivator.com/" target="_blank" rel="noopener noreferrer" data-t-aria="family.ctaAria" aria-label="Visit taskivator.com (opens in a new tab)">Taskivator</a>. <span data-t="footer.rights">All Rights Reserved.</span></p></div><nav data-t-aria="a11y.footerNav" aria-label="Footer navigation"><a href="#/docs" data-t="nav.docs">Documentation</a><a href="#/docs/license" data-t="docs.license">License Agreement</a><a href="#/docs/privacy" data-t="docs.privacy">Privacy Policy</a><a href="#/docs/security" data-t="docs.security">Security</a><a href="#/docs/refund" data-t="docs.refund">Refund Policy</a><a href="#/docs/commerce" data-t="docs.commerce">Commercial Transactions</a><a href="#/support" data-t="docs.support">Support</a><button type="button" class="foot-link" id="cookiePrefsLink" data-t="consent.prefsLink">Cookie preferences</button></nav></footer>
 
   <!-- Consent banner (Consent Mode v2). Hidden until app.js shows it, which only
        happens when the bugit_consent cookie is absent. All copy is localized via

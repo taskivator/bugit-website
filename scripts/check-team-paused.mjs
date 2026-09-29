@@ -59,6 +59,43 @@ const STALE = new RegExp(
   "i",
 );
 
+// THE TASKIVATOR FAMILY BAND (2026-09-30) lists sibling products with their taskivator.com status,
+// "coming soon" in every locale. Those are Taskivator facts, not Team copy, so ONLY the STALE test
+// looks past the band, and only between its own two markers (the <aside class="tk-family"> element
+// and the familyI18n dictionary). Each may be removed at most once and be at most 20 KB, so a
+// broken marker can never hide a whole file from this guard. Every other check reads whole files.
+// The dictionary's end is found by matching its braces (quoted strings skipped), because the
+// built bundle is minified onto one line and has no line structure to anchor on.
+const SKIP_MAX = 20000;
+const dictionarySpan = (src, from) => {
+  const open = src.indexOf("{", from);
+  let depth = 0, quote = null;
+  for (let i = open; i < src.length && i - from <= SKIP_MAX; i++) {
+    const c = src[i];
+    if (quote) { if (c === "\\") i++; else if (c === quote) quote = null; continue; }
+    if (c === '"' || c === "'" || c === "`") quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}" && --depth === 0) return i + 1;
+  }
+  return -1;
+};
+const withoutFamily = (name, src) => {
+  let out = src;
+  const asides = out.match(/<aside class="tk-family[\s\S]*?<\/aside>/g) || [];
+  check(asides.length <= 1, `${name}: the family band <aside> appears ${asides.length} times`);
+  for (const a of asides) check(a.length <= SKIP_MAX, `${name}: the family band <aside> is ${a.length} bytes, too large to skip`);
+  if (asides.length === 1) out = out.replace(asides[0], "");
+  const starts = out.split("const familyI18n=").length - 1;
+  check(starts <= 1, `${name}: familyI18n is declared ${starts} times`);
+  if (starts === 1) {
+    const from = out.indexOf("const familyI18n=");
+    const end = dictionarySpan(out, from);
+    check(end > from, `${name}: the familyI18n dictionary has no end within ${SKIP_MAX} bytes`);
+    if (end > from) out = out.slice(0, from) + out.slice(end);
+  }
+  return out;
+};
+
 if (TEAM_PAUSED) {
   // Paused: no user-count claim, no live CTA, must be visibly "temporarily unavailable".
   const USER_CLAIM = new RegExp(
@@ -86,7 +123,7 @@ if (TEAM_PAUSED) {
     check(TEAM_CTA.test(src), `${name} is missing the Team checkout CTA — Team is live and must be purchasable`);
   }
   for (const [name, src] of SOURCES) {
-    check(!STALE.test(src), `${name} still carries stale Team 'unavailable/coming soon' copy after launch`);
+    check(!STALE.test(withoutFamily(name, src)), `${name} still carries stale Team 'unavailable/coming soon' copy after launch`);
   }
 }
 
