@@ -1,6 +1,6 @@
 # Security
 
-BugIt QA Agent is a human-in-the-loop assistant. It only acts through your VS Code session and the integrations you enable.
+BugIt QA Agent is a human-in-the-loop assistant. It runs locally, through your assistant in VS Code or from a terminal, and acts only through the integrations you enable.
 
 ## What BugIt does to protect you
 - **No write without confirmation.** Every create/comment/attach/notify that carries your report is previewed; irreversible filings need you to type FILE IT. Chat text alone never files, and a plain "yes" is not enough. One exception: a connection test you start yourself with `notify connect`, `notify test` or `notify doctor --live` sends one fixed test message without a preview, to the channel you name or, if you name none, to every channel you have switched on. It carries no report content, and dry run blocks it.

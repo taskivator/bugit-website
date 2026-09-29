@@ -2,7 +2,7 @@
 
 > **Avviso sulla traduzione.** Questo documento è stato tradotto automaticamente e non è stato revisionato da madrelingua. Fa fede la versione inglese: in caso di difformità prevale il testo inglese. Per la formulazione più accurata e aggiornata, fai riferimento al documento in inglese.
 
-BugIt QA Agent è un assistente in cui le decisioni spettano a una persona (human in the loop). Agisce solo tramite la tua sessione di VS Code e le integrazioni che attivi.
+BugIt QA Agent è un assistente in cui le decisioni spettano a una persona (human in the loop). Funziona in locale, tramite il tuo assistente in VS Code o da terminale, e agisce solo tramite le integrazioni che attivi.
 
 ## Come BugIt ti protegge
 - **Nessuna scrittura senza conferma.** Ogni creazione, commento, allegato o notifica che contiene la tua segnalazione viene prima mostrato in anteprima; gli invii irreversibili richiedono che tu digiti FILE IT. Il solo testo della chat non invia mai nulla, e un semplice «sì» non basta. Un'eccezione: un test di connessione che avvii tu stesso con `notify connect`, `notify test` o `notify doctor --live` invia un messaggio di prova fisso senza anteprima, al canale che indichi oppure, se non ne indichi nessuno, a ogni canale che hai attivato. Non contiene alcun contenuto di segnalazione, e il dry run lo blocca.

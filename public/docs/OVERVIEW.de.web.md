@@ -2,7 +2,7 @@
 
 > **Hinweis zur Übersetzung.** Dieses Dokument wurde maschinell übersetzt und nicht von Muttersprachlern geprüft. Maßgeblich ist die englische Fassung: Bei Abweichungen gilt der englische Text. Für den genauesten und aktuellsten Wortlaut ziehen Sie bitte das englische Dokument heran.
 
-BugIt ist ein kommerzieller VS Code Copilot-Agent, der aus rohen Testnotizen einheitliche Fehlerberichte erstellt. Er erstellt Entwürfe lokal in Ihrem Arbeitsbereich und schreibt erst nach Vorschau und Bestätigung in verbundene Dienste.
+BugIt ist ein kommerzieller VS Code Copilot-Agent, der aus rohen Testnotizen einheitliche Fehlerberichte erstellt. Er erstellt Entwürfe lokal in Ihrem Arbeitsbereich und zeigt Schreibvorgänge im Tracker sowie Benachrichtigungen mit Ihrem Bericht vorab als Vorschau, bevor Sie sie bestätigen; das Einreichen erfordert die Eingabe von FILE IT. Ein Verbindungstest, den Sie selbst starten, sendet eine feste Testnachricht ohne Vorschau.
 
 ## Kernablauf
 

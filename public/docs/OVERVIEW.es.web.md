@@ -2,7 +2,7 @@
 
 > **Aviso sobre la traducción.** Este documento se ha traducido automáticamente y no ha sido revisado por hablantes nativos. La versión en inglés es la que prevalece: en caso de discrepancia, rige el texto en inglés. Para consultar la redacción más precisa y actualizada, acude al documento en inglés.
 
-BugIt es un agente comercial de Copilot para VS Code que convierte notas de prueba sin procesar en informes de errores coherentes. Redacta borradores localmente en tu espacio de trabajo y escribe en los servicios conectados solo tras la vista previa y la confirmación.
+BugIt es un agente comercial de Copilot para VS Code que convierte notas de prueba sin procesar en informes de errores coherentes. Redacta borradores localmente en tu espacio de trabajo y muestra en vista previa las escrituras al gestor de incidencias y las notificaciones que llevan tu informe antes de que las apruebes, y enviarlas requiere que escribas FILE IT. Una prueba de conexión que inicias tú envía un mensaje de prueba fijo sin vista previa.
 
 ## Flujo de trabajo principal
 

@@ -1,6 +1,6 @@
 # BugIt QA Agent: Overview
 
-BugIt is a commercial VS Code Copilot agent that converts raw test notes into consistent bug reports. It drafts locally in your workspace and writes to connected services only after preview and confirmation.
+BugIt is a commercial VS Code Copilot agent that converts raw test notes into consistent bug reports. It drafts locally in your workspace and previews tracker writes and notifications that carry your report before you approve them, and filing requires you to type FILE IT. A connection test you start yourself sends a fixed test message without a preview.
 
 ## Core workflow
 

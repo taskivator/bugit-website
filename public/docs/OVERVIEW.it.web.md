@@ -2,7 +2,7 @@
 
 > **Avviso sulla traduzione.** Questo documento è stato tradotto automaticamente e non è stato revisionato da madrelingua. Fa fede la versione inglese: in caso di difformità prevale il testo inglese. Per la formulazione più accurata e aggiornata, fai riferimento al documento in inglese.
 
-BugIt è un agente commerciale VS Code Copilot che trasforma appunti di test grezzi in bug report coerenti. Redige le bozze in locale, nel tuo workspace, e scrive sui servizi collegati solo dopo l'anteprima e la conferma.
+BugIt è un agente commerciale VS Code Copilot che trasforma appunti di test grezzi in bug report coerenti. Redige le bozze in locale, nel tuo workspace, e mostra in anteprima le scritture sul tracker e le notifiche che contengono la tua segnalazione prima che tu le approvi; inviarle richiede che tu digiti FILE IT. Un test di connessione che avvii tu stesso invia un messaggio di prova fisso senza anteprima.
 
 ## Flusso di lavoro principale
 
