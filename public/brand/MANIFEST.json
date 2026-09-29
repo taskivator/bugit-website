@@ -6,7 +6,9 @@
     "blip-buildit.svg",
     "blip-deployit.svg",
     "blip-docsit.svg",
+    "blip-freegift.svg",
     "blip-guide.svg",
+    "blip-labelmaker.svg",
     "blip-logo.svg",
     "blip-main.svg",
     "blip-mark.svg",
@@ -24,6 +26,7 @@
     "favicon.ico",
     "favicon.svg",
     "social-banner-4200x700.png",
+    "taskivator-mark.svg",
     "tokens.css"
   ]
 }
