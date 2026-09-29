@@ -1,7 +1,7 @@
 {
   "_comment": "The values `python tools/verify_release.py` tells you to compare. Generated from the signed provenance manifest; never typed by hand.",
-  "version": "1.4.3",
-  "archive_sha256": "5d2e05021e2d8d4a8701826d6082b883a0408a231f9213199b0ce29379b8dd5a",
+  "version": "1.4.4",
+  "archive_sha256": "6a740274e820dac9663ad16ea121c10f43184e78b6c5af79a2e372f42760919c",
   "release_key_id": "83a02b6039ee5dab",
   "files": 259
 }
