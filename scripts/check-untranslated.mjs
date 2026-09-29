@@ -49,6 +49,7 @@ const MIN = 12;
    for a stated reason and nothing is here because it was easier than fixing it. */
 const ALLOWED = [
   /^BugIt$/i, /^Taskivator$/i, /^BugIt by Taskivator$/i,   // the product and the parent brand
+  /^(Peelstack Label Maker|Giftproof)$/,                    // Taskivator's sibling products, named in the family band; product names are never translated
   /^FILE IT$/,                                            // a literal the agent matches, not a word
   /^(Jira|GitHub|GitLab|Bugzilla|YouTrack|Linear|Asana|Trello|ClickUp|Azure DevOps|Confluence|Zephyr|Notion|Slack|Stripe|Visual Studio Code|VS Code|GitHub Copilot|Claude|Gemini|GPT|Python|Windows|macOS|Linux)$/i,
   /^https?:\/\//,                                         // URLs
