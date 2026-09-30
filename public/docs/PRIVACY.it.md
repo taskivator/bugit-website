@@ -47,8 +47,7 @@ dispositivo il software invia solo ciò che serve a far funzionare la licenza:
   possiamo indicarle se è disponibile una versione più recente,
 - il **filtro di piano** che ha scelto all’inizio dell’attivazione: Solo, Team o nessuna
   preferenza. Restringe soltanto l’elenco delle licenze che il Portal le propone di
-  approvare. Non nomina mai una licenza specifica, e BugIt non invia mai un
-  identificatore di diritto d’uso, di team, di appartenenza o di postazione: quella
+  approvare. Non nomina mai una licenza, un team o un’appartenenza specifici: quella
   scelta la fa lei, con l’accesso effettuato, nel suo browser,
 - **materiale di attivazione** di breve durata: un valore casuale creato per quella singola
   richiesta, tenuto solo in memoria e mai scritto su disco. Dimostra che l'approvazione data nel
@@ -63,6 +62,10 @@ dispositivo il software invia solo ciò che serve a far funzionare la licenza:
   suo dispositivo non ne possiede ancora uno. Se in seguito il suo accesso viene revocato
   dal suo account, il valore stesso viene inviato una volta, così che possiamo sapere che
   questo dispositivo ha ricevuto la revoca.
+- a un controllo successivo, il **diritto d'uso firmato** che abbiamo emesso per questo
+  dispositivo all'attivazione. Contiene gli identificatori della sua licenza e di questo
+  dispositivo e, per una licenza Team, quelli del team e della sua appartenenza, così che
+  possiamo confermare che è ancora valido per questo dispositivo.
 
 In cambio, il suo dispositivo riceve un **diritto d'uso firmato** che registra che cosa è
 autorizzato a usare e fino a quando.

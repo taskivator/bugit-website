@@ -46,9 +46,8 @@ dispositivo, el software envía únicamente lo necesario para gestionar su licen
   indicarle si hay una versión más reciente,
 - el **filtro de plan** que eligió al empezar la activación: Solo, Team o ninguna
   preferencia. Solo reduce la lista de licencias que el Portal le ofrece para aprobar.
-  Nunca nombra una licencia concreta, y BugIt nunca envía un identificador de derecho de
-  uso, de equipo, de pertenencia ni de puesto: esa elección la hace usted, con su sesión
-  iniciada, en su navegador,
+  Nunca nombra una licencia, un equipo ni una pertenencia concretos: esa elección la hace
+  usted, con su sesión iniciada, en su navegador,
 - **material de activación** de vida corta: un valor aleatorio creado para esa única solicitud,
   mantenido solo en memoria y nunca escrito en disco. Demuestra que la aprobación que usted dio
   en su navegador pertenece a esa solicitud y no puede reutilizarse.
@@ -61,6 +60,10 @@ dispositivo, el software envía únicamente lo necesario para gestionar su licen
   hash al activar, y de nuevo en una comprobación posterior si su equipo aún no tiene
   ninguno. Si más adelante se retira su acceso desde su cuenta, el valor en sí se envía una
   vez, para que podamos saber que este dispositivo recibió la retirada.
+- en una comprobación posterior, el **derecho de uso firmado** que emitimos para este
+  dispositivo al activarlo. Contiene los identificadores de su licencia y de este
+  dispositivo y, en una licencia Team, los del equipo y de su pertenencia, para que
+  podamos confirmar que sigue siendo válido para este dispositivo.
 
 A cambio, su dispositivo recibe un **derecho de uso firmado** que registra qué tiene licencia
 para usar y hasta cuándo.

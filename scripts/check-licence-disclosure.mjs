@@ -49,14 +49,21 @@ const read = (f) => fs.readFileSync(path.join(root, f), 'utf8');
  * How many items the device sends and receives, per the activation modules. The authority
  * is the agent repository's `tests/test_privacy_and_threat_model_match_the_wire.py`,
  * which computes the set from the AST: fingerprint, installation_id, device_label, os,
- * app_version, requested_mode, challenge, token, ack_secret_hash/ack_secret, and the
- * entitlement coming back. Eight bullets plus the "in return" sentence.
+ * app_version, requested_mode, challenge, token, ack_secret_hash/ack_secret, the signed
+ * entitlement a later check SENDS back, and the entitlement coming back. Nine bullets plus
+ * the "in return" sentence.
+ *
+ * THE NINTH WAS A DENIAL UNTIL 2026-09-30. The plan-filter bullet said BugIt never sends an
+ * entitlement, team or membership identifier, while every renewal body carries the signed
+ * entitlement, whose payload names the licence and device and, for Team, the team and the
+ * membership. The list counted the entitlement only as something RECEIVED. So the bullet is
+ * now required by term, and the old denial is refused by its exact wording.
  *
  * IF THE WIRE GAINS A FIELD this number is wrong and every language is short by one. The
  * fix is not to edit this constant: it is to add the bullet in eleven languages and in
  * the FAQ, then edit it.
  */
-const EXPECTED_ITEMS = 8;
+const EXPECTED_ITEMS = 9;
 
 const LOCALES = ['', 'ar', 'de', 'es', 'fr', 'it', 'ja', 'ko', 'pt-br', 'ru', 'zh'];
 
@@ -83,6 +90,24 @@ const TERMS = {
   ru:      { plan: /фильтр плана|фильтр плана|фильтра плана|выбранный вами фильтр/i, token: /одноразовый токен подтверждения/i, ack: /секрет подтверждения/i },
   zh:      { plan: /套餐筛选/, token: /一次性批准令牌/, ack: /确认密钥/ },
 };
+
+/** The signed entitlement, which a later check sends. Matched in a BULLET, because the
+ *  "in return" sentence below the list names it too and would satisfy a section search. */
+const SENT_ENTITLEMENT = {
+  '': /signed entitlement/i, ar: /الاستحقاق الموقّع/, de: /signierten Berechtigungsnachweis/i,
+  es: /derecho de uso firmado/i, fr: /droit d['’]usage signé/i, it: /diritto d['’]uso firmato/i,
+  ja: /署名付きエンタイトルメント/, ko: /서명된 이용 권한/, 'pt-br': /direito de uso assinado/i,
+  ru: /подписанное разрешение/i, zh: /已签名的授权凭证/,
+};
+
+/** The denial, in the words each language shipped it in. */
+const DENIAL = new RegExp([
+  'never sends an entitlement', 'nunca envía un identificador de derecho',
+  'non invia mai un\\s+identificatore', 'nunca envia um identificador',
+  "n'envoie\\s+jamais d'identifiant", 'sendet nie eine\\s+Berechtigungs',
+  '識別子を送信することはありません', '식별자를 보내지 않습니다', '从不发送权益',
+  'никогда не\\s+отправляет идентификатор', 'لا يرسل BugIt مطلقًا',
+].join('|'));
 
 let failures = 0;
 const fail = (msg, why) => { failures++; console.error(`  FAIL  ${msg}\n        ${why}`); };
@@ -111,7 +136,18 @@ for (const lg of LOCALES) {
     fail(name, 'no "what the software sends" heading matched, so nothing below was checked');
     continue;
   }
-  const items = section.split('\n').filter((l) => l.startsWith('- ')).length;
+  const bullets = section.split('\n').reduce((acc, l) => {
+    if (l.startsWith('- ')) acc.push(l);
+    else if (acc.length && l.startsWith('  ')) acc[acc.length - 1] += ' ' + l.trim();
+    return acc;
+  }, []);
+  const items = bullets.length;
+  check(bullets.some((b) => SENT_ENTITLEMENT[lg].test(b)), `${name}: no sent-entitlement item`,
+    'a later licence check sends the signed entitlement (licence, device, and team and membership ids)');
+  check(!DENIAL.test(section), `${name}: still says BugIt never sends an entitlement identifier`,
+    'the renewal body carries the signed entitlement, which names those identifiers');
+  check(!/좀힐/.test(section), `${name}: the plan-filter verb is misspelled`,
+    '좁힐 (narrow) was published as 좀힐 in the Korean policy');
   check(items === EXPECTED_ITEMS, `${name}: ${items} items, expected ${EXPECTED_ITEMS}`,
     'the page says the device sends ONLY what it lists, so a short list is a false claim, ' +
     'not a documentation gap. If the wire really changed, change all eleven and EXPECTED_ITEMS.');

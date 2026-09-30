@@ -45,9 +45,8 @@ somente o necessário para operar sua licença:
   informar se há uma versão mais recente,
 - o **filtro de plano** que você escolheu ao iniciar a ativação: Solo, Team ou nenhuma
   preferência. Ele apenas reduz a lista de licenças que o Portal oferece para você
-  aprovar. Nunca nomeia uma licença específica, e o BugIt nunca envia um identificador
-  de direito de uso, de time, de associação ou de assento: essa escolha é sua, com você
-  conectado, no seu navegador,
+  aprovar. Nunca nomeia uma licença, um time ou uma associação específicos: essa escolha
+  é sua, com você conectado, no seu navegador,
 - **material de ativação** de curta duração: um valor aleatório criado para aquela única
   solicitação, mantido apenas em memória e nunca gravado em disco. Ele comprova que a aprovação
   que você deu no navegador pertence àquela solicitação e não pode ser reutilizada.
@@ -60,6 +59,10 @@ somente o necessário para operar sua licença:
   hash dele ao ativar e novamente em uma verificação posterior, se o seu dispositivo ainda
   não tiver um. Se o seu acesso for retirado da sua conta depois disso, o próprio valor é
   enviado uma vez, para que possamos saber que este dispositivo recebeu a retirada.
+- em uma verificação posterior, o **direito de uso assinado** que emitimos para este
+  dispositivo na ativação. Ele contém os identificadores da sua licença e deste
+  dispositivo e, em uma licença Team, os do time e da sua associação, para que possamos
+  confirmar que ele continua válido para este dispositivo.
 
 Em troca, o seu dispositivo recebe um **direito de uso assinado** que registra o que você está
 licenciado a usar e até quando.

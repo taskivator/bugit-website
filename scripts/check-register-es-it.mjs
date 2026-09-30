@@ -130,6 +130,8 @@ const PINS = [
   "Si tiene problemas de configuración",
   "Instale VS Code y GitHub Copilot",
   "El inicio de sesión en su cuenta de BugIt",
+  // The renewal FAQ answer is informal ("tu activación") and closed with the formal imperative.
+  "Renueve cerca del final del periodo actual",
   // W1 F3 (2026-09-24 cloud audit): the generated add("es",...) override set
   // docs.supportDesc back to the formal imperative, after the informal one was already
   // set by supportDescByLang, because the override ran second. Fixed on both sides

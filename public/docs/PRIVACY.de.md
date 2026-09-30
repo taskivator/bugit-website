@@ -47,9 +47,8 @@ Lizenz erforderlich ist:
   Ihnen sagen können, ob eine neuere Version verfügbar ist,
 - den **Planfilter**, den Sie zu Beginn der Aktivierung gewählt haben: Solo, Team oder
   keine Angabe. Er schränkt nur die Liste der Lizenzen ein, die Ihnen das Portal zur
-  Freigabe anbietet. Er benennt nie eine bestimmte Lizenz, und BugIt sendet nie eine
-  Berechtigungs-, Team-, Mitgliedschafts- oder Platzkennung: diese Wahl treffen Sie
-  selbst, angemeldet, in Ihrem Browser,
+  Freigabe anbietet. Er benennt nie eine bestimmte Lizenz, ein Team oder eine
+  Mitgliedschaft: diese Wahl treffen Sie selbst, angemeldet, in Ihrem Browser,
 - kurzlebiges **Aktivierungsmaterial**: ein Zufallswert, der für diese eine Anfrage erzeugt,
   nur im Arbeitsspeicher gehalten und nie auf die Festplatte geschrieben wird. Er belegt, dass
   die Freigabe aus Ihrem Browser zu dieser Anfrage gehört, und kann nicht wiederverwendet
@@ -64,6 +63,10 @@ Lizenz erforderlich ist:
   Ihr Gerät noch keines hält. Wird Ihr Zugriff später über Ihr Konto entzogen, wird der
   Wert selbst einmalig gesendet, damit wir erkennen können, dass dieses Gerät den Entzug
   erhalten hat.
+- bei einer späteren Prüfung den **signierten Berechtigungsnachweis**, den wir diesem
+  Gerät bei der Aktivierung ausgestellt haben. Er enthält die Kennungen Ihrer Lizenz und
+  dieses Geräts und, bei einer Team-Lizenz, die des Teams und Ihrer Mitgliedschaft, damit
+  wir bestätigen können, dass er für dieses Gerät weiterhin gilt.
 
 Im Gegenzug erhält Ihr Gerät einen **signierten Berechtigungsnachweis**, der festhält, was Sie
 nutzen dürfen und bis wann.

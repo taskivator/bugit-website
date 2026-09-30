@@ -48,9 +48,8 @@ votre licence :
   que nous puissions vous indiquer si une version plus récente est disponible,
 - le **filtre d'offre** que vous avez choisi au début de l'activation : Solo, Team ou
   aucune préférence. Il ne fait que restreindre la liste des licences que le Portal vous
-  propose d'approuver. Il ne désigne jamais une licence particulière, et BugIt n'envoie
-  jamais d'identifiant de droit d'usage, d'équipe, d'adhésion ou de poste : ce choix,
-  c'est vous qui le faites, connecté, dans votre navigateur,
+  propose d'approuver. Il ne désigne jamais une licence, une équipe ou une adhésion
+  particulière : ce choix, c'est vous qui le faites, connecté, dans votre navigateur,
 - du **matériel d'activation** de courte durée : une valeur aléatoire créée pour cette seule
   requête, conservée en mémoire uniquement et jamais écrite sur disque. Elle prouve que
   l'approbation donnée dans votre navigateur appartient à cette requête et ne peut être rejouée.
@@ -64,6 +63,10 @@ votre licence :
   vérification ultérieure si votre appareil n'en détient pas encore. Si votre accès est
   ensuite révoqué depuis votre compte, la valeur elle-même est envoyée une fois, afin que
   nous sachions que cet appareil a bien reçu la révocation.
+- lors d'une vérification ultérieure, le **droit d'usage signé** que nous avons émis pour
+  cet appareil à l'activation. Il contient les identifiants de votre licence et de cet
+  appareil et, pour une licence Team, ceux de l'équipe et de votre adhésion, afin que nous
+  puissions confirmer qu'il est toujours valable pour cet appareil.
 
 En retour, votre appareil reçoit un **droit d'usage signé** indiquant ce que vous êtes autorisé
 à utiliser et jusqu'à quand.

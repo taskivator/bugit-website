@@ -41,9 +41,8 @@ your license is checked again later, your device sends only the following:
   can tell you whether a newer version is available,
 - the **plan filter** you chose when you started activation: Solo, Team, or no
   preference. It only narrows the list of licences the Portal offers you to approve. It
-  never names a particular licence, and BugIt never sends an entitlement, team,
-  membership or seat identifier: you make that choice yourself, signed in, in your
-  browser,
+  never names a particular licence, team or membership: you make that choice yourself,
+  signed in, in your browser,
 - short lived **activation material**: a random value created for that one request,
   held in memory only, and never written to disk. It proves that the approval you
   gave in your browser belongs to that request and cannot be replayed.
@@ -55,6 +54,10 @@ your license is checked again later, your device sends only the following:
   you activate, and again on a later check if your machine is not yet holding one. If your
   access is withdrawn from your account, the value itself is sent once, so that we can tell
   this device received the withdrawal.
+- on a later check, the **signed entitlement** we issued to this device when you
+  activated. It carries the identifiers of your license and of this device and, for a
+  Team license, of the team and of your membership, so that we can confirm it is still
+  valid for this device.
 
 In return, your device receives a **signed entitlement** recording what you are
 licensed to use and until when.
