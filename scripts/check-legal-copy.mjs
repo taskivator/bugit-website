@@ -551,6 +551,158 @@ for (const base of ["REFUND", "TOKUSHOHO"]) {
 // Negative control, run by hand on 2026-09-25: with the old REFUND.md and TOKUSHOHO.ja.md
 // restored this section reported three failures; with the new copy it passes.
 
+// --- 12. THE COPY A VISITOR IS ACTUALLY SERVED (2026-10-04) ---------------------
+// On 2026-10-04 bugit.dev switched to the redesign: the homepage is v2/index.html and /docs/ is
+// v2/docs/index.html, with their translations in v2/i18n/<lang>.json and v2/docs/content.<lang>.json
+// and English fallbacks written into v2/*.js. Every check above reads app.js and index.html, which
+// still ship but which no published page loads any more. So from that day this guard went on
+// passing over the pages nobody reads while the homepage, its footer, its pricing block and every
+// translated docs label sat outside it. The legal DOCUMENTS are unaffected: the new docs page
+// fetches the same public/docs files sections 2 to 6 already hold.
+//
+// This section holds the published copy to the same properties: none of the removed alarming
+// wording, no personal telephone number or address, no address but support@bugit.dev (and the
+// one invented demo address below), no false certification claim, no "5 devices", no Spanish in
+// the French copy; the footer reaches Commercial Transactions and Security, the purchase block
+// reaches Commercial Transactions, the docs page registers both routes, and every locale's docs
+// chrome carries the commerce, refund and security labels with titles tied to the documents' own
+// headings, exactly as section 4 demanded of app.js. The file list is scripts/lib/published-copy.mjs,
+// never typed here. Every scan is first run over planted copies in memory and the guard exits 2 if
+// a plant is not caught, so a scan that has gone blind cannot report a pass.
+{
+  const { publishedCopy, publishedLangs } = await import("./lib/published-copy.mjs");
+  const langs = publishedLangs();
+  const copy = publishedCopy();
+
+  // The homepage's illustrative bug report shows BugIt redacting an invented reporter's address.
+  // It is demo text inside a mock ticket, not a contact the site advertises; that one value and
+  // nothing else is allowed beside the support address.
+  const DEMO_ADDRESS = "jane@acme.com";
+  const SPANISH_IN_FRENCH = /\b(?:está|licencia|año|única|único|también está|gestiona de forma)\b|El plan Team ya/;
+
+  const textProblems = (e) => {
+    const out = [];
+    const low = e.text.toLowerCase();
+    for (const p of BANNED_EN) if (low.includes(p)) out.push(`${e.file} still contains removed legal wording ("${p}")`);
+    for (const p of BANNED_JA) if (e.text.includes(p)) out.push(`${e.file} still contains removed Japanese legal wording ("${p}")`);
+    // Report the pattern that tripped, never the captured value.
+    for (const [re, what] of PERSONAL_PATTERNS) if (re.test(e.text)) out.push(`${e.file} appears to publish a ${what} (pattern: ${re})`);
+    for (const re of FALSE_CERT) {
+      const m = e.text.match(re);
+      if (m) out.push(`${e.file} makes a false legal-certification claim ("${m[0]}")`);
+    }
+    const dev = e.text.match(/\b(?:5|five)\s+(?:device seats|devices)\b/i);
+    if (dev) out.push(`${e.file} mis-states Team capacity as devices ("${dev[0]}"), should be up to 5 members`);
+    const foreign = [...e.text.matchAll(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g)].map((m) => m[0].toLowerCase())
+      .filter((a) => a !== "support@bugit.dev" && a !== DEMO_ADDRESS);
+    if (foreign.length) out.push(`${e.file} publishes ${foreign.length} email address(es) other than support@bugit.dev`);
+    if (e.lang === "fr") {
+      const line = e.text.split("\n").find((s) => SPANISH_IN_FRENCH.test(s));
+      if (line) out.push(`${e.file} carries Spanish inside the French copy: "${line.slice(0, 120)}"`);
+    }
+    return out;
+  };
+  const footerProblems = (file, html) => {
+    const f = html.match(/<footer[\s\S]*?<\/footer>/);
+    if (!f) return [`${file} has no footer`];
+    const out = [];
+    if (!/#\/docs\/commerce\b/.test(f[0])) out.push(`${file}: the footer does not link the Commercial Transactions page`);
+    if (!/#\/docs\/security\b/.test(f[0])) out.push(`${file}: the footer does not link the Security page`);
+    return out;
+  };
+  const pricingProblems = (file, html) => {
+    const s = html.match(/<section[^>]*\bid="pricing"[\s\S]*?<\/section>/);
+    if (!s) return [`${file}: no pricing section found, so the purchase flow could not be checked`];
+    return /#\/docs\/commerce\b/.test(s[0]) ? []
+      : [`${file}: the purchase flow (pricing section) does not link the Commercial Transactions page`];
+  };
+  const chromeProblems = (file, code, c) => {
+    const out = [];
+    const d = c.docs || {}, p = c.docPages || {};
+    if (!d.commerce) out.push(`${file} has no docs.commerce label`);
+    if (!p.commerceTitle) out.push(`${file} has no docPages.commerceTitle`);
+    if (!p.commerceIntro) out.push(`${file} has no docPages.commerceIntro`);
+    if (!d.commerceDesc) out.push(`${file} has no docs.commerceDesc card blurb`);
+    else if (d.commerceDesc === p.commerceIntro) out.push(`${file} reuses the full commerceIntro paragraph as the card blurb`);
+    else if (d.commerceDesc.length > 80) out.push(`${file} has a ${d.commerceDesc.length}-character commerce card blurb (max 80)`);
+    if (!d.refund) out.push(`${file} has no docs.refund label`);
+    if (!p.refundIntro) out.push(`${file} has no docPages.refundIntro`);
+    if (!d.security) out.push(`${file} has no docs.security label`);
+    if (!d.securityDesc) out.push(`${file} has no docs.securityDesc card blurb`);
+    else if (d.securityDesc.length > 80) out.push(`${file} has a ${d.securityDesc.length}-character security card blurb (max 80)`);
+    for (const [key, stem] of [["refundTitle", "REFUND"], ["securityTitle", "SECURITY"]]) {
+      const doc = path.join(docs, `${stem}${code === "en" ? "" : "." + code}.md`);
+      if (!p[key]) { out.push(`${file} has no docPages.${key}`); continue; }
+      if (!fs.existsSync(doc)) { out.push(`${file} links ${path.basename(doc)}, which is missing`); continue; }
+      const h1 = fs.readFileSync(doc, "utf8").split("\n")[0].replace(/^#\s*/, "").trim();
+      if (h1 !== p[key]) out.push(`${file} ${key} "${p[key]}" does not match the ${path.basename(doc)} heading "${h1}"`);
+    }
+    if (code === "ja" && (d.commerce !== JA_TITLE || p.commerceTitle !== JA_TITLE)) {
+      out.push(`${file}: the Japanese commerce label and heading must both be ${JA_TITLE}`);
+    }
+    return out;
+  };
+
+  // Negative controls, in memory. Each plant must be reported; a clean line carrying the two
+  // allowed addresses must not be.
+  const plants = [
+    { file: "planted", lang: "en", kind: "home", text: "This reflects an accepted legal risk." },
+    { file: "planted", lang: "ja", kind: "home", text: "販売事業者名：非公開" },
+    { file: "planted", lang: "en", kind: "home", text: "Call us on +81 3 1234 5678." },
+    { file: "planted", lang: "en", kind: "home", text: "BugIt is fully compliant with every law." },
+    { file: "planted", lang: "en", kind: "docs", text: "Team covers 5 devices." },
+    { file: "planted", lang: "en", kind: "script", text: "write to owner@example.com" },
+    { file: "planted", lang: "fr", kind: "docs", text: "Votre licencia está activa." },
+  ];
+  const blind = plants.filter((e) => textProblems(e).length === 0);
+  const clean = textProblems({ file: "planted", lang: "fr", kind: "home", text: `${DEMO_ADDRESS} support@bugit.dev Équipe jusqu'à 5 membres.` });
+  const shapeBlind =
+    footerProblems("planted", '<footer><a href="#/docs/commerce">C</a></footer>').length === 0
+    || footerProblems("planted", '<footer><a href="#/docs/security">S</a></footer>').length === 0
+    || footerProblems("planted", '<footer><a href="#/docs/commerce">C</a><a href="#/docs/security">S</a></footer>').length !== 0
+    || pricingProblems("planted", '<section id="pricing"><a href="/docs/#/docs/refund">R</a></section>').length === 0
+    || chromeProblems("planted", "en", { docs: { commerce: "C" }, docPages: {} }).length === 0;
+  if (blind.length || clean.length || shapeBlind) {
+    console.error("SELF-TEST FAILED: negative control did not fire. The published-copy scan "
+      + (blind.length ? `accepted ${blind.map((e) => JSON.stringify(e.text)).join(", ")}` : "")
+      + (clean.length ? `rejected allowed copy: ${clean.join("; ")}` : "")
+      + (shapeBlind ? "has a footer, pricing or docs chrome check that cannot fail (or rejects correct markup)" : ""));
+    process.exit(2);
+  }
+
+  // Positive control: the published copy was actually read, all of it.
+  const pages = copy.filter((e) => e.kind === "page");
+  const docsEntries = copy.filter((e) => e.kind === "docs");
+  const homeEntries = copy.filter((e) => e.kind === "home");
+  const chars = copy.reduce((n, e) => n + e.text.length, 0);
+  check(pages.length >= 2 && docsEntries.length === langs.length && homeEntries.length === langs.length - 1
+    && chars > 100000,
+    "the published copy was not all read",
+    `${pages.length} pages, ${docsEntries.length} docs dictionaries and ${homeEntries.length} homepage dictionaries `
+    + `(${chars} characters) for ${langs.length} languages`);
+
+  for (const e of copy) for (const p of textProblems(e)) check(false, p);
+  for (const e of pages) for (const p of footerProblems(e.file, e.text)) check(false, p);
+  const priced = pages.filter((e) => /\bid="pricing"/.test(e.text));
+  check(priced.length > 0, "no published page has a pricing section, so the purchase flow was not checked");
+  for (const e of priced) for (const p of pricingProblems(e.file, e.text)) check(false, p);
+
+  const docsScript = copy.find((e) => e.file.endsWith("docs/docs.js"));
+  check(!!docsScript && /r:\s*"docs\/commerce"/.test(docsScript.text), "the docs page does not register docs/commerce");
+  check(!!docsScript && /r:\s*"docs\/security"/.test(docsScript.text), "the docs page does not register docs/security");
+  for (const e of docsEntries) {
+    for (const p of chromeProblems(e.file, e.lang, JSON.parse(read(e.file)))) check(false, p);
+  }
+  // The homepage footer label is the one a Japanese buyer meets first; it must stay the statutory title.
+  const jaHome = homeEntries.find((e) => e.lang === "ja");
+  if (jaHome) {
+    const t = JSON.parse(read(jaHome.file)).t171;
+    check(t === JA_TITLE, `${jaHome.file} footer label t171 is "${t}", expected ${JA_TITLE}`);
+  }
+  console.log(`published copy: ${copy.length} files (${chars} characters, ${langs.length} languages) scanned; `
+    + `${plants.length + 5} negative controls fired`);
+}
+
 if (fails) {
   console.error(`\nLegal-copy check FAILED with ${fails} problem(s).`);
   process.exit(1);

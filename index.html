@@ -75,8 +75,8 @@
         "image": "https://bugit.dev/public/brand/og-image.png",
         "publisher": { "@id": "https://bugit.dev/#org" },
         "offers": [
-          { "@type": "Offer", "name": "Solo", "price": "39.99", "priceCurrency": "USD", "category": "one-time purchase" },
-          { "@type": "Offer", "name": "Team", "price": "199", "priceCurrency": "USD", "category": "one-time purchase" }
+          { "@type": "Offer", "name": "Solo", "price": "59.99", "priceCurrency": "USD", "category": "1-year license, no subscription, no automatic renewal" },
+          { "@type": "Offer", "name": "Team", "price": "249.99", "priceCurrency": "USD", "category": "1-year license, no subscription, no automatic renewal" }
         ]
       }
     ]
@@ -189,6 +189,7 @@
           <div><strong><svg class="mi" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5 4 5.5v5.5c0 4.6 3.4 7.8 8 9.2 4.6-1.4 8-4.6 8-9.2V5.5z"/><path d="m8.7 11.7 2.3 2.3 4.3-4.3"/></svg><span data-t="metrics.privateNum">Private by design</span></strong><small data-t="metrics.private">No telemetry. Your data stays yours.</small></div>
         </div>
         <div class="actions"><a class="primary" href="https://portal.bugit.dev/pricing"><span data-t="cta.early">Get BugIt</span></a><a class="secondary" href="#demo"><span data-t="cta.demo">Watch Demo</span> <span>▷</span></a><a class="secondary" href="#watch"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" class="cta-yt"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.13-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg><span data-t="cta.films">Watch the series</span></a></div>
+        <a class="trial-flag" href="#trial"><b data-t="trial.flagNew">New</b><span data-t="trial.flag">Free trial for testers</span><span aria-hidden="true">→</span></a>
         <div class="under"><span data-t="under.features">✓ No monthly subscription</span><span data-t="under.approval">✓ Human approval before filing</span><span data-t="under.updates">✓ Free software updates</span><span data-t="under.private">✓ 7-day refund policy</span></div>
       </div>
       <div class="mission-wrap">
@@ -365,10 +366,49 @@ From the log   Repeated 401 on /session/refresh after token expiry.</pre>
         <p class="note" data-t="integrations.note">⌁ Turn on a supported tool in setup. Connect once, use everywhere. Storage services like Amazon S3 and Google Drive aren’t set up automatically.</p>
       </div>
       <div id="pricing" class="pricing">
-        <article class="price-card"><h3 data-t="pricing.soloTitle">SOLO LICENSE</h3><div class="price"><strong>$39.99</strong><span data-t="pricing.perYear"> one-time</span></div><p class="regular"><b data-t="pricing.limited">Introductory price</b><span data-t="pricing.soloRegular">Regular price $59.99</span></p><ul><li data-t="pricing.soloDevice">1 device (one user)</li><li data-t="pricing.allFeatures">All features included</li><li data-t="pricing.updates">Free software updates while active</li><li data-t="pricing.docs">Documentation & guides</li><li data-t="pricing.support">Email support</li></ul><a class="primary wide" href="https://portal.bugit.dev/pricing?plan=solo"><span data-t="pricing.soloCta">Get BugIt Solo</span></a><small data-t="pricing.soloTerm">1-year Solo licence · does not auto-renew</small></article>
-        <article class="price-card"><h3 data-t="pricing.teamTitle">TEAM LICENSE</h3><div class="price"><strong>$199</strong><span data-t="pricing.perYear"> one-time</span></div><p class="regular"><b data-t="pricing.limited">Introductory price</b><span data-t="pricing.teamRegular">Regular price $249.99</span></p><ul><li data-t="pricing.teamDevices">Up to 5 members, each with their own account</li><li data-t="pricing.teamWorkflow">Shared QA workflow</li><li data-t="pricing.teamConfig">Shared project configuration</li><li data-t="pricing.teamSeverity">Consistent severity & categories</li><li data-t="pricing.teamTools">Central Team management in the Portal</li><li data-t="pricing.priority">Priority support</li></ul><a class="primary wide" href="https://portal.bugit.dev/pricing?plan=team"><span data-t="pricing.teamCta">Get BugIt Team</span></a><small data-t="pricing.teamTerm">1-year Team licence · does not auto-renew</small></article>
+        <article class="price-card"><h3 data-t="pricing.soloTitle">SOLO LICENSE</h3><div class="price"><strong>$59.99</strong><span data-t="pricing.perYear"> USD for 1 year</span></div><ul><li data-t="pricing.soloDevice">1 device (one user)</li><li data-t="pricing.allFeatures">All features included</li><li data-t="pricing.updates">Free software updates while active</li><li data-t="pricing.docs">Documentation & guides</li><li data-t="pricing.support">Email support</li></ul><a class="primary wide" href="https://portal.bugit.dev/pricing?plan=solo"><span data-t="pricing.soloCta">Get BugIt Solo</span></a><small data-t="pricing.soloTerm">1-year Solo license · No subscription · does not renew automatically</small></article>
+        <article class="price-card"><h3 data-t="pricing.teamTitle">TEAM LICENSE</h3><div class="price"><strong>$249.99</strong><span data-t="pricing.perYear"> USD for 1 year</span></div><ul><li data-t="pricing.teamDevices">Up to 5 members, each with their own account</li><li data-t="pricing.teamWorkflow">Shared QA workflow</li><li data-t="pricing.teamConfig">Shared project configuration</li><li data-t="pricing.teamSeverity">Consistent severity & categories</li><li data-t="pricing.teamTools">Central Team management in the Portal</li><li data-t="pricing.priority">Priority support</li></ul><a class="primary wide" href="https://portal.bugit.dev/pricing?plan=team"><span data-t="pricing.teamCta">Get BugIt Team</span></a><small data-t="pricing.teamTerm">1-year Team license · No subscription · does not renew automatically</small></article>
       </div>
-      <p class="pricing-note"><span data-t="pricing.refundNote">Backed by a 7-day refund policy.</span> <a href="#/docs/refund" data-t="pricing.refundLink">Read the refund policy</a> · <a href="#/docs/commerce" data-t="docs.commerce">Commercial Transactions</a></p>
+      <p class="pricing-note"><span data-t="pricing.currency">All prices are in US dollars (USD).</span> <span data-t="pricing.refundNote">Backed by a 7-day refund policy.</span> <a href="#/docs/refund" data-t="pricing.refundLink">Read the refund policy</a> · <a href="#/docs/commerce" data-t="docs.commerce">Commercial Transactions</a></p>
+    </section>
+
+    <!-- FREE TRIAL (owner, 2026-10-03: "inform ppl that now we have that free trial available ...
+         create a new section on the page to inform them what they need to do").
+         It is drawn as a TICKET because the request is one: a free trial is asked for through a
+         Support ticket in the Portal and answered on that ticket, so the section shows the thing a
+         visitor will actually be filling in rather than a generic offer banner.
+         EVERY SENTENCE HERE IS A DESCRIPTION OF THE PORTAL, and has to stay true of it:
+           * a limited number, reviewed by hand: the grant is manual, super admin only;
+           * six questions: role, tracker, computer, AI assistant, team size, how they heard;
+           * a free SOLO license: admin-license-grant signs "solo";
+           * it ends on its end date with no grace: the licenses_complimentary_has_no_grace trigger;
+           * refused to a working license or a Team seat: support_ticket_trial_request_guard.
+         The button goes to /dashboard/free-trial, a PATH, because the Portal's sign-in keeps the
+         path and drops the query; that route opens Support with the trial form chosen. -->
+    <section id="trial" class="trial shell" aria-labelledby="trialTitle">
+      <div class="section-head">
+        <span data-t="trial.eyebrow">FREE TRIAL</span>
+        <h2 id="trialTitle" data-t="trial.title">Try BugIt free, as one of our testers.</h2>
+        <p data-t="trial.subtitle">We give a limited number of free licenses to testers who will tell us honestly what works and what does not. This is how to get one.</p>
+      </div>
+      <div class="trial-ticket">
+        <div class="trial-bar">
+          <span class="trial-live"><i aria-hidden="true"></i><span data-t="trial.status">Open to testers</span></span>
+          <b data-t="trial.ticket">Request a free trial</b>
+          <code aria-hidden="true">FREE-TRIAL</code>
+        </div>
+        <ol class="trial-steps">
+          <li><span class="trial-n" aria-hidden="true">1</span><h3 data-t="trial.s1t">Create your BugIt account</h3><p data-t="trial.s1">It is free, in the BugIt Portal. It is the same account you activate BugIt with later.</p></li>
+          <li><span class="trial-n" aria-hidden="true">2</span><h3 data-t="trial.s2t">Ask for your trial</h3><p data-t="trial.s2">In the Portal, open Support and choose Request a free trial. Answer six quick questions about your role, tracker, computer, AI assistant and team, and say what you would like to test.</p></li>
+          <li><span class="trial-n" aria-hidden="true">3</span><h3 data-t="trial.s3t">We read every request</h3><p data-t="trial.s3">We reply on your ticket. If you are in, a free Solo license appears in your Portal and you activate BugIt as usual.</p></li>
+          <li><span class="trial-n" aria-hidden="true">4</span><h3 data-t="trial.s4t">Tell us how it went</h3><p data-t="trial.s4">After about two weeks of use, share honest feedback: what worked, what did not, what you missed.</p></li>
+        </ol>
+        <div class="trial-cta">
+          <a class="primary" href="https://portal.bugit.dev/dashboard/free-trial"><span data-t="trial.cta">Request a free trial</span> <span aria-hidden="true">→</span></a>
+          <a class="secondary" href="#watch"><span data-t="trial.watch">Watch it first</span></a>
+        </div>
+        <p class="trial-fine" data-t="trial.fine">Places are limited and each request is reviewed by hand. A free license stops on its end date, with no grace period. If your account already has a working license or a Team seat, you already have BugIt.</p>
+      </div>
     </section>
 
     <section id="faq" class="faq shell"><div class="section-head"><span>FAQ</span><h2 data-t="faq.title">Launch details, without surprises.</h2></div><div id="faqList" class="faq-grid"></div><p class="faq-more"><a id="faqMoreLink" href="#/docs/faq"></a></p></section>

@@ -50,8 +50,9 @@ Titulaire de la licence ») acceptez les présentes conditions.
    n'envoie à Taskivator aucune donnée de projet, de ticket, de glossaire ou d'outil
    de suivi. Voir PRIVACY.md.
 
-7. Durée. BugIt est un achat unique et non un abonnement : vous payez une fois, sans
-   reconduction automatique ni prélèvement récurrent. Votre achat confère une licence
+7. Durée. BugIt est vendu sous la forme d'une licence d'un an et non d'un
+   abonnement : la licence n'est pas reconduite automatiquement et aucun prélèvement
+   récurrent n'est effectué. Votre achat confère une licence
    d'un an, comprenant les mises à jour ainsi que les services de licence et
    d'activation, qui débute à la date d'achat. À l'issue de l'année, la
    licence expire ; une période de grâce de 3 jours suit, pendant laquelle le Logiciel

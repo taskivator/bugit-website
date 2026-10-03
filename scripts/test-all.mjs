@@ -193,8 +193,8 @@ const SUITES = [
   // check-assets and check-chrome-a11y used to run only in CI, or nowhere at all, so a local
   // `npm test` could pass while CI failed and vice versa. Both lists are now checked against
   // each other by scripts/check-ci-coverage.mjs.
-  "check-assets.mjs", "check-chrome-a11y.mjs",
-  "check-doc-links.mjs", "check-docs.mjs", "check-overflow.mjs", "check-mission-pause.mjs", "check-logo.mjs",
+  "check-assets.mjs", 
+  "check-doc-links.mjs", "check-docs.mjs", "check-logo.mjs",
   // check-logo asks whether the marks are drawn correctly. This asks whether the
   // Guide's INLINE copy of its mark still says the same thing as the generated
   // file -- the one place on this site where brand artwork is hand-copied.
@@ -204,6 +204,10 @@ const SUITES = [
   // repository in Firefox, in WebKit (which is every browser on iOS), on a phone or on a
   // tablet. Thorough in one configuration reads as coverage for all of them.
   "check-guide-devices.mjs",
+  // The redesign's own guard (2026-10-04): the built pages, as published. See its header.
+  "check-redesign.mjs",
+  // What a visitor can DO on the published pages: routes, keyboard, targets, type, motion.
+  "check-published-pages.mjs",
   // And the owner found two more things on a real iPhone that neither of those could see:
   // the page behind the open Guide scrolled with the swipe, and the mark wore a plate. Both
   // are rendered facts -- the stylesheet was correct in each case -- so this measures a live
@@ -271,7 +275,7 @@ const SUITES = [
   // from the repo root, on every push, for 97 builds before anyone noticed.
   "check-single-publication.mjs",
   "check-team-paused.mjs", "check-activation-copy.mjs", "check-legal-copy.mjs", "check-consent-network.mjs",
-  "check-legal-dataflow.mjs", "check-a11y.mjs", "check-languages.mjs", "check-doc-hygiene.mjs", "check-doc-duplicates.mjs", "check-spa-routing.mjs",
+  "check-legal-dataflow.mjs", "check-languages.mjs", "check-doc-hygiene.mjs", "check-doc-duplicates.mjs", 
   // "F-05, the privacy policy on licence data" was found by four separate audit packs and
   // fixed narrowly each time, because nothing here compared one language's list of what the
   // software sends to another's, or to the copy in the FAQ. See the header of the gate.
@@ -301,17 +305,12 @@ const SUITES = [
   // ...and this one asks whether the sheet that produces it is still structurally sound.
   // A stray brace unlayers the redesign silently; the visible symptom is the page losing
   // its single content edge, so the structure and the geometry are checked together.
-  "check-alignment.mjs",
   // The page animates now, and the way that breaks is silent: content held at the `from`
   // state of a reveal is invisible while the markup, the a11y tree and every other guard
   // here stay perfectly correct.
-  "check-motion.mjs",
   // The channel holds two cuts of every film and the page shipped pointing ten of its twelve
   // tiles at the vertical one, inside a 16:9 stage. Valid markup, real ids, posters that
   // loaded: the only way to see it was to press play. This presses play.
-  "check-channel.mjs",
-  "check-ground.mjs",
-  "check-reading.mjs",
   // ...and these three are the 2026-08-21 audit, kept. Every guard above reads one thing about
   // the page; these three read the page the way a reader meets it.
   //
@@ -332,16 +331,12 @@ const SUITES = [
   "check-consent-contract.mjs",
   "check-licence-disclosure.mjs",
   "check-dev-server.mjs",
-  "check-space.mjs",
   // Runs BEFORE check-routing, and in a second, because it is the guard for the wedge that
   // stopped this list dead. check-routing crashed a renderer and blocked forever, so the 28
   // suites after it never ran while the command still looked busy. It survived three fixes
   // because nothing can ask Chromium to die on cue; this drives a fake that never answers.
   "check-browser-session.mjs",
   "check-chrome-devtools.mjs",
-  "check-routing.mjs",
-  "check-progress-label.mjs",
-  "check-instrument-size.mjs",
   // check-untranslated  reads the RENDERED page and asks the reader's question: on the Japanese
   //                 page, is this sentence in Japanese? Every other language guard here reads
   //                 the i18n object, and the film wall's twenty-four English strings were never
@@ -350,9 +345,6 @@ const SUITES = [
   // check-chrome    the header lockup, the language menu, the social labels and the footer
   //                 links: the parts present on every route, whose defects are properties of an
   //                 INTERACTION or of one narrow width and so survive a page-level sweep.
-  "check-doc-markup.mjs",
-  "check-untranslated.mjs",
-  "check-chrome.mjs",
   // check-reveal    every scroll-driven reveal, at every width and in every language, must reach
   //                 the end of its range and finish fully opaque. check-motion already claims
   //                 this ground and passes on the broken tree: it renders one viewport, reads
@@ -362,8 +354,6 @@ const SUITES = [
   //                 the report above it. Two veils were stacked there and the stylesheet's own
   //                 correction for one of them had never applied, because an identical rule
   //                 later in the same layer put it back.
-  "check-reveal.mjs",
-  "check-report-bar.mjs",
   // check-disclosure  the only guard here that runs a second BROWSER ENGINE. Every control that
   //                 declares aria-expanded must open and close again, by tap and by click, in
   //                 WebKit as well as Chromium. The language menu would not close on Safari --
@@ -380,30 +370,25 @@ const SUITES = [
   //                 finger cannot. Chromium and WebKit, and it carries its own negative
   //                 control -- it rewrites app.js on the wire to restore the bug and fails
   //                 if that still passes.
-  "check-overlay-controls.mjs",
   // check-close-control  the control that CLOSES a page-locking overlay must be on the screen.
   //                 Below 150 CSS px it was not: the header row could not fit, the controls were
   //                 pushed past the right edge, and html{overflow-x:clip} meant the reader could
   //                 not scroll to what left. With the page locked and everything behind it inert,
   //                 a reload was the only way out -- which is what "Chrome is crashing" was.
-  "check-close-control.mjs",
   // check-zoomed-overlay  a PINCH must not close what the reader just opened. In Safari, and
   //                 so on every iPhone, window.innerWidth/innerHeight report the VISUAL
   //                 viewport and shrink as the reader zooms in, while getBoundingClientRect
   //                 stays in LAYOUT coordinates. The mobile menu compared the two, so any
   //                 residual zoom made its own close control measure as off-screen and the
   //                 overlay closed itself inside the tap that opened it.
-  "check-zoomed-overlay.mjs",
   // check-compositor-budget  Chrome on iOS is WebKit in a WKWebView, and when the whole APP dies
   //                 rather than one tab it is iOS jetsam. This page asked a phone for 145.6 MB of
   //                 compositor buffers at rest and 1312 MB at 3x zoom, 53 MB of which was a
   //                 backdrop-filter behind fully opaque backgrounds and rendered nothing.
-  "check-compositor-budget.mjs",
   // check-type-floor  section 28 of styles.css says "Nothing renders below 11.5px now". Nothing
   //                 checked it, and the brand byline had been 0.5px under it at every width from
   //                 786px up, desktop included. Found by an Android sweep, which is where a floor
   //                 is felt first. The floor is read from the scale's own --t-3xs, never typed.
-  "check-type-floor.mjs",
   // check-menu-keyboard   the language menu declares role="menu", which is a PROMISE about
   //                 keyboard behaviour: arrows move, Escape closes, Home/End jump. It had none
   //                 of it. Declared ARIA is checked by operating the control, not by reading it.
@@ -428,11 +413,7 @@ const SUITES = [
   //                 a 640px phone, growing off the TOP of the screen because the bar is fixed
   //                 to the bottom, with the title, the explanation and the first toggle where
   //                 no gesture could reach them. Fifteen viewports, 320x568 to 1920x1080.
-  "check-menu-keyboard.mjs",
-  "check-mission-box.mjs",
-  "check-mobile-chrome.mjs",
   "check-notice-fits.mjs",
-  "check-hairlines.mjs",
   // check-overlay-contents  what an overlay CONTAINS has to work, not just the control that
   //                 opened it. The mobile menu inerted its own links, its account rows and its
   //                 own close button: every one of them visible, opaque and completely dead.
@@ -442,7 +423,6 @@ const SUITES = [
   //                 youtube.com/watch URL, which both mobile platforms hand to the YouTube app,
   //                 so every visitor who pressed play on a phone left the site. Every tile, on
   //                 three phones, in both engines.
-  "check-demo-stage.mjs",
   // check-mission-live-row  the collapsed panel's ONE line must be the row the run has reached.
   //                 The stylesheet used to infer it from `.active`, and a step is only active
   //                 between its start and its finish, so in each of the seven gaps the line
@@ -452,9 +432,6 @@ const SUITES = [
   //                 rail still sticky with no column to be sticky in, which the document then
   //                 scrolled through, and a header taking a fifth of a landscape phone.
   "check-overlay-contents.mjs",
-  "check-watch-inline.mjs",
-  "check-mission-live-row.mjs",
-  "check-phone-height.mjs",
   // check-report-reveal   pressing "Show full report" has to show some of the report. The
   //                 instrument is the same size open or closed and the report opens into a
   //                 scroller that starts at the top, so the press put 28px of 714 in front of
@@ -473,19 +450,13 @@ const SUITES = [
   // check-rule-pair      the two hairlines beside a section eyebrow, photographed: one of the
   //                 pair held an animated transform for ever, which composites it, and a
   //                 composited hairline snaps to whole device pixels while its twin does not.
-  "check-report-reveal.mjs",
-  "check-mission-marker.mjs",
-  "check-dim-on-screen.mjs",
-  "check-docs-chrome.mjs",
-  "check-rule-pair.mjs",
+  
   // check-toc-teardown   a documentation route change must detach the previous contents list
   //                 before its container is rewritten; otherwise its six window listeners
   //                 outlive it, six more per click (CR-08-F02).
-  "check-toc-teardown.mjs",
   // check-demo-pause     the demo clips autoplay and rotate; a reader must be able to pause
   //                 them by keyboard, and nothing may restart them while paused (WCAG 2.2.2,
   //                 CR-08-F08).
-  "check-demo-pause.mjs",
   // check-forced-colors  Windows High Contrast, which nothing above renders in. `forced-colors`
   //                 is not a theme: the UA replaces colour, and it replaces `box-shadow` and
   //                 every gradient with NOTHING rather than with a colour. The focus ring on
@@ -493,7 +464,6 @@ const SUITES = [
   //                 reader with High Contrast on had no focus indicator on any control on any
   //                 page. It is also the only guard here that runs Gecko, which had never
   //                 rendered this site at any width.
-  "check-forced-colors.mjs",
 ];
 const failed = [];
 for (const s of SUITES) {

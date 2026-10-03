@@ -1,0 +1,118 @@
+{
+ "docPages": {
+  "homeTitle": "文档",
+  "commerceTitle": "商业交易信息",
+  "commerceIntro": "BugIt 的卖方与交易信息，包括依据日本《特定商取引法》就邮购销售提供的信息。",
+  "homeIntro": "安装、激活、自定义并安全使用 BugIt 所需的一切。已更新至 BugIt QA Agent。",
+  "refundTitle": "退款政策",
+  "refundIntro": "BugIt 许可证购买的退款政策。",
+  "gettingTitle": "快速开始",
+  "userTitle": "用户指南",
+  "licenseTitle": "许可协议",
+  "privacyTitle": "隐私政策",
+  "securityTitle": "安全",
+  "faqTitle": "FAQ",
+  "supportTitle": "支持",
+  "supportIntro": "遇到设置问题时，先让 BugIt 助手诊断问题，然后运行 Check status 或 Check readiness。如果仍需要帮助，请从 BugIt 控制台提交支持工单。",
+  "download": "下载 PDF",
+  "before": "提交支持工单前",
+  "beforeText": "不要包含机密源代码、客户数据、私有工单、截图、令牌或密钥。请用一般方式描述 BugIt 问题。",
+  "englishOnly": "支持工单必须以英文提交。本地化的网站页面仅为方便用户而提供，并不表示 Taskivator 会以所列出的每种语言提供支持。"
+ },
+ "docs": {
+  "eyebrow": "文档",
+  "getting": "快速开始",
+  "gettingDesc": "几分钟内完成 BugIt 设置。",
+  "user": "用户指南",
+  "userDesc": "功能与工作流的完整指南。",
+  "license": "许可协议",
+  "licenseDesc": "阅读 BugIt 的使用条款。",
+  "privacy": "隐私政策",
+  "privacyDesc": "我们如何收集、使用和保护你的数据。",
+  "security": "安全",
+  "securityDesc": "保护措施、已知限制以及如何报告漏洞。",
+  "refund": "退款政策",
+  "refundDesc": "我们的 7 天退款政策。",
+  "commerce": "商业交易信息",
+  "commerceDesc": "卖方与交易信息（特定商取引法に基づく表記）。",
+  "faqDesc": "常见问题解答。",
+  "support": "支持",
+  "supportDesc": "获取帮助并提交支持工单。"
+ },
+ "faq": [
+  [
+   "运行 BugIt 需要什么？",
+   "BugIt 在 Visual Studio Code 中运行，需要 GitHub Copilot Chat、Claude 扩展或其他助手，以及较新版本的 Python（3.10-3.14）。Windows 11 已获完全支持并通过发布验证；macOS 和 Linux 也受支持，但在验证范围扩大期间目前为预览（Preview）状态。BugIt 不含 AI 模型或订阅，请使用你自己的。"
+  ],
+  [
+   "BugIt 会自动提交缺陷吗？",
+   "不会。每个包含报告内容的工单、评论、附件或通知都会先预览。执行不可撤销的工单提交前，需要输入 FILE IT 进行批准；仅靠聊天文字永远不会提交。仅输入\"是\"不会执行操作。想零写入地练习，请使用 dry run。连接测试是唯一的例外：当你自己运行 notify connect、notify test 或 notify doctor --live 时，BugIt 会不经预览地发送一条固定的测试消息，发送到你指定的渠道；若未指定，则发送到你已启用的所有渠道。这些测试不含报告内容，dry run 同样会阻止它们。"
+  ],
+  [
+   "哪些跟踪器有内置且已测试的字段映射？",
+   "全部十一个都提供内置且已测试的字段映射，并使用你在自己账户中创建的凭据，直接通过各自的 REST API 提交：Jira Cloud、Azure DevOps、GitHub Issues、GitLab Issues、Bugzilla、YouTrack、Linear、Shortcut、ClickUp、Asana 和 Trello。提交不使用 MCP。崩溃工具等其他服务仍通过你自己的 MCP 服务器连接。截图和日志上传支持十一个中的八个：BugIt 不会向 GitHub Issues、GitLab Issues 和 Bugzilla 上传文件，并会在你尝试前告知。"
+  ],
+  [
+   "我需要 GitHub Copilot 吗？",
+   "推荐使用 GitHub Copilot，它是最简单的设置方式。BugIt 也支持 VS Code 中的 Claude 扩展、其他助手或普通终端：提交是一条命令，因此在它们中的使用方式完全相同。"
+  ],
+  [
+   "可以使用 Claude、Gemini 或 GPT 吗？",
+   "可以。在 GitHub Copilot 中，如果你的计划提供这些模型，就可以使用。standalone 模式支持你自己的 OpenAI 或 Anthropic 密钥。"
+  ],
+  [
+   "Taskivator 会看到我的工作内容吗？",
+   "不会。缺陷报告、规格、术语表、截图、代码、设置和工单都不会发送给 Taskivator。只会使用许可证/更新数据。"
+  ],
+  [
+   "会发送哪些许可证/更新数据？",
+   "在浏览器 Portal 中登录你的 BugIt 账户、一个单向哈希的设备 ID、一个随机安装标识符、你的设备名（主机名）与操作系统名称、BugIt 版本与你选择的 Solo 或 Team 套餐筛选、短时有效的加密质询材料、浏览器打开的 Portal 链接中的一次性批准令牌、每次激活生成的确认密钥（激活时发送其哈希；仅在撤销这台设备的访问时才发送密钥本身），以及你为这台设备批准的 Solo 或 Team 权益。"
+  ],
+  [
+   "Team 包含什么？",
+   "BugIt Team 现已推出。非订阅的 1 年期许可证，不会自动续费，适用于最多 5 名成员：每位成员都拥有各自的 BugIt 账户、各自的登录和各自的设备激活，而不是共享一个许可证。团队配置为共享，并在门户中集中管理，且不自动续订。Solo 套餐不受影响，同样可用。 超过五人？给同一个团队再加一个 Team 许可证即可增加 5 个席位，每个许可证各自计算期限。"
+  ],
+  [
+   "可以不提交就练习吗？",
+   "可以。使用 dry run 可以生成完整报告，而不会创建工单、评论、附件或通知。 dry run 会阻止 BugIt 内置的辅助工具写入，并指示代理拒绝对跟踪器的写入；这种拒绝遵循的是 BugIt 的指令而非平台级锁定，因此评估时请使用只读凭据。"
+  ],
+  [
+   "哪些文件可以安全编辑？",
+   "可以安全编辑 config.json、.vscode/mcp.json、.github/glossary/terms.template.md、.github/instructions/learned.instructions.md，以及你自己创建的 .github/instructions/house-style.instructions.md。"
+  ],
+  [
+   "哪些内容不应手动编辑？",
+   "不要手动编辑 .github/agents/bugit-qa-agent.agent.md、.github/instructions/ 下随产品提供的其他文件，或 tools/ 中的任何文件。更新会覆盖这些产品文件，而且不会备份。"
+  ],
+  [
+   "更新如何工作？",
+   "BugIt 会备份你拥有的设置文件，验证已签名的更新，就地安装，并保留配置、术语表、团队风格、许可证和连接。"
+  ],
+  [
+   "许可证到期后会怎样？",
+   "许可证期限结束后有 3 天宽限期，此后提交和激活功能需要有效的许可证。你的本地文件和设置仍归你所有。许可证服务器故障是另一种情况：缓存验证允许最多 72 小时离线继续工作。该年度自购买之日起计算。"
+  ],
+  [
+   "续订会叠加吗？",
+   "不会。续订会替换当前的激活，并从该日期开始新的期限。请在当前期限接近结束时续订。"
+  ],
+  [
+   "如何获得支持？",
+   "先让 AI 助手诊断问题，然后运行 Check status 或 Check readiness。如果仍需帮助，请从 BugIt 控制台提交支持工单，无需包含机密项目信息。"
+  ]
+ ],
+ "dl": {
+  "userGuide": "用户指南",
+  "overview": "QA 代理概览",
+  "ugDesc": "从安装到使用的完整分步指南。",
+  "ovDesc": "BugIt QA 代理的简明概览。",
+  "preview": "预览",
+  "download": "下载"
+ },
+ "ui": {
+  "openTicket": "提交支持工单",
+  "onThisPage": "本页内容",
+  "breadcrumb": "面包屑导航",
+  "toTop": "回到顶部"
+ }
+}

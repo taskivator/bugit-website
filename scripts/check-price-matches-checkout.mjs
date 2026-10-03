@@ -44,6 +44,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEffectiveI18n } from './lib/copy-effective-i18n.mjs';
 import { siteOffers, amounts, money, PLANS, KINDS } from './lib/copy-offers.mjs';
+import { publishedCopy, htmlText } from './lib/published-copy.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const read = (f) => fs.readFileSync(path.join(root, f), 'utf8');
@@ -80,6 +81,106 @@ function portalOffers(html) {
     else if (offers[plan].current === undefined) problems.push(`the portal's ${plan} card shows no current price`);
   }
   return { offers, problems };
+}
+
+// ---------------------------------------------------------------- the published copy (2026-10-04)
+//
+// Since 2026-10-04 build.js publishes v2/index.html as the homepage and v2/docs/index.html as
+// /docs/. copy-offers reads index.html and app.js, which are still built but which no visitor is
+// served, so until this was added the prices people actually read were compared with nothing: the
+// homepage could have advertised $49.99 while this guard compared the old page with the checkout
+// and passed. These records come from scripts/lib/published-copy.mjs, the one place that knows
+// where the published copy lives, and join the copy-offers records in the same comparison.
+//
+//   - a published page's JSON-LD Offers, by offer name, exactly as copy-offers reads index.html's.
+//   - a published page's plan cards (<article class="plan">): the plan comes from the card's
+//     checkout link (?plan=solo), which must name one plan only, and the card heading must say the
+//     same plan; the current price is the single amount in the card's <b> inside <p class="price">.
+//     Translations swap only the data-k spans, so the <b> price is the price in every language.
+//   - anything else is a price no check can bind to a plan, and is a problem: an amount in a page's
+//     visible text outside the cards and the JSON-LD, in any value of any language's homepage or
+//     docs JSON (which is where a translated card would carry one), or in a script's code.
+//
+// One narrow allowance: in a script, `$1` to `$9` with nothing after the digit is a
+// String.replace back reference (docs.js renders Markdown with them), not a price.
+function publishedOffers(entries) {
+  const records = [];
+  const problems = [];
+  let scanned = 0;
+  for (const e of entries) {
+    scanned += e.text.length;
+    if (e.kind === 'page') {
+      let rest = e.text.replace(/<!--[\s\S]*?-->/g, ' ');
+      for (const m of rest.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
+        let data;
+        try { data = JSON.parse(m[1]); } catch (err) {
+          problems.push(`${e.file}: a JSON-LD block is not valid JSON (${err.message})`);
+          continue;
+        }
+        const visit = (node) => {
+          if (Array.isArray(node)) return node.forEach(visit);
+          if (!node || typeof node !== 'object') return;
+          if (node['@type'] === 'Offer') {
+            const plan = String(node.name || '').trim().toLowerCase();
+            if (!PLANS.includes(plan)) problems.push(`${e.file} JSON-LD: an Offer named "${node.name}" is not a known plan`);
+            else if (node.priceCurrency !== 'USD') problems.push(`${e.file} JSON-LD: the ${plan} Offer is not in USD`);
+            else if (!/^\d+(?:\.\d{1,2})?$/.test(String(node.price))) {
+              problems.push(`${e.file} JSON-LD: the ${plan} Offer price "${node.price}" is not a plain amount`);
+            } else {
+              records.push({ plan, kind: 'current', cents: Math.round(Number(node.price) * 100),
+                where: `${e.file} JSON-LD Offer "${node.name}"` });
+            }
+          }
+          Object.values(node).forEach((x) => { if (x && typeof x === 'object') visit(x); });
+        };
+        visit(data);
+      }
+      rest = rest.replace(/<script\b[^>]*type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/g, ' ');
+      const cardRe = /<article\b[^>]*class="plan\b[^"]*"[^>]*>([\s\S]*?)<\/article>/g;
+      const seen = new Set();
+      for (const m of rest.matchAll(cardRe)) {
+        const card = m[1];
+        const links = [...new Set([...card.matchAll(/[?&]plan=(\w+)/g)].map((x) => x[1]))];
+        const plan = links.length === 1 && PLANS.includes(links[0]) ? links[0] : null;
+        if (!plan) { problems.push(`${e.file}: a plan card sells plan(s) [${links.join(', ')}], not exactly one known plan`); continue; }
+        const where = `${e.file} ${plan} plan card`;
+        if (seen.has(plan)) problems.push(`${where}: there are two cards for this plan`);
+        seen.add(plan);
+        const head = /<h3\b[^>]*>([\s\S]*?)<\/h3>/.exec(card);
+        if (!head || htmlText(head[1]).trim().toLowerCase() !== plan) {
+          problems.push(`${where}: its heading "${head ? htmlText(head[1]).trim() : ''}" does not name the plan its link sells`);
+        }
+        const price = /<p\b[^>]*class="price\b[^"]*"[^>]*>([\s\S]*?)<\/p>/.exec(card);
+        const b = price && /<b\b[^>]*>([\s\S]*?)<\/b>/.exec(price[1]);
+        const cur = b ? amounts(htmlText(b[1])) : [];
+        if (cur.length !== 1) problems.push(`${where}: expected exactly one amount in <p class="price"><b>, found ${cur.length}`);
+        else records.push({ plan, kind: 'current', cents: cur[0].cents, where: `${where} (price)` });
+        const others = amounts(htmlText(card)).length - cur.length;
+        if (others > 0) problems.push(`${where}: carries ${others} amount(s) besides its price, which no check binds`);
+      }
+      rest = rest.replace(cardRe, ' ');
+      for (const a of amounts(htmlText(rest))) {
+        problems.push(`${e.file}: "${a.raw}" is a price outside the plan cards and the JSON-LD offers, so no `
+          + 'check knows which plan it is the price of');
+      }
+    } else if (e.kind === 'home' || e.kind === 'docs') {
+      for (const a of amounts(htmlText(e.text))) {
+        problems.push(`${e.file}: "${a.raw}" is a price in translated copy; translations do not carry the `
+          + 'price, so no check knows which plan it is the price of');
+      }
+    } else {
+      const code = e.text.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[\s;{}(),])\/\/[^\n]*/g, '$1');
+      for (const a of amounts(code)) {
+        if (/^\$[1-9]$/.test(a.raw)) continue;
+        problems.push(`${e.file}: "${a.raw}" is a price written into a script, so no check knows which plan it is the price of`);
+      }
+    }
+  }
+  for (const plan of PLANS) {
+    if (!records.some((r) => r.plan === plan && /plan card/.test(r.where))) problems.push(`no published plan card for ${plan}`);
+    if (!records.some((r) => r.plan === plan && /JSON-LD/.test(r.where))) problems.push(`no published JSON-LD Offer for ${plan}`);
+  }
+  return { records, problems, scanned };
 }
 
 /** Site records against portal offers: the list of disagreements. */
@@ -164,6 +265,59 @@ try {
   console.error(`FAIL: could not read this site's prices: ${e.message}`);
   process.exit(1);
 }
+// The published copy: read, controlled in memory, then joined to the comparison.
+let published;
+try {
+  const entries = publishedCopy();
+  published = publishedOffers(entries);
+  // Negative controls, on copies held in memory only (nothing is written to a real file). Each
+  // planted defect must add a disagreement or a problem over the unplanted copy, measured against
+  // checkout offers taken from that copy's own cards, so the control does not depend on today's
+  // prices being right.
+  const fail = (why) => { console.error(`SELF-TEST FAILED: negative control did not fire: ${why}`); process.exit(2); };
+  const home = entries.find((e) => e.kind === 'page' && /<article\b[^>]*class="plan\b/.test(e.text));
+  if (!home) fail('no published page carries the plan cards, so nothing can be planted');
+  const asOffers = {};
+  for (const r of published.records) if (/plan card/.test(r.where)) asOffers[r.plan] ||= { current: r.cents };
+  const score = (es) => { const o = publishedOffers(es); return o.problems.length + disagreements(o.records, asOffers).length; };
+  const base = score(entries);
+  const swap = (from, to) => entries.map((e) => {
+    if (e !== home) return e;
+    const text = to(e.text);
+    if (text === e.text) fail(`could not plant "${from}": the homepage no longer has the shape this control edits`);
+    return { ...e, text };
+  });
+  const soloCard = (t) => /<article\b[^>]*class="plan\b[\s\S]*?\?plan=solo[\s\S]*?<\/article>/.exec(t)[0];
+  const plants = [
+    ['the Solo card price moved', swap('card price', (t) => t.replace(soloCard(t),
+      soloCard(t).replace(/(<p\b[^>]*class="price[^>]*>\s*<b>)[^<]*/, (_m, a) => `${a}$12.34`)))],
+    ['the Solo JSON-LD Offer price moved', swap('JSON-LD price', (t) => t.replace(/("name":\s*"Solo",\s*"price":\s*")[^"]*/, (_m, a) => `${a}12.34`))],
+    ['the two cards sell each other\'s plan', swap('checkout links', (t) => t.replace(/\?plan=solo/g, '?plan=TMP')
+      .replace(/\?plan=team/g, '?plan=solo').replace(/\?plan=TMP/g, '?plan=team'))],
+    ['a stray price in the homepage outside the cards', swap('stray price', (t) => t.replace('</body>', '<p hidden>Was $29.99</p></body>'))],
+    ['a price in a translated homepage value', [...entries, { file: 'synthetic fr home', lang: 'fr', kind: 'home', text: 'Seulement 49,99 $' }]],
+    ['a price in a docs JSON value', [...entries, { file: 'synthetic ja docs', lang: 'ja', kind: 'docs', text: '39.99 美元' }]],
+    ['a price in a script fallback', [...entries, { file: 'synthetic.js', lang: null, kind: 'script', text: 'var p = "$9.99";' }]],
+  ];
+  for (const [label, es] of plants) if (!(score(es) > base)) fail(`"${label}" was accepted`);
+  // The allowance stays narrow: a back reference is not a price (the $9.99 plant above shows a real one still is).
+  if (publishedOffers([{ file: 'r.js', kind: 'script', text: 's.replace(re, "<b>$1</b>$2")' }]).problems.some((p) => /^r\.js/.test(p))) {
+    fail('a String.replace back reference was read as a price');
+  }
+  console.log(`self-test (published copy): ${plants.length} planted defects rejected`);
+  // Positive control: the published copy was actually read, not an empty list.
+  if (entries.length < 20 || published.scanned < 100000) {
+    console.error(`FAIL: the published copy scan read ${entries.length} entries (${published.scanned} characters); `
+      + 'that is not the published site');
+    process.exit(1);
+  }
+} catch (e) {
+  console.error(`FAIL: could not read the published copy's prices: ${e.message}`);
+  process.exit(1);
+}
+site.problems.push(...published.problems);
+site.records.push(...published.records);
+
 if (site.problems.length) {
   console.error('FAIL: this site shows prices that cannot all be bound to a plan, so they cannot be '
     + 'compared with the checkout:\n' + site.problems.map((p) => `  - ${p}`).join('\n'));

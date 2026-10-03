@@ -33,6 +33,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { publishedCopy, publishedLangs } from "./lib/published-copy.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const docs = join(root, "public", "docs");
@@ -219,10 +220,92 @@ function scanGuideBanks() {
   return out;
 }
 
+/* THE PUBLISHED COPY, 2026-10-04. On that day bugit.dev switched to the redesign: build.js now
+   publishes v2/index.html as the homepage and v2/docs/index.html as /docs/, and app.js and
+   index.html, the two DICTIONARY_FILES above, are still built but no published page references
+   them. Every check above went on passing on files nobody reads, while the homepage strings in
+   v2/i18n/<lang>.json and the docs chrome and FAQ in v2/docs/content.<lang>.json sat behind
+   nothing. The file list is NOT restated here: scripts/lib/published-copy.mjs is the one place
+   that knows where the published copy lives, and this asks it.
+
+   Unlike app.js, the published copy is split by language, so the per-locale attribution the
+   dictionary scan could not make is available again: an entry with a locale that has a RETIRED
+   list gets that locale's FULL rules, Latin terms included (the pt-br `trackers?` rule is exactly
+   the one the dictionary scan had to skip). An English page, an English docs file or a script of
+   English fallbacks gets the dictionary treatment instead: the non-Latin rules and the retired
+   Latin phrases, with DICTIONARY_ALLOWED applied, because "tracker" is correct English.
+
+   For a JSON entry the helper joins the string values with newlines, so a "line" in a finding is
+   the Nth string value in that file, not a line of the file; the hit is quoted with its context so
+   it can be found by search. */
+const LATIN_PHRASES = [
+  [/BugIt archiva/g, "BugIt registra tickets", "LQA-0033, LQA-0036 (published copy)"],
+  [/ao seu tracker/g, "ao seu rastreador", "LQA-0057 (published copy)"],
+  [/contra[^.<>]{0,40}?destino/g, "en el destino elegido / no destino escolhido", "LQA-0033"],
+];
+
+function scanPublishedEntry(entry) {
+  const out = [];
+  let masked = entry.text;
+  for (const allow of DICTIONARY_ALLOWED) masked = masked.replace(allow, (m) => " ".repeat(m.length));
+  const localized = entry.lang && RETIRED[entry.lang] && (entry.kind === "home" || entry.kind === "docs");
+  const rules = [];
+  if (localized) {
+    for (const [p, r, w] of RETIRED[entry.lang]) rules.push([entry.lang, p, r, w]);
+  } else {
+    for (const [locale, list] of Object.entries(RETIRED)) {
+      for (const [p, r, w] of list) if (isNonLatin(p)) rules.push([locale, p, r, w]);
+    }
+    for (const [p, r, w] of LATIN_PHRASES) rules.push(["phrase", p, r, w]);
+  }
+  const unit = entry.kind === "home" || entry.kind === "docs" ? "string" : "line";
+  masked.split(/\r?\n/).forEach((line, i) => {
+    for (const [locale, pattern, replacement, why] of rules) {
+      for (const hit of line.matchAll(pattern)) {
+        const from = Math.max(0, hit.index - 40);
+        const ctx = line.slice(from, hit.index + hit[0].length + 40).replace(/\s+/g, " ");
+        out.push(`${entry.file} ${unit} ${i + 1}  [${locale}] "${hit[0]}"  ->  ${replacement}\n` +
+                 `      ...${ctx}...\n      ${why}`);
+      }
+    }
+  });
+  return out;
+}
+
+function scanPublished() {
+  const out = [];
+  const entries = publishedCopy();
+  // POSITIVE CONTROL: an empty or truncated subject must not read as clean copy. Every published
+  // language must have yielded at least one localized entry, and the text read must be of the
+  // size the site actually is (about 250k characters on 2026-10-04; the floor is far below that).
+  const langs = publishedLangs();
+  const seen = new Set(entries.filter((e) => e.kind === "home" || e.kind === "docs").map((e) => e.lang));
+  const missing = langs.filter((l) => !seen.has(l));
+  if (missing.length) out.push(`published copy: no home or docs entry for ${missing.join(", ")}, so it was not checked`);
+  const chars = entries.reduce((n, e) => n + e.text.length, 0);
+  if (entries.length < 2 * langs.length || chars < 100000) {
+    out.push(`published copy: only ${entries.length} entries / ${chars} characters read, so the reader lost its subject`);
+  }
+  // NEGATIVE CONTROLS, in memory and never in a real file: a localized entry carrying a Latin
+  // retired term, and an English script carrying a non-Latin one. If either comes back clean the
+  // scan is blind and its OK would mean nothing.
+  const controls = [
+    { file: "<control:pt-br docs>", lang: "pt-br", kind: "docs", text: "Quais Trackers têm mapeamento?" },
+    { file: "<control:script>", lang: null, kind: "script", text: 'var s = "一貫した重要度";' },
+  ];
+  for (const c of controls) {
+    if (scanPublishedEntry(c).length === 0) out.push(`published copy: negative control did not fire (${c.file})`);
+  }
+  for (const e of entries) out.push(...scanPublishedEntry(e));
+  return { out, entries: entries.length, chars };
+}
+
 const findings = [];
 let scanned = 0;
 findings.push(...scanDictionary());
 findings.push(...scanGuideBanks());
+const published = scanPublished();
+findings.push(...published.out);
 for (const [locale, names] of [...pages].sort()) {
   const rules = RETIRED[locale];
   if (!rules) continue;
@@ -247,8 +330,8 @@ if (findings.length) {
   console.error(`FAIL: ${findings.length} retired term(s) on a live surface\n`);
   for (const f of findings) console.error("  " + f);
   console.error(
-    "\nThese are what bugit.dev serves: the doc pages at /docs, and app.js, which is the site " +
-    "copy itself. A term corrected in the package guides and the PDFs but not here means a " +
+    "\nThese are what bugit.dev serves: the published homepage and docs copy under v2/, the " +
+    "online guide pages under public/docs, and app.js, which still ships. A term corrected in the package guides and the PDFs but not here means a " +
     "reader of that language meets both words.");
   process.exit(1);
 }
@@ -261,6 +344,10 @@ console.log(
   `check-retired-vocabulary OK: ${scanned} of ${total} online guide page(s) and ` +
   `${dictScanned.length} site dictionary file(s) (${dictScanned.join(", ")}) carry no retired ` +
   `term (${covered} of ${pages.size} locales have a list).`);
+console.log(
+  `  published copy: ${published.entries} entries (${published.chars} characters) from ` +
+  `scripts/lib/published-copy.mjs scanned, localized entries with their own locale's full rules; ` +
+  `both negative controls fired.`);
 console.log(
   "  in the dictionary only non-Latin terms and the retired Latin PHRASES are checked, because " +
   "one file holds all eleven languages; see the note beside DICTIONARY_FILES.");

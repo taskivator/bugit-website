@@ -27,8 +27,8 @@ soporte. El soporte se presta en inglés.
 
 BugIt es software descargable que funciona con el asistente de IA que elijas, en Visual Studio Code o en una terminal, y ayuda a los equipos de QA a redactar, revisar y enviar informes de errores a su rastreador.
 
-- BugIt Solo: 39,99 USD
-- BugIt Team: 199,00 USD
+- BugIt Solo: 59,99 USD
+- BugIt Team: 249,99 USD
 
 Los precios se muestran en dólares estadounidenses. El importe cobrado es el que se muestra
 al finalizar la compra en el momento de la adquisición.
@@ -44,8 +44,9 @@ tus proveedores de servicios. No hay cargos recurrentes ni ninguna otra comisió
 
 El pago lo procesa Stripe. Se aceptan las tarjetas y demás métodos de pago que Stripe
 Checkout ofrezca en el momento de la compra. El pago se cobra íntegramente en el momento de
-la compra. BugIt es una compra única: no hay suscripción, ni renovación automática, ni
-ningún cargo posterior a la compra.
+la compra. BugIt es una licencia de un año: no hay suscripción, la licencia no se renueva
+automáticamente y no hay ningún cargo posterior a la compra. Al terminar el año, puedes
+comprar una nueva licencia.
 
 ## Plazo de entrega digital
 

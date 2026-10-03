@@ -32,8 +32,8 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const CASES = [
   { locale: "ja-JP", expect: "ja",    label: "日本語", why: "base subtag: ja-JP resolves to ja" },
   { locale: "de-DE", expect: "de",    label: "Deutsch",            why: "base subtag: de-DE resolves to de" },
-  { locale: "pt-BR", expect: "pt-br", label: "Português BR",  why: "exact tag: pt-BR matches the pt-br we ship" },
-  { locale: "pt-PT", expect: "pt-br", label: "Português BR",  why: "region fallback: any Portuguese gets pt-br, the only one in the set" },
+  { locale: "pt-BR", expect: "pt-BR", label: "Português BR",  why: "exact tag: pt-BR matches the pt-br we ship" },
+  { locale: "pt-PT", expect: "pt-BR", label: "Português BR",  why: "region fallback: any Portuguese gets pt-br, the only one in the set" },
   { locale: "ar-EG", expect: "ar",    label: "العربية", dir: "rtl", why: "base subtag, and Arabic must also flip direction" },
   // THE OTHER FIVE. Until 2026-09-13 the first-visit cases above covered six of the eleven
   // languages we ship, and the five missing ones -- Spanish, Italian, Korean, Chinese and
@@ -92,21 +92,25 @@ const CASES = [
 // fail if any language has no FIRST-VISIT case -- a case with no cookie, no stored value, no
 // marker and no click, which is the only kind that proves a stranger's browser is asked at all.
 // Ship a twelfth language and this fails until someone proves a visitor can reach it.
-const appSrc = fs.readFileSync(path.join(root, "app.js"), "utf8");
-const langsDecl = /const\s+languages\s*=\s*\[(.*?)\];/s.exec(appSrc);
+//
+// THE PUBLISHED PAGES ARE v2 SINCE 2026-10-04 (build.js publishes v2/index.html and
+// v2/docs/index.html), so the set is read from v2/i18n.js, which decides the language on both, and
+// the control driven is its picker. html lang is the BCP 47 'pt-BR' there, which is what it should be.
+const appSrc = fs.readFileSync(path.join(root, "v2", "i18n.js"), "utf8");
+const langsDecl = /var\s+LANGS\s*=\s*\[(.*?)\];/s.exec(appSrc);
 if (!langsDecl) {
-  console.error("FAIL: could not find the `languages` array in app.js, so this guard cannot " +
+  console.error("FAIL: could not find the `LANGS` array in v2/i18n.js, so this guard cannot " +
                 "know what the site ships and must not pretend it checked.");
   process.exit(1);
 }
-const shipped = [...langsDecl[1].matchAll(/\['([a-z-]+)'\s*,/g)].map((m) => m[1]);
+const shipped = [...langsDecl[1].matchAll(/\["([a-z-]+)"\s*,/g)].map((m) => m[1]);
 if (shipped.length < 2) {
-  console.error("FAIL: parsed " + shipped.length + " language(s) out of app.js. The declaration " +
+  console.error("FAIL: parsed " + shipped.length + " language(s) out of v2/i18n.js. The declaration " +
                 "shape changed; fix this parser rather than letting it check nothing.");
   process.exit(1);
 }
 const firstVisitCovers = new Set(
-  CASES.filter((c) => !c.cookie && !c.lsLang && !c.marker && !c.click).map((c) => c.expect),
+  CASES.filter((c) => !c.cookie && !c.lsLang && !c.marker && !c.click).map((c) => c.expect.toLowerCase()),
 );
 const uncovered = shipped.filter((l) => !firstVisitCovers.has(l));
 if (uncovered.length) {
@@ -141,7 +145,8 @@ try {
   }
   browser = await chromium.launch();
 
-  for (const c of CASES) {
+  for (const c of CASES) for (const where of ["/", "/docs/"]) {
+    const url = base + where;
     const ctx = await browser.newContext({ locale: c.locale });
     if (c.cookie) await ctx.addCookies([{ name: "bugitLang", value: c.cookie, url: base }]);
     // bugitLangSet is how a click is told apart from a guess. Absent is the LEGACY state, and
@@ -167,16 +172,16 @@ try {
     const page = await ctx.newPage();
     const errors = [];
     page.on("pageerror", (e) => errors.push(String(e)));
-    await page.goto(base, { waitUntil: "networkidle" });
+    await page.goto(url, { waitUntil: "networkidle" });
     await page.waitForTimeout(400);
 
     // Drive the picker the way a person does, then come back the way they do.
     if (c.click) {
-      await page.click("#langButton");
-      await page.click('#langList button[data-lang="' + c.click + '"]');
+      await page.click(".lang-btn");
+      await page.click('.lang-list button[data-lang="' + c.click + '"]');
       await page.waitForTimeout(250);
       for (let n = 0; n < (c.reloads || 1); n++) {
-        await page.goto(base, { waitUntil: "networkidle" });
+        await page.goto(url, { waitUntil: "networkidle" });
         await page.waitForTimeout(400);
       }
     }
@@ -184,11 +189,11 @@ try {
     const got = await page.evaluate(() => ({
       lang: document.documentElement.lang,
       dir: document.documentElement.dir,
-      label: (document.getElementById("langLabel") || document.getElementById("langButton") || {}).textContent || "",
+      label: (document.querySelector(".lang-now") || {}).textContent || "",
       // Proof the browser really was asked, so a pass cannot come from a stale cookie.
       navLangs: (navigator.languages || []).join(","),
     }));
-    const seen = c.locale + (c.click ? " + clicked " + c.click + " then " + (c.reloads || 1) + " reload(s)" : "") +
+    const seen = where + " " + c.locale + (c.click ? " + clicked " + c.click + " then " + (c.reloads || 1) + " reload(s)" : "") +
                  (c.cookie ? " + cookie " + c.cookie : "") + (c.lsLang ? " + stored " + c.lsLang : "") +
                  (c.marker ? " + " + c.marker : c.cookie || c.lsLang ? " + no marker (legacy)" : "") +
                  (c.breakStorage ? " + storage throws" : "");
@@ -223,12 +228,12 @@ if (fail.length) {
   for (const f of fail) console.error("FAIL: " + f);
   console.error("\ncheck-locale-fallback: " + fail.length + " failure(s). A visitor is not being " +
                 "served their own language. Two places decide, and both read the marker before " +
-                "the language: the IIFE that initialises currentLang in app.js (bugitLangSet " +
+                "the language: initial() in v2/i18n.js (bugitLangSet " +
                 "'user' pins bugitLang, 'auto' and absent re-derive from navigator), and " +
-                "applyLang(), which records WHICH of those two it just did.");
+                "set(), which records WHICH of those two it just did.");
   process.exit(1);
 }
-console.log("check-locale-fallback: OK, all " + CASES.length + " cases. A visitor is served their own " +
+console.log("check-locale-fallback: OK, all " + CASES.length + " cases on both published pages. A visitor is served their own " +
             "language where we ship it and English where we do not, whether they arrive with no " +
             "history, with the 'en' this site stamped on everyone before 2026-09-07, or with a " +
             "language they actually chose, which still overrules the browser.");

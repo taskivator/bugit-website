@@ -122,6 +122,11 @@
   Cache-Control: public, max-age=0, must-revalidate
 /404.html
   Cache-Control: public, max-age=0, must-revalidate
+# The documentation page since the redesign (2026-10-04), revalidated like the homepage.
+/docs/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/index.html
+  Cache-Control: public, max-age=0, must-revalidate
 /robots.txt
   Cache-Control: public, max-age=0, must-revalidate
 /sitemap.xml
@@ -184,6 +189,16 @@
 /public/guide/guide.*.js
   Cache-Control: public, max-age=31536000, immutable
 /public/guide/match.*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# The redesign's code (2026-10-04). Every .js and .css under /v2/ is content-hashed by build.js,
+# so it can be immutable; its language files and docs content are fetched by fixed name and must
+# revalidate, exactly like the Guide's JSON above.
+/v2/*.json
+  Cache-Control: public, max-age=0, must-revalidate
+/v2/*.js
+  Cache-Control: public, max-age=31536000, immutable
+/v2/*.css
   Cache-Control: public, max-age=31536000, immutable
 
 # Current web guides must revalidate after every release so version switches are

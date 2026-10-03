@@ -41,8 +41,8 @@ terms.
    Software runs on the Licensee's own machine and does not send project, ticket,
    glossary, or tracker data to Taskivator. See PRIVACY.md.
 
-7. Term. BugIt is a one time purchase, not a subscription: you pay once, and there
-   is no automatic renewal and no recurring charge. Your purchase grants a one year
+7. Term. BugIt is a one year license, not a subscription: it does not renew
+   automatically, and there is no recurring charge. Your purchase grants a one year
    license, including updates and license and activation services, that begins on
    the date of purchase. When the year ends the license expires; a 3-day grace period
    follows, during which the Software continues to work. Continued use then

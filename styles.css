@@ -8845,3 +8845,112 @@
     .under{ justify-items:center }
   }
 }
+
+/* ---------- Free trial (owner, 2026-10-03) ----------------------------------------------------
+   A ticket, because the request is one: the Portal takes a free trial request as a Support
+   ticket and answers it there. The bar on top is a tracker ticket's header (status, title, key),
+   the steps run as a timeline joined by the brand gradient, and the call to action sits under
+   them, centred like every other card on the page (owner, 2026-09-30). Tokens only, so it moves
+   with the rest of the 2026 look. */
+@layer fixes {
+  .trial{ padding:var(--s8) 0 var(--s4) }
+  .trial-ticket{
+    position:relative; max-width:1080px; margin-inline:auto;
+    border:1px solid var(--rule); border-radius:var(--r-lg); overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 50% -20%, rgba(139,69,255,.16), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.01)),
+      #07050f;
+    box-shadow:0 30px 90px rgba(0,0,0,.45);
+    transition:border-color .3s ease;
+  }
+  .trial-ticket:hover,.trial-ticket:focus-within{ border-color:rgba(255,79,201,.45) }
+  .trial-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:var(--s4); flex-wrap:wrap;
+    padding:var(--s4) var(--s6); border-bottom:1px solid var(--rule);
+    background:rgba(255,255,255,.025);
+  }
+  .trial-bar b{ font-size:var(--t-sm); font-weight:600; letter-spacing:-.01em }
+  .trial-bar code{
+    font-family:var(--mono); font-size:var(--t-3xs); letter-spacing:.14em; color:var(--ink-3);
+    border:1px solid var(--rule); border-radius:var(--r-xs); padding:3px 8px;
+  }
+  .trial-live{
+    display:inline-flex; align-items:center; gap:var(--s2);
+    font-family:var(--mono); font-size:var(--t-3xs); letter-spacing:.12em; text-transform:uppercase;
+    color:var(--sig-pass);
+  }
+  .trial-live i{
+    width:8px; height:8px; border-radius:50%; background:var(--sig-pass);
+    box-shadow:0 0 0 0 rgba(50,242,140,.55); animation:trialPulse 2.2s ease-out infinite;
+  }
+  @keyframes trialPulse{
+    0%{ box-shadow:0 0 0 0 rgba(50,242,140,.55) }
+    70%{ box-shadow:0 0 0 8px rgba(50,242,140,0) }
+    100%{ box-shadow:0 0 0 0 rgba(50,242,140,0) }
+  }
+  .trial-steps{
+    position:relative; list-style:none; margin:0; padding:var(--s7) var(--s6) var(--s5);
+    display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--s5);
+    counter-reset:none; text-align:center;
+  }
+  /* The thread that joins the four numbers: one line behind them, from the first to the last. */
+  .trial-steps:before{
+    content:""; position:absolute; top:calc(var(--s7) + 19px);
+    inset-inline:calc(var(--s6) + 12.5%); height:1px;
+    background:linear-gradient(90deg, var(--purple), var(--pink), var(--sig-pass));
+    opacity:.55;
+  }
+  .trial-steps li{ position:relative; min-width:0 }
+  .trial-n{
+    position:relative; z-index:1; display:grid; place-items:center; margin:0 auto var(--s4);
+    width:38px; height:38px; border-radius:50%;
+    font-family:var(--mono); font-size:var(--t-xs); font-weight:600; color:#fff;
+    background:#0b0816; border:1px solid rgba(255,79,201,.55);
+    box-shadow:0 0 0 6px #07050f, 0 0 24px rgba(255,79,201,.25);
+  }
+  .trial-steps li:last-child .trial-n{ border-color:rgba(50,242,140,.6); box-shadow:0 0 0 6px #07050f, 0 0 24px rgba(50,242,140,.22) }
+  .trial-steps h3{ font-size:var(--t-sm); font-weight:600; margin:0 0 var(--s2); letter-spacing:-.01em }
+  .trial-steps p{ font-size:var(--t-2xs); line-height:1.6; color:var(--ink-3); margin:0; overflow-wrap:break-word }
+  .trial-cta{
+    display:flex; justify-content:center; align-items:center; gap:var(--s3); flex-wrap:wrap;
+    padding:var(--s3) var(--s6) var(--s5);
+  }
+  .trial-fine{
+    margin:0; padding:var(--s4) var(--s6) var(--s5); border-top:1px solid var(--rule-soft);
+    text-align:center; font-family:var(--mono); font-size:var(--t-3xs); line-height:1.7; color:var(--ink-3);
+  }
+
+  /* The hero's pointer to it: one quiet line under the buttons, not a banner over the page. */
+  .trial-flag{
+    display:inline-flex; align-items:center; gap:var(--s2); margin-top:var(--s4);
+    border:1px solid rgba(50,242,140,.35); border-radius:var(--r-pill);
+    background:rgba(50,242,140,.06); padding:5px 12px 5px 5px;
+    font-size:var(--t-2xs); color:var(--ink-2); transition:border-color .2s ease, background .2s ease;
+  }
+  .trial-flag b{
+    font-family:var(--mono); font-size:var(--t-3xs); font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:#06130c; background:var(--sig-pass); border-radius:var(--r-pill); padding:2px 8px;
+  }
+  .trial-flag:hover{ border-color:rgba(50,242,140,.65); background:rgba(50,242,140,.1) }
+  @media (max-width:1160px){ .hero-copy .trial-flag{ margin-inline:auto } }
+
+  @media (max-width:900px){
+    .trial-steps{ grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:var(--s6) }
+    .trial-steps:before{ display:none }
+  }
+  @media (max-width:560px){
+    .trial-steps{ grid-template-columns:minmax(0,1fr); padding-inline:var(--s5) }
+    .trial-bar{ justify-content:center; text-align:center; padding-inline:var(--s5) }
+    .trial-cta>a{ width:100% }
+    .trial-fine{ padding-inline:var(--s5) }
+  }
+  /* Arabic reads from the right, so the thread's colours run the same way the steps do. */
+  [dir="rtl"] .trial-cta .primary>span[aria-hidden],[dir="rtl"] .trial-flag>span[aria-hidden]{ display:inline-block; transform:scaleX(-1) }
+  [dir="rtl"] .trial-steps:before{ background:linear-gradient(270deg, var(--purple), var(--pink), var(--sig-pass)) }
+  @media (prefers-reduced-motion:reduce){ .trial-live i{ animation:none } }
+  @media (forced-colors:active){
+    .trial-ticket,.trial-n,.trial-flag{ border:1px solid CanvasText }
+    .trial-steps:before{ background:CanvasText }
+  }
+}

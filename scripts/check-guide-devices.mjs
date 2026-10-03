@@ -169,7 +169,8 @@ async function run(engine, vp) {
       // The mark, and specifically where its speech bubble lands. transform-box:view-box is the
       // part engines have disagreed about; if it is ignored the bubble is placed against the
       // wrong reference box and ends up off the body entirely.
-      const orb = await page.$(".askbar-orb img");
+      // The redesign (2026-10-04) draws the mark as img.ask-orb; the old page wrapped it in .askbar-orb.
+      const orb = await page.$("#askBar img.ask-orb, .askbar-orb img");
       check(where, "the Guide mark renders in the Ask bar", Boolean(orb));
       if (orb) {
         const ob = await orb.boundingBox();
@@ -237,11 +238,18 @@ async function run(engine, vp) {
     }
 
     // ---- it actually answers ------------------------------------------------
+    // SINCE THE REDESIGN (2026-10-04) pressing the Ask bar also ASKS the example question it is
+    // showing (BugitGuide.ask), so an answer may already be on screen before this one is typed.
+    // Wait for that one to settle, then read the answer that arrives AFTER this question: reading
+    // the first answer on screen would grade the Ask bar's question, not this one.
+    await page.waitForTimeout(1200);
+    const before = await page.$$eval(".bgd-bot .bgd-answer", (els) => els.length);
     await page.fill("#bgd-input", entry.question);
     if (vp.touch) await page.tap(".bgd-send");
     else await page.click(".bgd-send");
-    await page.waitForSelector(".bgd-bot .bgd-answer p", { timeout: 20000 });
-    const answered = await page.textContent(".bgd-bot .bgd-answer");
+    await page.waitForFunction((n) => document.querySelectorAll(".bgd-bot .bgd-answer p").length > 0 &&
+      document.querySelectorAll(".bgd-bot .bgd-answer").length > n, before, { timeout: 20000 });
+    const answered = await page.$$eval(".bgd-bot .bgd-answer", (els) => els[els.length - 1].textContent || "");
     const first = entry.answer.split("\n")[0].replace(/[*`]/g, "").slice(0, 40);
     check(where, "a question the bank knows is answered word for word", answered.includes(first), `wanted "${first}"`);
 

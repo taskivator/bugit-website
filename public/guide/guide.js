@@ -1534,6 +1534,15 @@ import { PREPARED_LANGS, answerFor, buildPreparedBank, guessLanguage, languageFr
       return true;
     },
     close() { closePanel(false); },
+    // Opens the Guide and asks a question, as if typed: the v2 homepage's Ask bar shows example
+    // questions and pressing it asks the one on screen. Refused, like open(), behind the consent
+    // banner, and ignored while an answer is still being worked out.
+    ask(text) {
+      if (consentUp()) return false;
+      openPanel(false);
+      if (!state.busy && String(text || "").trim()) ask(String(text));
+      return true;
+    },
     isOpen() { return state.open; },
     canOpen() { return !consentUp(); },
   };

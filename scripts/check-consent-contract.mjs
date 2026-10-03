@@ -24,6 +24,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { publishedCopy, publishedLangs } from "./lib/published-copy.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const portalConsent =
@@ -193,6 +194,120 @@ check(
   "analytics_storage must never be written from a variable or as true",
 );
 
+// --- THE PUBLISHED PAGES ARE THE OTHER SIDE OF consent.js NOW (2026-10-04).
+//
+// On that day bugit.dev became the redesign: build.js publishes v2/index.html as / and
+// v2/docs/index.html as /docs/. Everything above about the banner reads index.html and app.js,
+// which still ship but are referenced by no published page, so on their own they described a
+// banner no visitor sees. The banner the pages actually show is v2/consent-ui.js, which builds its
+// own markup and drives the decision through window.BugitConsent. The contract between consent.js
+// and a published page is therefore:
+//
+//   * the page loads /consent.js in <head>, before any other script, so the denied Consent Mode
+//     default and the decision exist before anything else runs;
+//   * the page loads /v2/consent-ui.js (after consent.js) and /v2/consent.css, and offers a
+//     [data-consent-open] control so a decision can be revisited from the page;
+//   * no Analytics switch, on the page or in the banner, for the same reason as above;
+//   * consent-ui.js keeps the ids other code depends on (consentBanner, which guide.js refuses to
+//     cover, and the three buttons), calls only methods consent.js actually exports, shows itself
+//     only when hasDecision() is false, writes analytics_storage as the constant false on every
+//     path, and carries its strings for every published language.
+//
+// The page list comes from scripts/lib/published-copy.mjs; the predicates are functions, run first
+// over planted defects in memory, and a control that does not fire fails this guard.
+const uiRel = "v2/consent-ui.js";
+const uiSrc = readFileSync(path.join(root, uiRel), "utf8");
+const exported = new Set(
+  [...((websiteSrc.match(/window\.BugitConsent = \{([\s\S]*?)\n\s*\};/) || [])[1] || "").matchAll(/^\s*(\w+):/gm)].map((m) => m[1]),
+);
+check(exported.has("read") && exported.has("write") && exported.has("hasDecision"),
+  "consent.js must export read, write and hasDecision on window.BugitConsent",
+  `found: ${[...exported].join(", ") || "(none)"}`);
+
+function pageConsentProblems(html) {
+  const problems = [];
+  const headEnd = html.search(/<\/head>/i);
+  const scripts = [...html.matchAll(/<script\b[^>]*>/gi)].map((m) => ({
+    at: m.index,
+    src: (m[0].match(/\ssrc="([^"]+)"/) || [])[1] || null,
+    tag: m[0],
+  }));
+  const consent = scripts.find((s) => s.src === "/consent.js");
+  const ui = scripts.find((s) => s.src === "/v2/consent-ui.js");
+  if (!consent) problems.push("does not load /consent.js");
+  else {
+    if (headEnd === -1 || consent.at > headEnd) problems.push("loads /consent.js outside <head>");
+    if (/\s(?:async|defer)\b|type="module"/.test(consent.tag)) problems.push("loads /consent.js async, deferred or as a module, so it may run after other scripts");
+    const before = scripts.filter((s) => s.at < consent.at && !/type="application\/ld\+json"/.test(s.tag));
+    if (before.length) problems.push(`runs ${before.map((s) => s.src || "an inline script").join(", ")} before /consent.js`);
+  }
+  if (!ui) problems.push("does not load /v2/consent-ui.js, so no visitor is ever asked");
+  else if (consent && ui.at < consent.at) problems.push("loads /v2/consent-ui.js before /consent.js");
+  if (!/<link\b[^>]*href="\/v2\/consent\.css"/.test(html)) problems.push("does not load /v2/consent.css");
+  if (!/\sdata-consent-open[\s>=]/.test(html)) problems.push("offers no [data-consent-open] control to revisit the decision");
+  if (/consentAnalytics|data-ck="analytics/.test(html)) problems.push("offers an Analytics consent switch");
+  return problems;
+}
+
+function uiProblems(src, langs) {
+  const problems = [];
+  for (const id of ["consentBanner", "consentAccept", "consentReject", "consentManage"]) {
+    if (!new RegExp(`id: "${id}"`).test(src)) problems.push(`no longer builds #${id}`);
+  }
+  if (!/var C = window\.BugitConsent;/.test(src)) problems.push("does not take its API from window.BugitConsent");
+  for (const m of new Set([...src.matchAll(/\bC\.(\w+)\(/g)].map((x) => x[1]))) {
+    if (!exported.has(m)) problems.push(`calls C.${m}(), which consent.js does not export`);
+  }
+  if (!/if \(!C\.hasDecision\(\)\) open\(false\);/.test(src)) problems.push("does not open itself exactly when hasDecision() is false");
+  if (!/closest\("\[data-consent-open\]"\)/.test(src)) problems.push("does not reopen from [data-consent-open]");
+  const writes = [...src.matchAll(/C\.write\(\{([^}]*)\}\)/g)].map((m) => m[1]);
+  if (!writes.length) problems.push("never writes a decision through C.write({...})");
+  for (const w of writes) {
+    if (!/analytics_storage: false\s*$/.test(w.trim()) && !/analytics_storage: false,/.test(w)) {
+      problems.push("writes a decision without analytics_storage as the constant false");
+    }
+  }
+  if (/analytics_storage:(?!\s*false\b)/.test(src)) problems.push("writes analytics_storage from something other than the constant false");
+  if (/consentAnalytics/.test(src) || /\banalytics(?:Desc)?\s*:/.test(src)) problems.push("carries an Analytics switch or its labels");
+  const table = (src.match(/var STRINGS = \{([\s\S]*?)\n {2}\};/) || [])[1];
+  if (!table) problems.push("STRINGS table not found");
+  else {
+    const have = new Set([...table.matchAll(/^ {4}"([a-z-]+)": \{/gm)].map((m) => m[1]));
+    const absent = langs.filter((l) => !have.has(l));
+    if (absent.length) problems.push(`has no strings for published language(s) ${absent.join(", ")}`);
+  }
+  return problems;
+}
+
+// Negative controls, in memory: each planted defect must be reported, the clean shapes must not.
+{
+  const goodPage =
+    '<html><head><script src="/consent.js"></script><link rel="stylesheet" href="/v2/consent.css"></head>' +
+    '<body><button data-consent-open>x</button><script src="/v2/consent-ui.js"></script></body></html>';
+  const pagesPlanted = [
+    goodPage.replace('<script src="/consent.js"></script>', '<script src="/v2/route.js"></script><script src="/consent.js"></script>'),
+    goodPage.replace('<script src="/consent.js"></script>', "").replace("</body>", '<script src="/consent.js"></script></body>'),
+    goodPage.replace(' data-consent-open', ""),
+    goodPage.replace('<script src="/v2/consent-ui.js"></script>', ""),
+  ];
+  const fired = pagesPlanted.filter((p) => pageConsentProblems(p).length).length;
+  const uiPlanted = uiSrc.replace("analytics_storage: false", "analytics_storage: advertising");
+  check(
+    pageConsentProblems(goodPage).length === 0 && fired === pagesPlanted.length &&
+      uiPlanted !== uiSrc && uiProblems(uiPlanted, publishedLangs()).length > 0 &&
+      uiProblems(uiSrc.replace('id: "consentBanner"', 'id: "cookieNotice"'), publishedLangs()).length > 0,
+    "negative control did not fire: a planted consent defect on a published page or in consent-ui.js went unreported",
+    `page controls fired ${fired}/${pagesPlanted.length}; the clean page reported ${JSON.stringify(pageConsentProblems(goodPage))}`,
+  );
+}
+
+const publishedPages = publishedCopy().filter((e) => e.kind === "page");
+check(publishedPages.length >= 2, "the published pages were found", `got ${publishedPages.map((e) => e.file).join(", ") || "none"}`);
+for (const page of publishedPages) {
+  for (const p of pageConsentProblems(page.text)) check(false, `${page.file} ${p}`);
+}
+for (const p of uiProblems(uiSrc, publishedLangs())) check(false, `${uiRel} ${p}`);
+
 // --- And now the same questions of the portal, which is the other half of the contract.
 if (!existsSync(portalConsent)) {
   console.log(
@@ -246,5 +361,6 @@ if (fails) {
 }
 console.log(
   `check-consent-contract: OK — both surfaces parse v${websiteVersion} identically, ` +
-    "strictly, and for the same four categories.",
+    "strictly, and for the same four categories; " +
+    `${publishedPages.length} published pages and ${uiRel} hold the consent.js contract (controls fired).`,
 );

@@ -31,9 +31,10 @@
 //
 // Run: `node scripts/check-locale-registration-order.mjs`. No dependencies.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { publishedLangs } from "./lib/published-copy.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = readFileSync(join(ROOT, "app.js"), "utf8").split("\r\n").join("\n");
@@ -187,6 +188,101 @@ if (SRC.includes("SHIPPED_LANGS")) {
   }
 }
 
+// ── 5. THE PUBLISHED PAGES, which register languages differently (2026-10-04) ────────────────
+//
+// On that day bugit.dev became the redesign: build.js publishes v2/index.html and
+// v2/docs/index.html, and app.js, though still built, is referenced by no published page. So
+// sections 1 to 4 now guard a page nobody is served. The redesign has the same two questions with
+// different answers, and they are asked here:
+//
+//   * The picker and the dictionaries name the same languages. v2/i18n.js's LANGS is the picker
+//     (and scripts/lib/published-copy.mjs reads the published list from it). A dictionary is a
+//     FILE fetched by name: v2/i18n/<lang>.json for the homepage and v2/docs/content.<lang>.json
+//     for the docs page. A code in LANGS with no file is a menu entry that silently falls back
+//     to English (i18n.js catches the failed fetch); a file with no code is copy nobody reaches.
+//     consent-ui.js keeps its own CODES list and STRINGS table, a second list of the kind section
+//     4 forbids in app.js; it cannot be derived (it loads without i18n.js on purpose), so it must
+//     at least name exactly the same languages.
+//   * The load-time decision asks the catalogue, never a dictionary, and stays prototype-safe.
+//     There is no late registration in v2 (dictionaries arrive by fetch, after the decision), so
+//     the analogue of the Arabic defect is initial() consulting the loaded dictionary or cache, or
+//     returning a stored cookie value without passing it through norm(), whose CODES is derived
+//     from LANGS and checked with indexOf on an array (no prototype chain to answer '__proto__').
+//
+// The predicate is a function, run first over planted defects in memory; a control that does not
+// fire fails the guard.
+function v2Problems(i18nSrc, homeFiles, docsFiles, consentSrc) {
+  const out = [];
+  const decl = /var\s+LANGS\s*=\s*\[(.*?)\];/s.exec(i18nSrc);
+  const langs = decl ? [...decl[1].matchAll(/\["([a-z-]+)"\s*,/g)].map((m) => m[1]) : [];
+  if (!langs.length) return ["v2/i18n.js has no LANGS catalogue"];
+  for (const code of langs) {
+    if (!homeFiles.includes(code)) out.push(`[${code}] is in the v2 picker but v2/i18n/${code}.json does not exist`);
+    if (!docsFiles.includes(code)) out.push(`[${code}] is in the v2 picker but v2/docs/content.${code}.json does not exist`);
+  }
+  for (const code of homeFiles) if (!langs.includes(code)) out.push(`v2/i18n/${code}.json exists but [${code}] is not in the v2 picker`);
+  for (const code of docsFiles) if (!langs.includes(code)) out.push(`v2/docs/content.${code}.json exists but [${code}] is not in the v2 picker`);
+
+  if (!/var CODES = LANGS\.map\(/.test(i18nSrc)) {
+    out.push("v2/i18n.js CODES is not derived from LANGS; a second list goes stale silently");
+  }
+  const normBody = (/function norm\(l\) \{([\s\S]*?)\n {2}\}/.exec(i18nSrc) || [])[1] || "";
+  if (!/CODES\.indexOf\(/.test(normBody) || /\bdict\b|\bcache\b|\bin CODES\b|CODES\[/.test(normBody)) {
+    out.push("v2/i18n.js norm() no longer checks membership with CODES.indexOf, the prototype-safe catalogue test");
+  }
+  const initBody = (/function initial\(\) \{([\s\S]*?)\n {2}\}/.exec(i18nSrc) || [])[1];
+  if (initBody === undefined) out.push("v2/i18n.js initial() is gone; the load-time decision is not covered");
+  else {
+    if (/\bdict\b|\bcache\b|\ben\[/.test(initBody)) out.push("v2/i18n.js initial() consults a dictionary while deciding the language");
+    // `q` is returned, but only as `var q = norm(...)`; a stored or browser value must go through
+    // norm() at the return itself.
+    if (/return\s+(?:chosen|how|tags\[)/.test(initBody) || !/return norm\(chosen\)/.test(initBody) ||
+        (/return q\b/.test(initBody) && !/var q = norm\(/.test(initBody))) {
+      out.push("v2/i18n.js initial() returns a stored or requested language without passing it through norm()");
+    }
+  }
+
+  const uiCodes = (/var CODES = \[([^\]]*)\]/.exec(consentSrc) || [])[1];
+  const uiList = uiCodes ? [...uiCodes.matchAll(/"([a-z-]+)"/g)].map((m) => m[1]) : [];
+  const table = (/var STRINGS = \{([\s\S]*?)\n {2}\};/.exec(consentSrc) || [])[1] || "";
+  const uiStrings = [...table.matchAll(/^ {4}"([a-z-]+)": \{/gm)].map((m) => m[1]);
+  for (const [what, list] of [["CODES", uiList], ["STRINGS", uiStrings]]) {
+    const missing = langs.filter((l) => !list.includes(l));
+    const extra = list.filter((l) => !langs.includes(l));
+    if (missing.length || extra.length) {
+      out.push(`v2/consent-ui.js ${what} disagrees with the v2 picker (missing: ${missing.join(", ") || "none"}; extra: ${extra.join(", ") || "none"})`);
+    }
+  }
+  return out;
+}
+
+{
+  const i18nSrc = readFileSync(join(ROOT, "v2", "i18n.js"), "utf8").split("\r\n").join("\n");
+  const consentSrc = readFileSync(join(ROOT, "v2", "consent-ui.js"), "utf8").split("\r\n").join("\n");
+  const homeFiles = readdirSync(join(ROOT, "v2", "i18n")).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
+  const docsFiles = readdirSync(join(ROOT, "v2", "docs"))
+    .map((f) => /^content\.([a-z-]+)\.json$/.exec(f)?.[1]).filter(Boolean);
+
+  // Controls: the real sources must be what is scanned, and each planted defect must be reported.
+  const langs = publishedLangs();
+  if (langs.length < 11) fail.push(`only ${langs.length} published languages read from v2/i18n.js; the v2 scan has no subject`);
+  const planted = [
+    ["a stored value returned raw", i18nSrc.replace("return norm(chosen);", "return chosen;"), homeFiles, docsFiles, consentSrc],
+    ["CODES restated by hand", i18nSrc.replace(/var CODES = LANGS\.map\([^;]*;/, 'var CODES = ["en", "ja"];'), homeFiles, docsFiles, consentSrc],
+    ["a picker language with no docs content", i18nSrc, homeFiles, docsFiles.filter((c) => c !== "ar"), consentSrc],
+    ["a consent banner missing a language", i18nSrc, homeFiles, docsFiles, consentSrc.replace(/"ko", /, "")],
+  ];
+  for (const [what, ...args] of planted) {
+    const unchanged = args[0] === i18nSrc && args[2] === docsFiles && args[3] === consentSrc;
+    if (unchanged) {
+      fail.push(`negative control could not be planted (${what}): the source no longer has the expected shape`);
+    } else if (!v2Problems(...args).length) {
+      fail.push(`negative control did not fire: ${what} was not reported`);
+    }
+  }
+  for (const p of v2Problems(i18nSrc, homeFiles, docsFiles, consentSrc)) fail.push(p);
+}
+
 if (fail.length) {
   console.error(`FAIL: ${fail.length} locale registration problem(s)\n`);
   for (const f of fail) console.error("  - " + f);
@@ -200,5 +296,7 @@ if (fail.length) {
 
 console.log(
   `check-locale-registration-order OK: ${shipped.length} shipped languages, every one registered, ` +
-    `and the language decision asks the catalogue rather than the half-built dictionary`,
+    `and the language decision asks the catalogue rather than the half-built dictionary; ` +
+    `the published v2 pages: ${publishedLangs().length} picker languages, each with its homepage and docs dictionary, ` +
+    `consent banner in step, initial() decides through norm() (controls fired)`,
 );

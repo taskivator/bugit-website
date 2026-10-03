@@ -46,6 +46,17 @@ import { walkStrings } from "./copy-effective-i18n.mjs";
 export const PLANS = ["solo", "team"];
 export const KINDS = ["current", "regular"];
 
+/**
+ * WHETHER A PROMOTION RUNS. Since 2026-10-03 it does not (owner: "we are removing the
+ * introductory price now and go with the full regular price"), so the price charged IS the
+ * regular price and nothing may show a second, struck-through one. While this is false, a
+ * pricing.<plan>Regular span on a card or a <plan>Regular key in any language is itself a
+ * problem: it can only be a leftover introductory offer. Set it back to true to run one again,
+ * and the "regular" records are required once more.
+ */
+export const PROMOTION = false;
+const REQUIRED_KINDS = PROMOTION ? KINDS : ["current"];
+
 // A US dollar amount, with the currency before it ($59.99, US$59,99, US$ 39,99) or after it
 // (59,99 $, 39,99 USD, 39.99 美元, 39,99 долл. США). Other currencies are deliberately not read:
 // a price shown in euros would then have no record, and a missing record is a failure.
@@ -143,7 +154,12 @@ function fromIndex(html, records, problems) {
       records.push({ plan, kind: "current", cents: cur[0].cents, currency: "USD", where: `${where} (price)` });
     }
     const regKeys = [...card.matchAll(/data-t="pricing\.(\w+)Regular"[^>]*>([^<]*)</g)];
-    if (regKeys.length !== 1 || regKeys[0][1] !== plan) {
+    if (!PROMOTION) {
+      if (regKeys.length || /data-t="pricing\.limited"/.test(card)) {
+        problems.push(`${where}: shows a struck-through regular price or a promotion label while no ` +
+          "promotion runs (copy-offers PROMOTION is false)");
+      }
+    } else if (regKeys.length !== 1 || regKeys[0][1] !== plan) {
       problems.push(`${where}: expected one pricing.${plan}Regular span, found ` +
         `[${regKeys.map((r) => `pricing.${r[1]}Regular`).join(", ")}]`);
     } else {
@@ -175,6 +191,10 @@ function fromDictionaries(i18n, codes, records, problems) {
       const key = `${plan}Regular`;
       const value = dict.pricing && dict.pricing[key];
       const where = `${code} pricing.${key}`;
+      if (!PROMOTION) {
+        if (value !== undefined) problems.push(`${where} is defined while no promotion runs`);
+        continue;
+      }
       if (typeof value !== "string") { problems.push(`${where} is not defined`); continue; }
       const found = amounts(value);
       if (found.length !== 1) {
@@ -242,7 +262,7 @@ export function siteOffers({ indexHtml, i18n, codes, docsDir }) {
   // Every plan must have both kinds from somewhere, or a comparison over the records is over
   // nothing for that slot.
   for (const plan of PLANS) {
-    for (const kind of KINDS) {
+    for (const kind of REQUIRED_KINDS) {
       if (!records.some((r) => r.plan === plan && r.kind === kind)) {
         problems.push(`no ${kind} price for ${plan} was found on any surface`);
       }

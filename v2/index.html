@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<script src="/v2/route.js"></script>
+<link rel="preconnect" href="https://portal.bugit.dev" crossorigin="use-credentials">
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="BugIt | Say what broke. BugIt writes the ticket.">
+<meta property="og:description" content="A QA agent inside the AI assistant you already use. It writes the whole bug report, runs five checks on your machine, and files nothing until you type FILE IT.">
+<meta property="og:url" content="https://bugit.dev/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BugIt | Say what broke. BugIt writes the ticket.">
+<meta name="twitter:description" content="A QA agent inside the AI assistant you already use. It writes the whole bug report, runs five checks on your machine, and files nothing until you type FILE IT.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>BugIt | Say what broke. BugIt writes the ticket.</title>
+<meta name="description" content="A QA agent inside the AI assistant you already use. It writes the whole bug report, runs five checks on your machine, and files nothing until you type FILE IT.">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/public/guide/guide.css">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<!-- The bugit.dev homepage since 2026-10-04 (owner approved the redesign). build.js publishes this
+     file as /index.html and v2/docs/index.html as /docs/index.html. route.js forwards the old
+     single page addresses (/#/docs/..., /#features) so links in the app, PDFs and posts still land. -->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://bugit.dev/#website",
+        "name": "BugIt",
+        "alternateName": "BugIt by Taskivator",
+        "url": "https://bugit.dev/",
+        "inLanguage": "en",
+        "publisher": { "@id": "https://bugit.dev/#org" }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://bugit.dev/#org",
+        "name": "Taskivator",
+        "url": "https://taskivator.com/",
+        "logo": "https://taskivator.com/assets/brand/icon-512.png",
+        "brand": { "@type": "Brand", "name": "BugIt" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "BugIt",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows 11",
+        "description": "BugIt is a QA agent for VS Code that turns rough test notes into polished, reviewed bug tickets filed to your tracker after your approval.",
+        "url": "https://bugit.dev/",
+        "image": "https://bugit.dev/public/brand/og-image.png",
+        "publisher": { "@id": "https://bugit.dev/#org" },
+        "offers": [
+          { "@type": "Offer", "name": "Solo", "price": "59.99", "priceCurrency": "USD", "category": "1-year license, no subscription, no automatic renewal" },
+          { "@type": "Offer", "name": "Team", "price": "249.99", "priceCurrency": "USD", "category": "1-year license, no subscription, no automatic renewal" }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+<a class="skip" href="#main" data-k="t001">Skip to content</a>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home" data-ka="aria-label:t174">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name" data-k="t002">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main" data-ka="aria-label:t175">
+    <a href="#how" data-k="t003">How it works</a>
+    <a href="#checks" data-k="t004">Checks</a>
+    <a href="#pricing" data-k="t005">Pricing</a>
+    <a href="/docs/#/docs" data-k="t006">Docs</a>
+  </nav>
+  <div class="nav-end">
+    <a class="nav-signin" href="https://portal.bugit.dev/login" data-k="t007">Sign in</a>
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing" data-k="t008">Get BugIt</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ── 1. HERO ─────────────────────────────────────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="spot" aria-hidden="true"></div>
+    <p class="kicker" data-k="t009"><span class="dot"></span>QA agent · runs in your AI assistant</p>
+    <h1 id="heroTitle" data-k="t010">Say what broke.<br><span class="grad">BugIt writes the ticket.</span></h1>
+    <p class="lede" data-k="t011">One rough sentence becomes a complete bug report. Five checks run on your machine, and nothing reaches your tracker until you type <kbd>FILE IT</kbd>.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://portal.bugit.dev/pricing" data-k="t012">Get BugIt</a>
+      <a class="btn btn-ghost" href="#trial" data-k="t013">Try it free</a>
+    </div>
+    <!-- ASK BUGIT: opens the same on-page Guide as bugit.dev (public/guide/guide.js): prepared
+         answers matched in the browser, no model, no server. The rotating question is decoration;
+         the button's accessible name is fixed. -->
+    <button type="button" class="ask" id="askBar" aria-haspopup="dialog" aria-controls="bgd-panel" aria-label="Ask BugIt anything and get an instant answer" data-ka="aria-label:t176">
+      <img class="ask-orb" src="/public/brand/blip-guide.svg" alt="" width="40" height="40">
+      <span class="ask-body" aria-hidden="true"><b data-k="t014">Ask BugIt</b><span class="ask-q"><span id="askQ" data-k="t015">Can a web page trick BugIt?</span><i></i></span></span>
+      <kbd aria-hidden="true">/</kbd>
+      <span class="ask-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="m12 5 7 7-7 7"></path></svg></span>
+    </button>
+    <ul class="runs" aria-label="Where it runs" data-ka="aria-label:t177">
+      <li data-k="t016">GitHub Copilot Chat</li><li data-k="t017">Claude in VS Code</li><li data-k="t018">Any terminal</li>
+    </ul>
+
+    <!-- THE DEMO. A real-sized bug, and BugIt visibly working: it asks what is missing, reads the
+         project's glossary and house style, parses the attached log, searches for duplicates,
+         classifies, rates, redacts and checks the report, and the ticket fills in section by
+         section as each piece of work finishes. Then it waits for the visitor to type FILE IT.
+         Plays once; reduced motion shows the finished draft at once. Illustrative, and says so.
+         Every step is something the product does (README "Smart features"); labels come from the
+         project and are never invented, which is why the label row says so. -->
+    <div class="demo" id="demo" aria-label="Illustrative demo: BugIt turns a rough note into a complete bug ticket" data-ka="aria-label:t178">
+      <div class="demo-bar"><i></i><i></i><i></i><span data-k="t019">Copilot Chat · BugIt QA Agent · checkout-web</span><button class="demo-replay" type="button" id="replay" data-k="t020">Replay</button></div>
+      <div class="demo-grid">
+        <div class="pane pane-chat">
+          <p class="pane-label" data-k="t021">You</p>
+          <div class="bubble you"><span id="typed"></span><i class="caret" aria-hidden="true"></i></div>
+          <div class="bubble bot" id="ask" hidden="" data-k="t022"><b>BugIt</b>Which build was this, and does it happen every time?</div>
+          <div class="bubble you" id="answer" hidden=""><span id="typed2"></span></div>
+          <div class="attach" id="attach" hidden="" data-k="t023"><span class="file-ico" aria-hidden="true"></span>checkout-console.log <em>286 lines</em></div>
+        </div>
+        <div class="pane pane-work">
+          <p class="pane-label" data-k="t024">BugIt at work</p>
+          <ol class="work" id="work">
+            <li><b></b><span data-k="t025">Read your glossary<em>“SAVE20” is a promo code, “annual” a plan</em></span></li>
+            <li><b></b><span data-k="t026">Matched your house style<em>title as [Area] Symptom</em></span></li>
+            <li><b></b><span data-k="t027">Asked what was missing<em>build and frequency</em></span></li>
+            <li><b></b><span data-k="t028">Parsed the log<em>1 error and 3 frames kept of 286 lines</em></span></li>
+            <li><b></b><span data-k="t029">Searched for duplicates<em>214 tickets · KAN-171 related, 41%</em></span></li>
+            <li><b></b><span data-k="t030">Classified<em>Checkout › Pricing · Production · Web</em></span></li>
+            <li><b></b><span data-k="t031">Suggested a severity<em>High: a paying customer sees the wrong total</em></span></li>
+            <li><b></b><span data-k="t032">Redacted personal data<em>1 email address</em></span></li>
+            <li><b></b><span data-k="t033">Checked the report<em>steps, expected, actual and build present</em></span></li>
+          </ol>
+        </div>
+        <div class="pane pane-draft">
+          <p class="pane-label" data-k="t034">The draft</p>
+          <article class="ticket" id="ticket">
+            <h3 data-at="1" data-k="t035">[Checkout] SAVE20 applies the monthly price after switching to annual</h3>
+            <dl>
+              <div data-at="2"><dt data-k="t036">Steps to reproduce</dt><dd><ol><li data-k="t037">Add the Pro plan to the cart (monthly)</li><li data-k="t038">Switch the billing period to annual</li><li data-k="t039">Apply promo code SAVE20</li><li data-k="t040">Look at the order summary</li></ol></dd></div>
+              <div class="row2" data-at="2"><div><dt data-k="t041">Expected</dt><dd data-k="t042">20% off the annual price</dd></div><div><dt data-k="t043">Actual</dt><dd data-k="t044">20% off the monthly price, shown as the annual total</dd></div></div>
+              <div data-at="3"><dt data-k="t045">Environment</dt><dd data-k="t046">Production · Web · build 2.14.1 · every time</dd></div>
+              <div data-at="4"><dt data-k="t047">Log</dt><dd><code>TypeError: plan.period is undefined<br>&nbsp;&nbsp;at applyPromo (pricing.ts:88)</code></dd></div>
+              <div class="row2" data-at="5"><div><dt data-k="t048">Related</dt><dd data-k="t049">KAN-171 Promo stacking on renewals</dd></div><div><dt data-k="t050">Component</dt><dd data-k="t051">Checkout › Pricing</dd></div></div>
+              <div class="row2" data-at="7"><div><dt data-k="t052">Severity</dt><dd><span class="pill pill-hot" data-k="t053">High</span></dd></div><div><dt data-k="t054">Reporter</dt><dd><span class="redact" data-k="t055">j••••@••••.com</span></dd></div></div>
+              <div data-at="9"><dt data-k="t056">Labels <span class="from">from your project</span></dt><dd><span class="pill" data-k="t057">checkout</span> <span class="pill" data-k="t058">pricing</span> <span class="pill" data-k="t059">regression</span></dd></div>
+            </dl>
+          </article>
+        </div>
+      </div>
+      <div class="gatebar">
+        <form class="gate" id="gate" autocomplete="off">
+          <label for="gateInput" data-k="t060">Read it? Type <b>FILE IT</b> to file this to Jira.</label>
+          <div class="gate-row">
+            <input id="gateInput" name="gate" spellcheck="false" placeholder="FILE IT" maxlength="12" aria-describedby="gateHint" disabled="" data-ka="placeholder:t179">
+            <button class="btn btn-primary btn-sm" type="submit" id="gateBtn" disabled="" data-k="t061">File</button>
+          </div>
+          <p class="gate-hint" id="gateHint" data-k="t062">BugIt is still writing. You approve what you have read.</p>
+        </form>
+        <div class="filed" id="filed" hidden="">
+          <span class="filed-logo" id="filedLogo"></span>
+          <div><b data-k="t063">Filed as KAN-192 in Jira</b><span data-k="t064">with severity, labels and the log attached</span></div>
+        </div>
+      </div>
+      <p class="demo-note" data-k="t065">Illustrative. Not a recording of a real editor.</p>
+    </div>
+  </section>
+
+  <!-- ── 2. HOW IT WORKS ─────────────────────────────────────────────────────────────── -->
+  <section class="band" id="how" aria-labelledby="howTitle">
+    <p class="eyebrow" data-k="t066">How it works</p>
+    <h2 id="howTitle" data-k="t067">Three moves. Only one of them is yours.</h2>
+    <ol class="steps">
+      <li><span class="num">01</span><h3 data-k="t068">You describe it</h3><p data-k="t069">In your own words, in any of sixteen languages, in the assistant you already have open.</p></li>
+      <li><span class="num">02</span><h3 data-k="t070">BugIt does the write up</h3><p data-k="t071">Title, steps, expected and actual, severity and platform, in your team's language and house style.</p></li>
+      <li class="you"><span class="num">03</span><h3 data-k="t072">You type FILE IT</h3><p data-k="t073">Then it goes to your tracker with your own token. Not a moment before.</p></li>
+    </ol>
+  </section>
+
+  <!-- ── 3. FIVE CHECKS (bento) ──────────────────────────────────────────────────────── -->
+  <section class="band" id="checks-sec" aria-labelledby="checksTitle">
+    <p class="eyebrow" id="checks" data-k="t074">Always on, on your machine</p>
+    <h2 id="checksTitle" data-k="t075">Five checks before you see the draft.</h2>
+    <div class="bento">
+      <article class="cell cell-wide">
+        <h3 data-k="t076">Duplicates</h3><p data-k="t077">Searches your tracker for tickets like yours and gives each a score.</p>
+        <div class="viz viz-dup" aria-hidden="true">
+          <div><span data-k="t078">KAN-148 Sign in spinner never stops</span><i style="--w:62%"></i><b>62</b></div>
+          <div><span data-k="t079">KAN-131 Login rate limit message</span><i style="--w:38%"></i><b>38</b></div>
+        </div>
+      </article>
+      <article class="cell">
+        <h3 data-k="t080">Severity</h3><p data-k="t081">Suggested from the symptoms, with reasons. You decide.</p>
+        <div class="viz viz-sev" aria-hidden="true"><span data-k="t082">Low</span><span data-k="t083">Medium</span><span class="on" data-k="t084">High</span><span data-k="t085">Critical</span></div>
+      </article>
+      <article class="cell">
+        <h3 data-k="t086">Logs</h3><p data-k="t087">Paste a log and it keeps the crash line and the stack.</p>
+        <pre class="viz viz-log" aria-hidden="true"><span data-k="t088">12:04:11 INFO  session ok</span>
+<mark data-k="t089">12:04:13 ERROR 401 token refresh</mark>
+<span data-k="t090">12:04:13 at AuthClient.refresh</span></pre>
+      </article>
+      <article class="cell">
+        <h3 data-k="t091">Personal data</h3><p data-k="t092">Emails and tokens are redacted before the draft. Best effort, so read it.</p>
+        <div class="viz viz-pii" aria-hidden="true"><s data-k="t093">jane@acme.com</s><span data-k="t094">j••••@••••.com</span></div>
+      </article>
+      <article class="cell">
+        <h3 data-k="t095">Thin reports</h3><p data-k="t096">Warns when the steps are too thin for a developer to act on, and asks what is missing.</p>
+        <div class="viz viz-qual" aria-hidden="true">
+          <span class="ok" data-k="t097">Steps</span><span class="ok" data-k="t098">Expected</span><span class="ok" data-k="t099">Actual</span><span class="warn" data-k="t100">Build version?</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 4. THE GATE ─────────────────────────────────────────────────────────────────── -->
+  <section class="gate-band" aria-labelledby="gateTitle">
+    <div class="keys" aria-hidden="true"><kbd>F</kbd><kbd>I</kbd><kbd>L</kbd><kbd>E</kbd><span class="gap"></span><kbd>I</kbd><kbd>T</kbd></div>
+    <h2 id="gateTitle" data-k="t101">Nothing is filed until you type it.</h2>
+    <p data-k="t102">Every write is previewed and bound to the draft you read. Change anything and BugIt asks again. Each yes is spent once, so it cannot file twice.</p>
+  </section>
+
+  <!-- ── 5. TRACKERS ─────────────────────────────────────────────────────────────────── -->
+  <section class="band" id="integrations" aria-labelledby="trackersTitle">
+    <p class="eyebrow" data-k="t103">Eleven trackers</p>
+    <h2 id="trackersTitle" data-k="t104">Files where your team already works.</h2>
+    <ul class="logos" id="logos" aria-label="Supported trackers" data-ka="aria-label:t180"></ul>
+    <p class="fine" data-k="t105">Each connected with a token you create in your own account. Slack, Teams, Discord and email notifications are built in and stay off until you connect them.</p>
+  </section>
+
+  <!-- ── 6. WATCH ────────────────────────────────────────────────────────────────────── -->
+  <section class="band" id="watch" aria-labelledby="watchTitle">
+    <a class="poster" href="https://www.youtube.com/watch?v=9aiGVJy57ug" target="_blank" rel="noopener">
+      <img src="/public/media/youtube/wide/trailer.jpg" alt="" width="1280" height="720" loading="lazy">
+      <span class="play" aria-hidden="true"></span>
+      <span class="poster-cap"><b id="watchTitle" data-k="t106">The two minute introduction</b><span data-k="t107">Plus a short film on every feature, on the BugIt channel</span></span>
+    </a>
+  </section>
+
+  <!-- ── 6b. FREE TRIAL ──────────────────────────────────────────────────────────────── -->
+  <section class="band" id="trial" aria-labelledby="trialTitle">
+    <p class="eyebrow" data-k="t108">Free trial</p>
+    <h2 id="trialTitle" data-k="t109">Try BugIt free, as one of our testers.</h2>
+    <p class="lede" data-k="t110">A limited number of free Solo licenses, for testers who will tell us honestly what works and what does not.</p>
+    <ol class="trial-steps">
+      <li><span class="num">01</span><h3 data-k="t111">Create your account</h3><p data-k="t112">Free, in the BugIt Portal. It is the account you activate BugIt with later.</p></li>
+      <li><span class="num">02</span><h3 data-k="t113">Ask for your trial</h3><p data-k="t114">Open Support, choose Request a free trial, and answer six quick questions.</p></li>
+      <li><span class="num">03</span><h3 data-k="t115">We read every request</h3><p data-k="t116">We reply on your ticket. If you are in, the license appears in your Portal.</p></li>
+      <li><span class="num">04</span><h3 data-k="t117">Tell us how it went</h3><p data-k="t118">After about two weeks, share honest feedback: what worked and what did not.</p></li>
+    </ol>
+    <div class="cta"><a class="btn btn-primary" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t119">Request a free trial</a></div>
+    <p class="fine" data-k="t120">Places are limited and each request is reviewed by hand. A free license stops on its end date, with no grace period.</p>
+  </section>
+
+  <!-- ── 7. PRICING + FAQ ────────────────────────────────────────────────────── -->
+  <section class="band" id="pricing" aria-labelledby="priceTitle">
+    <p class="eyebrow" data-k="t121">Pricing</p>
+    <h2 id="priceTitle" data-k="t122">Pay for a year. Renew only if you want to.</h2>
+    <a class="trial-strip" href="#trial">
+      <span class="tag" data-k="t123">Free trial</span>
+      <span data-k="t124">Testers can ask for a free Solo license first. See how it works.</span>
+      <span class="arrow" aria-hidden="true">↑</span>
+    </a>
+    <div class="plans">
+      <article class="plan">
+        <h3 data-k="t125">Solo</h3>
+        <p class="price"><b>$59.99</b><span data-k="t126">USD for 1 year</span></p>
+        <p class="intro" data-k="t127">No subscription · does not renew automatically</p>
+        <ul><li data-k="t128">One tester, one device</li><li data-k="t129">Every feature</li><li data-k="t130">A year of updates</li><li data-k="t131">Email support</li></ul>
+        <a class="btn btn-primary btn-block" href="https://portal.bugit.dev/pricing?plan=solo" data-k="t132">Get Solo</a>
+      </article>
+      <article class="plan plan-team">
+        <h3 data-k="t133">Team</h3>
+        <p class="price"><b>$249.99</b><span data-k="t134">USD for 1 year</span></p>
+        <p class="intro" data-k="t135">No subscription · does not renew automatically</p>
+        <ul><li data-k="t136">Up to five members, each with their own account</li><li data-k="t137">Shared setup, severities and categories</li><li data-k="t138">Managed in the Portal</li><li data-k="t139">Priority support</li></ul>
+        <a class="btn btn-primary btn-block" href="https://portal.bugit.dev/pricing?plan=team" data-k="t140">Get Team</a>
+      </article>
+    </div>
+    <p class="fine" data-k="t141">All prices are in US dollars (USD). Each license runs for one year and does not renew automatically: nothing is charged again unless you choose to renew. Backed by a <a href="/docs/#/docs/refund">7 day refund policy</a>.</p>
+    <p class="fine fine-links"><a href="/docs/#/docs/commerce" data-k="t184">Commercial Transactions</a></p>
+
+    <div class="faq">
+      <details><summary data-k="t142">Do I need GitHub Copilot?</summary><p data-k="t143">No. BugIt runs in any assistant that can run a command: Copilot Chat, the Claude extension in VS Code, or a plain terminal. It can also run standalone with your own OpenAI or Anthropic key.</p></details>
+      <details><summary data-k="t144">Does Taskivator see my tickets?</summary><p data-k="t145">No. Your tickets, specs and tokens do not pass through our servers. Only license and update data does, and every field is listed in the privacy notice.</p></details>
+      <details><summary data-k="t146">What do I need to run it?</summary><p data-k="t147">An AI assistant that can run a command, Python 3.10 to 3.14, and the tracker you already use. Windows 11 is fully supported; macOS and Linux are in preview.</p></details>
+      <details><summary data-k="t148">What happens after a year?</summary><p data-k="t149">Your files and settings stay. Filing needs an active license, and nothing renews unless you buy again.</p></details>
+    </div>
+  </section>
+
+  <!-- ── 8. CLOSE ────────────────────────────────────────────────────────────────────── -->
+  <section class="close" aria-labelledby="closeTitle">
+    <img src="/public/brand/blip-logo.svg" alt="" width="140" height="140" class="close-blip">
+    <h2 id="closeTitle" data-k="t150">Your testers find the bugs.<br><span class="grad">BugIt writes them up.</span></h2>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://portal.bugit.dev/pricing" data-k="t151">Get BugIt</a>
+      <a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t152">Request a free trial</a>
+    </div>
+  </section>
+  <!-- ── 9. THE FAMILY ───────────────────────────────────────────────────────────────
+       Owner, 2026-10-03: "a cool way to link taskivator.com to bugit too as the parent company".
+       taskivator.com's own lineup stage, borrowed: the products as characters under spotlights,
+       numbered TK-01 to TK-03, BugIt lit and marked as the one you are looking at. Every card goes
+       to taskivator.com, which is where the lineup lives. -->
+  <section class="family" aria-labelledby="familyTitle">
+    <a class="family-head" href="https://taskivator.com">
+      <img class="tk-mark" src="/public/brand/taskivator-mark.svg" alt="" width="120" height="120">
+      <span class="eyebrow" data-k="t153">From the Taskivator workshop</span>
+      <h2 id="familyTitle" data-k="t154">Busywork, switched off.</h2>
+      <p data-k="t155">BugIt is made by Taskivator, a company that builds focused software: each product takes one tedious job and does it properly.</p>
+    </a>
+    <ul class="lineup">
+      <li class="here"><a href="https://taskivator.com/#lineup">
+        <span class="beam" aria-hidden="true"></span>
+        <img src="/public/brand/blip-bugit.svg" alt="" width="88" height="88">
+        <span class="tk" data-k="t156">TK-01</span><b data-k="t157">BugIt</b><span class="job" data-k="t158">Bug reports from rough notes</span><span class="badge" data-k="t159">You are here</span>
+      </a></li>
+      <li style="--c:255,196,64"><a href="https://taskivator.com/peelstack/">
+        <span class="beam" aria-hidden="true"></span>
+        <img src="/public/brand/blip-labelmaker.svg" alt="" width="88" height="88">
+        <span class="tk" data-k="t160">TK-02</span><b data-k="t161">Peelstack Label Maker</b><span class="job" data-k="t162">Label sheets from a spreadsheet</span>
+      </a></li>
+      <li style="--c:255,82,82"><a href="https://taskivator.com/giftproof/">
+        <span class="beam" aria-hidden="true"></span>
+        <img src="/public/brand/blip-freegift.svg" alt="" width="88" height="88">
+        <span class="tk" data-k="t163">TK-03</span><b data-k="t164">Giftproof</b><span class="job" data-k="t165">A free gift that follows the cart</span>
+      </a></li>
+    </ul>
+    <a class="family-link" href="https://taskivator.com" data-k="t166">Meet Taskivator <span aria-hidden="true">→</span></a>
+  </section>
+</main>
+
+<footer class="foot">
+  <span data-k="t167">BugIt by <a href="https://taskivator.com">Taskivator</a></span>
+  <nav aria-label="Footer" data-ka="aria-label:t181"><a href="/docs/#/docs" data-k="t168">Docs</a><a href="/docs/#/docs/privacy" data-k="t169">Privacy</a><a href="/docs/#/docs/refund" data-k="t170">Refunds</a><a href="/docs/#/docs/commerce" data-k="t171">Commercial Transactions</a><a href="/docs/#/docs/security" data-k="t185">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+  <div class="social"><a href="https://www.linkedin.com/company/bugitdev" target="_blank" rel="noopener" aria-label="BugIt on LinkedIn (opens in a new tab)" data-ka="aria-label:t182"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"></path></svg><span data-k="t172">LinkedIn</span></a><a href="https://www.youtube.com/@BugItByTaskivator" target="_blank" rel="noopener" aria-label="BugIt on YouTube (opens in a new tab)" data-ka="aria-label:t183"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.13-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"></path></svg><span data-k="t173">YouTube</span></a></div>
+</footer>
+
+<script src="/v2/logos.js"></script>
+<script src="/v2/nav.js"></script>
+<script src="/v2/i18n.js"></script>
+<script src="/v2/v2.js"></script>
+<script src="/v2/consent-ui.js"></script>
+<script type="module" src="/public/guide/guide.js"></script>
+
+
+</body></html>

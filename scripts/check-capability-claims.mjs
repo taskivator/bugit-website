@@ -39,6 +39,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { publishedCopy, publishedLangs, htmlText } from "./lib/published-copy.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
@@ -166,6 +167,86 @@ for (const name of guidePages.sort()) {
   }
 }
 
+/* RULE D — THE PUBLISHED COPY, 2026-10-04. On that day bugit.dev switched to the redesign:
+   build.js publishes v2/index.html as the homepage and v2/docs/index.html as /docs/. app.js and
+   index.html, which rules A and B read, are still built but no published page references them,
+   so the claim a buyer actually reads (the homepage in v2/i18n/<lang>.json, the docs FAQ in
+   v2/docs/content.<lang>.json, the English written into the pages) was guarded by nothing.
+   scripts/lib/published-copy.mjs is the one place that knows those files; this asks it.
+
+   The trust.vscode key does not exist in the redesign, so rule B cannot be ported as written:
+   the published FAQ legitimately has Copilot-only sentences ("Do I need GitHub Copilot?", "GitHub
+   Copilot is the easiest setup and is recommended", the model-choice answer), and requiring
+   Claude in every one would demand that the copy stop answering questions about Copilot. What
+   is asserted instead:
+
+     D1. Every published language's copy names both Copilot and Claude, and every entry that
+         names Copilot also names Claude somewhere. (Arabic's 2026-09-02 failure: Copilot only.)
+     D2. No sentence that names Copilot TOGETHER WITH a requirement anchor (Python, Windows 11,
+         VS Code / Visual Studio Code) omits Claude. The requirement sentence is the one that
+         lists what you need, and those anchors are Latin product names in all eleven languages,
+         so no per language vocabulary is needed. (French's failure, in its shape.)
+
+   Pages are reduced to visible text with block elements kept apart, so a requirement sentence
+   in one paragraph cannot borrow "Claude" from the next. JSON values may carry inline markup
+   (Arabic wraps product names in <bdi>), which is stripped per value. */
+const ANCHORS = ["Python", "Windows 11", "VS Code", "Visual Studio Code"];
+const BLOCK = /<\/?(?:p|li|ul|ol|div|section|article|header|footer|nav|main|aside|h[1-6]|br|td|th|tr|dt|dd|summary|details|figure|figcaption|button|blockquote)\b[^>]*>/gi;
+const SEP = "";
+
+function publishedUnits(entry) {
+  if (entry.kind === "page") {
+    return htmlText(entry.text.replace(BLOCK, ` ${SEP} `)).split(SEP);
+  }
+  return entry.text.split(/\r?\n/).map((v) => v.replace(/<[^>]+>/g, " "));
+}
+
+function checkPublishedEntry(entry) {
+  const out = [];
+  const units = publishedUnits(entry);
+  const all = units.join("\n");
+  if (all.includes(COPILOT) && !all.includes(CLAUDE)) {
+    out.push(`[${entry.file}] names ${COPILOT} and never ${CLAUDE}; this copy reads as Copilot only`);
+  }
+  for (const unit of units) {
+    for (const sentence of sentences(unit)) {
+      if (sentence.includes(COPILOT) && !sentence.includes(CLAUDE) && ANCHORS.some((a) => sentence.includes(a))) {
+        out.push(`[${entry.file}] a requirement sentence names ${COPILOT} as the only path:\n        ${sentence}`);
+      }
+    }
+  }
+  return out;
+}
+
+const published = publishedCopy();
+const langs = publishedLangs();
+// NEGATIVE CONTROLS, in memory only: Arabic's shape (Copilot, no Claude anywhere) and French's
+// shape (Claude named, then a requirement sentence with Copilot alone). Both must be flagged.
+const controls = [
+  { file: "<control:ar>", lang: "ar", kind: "home", text: "ستحتاج أيضا إلى Copilot و Python." },
+  { file: "<control:fr>", lang: "fr", kind: "docs",
+    text: "L’extension Claude fonctionne aussi.\nBugIt fonctionne dans VS Code. GitHub Copilot et Python sont requis." },
+  { file: "<control:page>", lang: "en", kind: "page",
+    text: "<p>Use the Claude extension.</p><p>You need GitHub Copilot and Python 3.10.</p>" },
+];
+for (const c of controls) {
+  if (checkPublishedEntry(c).length === 0) problems.push(`published copy: negative control did not fire (${c.file})`);
+}
+// POSITIVE CONTROL: every published language must have copy that names both brands, and the
+// subject must be the size the site is, so an emptied reader cannot pass.
+for (const lang of langs) {
+  const text = published.filter((e) => e.lang === lang).map((e) => e.text).join("\n");
+  if (!text) problems.push(`published copy: nothing read for ${lang}`);
+  else if (!text.includes(COPILOT) || !text.includes(CLAUDE)) {
+    problems.push(`published copy: [${lang}] does not name both ${COPILOT} and ${CLAUDE} anywhere`);
+  }
+}
+const publishedChars = published.reduce((n, e) => n + e.text.length, 0);
+if (published.length < 2 * langs.length || publishedChars < 100000) {
+  problems.push(`published copy: only ${published.length} entries / ${publishedChars} characters read`);
+}
+for (const e of published) problems.push(...checkPublishedEntry(e));
+
 if (problems.length) {
   for (const p of problems) console.error(`FAIL: ${p}`);
   console.error(`\ncheck-capability-claims: ${problems.length} problem(s). The site states a ` +
@@ -174,3 +255,6 @@ if (problems.length) {
 }
 console.log(`check-capability-claims: OK — all ${claims.size} locales name both Copilot and ` +
             `Claude in ${KEY}, and no sentence names Copilot as the sole option.`);
+console.log(`  published copy: ${published.length} entries (${publishedChars} characters) across ` +
+            `${langs.length} languages name both, no requirement sentence names Copilot alone; ` +
+            `${controls.length} negative controls fired.`);

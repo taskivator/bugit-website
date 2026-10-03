@@ -119,10 +119,13 @@ for (const view of VIEWS) {
   const ctxOpts = view.device ? { ...devices[view.device] } : { viewport: view.size };
   const where = `${view.engine}/${view.device || `${view.size.width}x${view.size.height}`}`;
 
+  // BOTH PUBLISHED PAGES (2026-10-04). The single page site had every disclosure on one page;
+  // the redesign puts the docs' own controls on /docs/, so both are swept.
+  for (const pagePath of ["/", "/docs/"]) {
   // One pass to enumerate, then one fresh page per control.
   const ctx0 = await browser.newContext(ctxOpts);
   const p0 = await ctx0.newPage();
-  await p0.goto(base + "/", { waitUntil: "load" });
+  await p0.goto(base + pagePath, { waitUntil: "load" });
   try { await p0.click("#consentReject", { timeout: 2500 }); } catch {}
   await p0.waitForTimeout(900);
   const controls = await p0.evaluate(CONTROLS);
@@ -130,9 +133,8 @@ for (const view of VIEWS) {
   await ctx0.close();
 
   if (!controls.length) {
-    fail.push(`[${where}] no element declares aria-expanded at all: the scan did not run, and an ` +
+    fail.push(`[${where} ${pagePath}] no element declares aria-expanded at all: the scan did not run, and an ` +
               `empty sweep must never read as a clean one.`);
-    await browser.close();
     continue;
   }
 
@@ -140,7 +142,7 @@ for (const view of VIEWS) {
     const ctx = await browser.newContext(ctxOpts);
     await ctx.addCookies(consent);
     const page = await ctx.newPage();
-    await page.goto(base + "/", { waitUntil: "load" });
+    await page.goto(base + pagePath, { waitUntil: "load" });
     await page.waitForTimeout(800);
     const el = page.locator(c.sel).first();
     if (!(await el.count())) { await ctx.close(); continue; }
@@ -325,6 +327,7 @@ for (const view of VIEWS) {
        different amount of content at the end than at the start. A live region is not a broken
        disclosure. What has to come back is the STATE, and that is asserted above. */
     await ctx.close();
+  }
   }
   await browser.close();
 }

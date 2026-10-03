@@ -81,6 +81,48 @@ for (const rel of SCAN) {
 }
 
 // ---------------------------------------------------------------------------
+// THE PUBLISHED COPY (2026-10-04). That day bugit.dev switched to the redesign: the homepage is
+// v2/index.html and /docs/ is v2/docs/index.html, translated through v2/i18n/<lang>.json and
+// v2/docs/content.<lang>.json, with English fallbacks in v2/*.js. The scan above reads app.js and
+// dist, which still ship but which no published page loads, so the homepage's licence and grace
+// wording and every translated docs FAQ answer about expiry could have brought back "5 devices at
+// a time" or the 14-day grace and this guard would have said OK. The privacy statements and
+// licences are unaffected (the new docs page fetches the same public/docs files checked above).
+// The file list is scripts/lib/published-copy.mjs, not restated here, and its languages must all
+// have the documents this guard requires.
+//
+// The scan proves itself first, in memory: a planted retired fragment in English and in a
+// translation must be reported, and current Team and grace wording must not be.
+// ---------------------------------------------------------------------------
+const { publishedCopy, publishedLangs } = await import("./lib/published-copy.mjs");
+const retiredIn = (text) => FORBIDDEN.filter((f) => text.includes(f));
+{
+  const blind = ["Team allows 5 devices at a time.", "Tras el vencimiento hay 14 días de gracia.", "同時に5デバイス"]
+    .filter((t) => retiredIn(t).length === 0);
+  const clean = retiredIn("A 1-year license covers up to 5 members, each with one active device; a 3-day grace period follows.");
+  if (blind.length || clean.length) {
+    console.error("SELF-TEST FAILED: negative control did not fire. "
+      + (blind.length ? `The published-copy scan accepted ${JSON.stringify(blind)}. ` : "")
+      + (clean.length ? `It rejected current wording for ${JSON.stringify(clean)}.` : ""));
+    process.exit(2);
+  }
+}
+const published = publishedCopy();
+const publishedChars = published.reduce((n, e) => n + e.text.length, 0);
+const v2Langs = publishedLangs();
+if (published.filter((e) => e.kind === "docs").length !== v2Langs.length || publishedChars < 100000) {
+  fail(`the published copy was not all read (${published.length} files, ${publishedChars} characters, ${v2Langs.length} languages)`);
+}
+for (const l of v2Langs) {
+  if (!LOCALES.includes(l === "en" ? "" : l)) {
+    fail(`the published site ships "${l}", which app.js's language table does not, so its privacy statement and licence are outside this guard`);
+  }
+}
+for (const e of published) {
+  for (const frag of retiredIn(e.text)) fail(`${e.file}: retired-model fragment present — "${frag}"`);
+}
+
+// ---------------------------------------------------------------------------
 // REQUIRED (English source of truth): browser-entitlement fields present.
 // ---------------------------------------------------------------------------
 const enPrivacy = exists(privacyFile("")) ? read(privacyFile("")) : "";
@@ -215,7 +257,8 @@ if (failures) {
   process.exit(1);
 }
 console.log(`check-legal-dataflow: OK. All ${REQUIRED_DOCS.length} privacy/licence documents for ${LOCALES.length} ` +
-  `locales exist; no retired-model fragment in them, app.js or dist (${SCAN.length} files); the English ` +
+  `locales exist; no retired-model fragment in them, app.js or dist (${SCAN.length} files) or the ` +
+  `${published.length} published files (${publishedChars} characters, 4 negative controls fired); the English ` +
   `privacy statement names every activation field; every locale references the Portal and ` +
   `describes the assistant's account summary, the self-serve export and the stored IP addresses. ` +
   `(Presence checks, not a legal or translation review.)`);

@@ -13,6 +13,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { publishedCopy, publishedLangs, htmlText } from "./lib/published-copy.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -207,6 +208,132 @@ for (const t of ["crashlytics", "bugsnag"])
     fail.push(`${t} is inside the BUILT-IN TESTED MAPPING row — implies certification it does not have`);
 if (!/Jira and Azure DevOps include built-in tested field mapping/.test(html))
   note.push("integrations lede wording changed — re-verify built-in claim scope");
+
+// --- THE PUBLISHED PAGES (2026-10-04) ------------------------------------------
+// On 2026-10-04 bugit.dev switched to the redesign. Everything above reads app.js and index.html,
+// which still ship and so stay checked, but which no published page loads: the homepage is
+// v2/index.html translated by v2/i18n/<lang>.json, and /docs/ is v2/docs/index.html filled from
+// v2/docs/content.<lang>.json. None of the catalogue above exists there. What a visitor gets from
+// the language machinery of the published pages is asserted here, over what lib/published-copy.mjs
+// says is published, so the language list is the one the site ships rather than a copy of it:
+//
+//   A. Completeness of the homepage. Every key the pages and scripts ask for ([data-k], [data-ka],
+//      and the "t012" / "js.q1" / "d.docs" style keys the scripts pass to V2T) must be a non-empty
+//      string in every language's file. i18n.js would fall back to English for a missing one, so a
+//      gap never errors: it silently shows one English sentence in a Japanese page.
+//   B. Completeness of the docs. Every language's content file must have exactly English's shape:
+//      the same keys, the same number of FAQ entries, no empty value.
+//   C. Parity between languages. Every homepage file carries the same key set as every other, so a
+//      key added to one translation and forgotten in the rest is caught even if nothing reads it yet.
+//   D. The fallback and the picker, as the source states them: a missing string falls back to
+//      English, a failed load falls back to English, Arabic is laid out right to left, and the
+//      picker shows each language's own name with no "(Preview)" tag (the owner removed it).
+//   E. Crashlytics and BugSnag (item 6 above): no published English sentence that names either
+//      may call it built-in or tested.
+const KEYISH = /^(?:t\d{3}|(?:js|d|menu)\.[A-Za-z0-9]+)$/;
+function scanPublished(entries) {
+  const found = [];
+  const langs = new Set(entries.filter((e) => e.lang && e.lang !== "en").map((e) => e.lang));
+  const wanted = new Map(); // key -> where it is asked for
+  for (const e of entries) {
+    if (e.kind === "page") {
+      for (const m of e.text.matchAll(/\sdata-k="([^"]+)"/g)) wanted.set(m[1], e.file);
+      for (const m of e.text.matchAll(/\sdata-ka="([^"]+)"/g)) {
+        for (const pair of m[1].split(",")) wanted.set(pair.split(":")[1], e.file);
+      }
+    } else if (e.kind === "script") {
+      for (const m of e.text.matchAll(/"([^"\n]{2,40})"/g)) if (KEYISH.test(m[1])) wanted.set(m[1], e.file);
+    }
+  }
+  const home = {}, docs = {};
+  for (const e of entries) {
+    const tree = e.json ?? (e.kind === "home" || e.kind === "docs" ? JSON.parse(readFileSync(join(root, e.file), "utf8")) : null);
+    if (e.kind === "home") home[e.lang] = tree;
+    if (e.kind === "docs") docs[e.lang] = { file: e.file, flat: flatShape(tree) };
+  }
+  for (const lang of langs) {
+    if (!home[lang]) { found.push(`homepage: no ${lang} dictionary among the published copy`); continue; }
+    for (const [key, where] of wanted) {
+      const v = home[lang][key];
+      if (typeof v !== "string" || !v.trim()) found.push(`homepage ${lang}: "${key}" (asked for by ${where}) is ${v === undefined ? "missing" : "empty"}`);
+    }
+  }
+  const homeLangs = Object.keys(home);
+  for (const lang of homeLangs.slice(1)) {
+    const a = Object.keys(home[homeLangs[0]]), b = Object.keys(home[lang]);
+    const onlyA = a.filter((k) => !(k in home[lang])), onlyB = b.filter((k) => !(k in home[homeLangs[0]]));
+    if (onlyA.length || onlyB.length) {
+      found.push(`homepage ${homeLangs[0]} and ${lang} carry different keys: only ${homeLangs[0]} ${JSON.stringify(onlyA.slice(0, 8))}, only ${lang} ${JSON.stringify(onlyB.slice(0, 8))}`);
+    }
+  }
+  if (!docs.en) found.push("docs: no English content among the published copy, so nothing to compare the others to");
+  else {
+    for (const lang of langs) {
+      const d = docs[lang];
+      if (!d) { found.push(`docs: no ${lang} content among the published copy`); continue; }
+      for (const [k, v] of docs.en.flat) {
+        const mine = d.flat.get(k);
+        if (mine === undefined) found.push(`docs ${lang}: ${d.file} is missing ${k}`);
+        else if (typeof v === "string" && (typeof mine !== "string" || !mine.trim())) found.push(`docs ${lang}: ${d.file} has an empty ${k}`);
+      }
+      for (const k of d.flat.keys()) if (!docs.en.flat.has(k)) found.push(`docs ${lang}: ${d.file} has ${k}, which English does not`);
+    }
+  }
+  const i18n = entries.find((e) => e.kind === "script" && /(^|\/)i18n\.js$/.test(e.file));
+  if (!i18n) found.push("the published language script (i18n.js) is not among the published copy");
+  else {
+    if (!/en\[k\] != null \? en\[k\] : fallback/.test(i18n.text)) found.push("i18n.js: a missing string no longer falls back to English");
+    // The fallback may be guarded so only the latest request paints (2026-10-04): either form.
+    if (!/\.catch\(function \(\) \{ (?:if \(my === seq\) )?apply\("en", \{\}\); \}\)/.test(i18n.text)) found.push("i18n.js: a failed language load no longer falls back to English");
+    if (!/l === "ar" \? "rtl" : "ltr"/.test(i18n.text)) found.push("i18n.js: Arabic is no longer laid out right to left");
+    if (/\(Preview\)|\(preview\)/.test(i18n.text)) found.push("i18n.js: the language picker tags a language '(Preview)' again; the owner removed that label");
+    if (!/\+ x\[1\] \+/.test(i18n.text)) found.push("i18n.js: the language picker no longer renders each language's own name");
+  }
+  for (const e of entries) {
+    if (e.lang !== "en") continue;
+    const text = e.kind === "page" ? htmlText(e.text) : e.text;
+    for (const s of text.split(/(?<=[.!?])\s+/)) {
+      if (/crashlytics|bugsnag/i.test(s) && /built-in|tested mapping|certified/i.test(s)) {
+        found.push(`${e.file}: names Crashlytics or BugSnag next to a built-in/tested claim: ${JSON.stringify(s.slice(0, 140))}`);
+      }
+    }
+  }
+  return { found, wanted: wanted.size, wantedKeys: [...wanted.keys()], langs: langs.size, docsKeys: docs.en ? docs.en.flat.size : 0 };
+}
+// Leaf paths with their values; an array contributes its length too, so a dropped FAQ entry shows.
+function flatShape(node, prefix = "", out = new Map()) {
+  if (Array.isArray(node)) { out.set(prefix + ".length", node.length); node.forEach((v, i) => flatShape(v, `${prefix}[${i}]`, out)); }
+  else if (node && typeof node === "object") for (const [k, v] of Object.entries(node)) flatShape(v, prefix ? `${prefix}.${k}` : k, out);
+  else out.set(prefix, node);
+  return out;
+}
+{
+  const entries = publishedCopy();
+  const result = scanPublished(entries);
+  for (const f of result.found) fail.push("published: " + f);
+  // Positive control: the subject is the size the site is, not an empty set that passes.
+  if (result.langs !== publishedLangs().length - 1) fail.push(`published: compared ${result.langs} translated language(s), the site ships ${publishedLangs().length - 1}`);
+  if (result.wanted < 150) fail.push(`published: only ${result.wanted} homepage key(s) found to require; the scan is blind`);
+  if (result.docsKeys < 40) fail.push(`published: only ${result.docsKeys} docs key(s) read from English; the scan is blind`);
+  // Negative control, in memory: a Japanese homepage missing one key the page asks for, a German
+  // docs file one FAQ entry short, and a picker that says "(Preview)" again. Each must be reported.
+  const ja = entries.find((e) => e.kind === "home" && e.lang === "ja");
+  const de = entries.find((e) => e.kind === "docs" && e.lang === "de");
+  const i18n = entries.find((e) => e.kind === "script" && /(^|\/)i18n\.js$/.test(e.file));
+  const jaTree = JSON.parse(readFileSync(join(root, ja.file), "utf8"));
+  const dropped = result.wantedKeys.find((k) => k in jaTree) ?? "t001";
+  delete jaTree[dropped];
+  const deTree = JSON.parse(readFileSync(join(root, de.file), "utf8"));
+  deTree.faq = deTree.faq.slice(1);
+  const planted = entries.map((e) => e === ja ? { ...e, json: jaTree }
+    : e === de ? { ...e, json: deTree }
+    : e === i18n ? { ...e, text: e.text + '\n/* x */ var tag = " (Preview)";' } : e);
+  const control = scanPublished(planted).found;
+  if (!control.some((f) => f.startsWith(`homepage ja: "${dropped}"`))) fail.push(`published: negative control did not fire (ja without "${dropped}" passed)`);
+  if (!control.some((f) => f.startsWith("docs de:") && f.includes("faq"))) fail.push("published: negative control did not fire (a German FAQ one entry short passed)");
+  if (!control.some((f) => f.includes("(Preview)"))) fail.push("published: negative control did not fire (a '(Preview)' picker label passed)");
+  note.push(`published copy: ${result.langs} translated languages, ${result.wanted} homepage keys required of each, ${result.docsKeys} docs fields matched to English`);
+}
 
 if (note.length) console.log("check-languages notes:\n - " + note.join("\n - "));
 if (fail.length) {

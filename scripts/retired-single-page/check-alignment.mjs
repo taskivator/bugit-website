@@ -153,9 +153,22 @@ const MEASURE = (dir) => {
     // nothing. The last line is the short one, and where it sits is the whole question.
     const range = document.createRange();
     range.selectNodeContents(h);
-    const lines = [...range.getClientRects()].filter((r) => r.width > 1);
+    // A client rect is a RUN of text, not a line. Mixed-direction text splits one visual line
+    // into several runs: an Arabic heading with "BugIt" in it is three rects on one line, and
+    // taking the final rect as "the last line" measured one run against the whole box and
+    // reported a centred heading as 569px off (the free trial heading, 2026-10-03). Runs are
+    // merged by line (same vertical band) before the last line is taken.
+    const runs = [...range.getClientRects()].filter((r) => r.width > 1);
     const box = h.getBoundingClientRect();
-    if (!lines.length || !box.width) continue;
+    if (!runs.length || !box.width) continue;
+    const lines = [];
+    for (const r of runs) {
+      const mid = (r.top + r.bottom) / 2;
+      const line = lines.find((l) => mid > l.top && mid < l.bottom);
+      if (line) { line.left = Math.min(line.left, r.left); line.right = Math.max(line.right, r.right); }
+      else lines.push({ top: r.top, bottom: r.bottom, left: r.left, right: r.right });
+    }
+    lines.sort((a, b) => a.top - b.top);
     const last = lines[lines.length - 1];
     heads.push({ id,
                  left: Math.round(last.left - box.left),

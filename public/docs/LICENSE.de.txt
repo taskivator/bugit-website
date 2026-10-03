@@ -51,8 +51,9 @@ verkauft. Mit dem Kauf, der Aktivierung oder der Nutzung der Software erklären 
    keine Projekt-, Ticket-, Glossar- oder Tracker-Daten an Taskivator. Siehe
    PRIVACY.md.
 
-7. Laufzeit. BugIt ist ein einmaliger Kauf, kein Abonnement: Sie zahlen einmal, und
-   es gibt keine automatische Verlängerung und keine wiederkehrende Belastung. Ihr
+7. Laufzeit. BugIt wird als Lizenz für ein Jahr verkauft, nicht als Abonnement: Die
+   Lizenz verlängert sich nicht automatisch, und es gibt keine wiederkehrende
+   Belastung. Ihr
    Kauf gewährt eine einjährige Lizenz, einschließlich Updates sowie Lizenz- und
    Aktivierungsdiensten, die am Kaufdatum beginnt. Mit Ablauf des
    Jahres erlischt die Lizenz; es folgt eine Schonfrist von 3 Tagen, in der die

@@ -1,0 +1,118 @@
+{
+ "docPages": {
+  "homeTitle": "Dokumentation",
+  "commerceTitle": "Handelsrechtliche Angaben",
+  "commerceIntro": "Verkäufer- und Transaktionsangaben zu BugIt, einschließlich der Angaben für den Versandhandel in Japan nach dem Gesetz über bestimmte Handelsgeschäfte (特定商取引法).",
+  "homeIntro": "Alles, was Sie zum Installieren, Aktivieren, Anpassen und sicheren Nutzen von BugIt brauchen. Aktualisiert für BugIt QA Agent.",
+  "refundTitle": "Rückerstattungsrichtlinie",
+  "refundIntro": "Unsere Rückerstattungsrichtlinie für den Kauf von BugIt Lizenzen.",
+  "gettingTitle": "Erste Schritte",
+  "userTitle": "Benutzerhandbuch",
+  "licenseTitle": "Lizenzvertrag",
+  "privacyTitle": "Datenschutzrichtlinie",
+  "securityTitle": "Sicherheit",
+  "faqTitle": "FAQ",
+  "supportTitle": "Support",
+  "supportIntro": "Bei Setup-Problemen bitten Sie zuerst den BugIt-Assistenten um eine Diagnose und führen dann Check status oder Check readiness aus. Wenn Sie weiterhin Hilfe benötigen, öffnen Sie über Ihr BugIt-Dashboard ein Support-Ticket.",
+  "download": "PDF herunterladen",
+  "before": "Bevor Sie ein Support-Ticket öffnen",
+  "beforeText": "Geben Sie keinen vertraulichen Quellcode und keine Kundendaten, privaten Tickets, Screenshots, Tokens oder Secrets an. Beschreiben Sie das BugIt-Problem allgemein.",
+  "englishOnly": "Support-Tickets müssen auf Englisch eingereicht werden. Die lokalisierten Website-Seiten dienen nur Ihrer Bequemlichkeit und bedeuten nicht, dass Taskivator Support in jeder aufgeführten Sprache anbietet."
+ },
+ "docs": {
+  "eyebrow": "DOKUMENTATION",
+  "getting": "Erste Schritte",
+  "gettingDesc": "BugIt in wenigen Minuten einrichten.",
+  "user": "Benutzerhandbuch",
+  "userDesc": "Vollständiger Leitfaden zu Funktionen und Workflows.",
+  "license": "Lizenzvertrag",
+  "licenseDesc": "Nutzungsbedingungen für BugIt lesen.",
+  "privacy": "Datenschutzrichtlinie",
+  "privacyDesc": "Wie wir Ihre Daten erheben, nutzen und schützen.",
+  "security": "Sicherheit",
+  "securityDesc": "Schutzmaßnahmen, bekannte Grenzen und Meldung von Schwachstellen.",
+  "refund": "Rückerstattungsrichtlinie",
+  "refundDesc": "Unsere 7-tägige Rückerstattungsrichtlinie.",
+  "commerce": "Handelsrechtliche Angaben",
+  "commerceDesc": "Verkäufer- und Transaktionsangaben (特定商取引法に基づく表記).",
+  "faqDesc": "Antworten auf häufige Fragen.",
+  "support": "Support",
+  "supportDesc": "Hilfe erhalten und ein Support-Ticket öffnen."
+ },
+ "faq": [
+  [
+   "Was brauche ich, um BugIt zu nutzen?",
+   "BugIt läuft in Visual Studio Code mit GitHub Copilot Chat, der Claude-Erweiterung oder einem anderen Assistenten und einer aktuellen Python-Version (3.10-3.14). Windows 11 wird vollständig unterstützt und ist release-validiert; macOS und Linux werden unterstützt, befinden sich aber derzeit in der Preview, während die Validierung ausgeweitet wird. BugIt enthält kein KI-Modell und kein Abo. Das bringen Sie selbst mit."
+  ],
+  [
+   "Legt BugIt automatisch Bugs an?",
+   "Nein. Jedes Ticket, jeder Kommentar, jeder Anhang und jede Benachrichtigung mit Ihrem Berichtsinhalt wird zuerst als Vorschau angezeigt. Vor einer irreversiblen Einreichung bestätigen Sie durch die Eingabe von FILE IT; Chat-Text allein reicht nie zum Einreichen. Ein einfaches „Ja“ reicht nicht aus. Nutzen Sie dry run, um ohne jeden Schreibvorgang zu üben. Verbindungstests sind die einzige Ausnahme: Wenn Sie notify connect, notify test oder notify doctor --live selbst ausführen, sendet BugIt ohne Vorschau eine feste Testnachricht an den Kanal, den Sie angeben, oder an jeden eingeschalteten Kanal, wenn Sie keinen angeben. Diese Tests enthalten keine Berichtsinhalte, und dry run blockiert sie ebenfalls."
+  ],
+  [
+   "Welche Tracker haben integriertes, getestetes Mapping?",
+   "Alle elf Tracker bringen ein integriertes, getestetes Feld-Mapping mit, und BugIt reicht in jeden davon mit einer Zugangsberechtigung ein, die Sie in Ihrem eigenen Konto anlegen: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana und Trello. BugIt prüft Ihre eigene Zugangsberechtigung gegen Ihr Ziel, bevor es die Verbindung speichert. Crash-Tools und weitere Dienste binden Sie über Ihren eigenen MCP-Server ein, damit Ihr Assistent daraus lesen kann. Uploads von Screenshots und Logs erreichen acht der elf: BugIt lädt keine Dateien zu GitHub Issues, GitLab Issues oder Bugzilla hoch und sagt es Ihnen, bevor Sie es versuchen."
+  ],
+  [
+   "Brauche ich GitHub Copilot?",
+   "GitHub Copilot ist empfohlen und am einfachsten einzurichten. BugIt funktioniert auch mit der Claude-Erweiterung in VS Code, mit einem anderen Assistenten oder in einem einfachen Terminal. Das Einreichen ist ein Befehl und funktioniert überall gleich."
+  ],
+  [
+   "Kann ich Claude, Gemini oder GPT nutzen?",
+   "Ja, in GitHub Copilot, sofern diese Modelle in Ihrem Plan verfügbar sind. Der Standalone-Modus unterstützt Ihren eigenen OpenAI- oder Anthropic-Schlüssel."
+  ],
+  [
+   "Sieht Taskivator meine Arbeit?",
+   "Nein. Bug-Reports, Spezifikationen, Glossar, Screenshots, Code, Einstellungen und Tickets werden nicht an Taskivator gesendet. Es werden nur Lizenz-/Update-Daten verwendet."
+  ],
+  [
+   "Welche Lizenz-/Update-Daten werden gesendet?",
+   "Die Anmeldung bei Ihrem BugIt-Konto (im Browser, im Portal), eine mit einem Einweg-Hash versehene Geräte-ID, eine zufällige Installationskennung, den Namen Ihres Geräts (Hostname) und des Betriebssystems, die BugIt-Version und den von Ihnen gewählten Solo- oder Team-Planfilter, kurzlebiges kryptografisches Challenge-Material, den einmaligen Freigabe-Token aus dem Portal-Link, den Ihr Browser geöffnet hat, ein Bestätigungsgeheimnis je Aktivierung (dessen Hash beim Aktivieren, der Wert selbst nur beim Widerruf des Zugriffs dieses Geräts) und die Solo- oder Team-Berechtigung, die Sie für dieses Gerät bestätigen."
+  ],
+  [
+   "Was ist in Team enthalten?",
+   "Der Team-Tarif ist jetzt verfügbar. Eine 1-Jahres-Lizenz (kein Abo, keine automatische Verlängerung) deckt bis zu 5 Mitglieder ab, und jedes Mitglied erhält ein eigenes BugIt-Konto, eine eigene Anmeldung und eine eigene Geräteaktivierung statt einer gemeinsamen Lizenz. Die Team-Konfiguration wird gemeinsam genutzt und zentral im Portal verwaltet, ohne automatische Verlängerung. Der Solo-Tarif ist nicht betroffen und ebenfalls verfügbar. Mehr als fünf? Eine zweite Team-Lizenz fügt demselben Team fünf weitere Plätze hinzu, und jede Lizenz hat ihre eigene Laufzeit."
+  ],
+  [
+   "Kann ich üben, ohne einzureichen?",
+   "Ja. Mit dry run erzeugen Sie einen vollständigen Bericht, ohne Tickets, Kommentare, Anhänge oder Benachrichtigungen zu erstellen. Dry run hindert die mitgelieferten BugIt-Helfer am Schreiben und weist den Agenten an, Tracker-Schreibzugriffe zu verweigern; diese Verweigerung folgt den Anweisungen von BugIt, nicht einer plattformseitigen Sperre. Verwenden Sie zum Testen daher schreibgeschützte Zugangsdaten."
+  ],
+  [
+   "Welche Dateien darf ich gefahrlos bearbeiten?",
+   "Gefahrlos bearbeitbar sind config.json, .vscode/mcp.json, .github/glossary/terms.template.md, .github/instructions/learned.instructions.md und .github/instructions/house-style.instructions.md, falls Sie sie erstellen."
+  ],
+  [
+   "Was sollte ich nicht manuell bearbeiten?",
+   "Bearbeiten Sie nicht .github/agents/bugit-qa-agent.agent.md, andere ausgelieferte Dateien unter .github/instructions/ oder Dateien in tools/. Updates überschreiben diese Produktdateien und sie werden nicht gesichert."
+  ],
+  [
+   "Wie funktionieren Updates?",
+   "BugIt sichert Ihre eigenen Einstellungen, prüft signierte Updates, installiert direkt im bestehenden Ordner und behält Konfiguration, Glossar, Hausstil, Lizenz und Verbindungen."
+  ],
+  [
+   "Was passiert, wenn meine Lizenz abläuft?",
+   "Nach Ablauf der Jahreslizenz gilt eine Schonfrist von 3 Tagen; danach endet der Anspruch auf Einreichung und Aktivierung; Ihre lokalen Dateien und Einstellungen bleiben Ihnen erhalten. Ausfälle des Lizenzservers sind davon getrennt: Die zwischengespeicherte Prüfung lässt Sie bis zu 72 Stunden offline weiterarbeiten. Das Jahr beginnt am Kaufdatum."
+  ],
+  [
+   "Stapeln sich Verlängerungen?",
+   "Nein. Eine Verlängerung ersetzt Ihre aktuelle Aktivierung und startet ab diesem Datum eine neue Laufzeit. Verlängern Sie daher nahe am Ende Ihrer aktuellen Laufzeit."
+  ],
+  [
+   "Wie bekomme ich Support?",
+   "Bitten Sie zuerst den KI-Assistenten um eine Diagnose und führen Sie dann Check status oder Check readiness aus. Wenn Sie weiterhin nicht weiterkommen, öffnen Sie über Ihr BugIt-Dashboard ein Support-Ticket. Vertrauliche Projektdaten müssen Sie dabei nicht angeben."
+  ]
+ ],
+ "dl": {
+  "userGuide": "Benutzerhandbuch",
+  "overview": "QA-Agent-Übersicht",
+  "ugDesc": "Die vollständige Schritt-für-Schritt-Anleitung zu Einrichtung und Nutzung.",
+  "ovDesc": "Ein kompakter Überblick über den BugIt QA-Agenten.",
+  "preview": "Vorschau",
+  "download": "Herunterladen"
+ },
+ "ui": {
+  "openTicket": "Support-Ticket öffnen",
+  "onThisPage": "Auf dieser Seite",
+  "breadcrumb": "Brotkrümelnavigation",
+  "toTop": "Nach oben"
+ }
+}

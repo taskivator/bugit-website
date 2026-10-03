@@ -91,6 +91,50 @@ for (const [name, src] of APP_SOURCES) {
 }
 
 // ---------------------------------------------------------------------------
+// THE PUBLISHED COPY (2026-10-04). bugit.dev switched to the redesign that day: the homepage is
+// v2/index.html, /docs/ is v2/docs/index.html, the translations are v2/i18n/<lang>.json and
+// v2/docs/content.<lang>.json, and English fallbacks live in v2/*.js. The scans above read app.js
+// and its dist bundle, which still ship but which no published page loads, so the copy visitors
+// actually read was outside this guard. The same removed-flow patterns and the same stale renewal
+// nouns are now applied to every published file, listed by scripts/lib/published-copy.mjs rather
+// than here. The getting-started guide checked below is still what the new docs page fetches
+// (public/docs/GETTING_STARTED*.web.md), so its presence check needs no second copy.
+//
+// The scan proves itself first, in memory: a planted copy of each removed-flow phrasing and of a
+// stale renewal noun must be reported, and a correct browser-model sentence must not be.
+// ---------------------------------------------------------------------------
+const { publishedCopy, publishedLangs } = await import("./lib/published-copy.mjs");
+const publishedProblems = (e) => [
+  ...PROHIBITED.filter(([rx]) => rx.test(e.text)).map(([rx, why]) => `${e.file}: ${why} (matched ${rx})`),
+  ...STALE_RENEWAL_KEY.filter((f) => e.text.includes(f))
+    .map((f) => `${e.file}: stale renewals FAQ still says "${f}" (key-based renewal)`),
+];
+{
+  const plant = (text) => ({ file: "planted", lang: "en", kind: "docs", text });
+  const plants = [
+    "Paste your license key into the terminal.", "Run activate BUGIT-1234.", "Use --clipboard to activate.",
+    "Every member uses the shared Team key.", "Renewals stack. Activating a new key adds a year.",
+    "La renovación se suma al activar una nueva clave.",
+  ];
+  const blind = plants.filter((t) => publishedProblems(plant(t)).length === 0);
+  const clean = publishedProblems(plant("BugIt opens the BugIt Portal in your browser: no shared key and no shared login. "
+    + "Standalone mode supports your own OpenAI or Anthropic key."));
+  if (blind.length || clean.length) {
+    console.error("SELF-TEST FAILED: negative control did not fire. "
+      + (blind.length ? `The published-copy scan accepted ${JSON.stringify(blind)}. ` : "")
+      + (clean.length ? `It rejected correct browser-model copy: ${clean.join("; ")}` : ""));
+    process.exit(2);
+  }
+}
+const published = publishedCopy();
+const publishedChars = published.reduce((n, e) => n + e.text.length, 0);
+const langs = publishedLangs();
+check(published.filter((e) => e.kind === "docs").length === langs.length && published.some((e) => e.kind === "page")
+  && publishedChars > 100000,
+  `the published copy was not all read (${published.length} files, ${publishedChars} characters, ${langs.length} languages)`);
+for (const e of published) for (const p of publishedProblems(e)) check(false, p);
+
+// ---------------------------------------------------------------------------
 // POSITIVE: the English getting-started guide must describe the browser flow.
 // ---------------------------------------------------------------------------
 const en = GUIDES.find(([n]) => n.endsWith("GETTING_STARTED.web.md"));
@@ -119,4 +163,5 @@ if (failures) {
   console.error(`\ncheck-activation-copy: ${failures} failure(s).`);
   process.exit(1);
 }
-console.log(`check-activation-copy: OK — browser flow present, no removed key-activation flow in ${ALL.length} source/dist files.`);
+console.log(`check-activation-copy: OK — browser flow present, no removed key-activation flow in ${ALL.length} source/dist files `
+  + `or in the ${published.length} published files (${publishedChars} characters); 6 negative controls fired.`);

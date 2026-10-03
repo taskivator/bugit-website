@@ -98,22 +98,28 @@ console.log("check-seo: parser self-tests");
 
 // ---------------------------------------------------------------- 1. redirects point at real routes
 console.log("\ncheck-seo: every redirect destination is a route that exists");
-const app = read("app.js");
-const html = read("index.html");
+// SINCE THE REDESIGN (2026-10-04) the authorities are the new pages: v2/index.html is published as
+// the homepage (its ids are the /#... targets) and v2/docs/docs.js routes the documentation page
+// (its DOCS registry `r:` values, plus its ALIAS map, are the /docs/#/... targets).
+const docsJs = read("v2/docs/docs.js");
+const html = read("v2/index.html");
 
-const mDoc = app.match(/const docRoutes\s*=\s*\[([^\]]*)\]/);
-const docRoutes = mDoc ? [...mDoc[1].matchAll(/'([^']+)'/g)].map((m) => m[1]) : [];
+const docRoutes = [
+  "docs",
+  ...[...docsJs.matchAll(/\{\s*r:\s*"([^"]+)"/g)].map((m) => m[1]),
+  ...[...(docsJs.match(/var ALIAS\s*=\s*\{([^}]*)\}/)?.[1] ?? "").matchAll(/"([^"]+)"\s*:/g)].map((m) => m[1]),
+];
 check(
-  docRoutes.length >= 5,
-  "docRoutes was read out of app.js",
+  docRoutes.length >= 8,
+  "the docs routes were read out of v2/docs/docs.js",
   "found " + docRoutes.length + ": " + docRoutes.join(", ") +
     " -- if this is empty the declaration moved and every check below is vacuous",
 );
 
 const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
 check(
-  ids.has("pricing") && ids.has("features"),
-  "section ids were read out of index.html",
+  ids.has("pricing") && ids.has("how"),
+  "section ids were read out of v2/index.html",
   ids.size + " ids found -- a positive control on two that must exist",
 );
 
@@ -131,20 +137,25 @@ for (const { from, to, code } of redirects) {
     check(false, from + " uses status " + code, "Cloudflare Pages supports 301, 302, 303, 307 and 308 for redirects");
   }
 
-  if (to.startsWith("/#/")) {
-    const slug = to.slice(3);
+  if (to.startsWith("/docs/#/")) {
+    const slug = to.slice("/docs/#/".length);
     check(
       docRoutes.includes(slug),
-      from + " -> " + to + " names a real SPA route",
-      '"' + slug + '" is not in docRoutes. A redirect to a renamed route answers 200 and shows the wrong page.',
+      from + " -> " + to + " names a real docs route",
+      '"' + slug + '" is not a route in v2/docs/docs.js. A redirect to a renamed route answers 200 and shows the wrong page.',
     );
   } else if (to.startsWith("/#")) {
     const anchor = to.slice(2);
     check(
       ids.has(anchor),
       from + " -> " + to + " names a real section id",
-      'no element in index.html has id="' + anchor + '"',
+      'no element in v2/index.html has id="' + anchor + '"',
     );
+  } else if (to === "/" || to === "/docs/") {
+    // The two pages, published by build.js from v2/index.html and v2/docs/index.html.
+    check(fs.existsSync(path.join(root, "v2", ...(to === "/" ? [] : ["docs"]), "index.html")), from + " -> " + to + " is a published page");
+  } else if (/^\/#\//.test(to)) {
+    check(false, from + " -> " + to + " is an old single page address", "the documentation moved to /docs/#/...; v2/route.js forwards these in the browser, but a redirect should name the new address");
   } else if (!to.startsWith("http")) {
     check(fs.existsSync(path.join(root, to.replace(/^\//, ""))), from + " -> " + to + " resolves to a file");
   }

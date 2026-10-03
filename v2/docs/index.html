@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<link rel="preconnect" href="https://portal.bugit.dev" crossorigin="use-credentials">
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/docs/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="Documentation · BugIt">
+<meta property="og:description" content="Install, activate, customize and use BugIt safely: the User Guide, the QA Agent Overview, the FAQ and every BugIt policy.">
+<meta property="og:url" content="https://bugit.dev/docs/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Documentation · BugIt">
+<meta name="twitter:description" content="Install, activate, customize and use BugIt safely: the User Guide, the QA Agent Overview, the FAQ and every BugIt policy.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>Documentation · BugIt</title>
+<meta name="description" content="Install, activate, customize and use BugIt safely: the User Guide, the QA Agent Overview, the FAQ and every BugIt policy.">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/public/guide/guide.css">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<link rel="stylesheet" href="/v2/docs/docs.css">
+<!-- bugit.dev/docs/ since 2026-10-04. The same sources and #/docs routes the old site used. -->
+</head>
+<body class="docs-page is-home">
+<a class="skip" href="#docsMain" data-k="t001">Skip to content</a>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home" data-ka="aria-label:t174">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name" data-k="t002">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main" data-ka="aria-label:t175">
+    <a href="/#how" data-k="t003">How it works</a>
+    <a href="/#checks" data-k="t004">Checks</a>
+    <a href="/#pricing" data-k="t005">Pricing</a>
+    <a href="#/docs" aria-current="page" data-k="t006">Docs</a>
+  </nav>
+  <div class="nav-end">
+    <button class="nav-search" type="button" data-open-search aria-label="Search the docs" data-ka="aria-label:d.search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><kbd>Ctrl K</kbd></button>
+    <a class="nav-signin" href="https://portal.bugit.dev/login" data-k="t007">Sign in</a>
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing" data-k="t008">Get BugIt</a>
+  </div>
+  <span class="progress" id="progress" aria-hidden="true"></span>
+</header>
+
+<div class="docs-shell">
+  <aside class="docs-side" aria-label="Documentation" data-ka="aria-label:d.docsLabel">
+    <button class="side-toggle" id="sideToggle" type="button" aria-expanded="false" aria-controls="side"><span id="sideCurrent">Overview</span><span aria-hidden="true">▾</span></button>
+    <nav class="side" id="side"></nav>
+  </aside>
+  <main id="docsMain" class="docs-main" tabindex="-1"></main>
+  <nav class="toc" id="toc" aria-label="On this page" data-ka="aria-label:d.onThisPage" hidden></nav>
+</div>
+
+<dialog class="search" id="search" aria-label="Search the docs" data-ka="aria-label:d.search">
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+    <input id="q" type="search" placeholder="Search guides, policies and answers" data-ka="placeholder:d.searchPh" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox"></ul>
+  <p class="search-foot"><span data-k="d.toMove"><kbd>↑</kbd><kbd>↓</kbd> to move</span><span data-k="d.toOpen"><kbd>Enter</kbd> to open</span></p>
+</dialog>
+
+<footer class="foot">
+  <span data-k="t167">BugIt by <a href="https://taskivator.com">Taskivator</a></span>
+  <nav aria-label="Footer" data-ka="aria-label:t181"><a href="#/docs" data-k="t168">Docs</a><a href="#/docs/privacy" data-k="t169">Privacy</a><a href="#/docs/refund" data-k="t170">Refunds</a><a href="#/docs/commerce" data-k="t171">Commercial Transactions</a><a href="#/docs/security" data-k="t185">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+  <div class="social"><a href="https://www.linkedin.com/company/bugitdev" target="_blank" rel="noopener" aria-label="BugIt on LinkedIn (opens in a new tab)" data-ka="aria-label:t182"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg><span>LinkedIn</span></a><a href="https://www.youtube.com/@BugItByTaskivator" target="_blank" rel="noopener" aria-label="BugIt on YouTube (opens in a new tab)" data-ka="aria-label:t183"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.13-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg><span>YouTube</span></a></div>
+</footer>
+
+<script src="/v2/nav.js"></script>
+<script src="/v2/i18n.js"></script>
+<script src="/v2/docs/docs.js"></script>
+<script src="/v2/consent-ui.js"></script>
+<script type="module" src="/public/guide/guide.js"></script>
+</body>
+</html>

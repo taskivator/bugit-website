@@ -53,7 +53,9 @@ catch {
   try {
     const res = await fetch(BASE, { redirect: "follow" });
     const body = await res.text();
-    reachable = res.ok && /id="langList"|class="brand"/.test(body);
+    // The published homepage is the redesign since 2026-10-04 (v2/index.html): its header is
+    // <header class="nav"> and the language picker (.lang-list) is built by v2/i18n.js.
+    reachable = res.ok && /<header class="nav">|data-k="t\d+"/.test(body);
     why = res.ok ? "served a page with no BugIt markup in it" : `answered HTTP ${res.status}`;
   } catch (e) {
     why = e.code || e.message || String(e);
@@ -156,7 +158,7 @@ async function loadHome(page) {
   const loaded = await did(page.goto(BASE, { waitUntil: "load", timeout: 45000 }));
   // Idle is a best-effort wait for a page that streams video; the LOAD is the transition.
   await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
-  return loaded && await page.locator("#langList").count().then((n) => n > 0, () => false);
+  return loaded && await page.locator(".lang-list").count().then((n) => n > 0, () => false);
 }
 // A marker in the current document. After a real reload it is gone; after a swallowed one it is not.
 const mark = (page) => page.evaluate(() => { window.__consentProofDoc = 1; }).then(() => true, () => false);
@@ -206,11 +208,11 @@ async function rejectScenario(browser, plant) {
        "3-pre. the reload happened (the document was replaced)");
     await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
     ck(!(await page.isVisible("#consentBanner").catch(() => true)), "3-pre. the rejection survived the reload (no banner)");
-    ck(await did(page.goto(BASE + "/#/docs", { waitUntil: "load", timeout: 30000 })), "3-pre. the navigation to /#/docs happened");
-    const docShown = await page.waitForFunction(() => {
-      const v = document.getElementById("docView");
-      return v && !v.hidden && !!document.querySelector("#docContent h1");
-    }, null, { timeout: 8000 }).then(() => true, () => false);
+    // The documentation is its own page since 2026-10-04: /docs/ (v2/docs/index.html), which
+    // loads consent.js in its own head, so this is a real second document, not a hash change.
+    ck(await did(page.goto(BASE + "/docs/#/docs", { waitUntil: "load", timeout: 30000 })), "3-pre. the navigation to /docs/ happened");
+    const docShown = await page.waitForFunction(() => !!document.querySelector("#docsMain h1"),
+      null, { timeout: 8000 }).then(() => true, () => false);
     ck(docShown, "3-pre. the documentation view rendered after that navigation");
     await settle(page);
     ck(reqs.length === 0, "3. after Reject + navigation/reload: zero Google requests", reqs.join(", "));
@@ -281,7 +283,7 @@ async function withdrawScenario(browser, plant) {
     await mark(page);
     // Reopen preferences, turn Advertising OFF, save -> consent.js reloads to purge runtime.
     const opened = await did(page.click("#consentManage", { timeout: 5000 })) ||
-      await did(page.click("#cookiePrefsLink", { timeout: 3000 }));
+      await did(page.click("[data-consent-open]", { timeout: 3000 }));
     ck(opened, "5-pre. the consent preferences opened");
     ck(await did(page.uncheck("#consentAdvertising", { timeout: 5000 })), "5-pre. the Advertising switch was turned off");
     ck(await did(page.click("#consentSave", { timeout: 5000 })), "5-pre. the preferences were saved");

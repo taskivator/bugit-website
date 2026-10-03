@@ -448,7 +448,70 @@ if (fs.existsSync(guideDir)) {
   console.log(`build: the Guide's code is content-hashed (${Object.values(guideAssets).join(', ') || 'nothing found'}).`);
 }
 
-for (const html of ['index.html','404.html']) {
+// ---------------------------------------------------------------- the redesign (2026-10-04)
+// THE OWNER APPROVED THE NEW DESIGN, and it lives in v2/: v2/index.html is the homepage and
+// v2/docs/index.html the documentation. They are published as /index.html (over the old page,
+// which is still copied above so every check that reads it keeps a subject until it is retired)
+// and /docs/index.html. The old app.js and styles.css are still built and published, unreferenced:
+// check-deploy-safety refuses a build that drops a file the live homepage references, and the
+// first deploy of the new design is exactly that build. They can go in the deploy after this one.
+//
+// The design's code is minified and content-hashed like the old site's, for the same reason
+// (_headers caches hashed paths for a year as immutable). Its language files and the docs content
+// are fetched by name at run time, so they keep their names and are revalidated (_headers).
+// Nothing under v2/tools/ (authoring scripts) or any path starting with _ (scratch) ships.
+{
+  const v2Src = path.join(root,'v2');
+  const PAGES = [['index.html','index.html'],['docs/index.html','docs/index.html']];
+  const NEEDED = ['index.html','docs/index.html','v2.css','v2.js','i18n.js','nav.js','logos.js','route.js','docs/docs.js','docs/docs.css','i18n/en.json','docs/content.en.json'];
+  const missing = NEEDED.filter((f) => !fs.existsSync(path.join(v2Src,...f.split('/'))));
+  if (missing.length) { console.error(`build: the site's pages need v2/${missing.join(', v2/')}, and they are missing.`); process.exit(1); }
+  const v2Dist = path.join(dist,'v2');
+  const pageSet = new Set(PAGES.map(([from]) => from));
+  fs.cpSync(v2Src, v2Dist, { recursive: true, filter: (src) => {
+    const rel = path.relative(v2Src, src).split(path.sep).join('/');
+    if (rel === '') return true;
+    if (rel.split('/').some((seg) => seg.startsWith('_'))) return false;
+    if (rel === 'tools' || rel.startsWith('tools/')) return false;
+    return !pageSet.has(rel);
+  }});
+  // Minify, then hash, every script and stylesheet. A file's hash is of the bytes served.
+  const v2Assets = {};
+  const walk = (d) => fs.readdirSync(d,{withFileTypes:true}).flatMap((e) => e.isDirectory() ? walk(path.join(d,e.name)) : [path.join(d,e.name)]);
+  for (const abs of walk(v2Dist).filter((f) => /\.(js|css)$/.test(f))) {
+    const loader = abs.endsWith('.css') ? 'css' : 'js';
+    const { code } = await esbuild.transform(fs.readFileSync(abs,'utf8'), { loader, minify: true, legalComments: 'none', charset: 'utf8' });
+    fs.writeFileSync(abs, code);
+    const h = crypto.createHash('md5').update(code).digest('hex').slice(0,10);
+    const named = abs.replace(/\.(js|css)$/, `.${h}.$1`);
+    fs.renameSync(abs, named);
+    const rel = path.relative(dist, abs).split(path.sep).join('/');
+    v2Assets['/' + rel] = '/' + path.relative(dist, named).split(path.sep).join('/');
+  }
+  // The translations carry links too, swapped in as innerHTML. On 2026-10-04 every language but
+  // English still sent the pricing note's refund link to /v2/docs/, the preview address, while the
+  // page check below passed: it reads the English page, never the JSON.
+  // A quoted /v2/ or /v2/docs/ that ends there (a quote, an escaped quote, a fragment or a query)
+  // is a page, with or without a fragment; /v2/i18n/ja.json and /v2/docs/content.ja.json are assets.
+  const V2_PAGE = /["'`]\/v2\/(?:docs\/)?(?=["'`#?\\])/;
+  for (const abs of walk(v2Dist).filter((f) => f.endsWith('.json') || /\.js$/.test(f))) {
+    const hit = V2_PAGE.exec(fs.readFileSync(abs,'utf8'));
+    if (hit) { console.error(`build: ${path.relative(dist, abs)} links to a /v2/ page, which production does not have: ${hit[0]}`); process.exit(1); }
+  }
+  for (const [from,to] of PAGES) {
+    let html = fs.readFileSync(path.join(v2Src,...from.split('/')),'utf8');
+    for (const [plain,hashed] of Object.entries(v2Assets)) html = html.split(`"${plain}"`).join(`"${hashed}"`);
+    const stale = (html.match(/(?:href|src)="\/v2\/[^"]+\.(?:js|css)"/g) || []).filter((m) => !/\.[a-f0-9]{10}\.(?:js|css)"$/.test(m));
+    if (stale.length) { console.error(`build: ${to} still references an unhashed asset: ${stale[0]}`); process.exit(1); }
+    if (/(?:href)="\/v2\/(?:docs\/)?(?:#[^"]*)?"/.test(html)) { console.error(`build: ${to} links to a /v2/ page, which production does not have.`); process.exit(1); }
+    const out = path.join(dist,...to.split('/'));
+    fs.mkdirSync(path.dirname(out),{recursive:true});
+    fs.writeFileSync(out, html);
+  }
+  console.log(`build: the site's pages are the redesign (${Object.keys(v2Assets).length} hashed assets under /v2/).`);
+}
+
+for (const html of ['index.html','docs/index.html','404.html']) {
   const p = path.join(dist,html);
   if (!fs.existsSync(p)) continue;
   let s = fs.readFileSync(p,'utf8');

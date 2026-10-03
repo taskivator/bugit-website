@@ -46,6 +46,8 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
+import { publishedCopy } from "./lib/published-copy.mjs";
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const RAW = readFileSync(join(ROOT, "app.js"), "utf8").split("\r\n").join("\n");
 
@@ -231,8 +233,87 @@ if (findings.length || missing.length) {
   process.exit(1);
 }
 
+// --- THE PUBLISHED PAGES (2026-10-04) ---------------------------------------------------------
+//
+// On that day bugit.dev became the redesign: build.js publishes v2/index.html and
+// v2/docs/index.html, and app.js, though still built, is referenced by no published page. The
+// Spanish and Italian a visitor reads now come from v2/i18n/<lang>.json (homepage),
+// v2/docs/content.<lang>.json (docs chrome and FAQ), and the per-language blocks of
+// v2/consent-ui.js's STRINGS table (the cookie notice). Everything above checked only app.js.
+//
+// So the same markers and pins are run over those, by language: the Spanish marker over Spanish
+// text only and the Italian marker over Italian text only, which is point 2 of the header made
+// structural (no pt-br statute can be flagged as Italian, because pt-br text is never scanned).
+// No allowance applies here: the two in ALLOWED are app.js sentences, and a published-page copy
+// of contract wording would be a new decision to make and record, not something to inherit.
+//
+// The legal documents themselves (public/docs/LICENSE.es.txt, PRIVACY.it.md, ...) are contract
+// text, fetched by the docs page exactly as they were by the old one, and were never in this
+// guard's scope; they are not added. The file list comes from scripts/lib/published-copy.mjs.
+function scanPublished(text, lang) {
+  const findings = [];
+  for (const m of MARKERS.filter((x) => x.lang === lang)) {
+    m.re.lastIndex = 0;
+    let hit;
+    while ((hit = m.re.exec(text)) !== null) {
+      findings.push({ kind: m.label, line: lineOf(text, hit.index), quote: text.slice(Math.max(0, hit.index - 60), hit.index + 70).replace(/\s+/g, " ").trim() });
+    }
+  }
+  for (const pin of PINS) {
+    for (let at = text.indexOf(pin); at !== -1; at = text.indexOf(pin, at + pin.length)) {
+      findings.push({ kind: "formal sentence returned", line: lineOf(text, at), quote: pin });
+    }
+  }
+  return findings;
+}
+
+const PUBLISHED_CONTROLS = [
+  { name: "a Spanish formal pronoun in Spanish copy", text: "Si usted ejecuta notify test", lang: "es", expect: 1 },
+  { name: "an Italian formal pronoun in Italian copy", text: "quando lei esegue notify test", lang: "it", expect: 1 },
+  { name: "a pinned formal sentence", text: "Renueve cerca del final del periodo actual.", lang: "es", expect: 1 },
+  { name: "the Italian pronoun in Spanish copy is not Italian", text: "Lei de Transações", lang: "es", expect: 0 },
+  { name: "clean informal copy", text: "Tu trabajo va a la IA que conectes.", lang: "es", expect: 0 },
+];
+for (const c of PUBLISHED_CONTROLS) {
+  const got = scanPublished(c.text, c.lang).length;
+  if (got !== c.expect) {
+    console.error(`check-register-es-it: negative control did not fire -- ${c.name}: expected ${c.expect}, got ${got}`);
+    bad += 1;
+  }
+}
+
+const publishedEs = [];
+for (const entry of publishedCopy()) {
+  if (entry.lang === "es" || entry.lang === "it") publishedEs.push({ file: entry.file, lang: entry.lang, text: entry.text });
+  if (entry.kind === "script") {
+    // A per-language block of a script's string table, e.g. consent-ui.js `"es": { ... }`.
+    for (const m of entry.text.matchAll(/^ {4}"(es|it)": \{([\s\S]*?)\n {4}\}/gm)) {
+      publishedEs.push({ file: `${entry.file} STRINGS.${m[1]}`, lang: m[1], text: m[2] });
+    }
+  }
+}
+const scannedLangs = new Set(publishedEs.map((e) => e.lang));
+if (!scannedLangs.has("es") || !scannedLangs.has("it") || publishedEs.length < 4) {
+  console.error(`check-register-es-it: only ${publishedEs.length} published Spanish/Italian entries found; the published copy was not scanned`);
+  bad += 1;
+}
+let publishedFindings = 0;
+for (const e of publishedEs) {
+  for (const f of scanPublished(e.text, e.lang)) {
+    console.error(`check-register-es-it: ${e.file} (${e.lang}) line ${f.line}  ${f.kind}`);
+    console.error(`    ${f.quote}`);
+    publishedFindings += 1;
+  }
+}
+if (bad || publishedFindings) {
+  console.error("");
+  console.error("Spanish and Italian copy on the published pages uses the INFORMAL register too.");
+  process.exit(1);
+}
+
 console.log(
-  `check-register-es-it: OK (${CONTROLS.length} controls fired as expected; ` +
-    `${MARKERS.length} markers and ${PINS.length} regression pins clean across app.js; ` +
+  `check-register-es-it: OK (${CONTROLS.length + PUBLISHED_CONTROLS.length} controls fired as expected; ` +
+    `${MARKERS.length} markers and ${PINS.length} regression pins clean across app.js and ` +
+    `${publishedEs.length} published Spanish/Italian entries; ` +
     `${ALLOWED.length} allowances all still matched)`,
 );

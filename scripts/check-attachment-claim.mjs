@@ -183,8 +183,8 @@ const { i18n, codes } = effective;
 // Runs on every invocation, over copies of the real dictionaries, so it keeps proving itself in
 // CI. Each plant leaves every OTHER locale correct, which is exactly the situation the old
 // character windows could not tell apart from a pass.
-const problems = problemsFor(i18n, codes);
-{
+function selfTest(i18n, codes, which) {
+  const problems = problemsFor(i18n, codes);
   // A plant counts as caught only if it adds a problem the live dictionaries do not already
   // have, so a live failure elsewhere cannot make every plant look rejected.
   const baseline = new Set(problems);
@@ -220,12 +220,12 @@ const problems = problemsFor(i18n, codes);
   }
   for (const [label, dict, planted] of plants) {
     if (!planted) {
-      console.error(`SELF-TEST FAILED: could not plant "${label}": the live answer no longer has ` +
+      console.error(`SELF-TEST FAILED [${which}]: could not plant "${label}": the live answer no longer has ` +
         "the shape this self-test edits, so update the plant.");
       process.exit(2);
     }
     if (added(dict).length === 0) {
-      console.error(`SELF-TEST FAILED: the planted defect "${label}" was accepted. This guard ` +
+      console.error(`SELF-TEST FAILED [${which}]: negative control did not fire, the planted defect "${label}" was accepted. This guard ` +
         "cannot fail for the reason it was written, so it proves nothing.");
       process.exit(2);
     }
@@ -238,13 +238,43 @@ const problems = problemsFor(i18n, codes);
       "GitLab Issues and Bugzilla do not accept uploads, and BugIt tells you before you try.";
     const left = problemsFor(d, codes).filter((p) => p.startsWith("en:"));
     if (left.length) {
-      console.error("SELF-TEST FAILED: a correct alternative English wording was rejected:\n  - " +
+      console.error(`SELF-TEST FAILED [${which}]: a correct alternative English wording was rejected:\n  - ` +
         left.join("\n  - "));
       process.exit(2);
     }
   }
-  console.log(`self-test: ${plants.length} planted defects rejected, an alternative wording accepted`);
+  console.log(`self-test [${which}]: ${plants.length} planted defects rejected, an alternative wording accepted`);
+  return problems;
 }
+
+// --- THE PUBLISHED COPY (2026-10-04) ------------------------------------------------------ //
+// On 2026-10-04 bugit.dev switched to the redesign: the homepage is v2/index.html and /docs/ is
+// v2/docs/index.html. The FAQ a visitor now reads is the docs page's, from
+// v2/docs/content.<lang>.json, and the homepage strings come from v2/i18n/<lang>.json. app.js,
+// whose effective dictionaries are read above, still ships but no published page loads it, so
+// from that day this guard proved the statement in copy nobody was reading. The same predicate
+// and the same planted defects now run over the published copy as well, in every language
+// v2/i18n.js ships, through scripts/lib/published-copy.mjs (the file list is not restated here).
+// Each published string (a docs FAQ answer, a homepage line) is one "answer": the count and the
+// three refusers must still be stated together in ONE of them, in that language.
+const { publishedCopy, publishedLangs } = await import("./lib/published-copy.mjs");
+const pubCodes = publishedLangs();
+const pubI18n = {};
+let pubStrings = 0;
+for (const e of publishedCopy()) {
+  if (e.kind !== "docs" && e.kind !== "home") continue;
+  const items = e.text.split("\n").filter(Boolean).map((a) => ["", a]);
+  pubStrings += items.length;
+  (pubI18n[e.lang] ||= { faq: { items: [] } }).faq.items.push(...items);
+}
+if (pubStrings < 500) {
+  console.error(`\ncheck-attachment-claim: FAIL\n  - only ${pubStrings} published strings were read, ` +
+    "so the published copy was not scanned");
+  process.exit(1);
+}
+const appProblems = selfTest(i18n, codes, "app.js");
+const pubProblems = selfTest(pubI18n, pubCodes, "published");
+const problems = [...appProblems, ...pubProblems.map((p) => "published copy, " + p)];
 
 // --- the live dictionaries ---------------------------------------------------------------- //
 if (problems.length) {
@@ -252,6 +282,7 @@ if (problems.length) {
   for (const p of problems) console.error("  - " + p);
   process.exit(1);
 }
-console.log(`check-attachment-claim: OK (${codes.length} languages, each read from its own effective ` +
+console.log(`check-attachment-claim: OK (${codes.length} languages in app.js and ${pubCodes.length} in the ` +
+  `published copy, ${pubStrings} strings, each read from its own effective ` +
   `dictionary; each states that ${UPLOADS} of the ${FILEABLE_TOTAL} trackers take an upload and ` +
   `names ${REFUSERS.join(", ")} as the ones that do not)`);

@@ -178,8 +178,62 @@ for (const lg of LOCALES) {
     'every copy of the list must be complete');
 }
 
+// --- 3. the copy a visitor is actually served (2026-10-04) -----------------
+// That day bugit.dev switched to the redesign: the homepage is v2/index.html and /docs/ is
+// v2/docs/index.html, translated through v2/i18n/<lang>.json and v2/docs/content.<lang>.json,
+// with English fallbacks in v2/*.js. Section 2 reads app.js, which still ships but which no
+// published page loads, so the FAQ list a visitor now reads (the docs page's "What license/update
+// data is sent?" answer, in eleven languages) was a fourth copy of this list with nothing behind
+// it: the exact shape of the four F-05 rounds. The same rule now holds there. In every language
+// the docs dictionary must carry the list (the acknowledgement secret is again the control), and
+// in EVERY published file each copy of the list must name the plan filter and the approval token.
+// The policies themselves are unaffected: the new docs page fetches the public/docs files section
+// 1 reads. The file list is scripts/lib/published-copy.mjs, not restated here.
+const { publishedCopy, publishedLangs } = await import('./lib/published-copy.mjs');
+const countOf = (rx, text) => (text.match(new RegExp(rx.source, rx.flags.replace('g', '') + 'g')) || []).length;
+/** Problems with one published file's copies of the list, in the language it is written in. */
+function listProblems(e) {
+  const t = TERMS[e.lang === 'en' || e.lang === null ? '' : e.lang];
+  if (!t) return [`${e.file}: no TERMS entry for "${e.lang}", so its copy of the list cannot be checked`];
+  const n = countOf(t.ack, e.text);
+  const out = [];
+  if (n === 0 && e.kind === 'docs') {
+    out.push(`${e.file}: the licensing list was not found (THE CONTROL: the acknowledgement secret anchors every copy)`);
+  }
+  if (n > 0 && countOf(t.plan, e.text) < n) out.push(`${e.file}: ${n} copies of the list, ${countOf(t.plan, e.text)} name the plan filter`);
+  if (n > 0 && countOf(t.token, e.text) < n) out.push(`${e.file}: ${n} copies of the list, ${countOf(t.token, e.text)} name the approval token`);
+  return out;
+}
+{
+  // Negative controls, in memory: a docs dictionary that lost the list, a copy that dropped the
+  // approval token, and one that dropped the plan filter must each be reported; a complete copy
+  // must not be.
+  const full = 'the BugIt version and selected plan; the one-time approval token; a per-activation acknowledgement secret';
+  const plants = [
+    { file: 'planted', lang: 'en', kind: 'docs', text: 'Only license and update data is used.' },
+    { file: 'planted', lang: 'en', kind: 'docs', text: full.replace('one-time approval token', 'approval') },
+    { file: 'planted', lang: 'de', kind: 'home', text: 'Planfilter; ein Bestätigungsgeheimnis' },
+    { file: 'planted', lang: 'en', kind: 'docs', text: full.replace('selected plan', 'plan') },
+  ];
+  const blind = plants.filter((e) => listProblems(e).length === 0);
+  const clean = listProblems({ file: 'planted', lang: 'en', kind: 'docs', text: full });
+  if (blind.length || clean.length) {
+    console.error('SELF-TEST FAILED: negative control did not fire. '
+      + (blind.length ? `Accepted ${JSON.stringify(blind.map((e) => e.text))}. ` : '')
+      + (clean.length ? `Rejected a complete list: ${clean.join('; ')}` : ''));
+    process.exit(2);
+  }
+}
+const published = publishedCopy();
+const langs = publishedLangs();
+const docsEntries = published.filter((e) => e.kind === 'docs');
+check(docsEntries.length === langs.length && langs.every((l) => docsEntries.some((e) => e.lang === l)),
+  `the published copy has ${docsEntries.length} docs dictionaries for ${langs.length} languages`,
+  'a gate whose subject can go empty passes by checking nothing');
+for (const e of published) for (const p of listProblems(e)) fail(p, 'every copy of the list a visitor can read must be complete');
+
 if (failures > 0) {
   console.error(`\ncheck-licence-disclosure: ${failures} failure(s)`);
   process.exit(1);
 }
-console.log('check-licence-disclosure: OK, eleven policies and every copy of the FAQ list agree.');
+console.log(`check-licence-disclosure: OK, eleven policies and every copy of the FAQ list agree, in app.js and in the ${published.length} published files (${docsEntries.length} docs dictionaries carry the list; 4 negative controls fired).`);

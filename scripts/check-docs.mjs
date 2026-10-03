@@ -11,6 +11,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { publishedCopy, publishedLangs } from "./lib/published-copy.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const docs = join(root, "public", "docs");
@@ -216,5 +217,142 @@ for (const [, code, json] of generated) {
   }
 }
 
-console.log(`\nlanguages: ${langs.length} · locales: ${generated.length} · highlights + PDF guides + version-neutrality + locale chrome · errors: ${errors}`);
+// 5) THE PUBLISHED DOCS PAGE (2026-10-04). bugit.dev now serves v2/docs/index.html as /docs/,
+// driven by v2/docs/docs.js and v2/docs/content.<lang>.json. Sections 1 to 4 read app.js, which
+// still ships but is referenced by no published page, so on their own they said nothing about the
+// documentation a visitor reads. The same four properties, asked of what is published (the file
+// list comes from scripts/lib/published-copy.mjs and is not restated here):
+//
+//   5a. Every published language has its highlights and its two PDFs, and docs.js's own
+//       PDF_LANGS (which picks the PDF a reader downloads, English otherwise) names exactly the
+//       published languages, so no language silently downloads the English guide.
+//   5b. No pinned release number in any published copy: pages, language files, docs content,
+//       scripts.
+//   5c. Docs chrome completeness. docs.js does NOT merge a language file onto English: it fetches
+//       content.<lang>.json and reads it as is, so a key missing there renders "undefined" (or the
+//       English fallback where the code supplies one). Every language must therefore carry every
+//       string content.en.json carries, the same number of FAQ entries, and every key docs.js
+//       reads must exist in content.en.json in the first place. Likewise every V2T("d.*") label
+//       docs.js asks for must be in each translated v2/i18n/<lang>.json, or it falls back to
+//       English inside a translated page.
+// Each predicate runs first over a planted defect in memory and must report it.
+const pubLangs = publishedLangs();
+const v2DocsJs = readFileSync(join(root, "v2", "docs", "docs.js"), "utf8");
+const readJson = (rel) => JSON.parse(readFileSync(join(root, rel), "utf8"));
+
+// 5a
+for (const lang of pubLangs) {
+  if (!langs.includes(lang)) {
+    for (const stem of ["OVERVIEW", "GETTING_STARTED"]) {
+      const file = lang === "en" ? `${stem}.web.md` : `${stem}.${lang}.web.md`;
+      existsSync(join(docs, file)) ? ok(`highlights ${file}`) : fail(`highlights ${file} (published language ${lang})`);
+    }
+    for (const pdf of GUIDE_PDFS) {
+      existsSync(join(guides, lang, pdf)) ? ok(`pdf guides/${lang}/${pdf}`) : fail(`pdf guides/${lang}/${pdf} (published language ${lang})`);
+    }
+  }
+}
+const pdfLangDecl = v2DocsJs.match(/var PDF_LANGS\s*=\s*\[([^\]]*)\]/);
+if (!pdfLangDecl) {
+  fail("could not find `var PDF_LANGS = [...]` in v2/docs/docs.js");
+} else {
+  const pdfLangs = [...pdfLangDecl[1].matchAll(/"([a-z-]+)"/g)].map((m) => m[1]);
+  const missingPdf = pubLangs.filter((l) => !pdfLangs.includes(l));
+  const extraPdf = pdfLangs.filter((l) => !pubLangs.includes(l));
+  missingPdf.length || extraPdf.length
+    ? fail(`v2/docs/docs.js PDF_LANGS disagrees with the published languages (missing: ${missingPdf.join(", ") || "none"}; extra: ${extraPdf.join(", ") || "none"})`)
+    : ok(`v2/docs/docs.js PDF_LANGS names the ${pubLangs.length} published languages`);
+}
+
+// 5b
+const releaseHits = (entries) => entries.flatMap((e) => {
+  const m = e.text.match(releaseRe);
+  return m ? [`version number in published copy ${e.file} (found "${m[0]}")`] : [];
+});
+if (!releaseHits([{ file: "planted", text: "<p>New in BugIt v1.0.4</p>" }]).length) {
+  fail("self-test: negative control did not fire; a planted v1.0.4 in published copy was not reported");
+}
+const published = publishedCopy();
+if (!published.some((e) => e.kind === "page") || !published.some((e) => e.kind === "docs")) {
+  fail("published copy yielded no page or no docs content; nothing published was scanned");
+}
+for (const p of releaseHits(published)) fail(p);
+
+// 5c
+function leafPaths(v, prefix = "", out = []) {
+  if (Array.isArray(v)) out.push([prefix, v]);
+  else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) leafPaths(x, prefix ? `${prefix}.${k}` : k, out);
+  else out.push([prefix, v]);
+  return out;
+}
+function contentGaps(dict, base) {
+  const gaps = [];
+  for (const [key, want] of leafPaths(base)) {
+    const got = key.split(".").reduce((o, k) => (o == null ? undefined : o[k]), dict);
+    if (Array.isArray(want)) {
+      if (!Array.isArray(got) || got.length !== want.length) {
+        gaps.push(`${key} has ${Array.isArray(got) ? got.length : 0} entries, English has ${want.length}`);
+      } else if (got.some((x, i) => Array.isArray(want[i]) && (!Array.isArray(x) || x.length !== want[i].length || x.some((s) => typeof s !== "string" || !s.trim())))) {
+        gaps.push(`${key} has an incomplete entry`);
+      }
+    } else if (typeof got !== "string" || !got.trim()) {
+      gaps.push(`${key} is missing`);
+    }
+  }
+  return gaps;
+}
+const contentEn = readJson("v2/docs/content.en.json");
+{
+  const planted = JSON.parse(JSON.stringify(contentEn));
+  delete planted.docPages.refundTitle;
+  planted.faq = planted.faq.slice(1);
+  const g = contentGaps(planted, contentEn);
+  if (!g.some((x) => /refundTitle/.test(x)) || !g.some((x) => /^faq /.test(x)) || contentGaps(contentEn, contentEn).length) {
+    fail("self-test: negative control did not fire; the docs content completeness predicate missed a planted gap");
+  }
+}
+// The keys docs.js reads, so content.en.json cannot itself be the thing that is short. A name
+// preceded by a quote is a V2T label ("d.gGuides"), not a content read, and is checked below.
+function liftFn(name) {
+  const start = v2DocsJs.indexOf(`function ${name}(`);
+  if (start === -1) return "";
+  let depth = 0;
+  for (let i = v2DocsJs.indexOf("{", start); i < v2DocsJs.length; i++) {
+    if (v2DocsJs[i] === "{") depth++;
+    else if (v2DocsJs[i] === "}" && --depth === 0) return v2DocsJs.slice(start, i + 1);
+  }
+  return "";
+}
+const readKeys = new Set([...v2DocsJs.matchAll(/C\.(docPages|docs|dl|ui)\.(\w+)/g)].map((m) => `${m[1]}.${m[2]}`));
+for (const fn of ["buildDocs", "homePage", "support"]) {
+  const body = liftFn(fn);
+  if (!body) { fail(`v2/docs/docs.js has no ${fn}(); the keys it reads cannot be checked`); continue; }
+  if (/var d = C\.docPages/.test(body)) for (const m of body.matchAll(/(?<!["'\w.])d\.(\w+)/g)) readKeys.add(`docPages.${m[1]}`);
+  if (/\bl = C\.docs\b/.test(body)) for (const m of body.matchAll(/(?<!["'\w.])l\.(\w+)/g)) readKeys.add(`docs.${m[1]}`);
+  if (/\bdl = C\.dl\b/.test(body)) for (const m of body.matchAll(/(?<!["'\w.])dl\.(\w+)/g)) readKeys.add(`dl.${m[1]}`);
+}
+if (readKeys.size < 15) fail(`only ${readKeys.size} content keys read out of v2/docs/docs.js; the reader changed shape`);
+for (const key of readKeys) {
+  const [group, k] = key.split(".");
+  typeof contentEn[group]?.[k] === "string" && contentEn[group][k].trim()
+    ? ok(`content.en.json ${key} (read by docs.js)`)
+    : fail(`v2/docs/docs.js reads ${key} but v2/docs/content.en.json has no such string`);
+}
+if (!Array.isArray(contentEn.faq) || !contentEn.faq.length) fail("v2/docs/content.en.json has no faq entries");
+for (const lang of pubLangs.filter((l) => l !== "en")) {
+  const gaps = contentGaps(readJson(`v2/docs/content.${lang}.json`), contentEn);
+  for (const g of gaps) fail(`v2/docs/content.${lang}.json: ${g}`);
+  if (!gaps.length) ok(`v2/docs/content.${lang}.json carries every docs string`);
+}
+const labelKeys = [...new Set([...v2DocsJs.matchAll(/\bT\("(d\.[\w.]+)"/g)].map((m) => m[1]))];
+if (labelKeys.length < 10) fail(`only ${labelKeys.length} V2T("d.*") labels read out of v2/docs/docs.js`);
+for (const lang of pubLangs.filter((l) => l !== "en")) {
+  const dict = readJson(`v2/i18n/${lang}.json`);
+  const absent = labelKeys.filter((k) => typeof dict[k] !== "string" || !dict[k].trim());
+  absent.length
+    ? fail(`v2/i18n/${lang}.json lacks docs label(s) ${absent.join(", ")} (would show English)`)
+    : ok(`v2/i18n/${lang}.json carries all ${labelKeys.length} docs labels`);
+}
+
+console.log(`\nlanguages: ${langs.length} · locales: ${generated.length} · published languages: ${pubLangs.length} · published entries scanned: ${published.length} · highlights + PDF guides + version-neutrality + locale chrome (app.js and v2) · errors: ${errors}`);
 process.exit(errors ? 1 : 0);

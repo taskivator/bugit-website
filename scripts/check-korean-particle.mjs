@@ -39,6 +39,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { publishedCopy } from "./lib/published-copy.mjs";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
@@ -121,6 +122,55 @@ for (const file of targets) {
   }
 }
 
+// THE PUBLISHED COPY (2026-10-04). On that day bugit.dev switched to the redesign: the homepage
+// is v2/index.html with its Korean in v2/i18n/ko.json, and /docs/ is v2/docs/index.html with its
+// Korean in v2/docs/content.ko.json. Everything above reads app.js, which still ships but which no
+// published page loads, so a wrong particle in the Korean homepage a visitor actually reads was
+// behind nothing. The list of what is published is asked of lib/published-copy.mjs rather than
+// restated here, for the same reason the doc list above is a glob: a hand list is always short.
+//
+// Every entry is read, not only the Korean ones, because a Korean sentence pasted into the wrong
+// file is still a Korean sentence on the site. The values are HTML (data-k swaps innerHTML), so
+// tags are removed WITHOUT a space before scanning: "BugIt</b>는" renders as one word and is the
+// same defect as "BugIt는". Removing them with a space would hide exactly that case.
+const visible = (text) => text.replace(/<[^>]+>/g, "");
+const scanPublished = (entries) => {
+  const found = [];
+  for (const e of entries) {
+    for (const o of offences(visible(e.text))) found.push({ ...o, file: e.file, lang: e.lang, kind: e.kind });
+  }
+  return found;
+};
+const published = publishedCopy();
+let publishedKoreanChars = 0;
+for (const e of published) publishedKoreanChars += (visible(e.text).match(/[가-힣]/g) || []).length;
+for (const o of scanPublished(published)) {
+  fail.push(`${o.file} (${o.kind}, ${o.lang ?? "en"}) — BugIt${o.wrong} (${o.role}) should be BugIt${o.right}\n`
+    + `    ...${o.quote}...`);
+}
+// Positive control: the Korean homepage and the Korean docs content were both actually read. If the
+// helper ever stops returning them, this fails instead of scanning nothing and calling it clean.
+for (const kind of ["home", "docs"]) {
+  const ko = published.find((e) => e.lang === "ko" && e.kind === kind);
+  if (!ko) fail.push(`published copy: no Korean ${kind} entry was returned, so the Korean ${kind} copy was not scanned`);
+  else if (!/BugIt[가-힣]/.test(visible(ko.text))) {
+    fail.push(`published copy: ${ko.file} has no "BugIt" followed by Hangul at all, so this scan proved nothing there`);
+  }
+}
+if (publishedKoreanChars < 2000) {
+  fail.push(`published copy: only ${publishedKoreanChars} Hangul syllables read across ${published.length} entries; `
+    + "the Korean homepage and docs alone are far larger than that");
+}
+// Negative control over the published-copy path itself: the same function, a synthetic entry shaped
+// like a real one, carrying the shipped defect both bare and split by markup. In memory only.
+const planted = scanPublished([
+  { file: "synthetic/ko.json", lang: "ko", kind: "home", text: "다만 BugIt는 그전에" },
+  { file: "synthetic/ko.json", lang: "ko", kind: "home", text: "<b>BugIt</b>를 설치하세요" },
+]);
+if (planted.length !== 2) {
+  fail.push(`negative control did not fire: the published-copy scan found ${planted.length} of 2 planted wrong particles`);
+}
+
 // A guard whose subject can quietly become empty passes forever. If the Korean dictionary block
 // or the Korean doc page is renamed or dropped, this says so instead of reporting nothing wrong.
 if (targets.length < 2) fail.push(`only ${targets.length} file(s) to read; the Korean pages are missing`);
@@ -151,6 +201,7 @@ if (fail.length) {
   for (const f of fail) console.error("  " + f);
   process.exit(1);
 }
-console.log(`check-korean-particle OK: ${targets.length} file(s) read, ${korean} carrying Korean; `
+console.log(`check-korean-particle OK: ${targets.length} file(s) read, ${korean} carrying Korean, plus `
+  + `${published.length} published copy entries (${publishedKoreanChars} Hangul syllables); `
   + "every particle after BugIt is the consonant-final form the name takes, and the scanner still "
   + "catches the sentence that shipped without touching BugIt가이드.");

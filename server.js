@@ -15,7 +15,16 @@ import { fileURLToPath } from 'node:url';
 // Resolved against the working directory when relative. The traversal guard below compares
 // against this value, so a request still cannot escape whichever root was chosen.
 const root = path.resolve(process.env.SITE_ROOT || path.dirname(fileURLToPath(import.meta.url)));
-const mime = {'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.mp4':'video/mp4','.pdf':'application/pdf','.md':'text/plain; charset=utf-8','.txt':'text/plain; charset=utf-8','.svg':'image/svg+xml'};
+const mime = {'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.mp4':'video/mp4','.pdf':'application/pdf','.md':'text/plain; charset=utf-8','.txt':'text/plain; charset=utf-8','.svg':'image/svg+xml','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.webmanifest':'application/manifest+json'};
+// THE SITE'S PAGES IN THE SOURCE TREE (2026-10-04). Since the redesign, the homepage and the docs
+// are v2/index.html and v2/docs/index.html; build.js publishes them as /index.html and
+// /docs/index.html. Served from the repo root, this maps the two public addresses onto their
+// sources so a local run shows what production shows. Served from dist (SITE_ROOT), the built
+// files are already in place and nothing is mapped.
+const SOURCE_PAGES = fs.existsSync(path.join(root, 'v2', 'index.html'))
+  ? { '/': 'v2/index.html', '/index.html': 'v2/index.html', '/docs': 'v2/docs/index.html', '/docs/': 'v2/docs/index.html', '/docs/index.html': 'v2/docs/index.html' }
+  : {};
+const HOME = SOURCE_PAGES['/'] || 'index.html';
 // Inside `root`, decided on the boundary and on what the filesystem says the path IS. Exported
 // in shape (not as a module) to the two private fixture servers under scripts/, which carried
 // the same one-line check; they each hold a copy of this function with this comment above it,
@@ -41,7 +50,7 @@ const server = http.createServer((req,res)=>{ try {
   let clean;
   try { clean = decodeURIComponent(req.url.split('?')[0]); }
   catch { res.writeHead(400); return res.end('Bad Request'); }
-  let file = path.join(root, clean === '/' ? 'index.html' : clean);
+  let file = path.join(root, SOURCE_PAGES[clean] || (clean === '/' ? 'index.html' : clean));
   // A STRING PREFIX IS NOT A DIRECTORY BOUNDARY, and a path is not the file it names.
   //
   // `startsWith(root)` answers yes for a SIBLING whose name merely begins with the root's:
@@ -56,7 +65,7 @@ const server = http.createServer((req,res)=>{ try {
   // through to the index.html fallback below exactly as before rather than becoming a 403.
   if (!contained(file)) { res.writeHead(403); return res.end('Forbidden'); }
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file,'index.html');
-  if (!fs.existsSync(file)) file = path.join(root,'index.html');
+  if (!fs.existsSync(file)) file = path.join(root,HOME);
   res.writeHead(200, {'Content-Type': mime[path.extname(file)] || 'application/octet-stream'});
   const stream = fs.createReadStream(file);
   // A client that walks away mid-response used to take the whole server with it: Chromium

@@ -202,8 +202,13 @@ await within(2_000, "disposeWithin gives up on a close that never settles", asyn
 
 /* --- 6. check-routing must actually USE this ---------------------------- */
 await within(5_000, "check-routing opens every session through the seam", async () => {
-  const { readFileSync } = await import("node:fs");
-  const src = readFileSync(new URL("./check-routing.mjs", import.meta.url), "utf8");
+  const { readFileSync, existsSync } = await import("node:fs");
+  // check-routing was retired on 2026-10-04 with the single page site it drove
+  // (scripts/retired-single-page/README.md), and no live guard imports this seam yet. Sections 1
+  // to 5 still prove the seam itself; this section returns when a guard uses it again.
+  const at = new URL("./check-routing.mjs", import.meta.url);
+  if (!existsSync(at)) { ok("check-routing is retired with the single page site; no live guard uses the seam to inspect"); return; }
+  const src = readFileSync(at, "utf8");
   // The predicate that caused this, in the file it caused it in. Its own header explains why
   // it cannot be trusted, and it was still being used at the bottom of the same file.
   if (/if\s*\(\s*!\s*browser\.isConnected\(\)\s*\)/.test(src)) {
@@ -228,4 +233,4 @@ if (fail.length) {
   console.error(`\ncheck-browser-session FAILED (${fail.length}):\n - ` + fail.join("\n - "));
   process.exit(1);
 }
-console.log("\ncheck-browser-session OK: a dead renderer is replaced under a clock, and check-routing goes through it.");
+console.log("\ncheck-browser-session OK: a dead renderer is replaced under a clock (no live guard uses the seam since check-routing retired on 2026-10-04).");

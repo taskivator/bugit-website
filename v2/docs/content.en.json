@@ -1,0 +1,118 @@
+{
+ "docPages": {
+  "homeTitle": "Documentation",
+  "commerceTitle": "Commercial Transactions",
+  "commerceIntro": "Seller and transaction information for BugIt, including the information provided for mail order sales in Japan under the Act on Specified Commercial Transactions (特定商取引法).",
+  "homeIntro": "Everything you need to install, activate, customize and use BugIt safely. Updated for BugIt QA Agent.",
+  "refundTitle": "Refund Policy",
+  "refundIntro": "Our refund policy for BugIt license purchases.",
+  "gettingTitle": "Getting Started",
+  "userTitle": "User Guide",
+  "licenseTitle": "License Agreement",
+  "privacyTitle": "Privacy Policy",
+  "securityTitle": "Security",
+  "faqTitle": "FAQ",
+  "supportTitle": "Support",
+  "supportIntro": "For setup issues, first ask the BugIt assistant to diagnose the problem, then run Check status or Check readiness. If you still need help, open a support ticket from your BugIt dashboard.",
+  "download": "Download PDF",
+  "before": "Before opening a support ticket",
+  "beforeText": "Do not include confidential source code, customer data, private tickets, screenshots, tokens or secrets. Describe the BugIt problem in general terms.",
+  "englishOnly": "Support tickets must be submitted in English. Localized website pages are provided for your convenience and do not mean that Taskivator provides support in every listed language."
+ },
+ "docs": {
+  "eyebrow": "DOCUMENTATION",
+  "getting": "Getting Started",
+  "gettingDesc": "Set up BugIt in minutes.",
+  "user": "User Guide",
+  "userDesc": "Complete guide to features and workflows.",
+  "license": "License Agreement",
+  "licenseDesc": "Read the terms for using BugIt.",
+  "privacy": "Privacy Policy",
+  "privacyDesc": "How we collect, use and protect your data.",
+  "security": "Security",
+  "securityDesc": "Safeguards, known limits and how to report a vulnerability.",
+  "refund": "Refund Policy",
+  "refundDesc": "Our 7-day refund policy.",
+  "commerce": "Commercial Transactions",
+  "commerceDesc": "Seller and transaction details (特定商取引法に基づく表記).",
+  "faqDesc": "Answers to common questions.",
+  "support": "Support",
+  "supportDesc": "Get help and open a support ticket."
+ },
+ "faq": [
+  [
+   "What do I need to run BugIt?",
+   "BugIt runs inside Visual Studio Code with GitHub Copilot Chat, the Claude extension, or another assistant and a recent version of Python (3.10 to 3.14). Windows 11 is fully supported and release-validated; macOS and Linux are supported but currently in Preview while validation broadens. BugIt does not include an AI model or subscription; you bring your own."
+  ],
+  [
+   "Does BugIt file automatically?",
+   "No. Every ticket, comment, attachment or notification that carries your report is previewed first. Before an irreversible filing, you approve it by typing FILE IT; chat text alone never files. A plain \"yes\" is not enough. Use dry run for zero-write practice. Connection tests are the one exception: when you deliberately run notify connect, notify test or notify doctor --live, BugIt sends one fixed test message without a preview, to the channel you name or, if you name none, to every channel you have switched on. Those tests carry no report content, and dry run blocks them too."
+  ],
+  [
+   "Which trackers have built-in tested mapping?",
+   "All eleven include built-in, tested field mapping and create tickets directly through the tracker’s REST API, using a credential you create in your own account: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana and Trello. Filing does not use MCP. Crash tools and other services still connect through your own MCP server. Screenshot and log uploads through BugIt reach eight of the eleven; uploads to GitHub Issues, GitLab Issues and Bugzilla are not supported, and you are told before you try."
+  ],
+  [
+   "Do I need GitHub Copilot?",
+   "GitHub Copilot is the easiest setup and is recommended. BugIt also works with the Claude extension in VS Code, another assistant, or a plain terminal. Filing is a command, so it works the same in all of them."
+  ],
+  [
+   "Can I use Claude, Gemini or GPT?",
+   "Yes, inside GitHub Copilot where those models are available to your plan. Standalone mode supports your own OpenAI or Anthropic key."
+  ],
+  [
+   "Does Taskivator see my work?",
+   "No. Bug reports, specs, glossary, screenshots, code, settings and tickets are not sent to Taskivator. Only license/update data is used."
+  ],
+  [
+   "What license/update data is sent?",
+   "BugIt sends Taskivator only licensing and update data: your Portal sign-in; an anonymous, one-way hashed device identifier; a random installation identifier; your device label and operating system; the BugIt version and selected plan; short-lived cryptographic challenge data; the one-time approval token from the Portal link your browser opened; a per-activation acknowledgement secret, whose hash is sent when you activate and whose value is sent only if you withdraw access for this device; and the entitlement approved for this device."
+  ],
+  [
+   "What is included in Team?",
+   "BugIt Team is available now. A 1-year license with no subscription covers up to 5 members, does not renew automatically, and each member gets their own BugIt account, their own sign-in, and their own device activation, instead of a shared license. Team configuration is shared and managed centrally in the Portal, and it does not auto-renew. Solo is unaffected and available too. Need more than five? A second Team license adds five more seats to the same Team, and each license runs its own term."
+  ],
+  [
+   "Can I practice without filing?",
+   "Yes. Use dry run to generate the full report without creating tickets, comments, attachments or notifications. Dry run stops BugIt’s bundled helpers from writing and tells the agent to refuse tracker writes; that refusal follows BugIt’s instructions rather than a platform lock, so use read-only credentials when evaluating."
+  ],
+  [
+   "What files can I safely edit?",
+   "Safe buyer-owned files include config.json, .vscode/mcp.json, .github/glossary/terms.template.md, .github/instructions/learned.instructions.md, and .github/instructions/house-style.instructions.md if you create it."
+  ],
+  [
+   "What should I not hand-edit?",
+   "Do not hand-edit .github/agents/bugit-qa-agent.agent.md, other shipped files under .github/instructions/, or anything in tools/. Updates overwrite those product files and they are not backed up."
+  ],
+  [
+   "How do updates work?",
+   "BugIt backs up your buyer-owned settings, verifies signed updates, installs in place, and preserves your config, glossary, house style, license and connections."
+  ],
+  [
+   "What happens when my license expires?",
+   "BugIt is a 1-year license with no subscription and does not auto-renew. Your one-year license covers updates and license/activation services; when it ends, a 3-day grace period follows, after which filing and activation features need a current license, while your local files and settings stay yours. You can buy a new license to continue. There is no automatic charge. Licensing-server outages are separate: cached verification lets you keep working for up to 72 hours offline. The year begins on the date of purchase."
+  ],
+  [
+   "If I buy BugIt again, does the time add on?",
+   "No. Buying again replaces your current activation and starts a fresh one-year license from that date, so buy again near the end of your current license. Purchases never renew automatically."
+  ],
+  [
+   "How do I get support?",
+   "First ask the AI assistant to diagnose the issue, then run Check status or Check readiness. If you are still stuck, open a support ticket from your BugIt dashboard. There is no need to include confidential project details."
+  ]
+ ],
+ "dl": {
+  "userGuide": "User Guide",
+  "overview": "QA Agent Overview",
+  "ugDesc": "The complete step-by-step setup and usage guide.",
+  "ovDesc": "A concise overview of the BugIt QA Agent.",
+  "preview": "Preview",
+  "download": "Download"
+ },
+ "ui": {
+  "openTicket": "Open a support ticket",
+  "onThisPage": "On this page",
+  "breadcrumb": "Breadcrumb",
+  "toTop": "Back to top"
+ }
+}
