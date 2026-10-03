@@ -18,6 +18,44 @@
   var timers = [];
   var later = function (fn, ms) { timers.push(setTimeout(fn, ms)); };
 
+  /* ── On a phone, one pane at a time (owner 2026-10-04: "the copilot chat demo on mobile view is
+     way too long"). Below 980px the three panes stacked to 1934px at 390 wide, more than two
+     screens. A tab bar now shows one: it follows the demo (your note, then the work, then the
+     draft) until the visitor taps a tab, which keeps their choice until Replay. The labels are the
+     panes' own translated titles, so no new copy. Above 980px the bar is hidden and all three show. */
+  var grid = demo.querySelector(".demo-grid");
+  var PANES = [["chat", ".pane-chat"], ["work", ".pane-work"], ["draft", ".pane-draft"]];
+  var tabs = document.createElement("div");
+  tabs.className = "demo-tabs"; tabs.setAttribute("role", "tablist");
+  var picked = false;
+  var tabBtns = PANES.map(function (p) {
+    var pane = grid.querySelector(p[1]);
+    if (!pane.id) pane.id = "demoPane-" + p[0];
+    var b = document.createElement("button");
+    b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-controls", pane.id); b.dataset.pane = p[0];
+    b.addEventListener("click", function () { picked = true; showPane(p[0]); });
+    tabs.appendChild(b);
+    return b;
+  });
+  function labelTabs() {
+    tabBtns.forEach(function (b, i) { var l = grid.querySelector(PANES[i][1] + " .pane-label"); b.textContent = l ? l.textContent : PANES[i][0]; });
+  }
+  function showPane(name) {
+    grid.dataset.show = name;
+    tabBtns.forEach(function (b) { var on = b.dataset.pane === name; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; });
+  }
+  function follow(name) { if (!picked) showPane(name); }
+  tabs.addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    e.preventDefault();
+    var i = tabBtns.indexOf(document.activeElement); if (i < 0) return;
+    var n = tabBtns[(i + (e.key === "ArrowRight" ? 1 : -1) + tabBtns.length) % tabBtns.length];
+    n.focus(); n.click();
+  });
+  grid.parentNode.insertBefore(tabs, grid);
+  labelTabs(); showPane("chat");
+  document.addEventListener("v2:lang", labelTabs);
+
   // ── Tracker logos ───────────────────────────────────────────────────────────
   var NAMES = { jira: "Jira", azuredevops: "Azure DevOps", github: "GitHub Issues", gitlab: "GitLab Issues",
     linear: "Linear", youtrack: "YouTrack", bugzilla: "Bugzilla", shortcut: "Shortcut", clickup: "ClickUp",
@@ -33,11 +71,13 @@
   function setHint(t) { $("gateHint").textContent = t; }
   function reveal(step) { parts.forEach(function (p) { if (Number(p.dataset.at) <= step) p.classList.add("on"); }); }
   function ready() {
+    follow("draft");
     demo.classList.add("done"); input.disabled = false; btn.disabled = false;
     setHint(T("js.hintReady", "Anything else is refused. That is the point."));
   }
   function reset() {
     timers.forEach(clearTimeout); timers = [];
+    picked = false; showPane("chat");
     demo.classList.remove("done");
     typed.textContent = ""; typed2.textContent = "";
     ask.hidden = true; answer.hidden = true; attach.hidden = true;
@@ -74,7 +114,7 @@
           answer.hidden = false;
           type(typed2, ANSWER(), function () {
             later(function () {
-              work[2].classList.replace("busy", "on"); reveal(3);
+              work[2].classList.replace("busy", "on"); reveal(3); follow("work");
               // the remaining six run on their own
               var rest = work.slice(3), t = 0;
               rest.forEach(function (w, k) {

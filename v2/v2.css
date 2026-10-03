@@ -538,3 +538,40 @@ h1,h2,h3{text-wrap:balance}
   .btn{border:1px solid ButtonText}
   .foot .foot-link{color:LinkText;text-decoration:underline}
 }
+
+/* The demo on a phone or tablet: one pane at a time behind a tab bar (v2.js, 2026-10-04). */
+.demo-tabs{display:none}
+@media (max-width:980px){
+  .demo-tabs{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .demo-tabs button{flex:1 1 0;min-width:0;min-height:36px;padding:6px 8px;border-radius:999px;border:1px solid var(--line-2);
+    background:none;color:var(--ink-3);font:500 13px/1.2 var(--sans);cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .demo-tabs button[aria-selected="true"]{background:rgba(255,79,201,.14);border-color:rgba(255,79,201,.45);color:var(--ink)}
+  /* All three share one grid cell, so the stage is always as tall as its tallest pane and the
+     page does not jump when the tab changes. The others are hidden, not removed. */
+  .demo-grid[data-show] > .pane{grid-area:1/1;visibility:hidden;border-bottom:0}
+  .demo-grid[data-show="chat"] > .pane-chat,.demo-grid[data-show="work"] > .pane-work,.demo-grid[data-show="draft"] > .pane-draft{visibility:visible}
+  .demo-grid .pane-label{display:none}
+}
+@media (max-width:560px){
+  .demo-grid .pane{padding:14px}
+  .ticket{padding:12px 14px}
+  .ticket h3{font-size:15px;margin-bottom:8px}
+  .ticket dl{gap:7px}
+  .ticket dd{font-size:13px}
+  .ticket .row2{gap:8px}
+}
+@media (forced-colors:active){.demo-tabs button{border:1px solid ButtonText}.demo-tabs button[aria-selected="true"]{text-decoration:underline}}
+
+/* The film poster on a phone (owner 2026-10-04: the caption collided with the play button). Below
+   640px the picture is about 200px tall, too short to hold both, so the caption moves under the
+   picture and the play button is centred on the picture alone. */
+@media (max-width:640px){
+  .poster{background:var(--card)}
+  .poster img{display:block}
+  .play{top:0;height:0;margin:0;width:100%;left:0;background:none;box-shadow:none;aspect-ratio:auto;padding-top:56.25%}
+  .play:before{content:"";position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:#fff;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+  .play:after{left:calc(50% - 7px);top:calc(50% - 12px);border-left-width:17px;border-top-width:12px;border-bottom-width:12px}
+  .poster-cap{display:block;position:static;padding:14px 18px 16px;background:none}
+  .poster-cap b{font-size:18px}
+  .poster-cap span{font-size:13px}
+}

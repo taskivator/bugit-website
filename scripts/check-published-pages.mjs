@@ -131,7 +131,16 @@ async function measure(route, width, lang, opts = {}) {
   const { ctx, page, errors } = await open(width, lang, opts);
   await page.goto(B + route, { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
-  const r = await page.evaluate(sweep, { TAP_MIN, TYPE_MIN });
+  // EVERY DEMO TAB. Below 980px the demo shows one pane at a time (v2.js), and a hidden pane's
+  // text is not measured; a defect in the draft would pass while the chat tab was showing.
+  const panes = await page.evaluate(() => { const g = document.querySelector(".demo-grid[data-show]"); return g ? ["chat", "work", "draft"] : [null]; });
+  let r = null;
+  for (const pane of panes) {
+    if (pane) await page.evaluate((n) => { document.querySelector(".demo-grid").dataset.show = n; }, pane);
+    const one = await page.evaluate(sweep, { TAP_MIN, TYPE_MIN });
+    if (!r) r = one;
+    else for (const k of ["tap", "unnamed", "small", "noAlt"]) r[k] = [...new Set([...r[k], ...one[k]])];
+  }
   await ctx.close();
   return { ...r, errors };
 }
