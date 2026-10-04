@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { createHash } from "node:crypto";
 /**
  * Guard: Team commercial state on bugit.dev. Team LAUNCHED 2026-07-27
  * (owner-authorized) — the site must present it as purchasable and must NOT
@@ -139,10 +140,24 @@ for (const name of ["index.html", "dist/index.html"]) {
   check(/\$59\.99/.test(src), `${name} lost the $59.99 Solo price`);
 }
 
+// --- the owner's personal address, held as a FINGERPRINT, never as text (2026-10-04) ----------
+// This file used to spell the address out in two places (the check and its negative control), so
+// it travelled inside every snapshot handed to an external auditor; the audit drop's identity
+// screen refused it. Every address on a page is now hashed and compared. The second fingerprint is
+// a synthetic address the negative control plants, so the control proves the same code path.
+const PERSONAL_ADDRESS_SHA256 = new Set([
+  "4d98073dc6d929b921dc5ce1f748aff38a808a0630e4d6c3ee861c160e6452c4",
+  "8f1358afcc390f0c944197b8e3ccc3c39f321d53128b5b65328366b8438d6c07", // CONTROL_ADDRESS below
+]);
+const CONTROL_ADDRESS = "owner.control@example.invalid";
+const EMAIL_SHAPE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
+const exposesPersonalAddress = (text) =>
+  (text.match(EMAIL_SHAPE) || []).some((a) => PERSONAL_ADDRESS_SHA256.has(createHash("sha256").update(a.toLowerCase()).digest("hex")));
+
 // --- no shared-key instruction and no personal address ----------------------
 for (const [name, src] of SOURCES) {
   check(
-    !/p\.pedram01@gmail\.com/i.test(src),
+    !exposesPersonalAddress(src),
     `${name} exposes a personal email address`,
   );
 }
@@ -196,7 +211,7 @@ function scanPublished(entries, paused) {
   }
   if (!/href="https:\/\/portal\.bugit\.dev\/pricing\?plan=solo"/.test(home.text)) out.push(`${home.file} lost the Solo purchase CTA; Solo sales must remain available`);
   if (!/\$59\.99/.test(home.text)) out.push(`${home.file} lost the $59.99 Solo price`);
-  for (const e of entries) if (/p\.pedram01@gmail\.com/i.test(e.text)) out.push(`${e.file} exposes a personal email address`);
+  for (const e of entries) if (exposesPersonalAddress(e.text)) out.push(`${e.file} exposes a personal email address`);
   return out;
 }
 
@@ -217,7 +232,7 @@ const controls = [
   ["clean synthetic homepage flagged (control is wrong)", () => scanPublished([page(SOLO + TEAM)], TEAM_PAUSED).length === 0],
   ["missing Solo CTA", () => scanPublished([page("<b>$59.99</b>" + TEAM)], TEAM_PAUSED).length > 0],
   ["missing $59.99", () => scanPublished([page(SOLO.replace("$59.99", "$39.99") + TEAM)], TEAM_PAUSED).length > 0],
-  ["personal address", () => scanPublished([page(SOLO + TEAM), extra("p.pedram01@gmail.com")], TEAM_PAUSED).length > 0],
+  ["personal address", () => scanPublished([page(SOLO + TEAM), extra(CONTROL_ADDRESS)], TEAM_PAUSED).length > 0],
   ...(TEAM_PAUSED
     ? [["Team user count while paused", () => scanPublished([page(SOLO + TEAM), extra("Team: 5 utilisateurs")], true).length > 0]]
     : [

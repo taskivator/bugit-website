@@ -60,7 +60,9 @@ for (const f of fs.readdirSync(ROOT)) if (/^\.env|^\.dev\.vars$/.test(f) && fs.s
 }
 const exact = [...EXACT_SECRETS, ...bugitExact];
 
-const FORBIDDEN_NAME = /(^|\/)(\.env[^/]*|.*\.pem|.*\.key|.*cloudflare-token.*|.*private-denylist.*|.*\.local(\.json)?|\.dev\.vars|\.wrangler\/.*|.*secrets?-and-tokens.*)$/i;
+// A token FILE is refused by name; source code that merely looks a token up (scripts/lib/
+// cloudflare-token.mjs) is not, and is screened by content like every other file.
+const FORBIDDEN_NAME = /(^|\/)(\.env[^/]*|.*\.pem|.*\.key|[^/]*cloudflare-token[^/]*\.(txt|json|env|key)|.*private-denylist.*|.*\.local(\.json)?|\.dev\.vars|\.wrangler\/.*|.*secrets?-and-tokens.*)$/i;
 const hits = [];
 const screenText = (label, text) => {
   if (SECRET.test(text)) hits.push(`${label}: looks like a secret, line ${text.slice(0, text.search(SECRET)).split('\n').length}`);
