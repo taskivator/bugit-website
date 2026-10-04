@@ -20,8 +20,10 @@
 //      scripts/check-committed-secrets.mjs. Any hit stops everything. Hits are reported by file
 //      and line, never by value.
 //   4. Places ONE snapshot in 01-DIST-TO-AUDIT (older ones removed), with its .sha256 and
-//      README-FIRST.txt, and a round folder 02-AUDIT-REPORTS\<date>_<sha>\ with the brief and the
-//      owner's HANDOVER-WHAT-TO-SEND.txt. A second run for the same snapshot APPENDS a round block.
+//      README-FIRST.txt and the brief as MASTER-AUDIT-PROMPT.txt, and a round folder
+//      02-AUDIT-REPORTS\<date>_<sha>\ with the same brief and the owner's HANDOVER-WHAT-TO-SEND.txt.
+//      README.txt at the top is rewritten as the 3 steps. A second run for the same snapshot
+//      APPENDS a round block.
 // The Drive folder is never shared. The owner downloads what the handover lists.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -167,14 +169,14 @@ const readmeFirst = [
   `Snapshot ....... ${zipName}`, `SHA256 ......... ${zipSha}`, `Commit ......... ${commit}`, `Verified live .. ${deployedAt} on https://bugit.dev/`, '',
   'This is `git archive` of the commit that is live: tracked source only, no history, no credentials.',
   'It builds with Node 22 (`npm ci`, then `node build.js` writes dist/), but you do not need to build it.',
-  'Read the brief first:',
-  `02-AUDIT-REPORTS\\${today}_${short}\\EXTERNAL-AUDIT-PROMPT.txt`, '',
+  'Read the master prompt first: MASTER-AUDIT-PROMPT.txt, in this same folder. It runs the whole review in one session.', '',
 ].join('\r\n');
 const handover = [
   'HANDOVER: WHAT TO SEND (for the OWNER only; never send this file)', '',
   'Download exactly these files and give them to GPT-6 Astra (the auditor until further notice), in a NEW chat for each review:',
-  `  1. 01-DIST-TO-AUDIT\\${zipName}`, `  2. 01-DIST-TO-AUDIT\\${zipName}.sha256`, '  3. 01-DIST-TO-AUDIT\\README-FIRST.txt',
-  `  4. 02-AUDIT-REPORTS\\${today}_${short}\\EXTERNAL-AUDIT-PROMPT.txt   (ATTACH it as a file; a paste gets cut off)`, '',
+  '  1. 01-DIST-TO-AUDIT\\MASTER-AUDIT-PROMPT.txt   (ATTACH it as a file; a paste gets cut off)',
+  `  2. 01-DIST-TO-AUDIT\\${zipName}`, `  3. 01-DIST-TO-AUDIT\\${zipName}.sha256`, '  4. 01-DIST-TO-AUDIT\\README-FIRST.txt',
+  'and send: Run MASTER-AUDIT-PROMPT.txt from start to finish in this session.', '',
   'Do not share the Drive folder itself, and do not send this file.', '',
   'When the review comes back: drop AUDIT-REPORT.txt and AUDIT-FIXES.txt, unrenamed, into',
   `02-AUDIT-REPORTS\\${today}_${short}\\ and tell Claude "new audit". Claude files, confirms and fixes them.`, '',
@@ -195,7 +197,7 @@ console.log('screening: 0 problems');
 // 4. Place it.
 const dist = path.join(DRIVE, '01-DIST-TO-AUDIT');
 const plan = [
-  `${dist}\\${zipName} (+ .sha256, README-FIRST.txt); older bugit-website-*.zip removed`,
+  `${dist}\\${zipName} (+ .sha256, README-FIRST.txt, MASTER-AUDIT-PROMPT.txt); older bugit-website-*.zip removed`,
   `${briefPath} (${existing ? 'round ' + roundNo + ' appended' : 'new'})`,
   `${path.join(roundDir, 'HANDOVER-WHAT-TO-SEND.txt')}`,
 ];
@@ -207,18 +209,27 @@ fs.writeFileSync(path.join(dist, zipName), zip);
 fs.writeFileSync(path.join(dist, zipName + '.sha256'), `${zipSha}  ${zipName}\r\n`);
 fs.writeFileSync(path.join(dist, 'README-FIRST.txt'), readmeFirst);
 fs.writeFileSync(briefPath, brief.replace(/\r?\n/g, '\r\n'));
+// The auditor gets the brief from 01 as MASTER-AUDIT-PROMPT.txt, the layout every Taskivator Audits folder uses;
+// the round folder keeps the same bytes as the record of what was sent.
+fs.writeFileSync(path.join(dist, 'MASTER-AUDIT-PROMPT.txt'), brief.replace(/\r?\n/g, '\r\n'));
 fs.writeFileSync(path.join(roundDir, 'HANDOVER-WHAT-TO-SEND.txt'), handover);
 const readme = path.join(DRIVE, 'README.txt');
-if (!fs.existsSync(readme)) fs.writeFileSync(readme, [
-  'BugIt website (bugit.dev): external review drops', '',
-  '01-DIST-TO-AUDIT   ONE snapshot of bugit.dev, the commit that is live, with its sha256 and README-FIRST.txt.',
-  '02-AUDIT-REPORTS   one folder per snapshot reviewed: <date>_<commit>\\ holding the brief (EXTERNAL-AUDIT-PROMPT.txt),',
-  '                   the owner\'s HANDOVER-WHAT-TO-SEND.txt, and the returned reports.', '',
-  'This folder is never shared. To run a review: open HANDOVER-WHAT-TO-SEND.txt in the newest round folder and follow it.',
-  'To return a review: drop AUDIT-REPORT.txt and AUDIT-FIXES.txt, unrenamed, into that round folder and tell Claude "new audit".',
-  'Claude renames them to <date>_<commit>_external-audit-<reviewer>(-fixes).txt once they are filed; a renamed report is handled.',
+fs.writeFileSync(readme, [
+  'BUGIT.DEV: HOW TO RUN AN EXTERNAL AUDIT (3 steps)', '=================================================', '',
+  `Current snapshot: ${zipName} (the commit live on https://bugit.dev).`, '',
+  '1. Open ONE new GPT-6 Astra chat. Attach the 4 files in 01-DIST-TO-AUDIT (attach, do not paste):',
+  `     MASTER-AUDIT-PROMPT.txt, ${zipName}, ${zipName}.sha256, README-FIRST.txt`,
+  '   and send: Run MASTER-AUDIT-PROMPT.txt from start to finish in this session.', '',
+  '2. Put the two files it returns (AUDIT-REPORT.txt, AUDIT-FIXES.txt), unrenamed, into',
+  `   02-AUDIT-REPORTS\\${today}_${short}\\`, '',
+  '3. Tell Claude in the BugIt session: "new audit". Claude files, checks and fixes them.', '',
+  'Folders:',
+  '  01-DIST-TO-AUDIT   everything the auditor gets, for the commit that is live. Only ever one snapshot.',
+  '  02-AUDIT-REPORTS   one folder per reviewed snapshot (<date>_<commit>), with the brief as sent and the reports.', '',
+  'This folder is never shared. Never send README.txt or any HANDOVER file to the auditor.',
   'Made by bugit-website/scripts/audit-drop.mjs. The BugIt agent\'s own drop is in Taskivator Audits\\BugIt.', '',
 ].join('\r\n'));
 // Read back what was written and compare by hash: a write is not a delivery.
 if (sha256(fs.readFileSync(path.join(dist, zipName))) !== zipSha) stop('the zip on the Drive does not match what was built');
+if (sha256(fs.readFileSync(path.join(dist, 'MASTER-AUDIT-PROMPT.txt'))) !== sha256(fs.readFileSync(briefPath))) stop('MASTER-AUDIT-PROMPT.txt does not match the round brief');
 console.log('written and read back:\n  ' + plan.join('\n  '));
