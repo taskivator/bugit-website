@@ -33,7 +33,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const WRITE = process.argv.includes('--write');
 const SELF_TEST = process.argv.includes('--self-test');
-const DRIVE = process.env.BUGIT_WEBSITE_AUDIT_DRIVE || 'F:\\My Drive\\5-BugIt Website Google Drive';
+const DRIVE = process.env.BUGIT_WEBSITE_AUDIT_DRIVE || 'F:\\My Drive\\Taskivator Audits\\BugIt.dev website';
 // ONE home for the identity and secret guards: the taskivator.com build's module, imported rather
 // than copied, so a term added to the denylist or a pattern added there protects this drop too.
 const GUARD = process.env.BUGIT_IDENTITY_GUARD || 'E:\\Taskivator\\Taskivator website\\01-repos-live-code\\taskivator-website\\src\\identity-guard.mjs';
@@ -217,7 +217,7 @@ if (!fs.existsSync(readme)) fs.writeFileSync(readme, [
   'This folder is never shared. To run a review: open HANDOVER-WHAT-TO-SEND.txt in the newest round folder and follow it.',
   'To return a review: drop AUDIT-REPORT.txt and AUDIT-FIXES.txt, unrenamed, into that round folder and tell Claude "new audit".',
   'Claude renames them to <date>_<commit>_external-audit-<reviewer>(-fixes).txt once they are filed; a renamed report is handled.',
-  'Made by bugit-website/scripts/audit-drop.mjs. The BugIt agent\'s own drop is in 1-BugIt Google Drive.', '',
+  'Made by bugit-website/scripts/audit-drop.mjs. The BugIt agent\'s own drop is in Taskivator Audits\\BugIt.', '',
 ].join('\r\n'));
 // Read back what was written and compare by hash: a write is not a delivery.
 if (sha256(fs.readFileSync(path.join(dist, zipName))) !== zipSha) stop('the zip on the Drive does not match what was built');
