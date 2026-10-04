@@ -1,0 +1,26 @@
+DIGESTED UP TO: 2026-10-04
+This is the FIRST review dedicated to bugit.dev. Until now the site was reviewed only in passing,
+as part of the BugIt agent's external audits (bugit.dev was in their scope signed out, by URL),
+and by our own internal reviews. What those found and what we changed, so you do not report it
+again:
+
+  * Claims. Two claims were found to be false and removed everywhere on 2026-10-04, from the site,
+    the docs, all eleven languages and the films: that BugIt "compares your whole message" before
+    filing, and that data "never leaves your machine". Redaction is described as best effort.
+    These are in contract 2.1 so that any copy that survived is reported.
+  * Pricing. The introductory price was retired on 2026-10-03; one price per plan since. Any
+    remaining introductory, launch or "one-time" wording is a finding (contract 2.2).
+  * The redesign. The pages visitors see were replaced by the 2026 redesign (v2/) on 2026-10-04.
+    About forty guards that checked the old single page were retired the same day and the copy
+    guards now read the published copy itself. A guard that still tests the old page instead of
+    the new one, or a contract the old page kept that the new one dropped, is worth reporting.
+  * Phone poster. On a phone the film's caption overlapped the play button (fixed 2026-10-04: the
+    caption sits under the picture below 640px). The play button was redesigned the same day.
+  * Delivery. On 2026-09-23 a deploy built from the wrong branch removed two features from
+    production. Since then every deploy refuses a build that would remove something production
+    serves, and verifies every file on the edge byte for byte afterwards.
+
+STATED LIMITS, not findings unless you show they are worse than described:
+  * Redaction in the product is pattern based (the site says so).
+  * The Google Ads tag is present on the page; it runs with every signal denied until consent.
+  * The CSP permits Cloudflare's cookieless Web Analytics beacon; the page source does not load it.
