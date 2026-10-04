@@ -181,8 +181,30 @@ main>section{width:min(var(--wrap),calc(100% - 32px));margin-inline:auto;text-al
 .poster{position:relative;display:block;border-radius:24px;overflow:hidden;border:1px solid var(--line-2);max-width:980px;margin:0 auto}
 .poster img{width:100%;opacity:.85;transition:opacity .3s ease,transform .6s ease}
 .poster:hover img{opacity:1;transform:scale(1.015)}
-.play{position:absolute;left:50%;top:44%;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.play:after{content:"";position:absolute;left:34px;top:26px;border-left:22px solid #0b0716;border-top:16px solid transparent;border-bottom:16px solid transparent}
+/* The play button (owner 2026-10-04: "more modern and cool"). A frosted glass disc inside a
+   slowly turning brand gradient ring, a soft halo that pulses out from it, and a rounded play
+   glyph. `.play` covers the picture so the disc can be centred on it at --cy (44% on a wide
+   screen, clear of the caption; 50% on a phone, where the caption sits under the picture).
+   Every animation stops under prefers-reduced-motion (the global rule further down). */
+.play{position:absolute;inset:0 0 auto;aspect-ratio:16/9;--d:96px;--cy:44%;pointer-events:none}
+.play:before{content:"";position:absolute;left:50%;top:var(--cy);width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;border:2px solid rgba(255,79,201,.55);animation:playHalo 2.6s cubic-bezier(.2,.6,.3,1) infinite}
+.play i{position:absolute;left:50%;top:var(--cy);width:var(--d);height:var(--d);margin:calc(var(--d) / -2) 0 0 calc(var(--d) / -2);border-radius:50%;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.34),rgba(255,255,255,.08) 55%,rgba(255,255,255,.04));
+  -webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 18px 50px rgba(5,3,10,.55),0 0 46px rgba(255,79,201,.38);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1.2),box-shadow .35s ease}
+.play i:before{content:"";position:absolute;inset:-3px;border-radius:50%;
+  background:conic-gradient(#ff7ad9,#ff4fc9,#b45cff,#18e1ff,#ff7ad9);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px));
+  animation:playSpin 6s linear infinite}
+.play i:after{content:"";position:absolute;left:50%;top:50%;width:38%;height:38%;margin:-19% 0 0 -16%;background:#fff;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 4.6v14.8a1.4 1.4 0 0 0 2.1 1.2l11.6-7.4a1.4 1.4 0 0 0 0-2.4L9.1 3.4A1.4 1.4 0 0 0 7 4.6z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 4.6v14.8a1.4 1.4 0 0 0 2.1 1.2l11.6-7.4a1.4 1.4 0 0 0 0-2.4L9.1 3.4A1.4 1.4 0 0 0 7 4.6z'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter:drop-shadow(0 2px 6px rgba(5,3,10,.35))}
+.poster:hover .play i,.poster:focus-visible .play i{transform:scale(1.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 22px 60px rgba(5,3,10,.6),0 0 70px rgba(255,79,201,.6)}
+.poster:hover .play i:before,.poster:focus-visible .play i:before{animation-duration:1.6s}
+@keyframes playSpin{to{transform:rotate(1turn)}}
+@keyframes playHalo{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.75);opacity:0}}
 .poster-cap{position:absolute;inset:auto 0 0;padding:60px 28px 24px;background:linear-gradient(transparent,rgba(5,3,10,.92));text-align:left}
 .poster-cap b{display:block;font-size:22px;letter-spacing:-.02em}
 .poster-cap span{color:var(--ink-2);font-size:14px}
@@ -568,9 +590,7 @@ h1,h2,h3{text-wrap:balance}
 @media (max-width:640px){
   .poster{background:var(--card)}
   .poster img{display:block}
-  .play{top:0;height:0;margin:0;width:100%;left:0;background:none;box-shadow:none;aspect-ratio:auto;padding-top:56.25%}
-  .play:before{content:"";position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:#fff;box-shadow:0 14px 40px rgba(0,0,0,.5)}
-  .play:after{left:calc(50% - 7px);top:calc(50% - 12px);border-left-width:17px;border-top-width:12px;border-bottom-width:12px}
+  .play{--d:68px;--cy:50%}
   .poster-cap{display:block;position:static;padding:14px 18px 16px;background:none}
   .poster-cap b{font-size:18px}
   .poster-cap span{font-size:13px}
