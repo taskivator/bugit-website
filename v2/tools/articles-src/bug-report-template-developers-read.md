@@ -7,6 +7,7 @@ hero: images/bug-report-anatomy.svg
 hero_alt: "A bug report card with six labelled parts: title, steps to reproduce, expected, actual, environment and evidence."
 product: bugit
 canonical: https://bugit.dev/articles/bug-report-template-developers-read/
+order: 1
 tags: [bug report, bug report template, QA, software testing, issue tracking]
 hero_image_idea: "Clean diagram of one bug report card with six labelled parts (title, steps, expected, actual, environment, evidence) and a small note beside each saying which question from the developer it answers."
 images:

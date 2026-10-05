@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">What a helpful screenshot shows</title>
+<desc id="d">An example screenshot frame with three callouts: show the address and build, crop to the problem, and cover personal data.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">A screenshot that helps, in three habits</text>
+<rect x="60" y="110" width="700" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<rect x="60" y="110" width="700" height="46" rx="16" fill="#1c1530"/>
+<circle cx="90" cy="133" r="6" fill="#2a2238"/><circle cx="112" cy="133" r="6" fill="#2a2238"/><circle cx="134" cy="133" r="6" fill="#2a2238"/>
+<rect x="160" y="120" width="420" height="26" rx="13" fill="#0b0614"/>
+<text x="176" y="138" font-size="15" fill="#cfc4e2" font-family="Consolas,monospace">example.test/checkout  build 2.14.1</text>
+<text x="90" y="210" font-size="22" font-weight="700" fill="#f6f1ff">Order summary</text>
+<text x="90" y="250" font-size="18" fill="#cfc4e2">Pro plan, annual</text>
+<rect x="84" y="270" width="360" height="44" rx="10" fill="#ff5b72" fill-opacity=".18" stroke="#ff5b72" stroke-width="2"/>
+<text x="100" y="299" font-size="19" fill="#ffd0d6">Total: 20% off the monthly price</text>
+<text x="90" y="360" font-size="16" fill="#9a8fb0">Signed in as</text>
+<rect x="190" y="342" width="230" height="24" rx="6" fill="#f6f1ff"/>
+<g stroke="#ff4fc9" stroke-width="3" fill="none" stroke-linecap="round">
+<path d="M790 133H592"/><path d="M790 292H450"/><path d="M790 354H426"/>
+</g>
+<g font-size="20">
+<text x="800" y="124" font-weight="700" fill="#f6f1ff">1 Show the address and build</text>
+<text x="800" y="152" font-size="16" fill="#cfc4e2">So the page and version are clear.</text>
+<text x="800" y="284" font-weight="700" fill="#f6f1ff">2 Crop to the problem</text>
+<text x="800" y="312" font-size="16" fill="#cfc4e2">Point at what is wrong.</text>
+<text x="800" y="372" font-weight="700" fill="#f6f1ff">3 Cover personal data</text>
+<text x="800" y="400" font-size="16" fill="#cfc4e2">Use a solid bar, not a blur.</text>
+</g>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">Example screen for illustration · BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

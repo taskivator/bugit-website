@@ -7,6 +7,7 @@ hero: images/log-to-repro-steps.svg
 hero_alt: "A short example log with the error line highlighted, an arrow, and three numbered steps to reproduce the failure."
 product: bugit
 canonical: https://bugit.dev/articles/reproduce-a-bug-from-logs/
+order: 3
 tags: [reproduce a bug, log analysis, debugging, bug report, QA]
 hero_image_idea: "Clean diagram with a short example log on the left with one error line highlighted, an arrow in the middle labelled 'read the clues', and three numbered reproduction steps on the right."
 images:

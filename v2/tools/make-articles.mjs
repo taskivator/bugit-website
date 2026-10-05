@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds the guides under /articles/ from their Markdown sources (2026-10-05).
+// Builds the articles under /articles/ from their Markdown sources (2026-10-05).
 //
 //   node v2/tools/make-articles.mjs
 //
@@ -150,7 +150,7 @@ const head = (title, desc, url, type, current) => `<!doctype html>
     <a href="/#how">How it works</a>
     <a href="/#pricing">Pricing</a>
     <a href="/docs/">Docs</a>
-    <a href="/articles/"${current ? ' aria-current="page"' : ""}>Guides</a>
+    <a href="/articles/"${current ? ' aria-current="page"' : ""}>Articles</a>
   </nav>
   <div class="nav-end">
     <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing">Get BugIt</a>
@@ -161,7 +161,7 @@ const head = (title, desc, url, type, current) => `<!doctype html>
 const foot = `
 <footer class="foot">
   <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
-  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Guides</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
 </footer>
 
 <script src="/v2/nav.js"></script>
@@ -171,7 +171,7 @@ const foot = `
 `;
 
 const files = fs.readdirSync(SRC).filter((f) => f.endsWith(".md")).sort();
-const all = files.map((f) => parse(path.join(SRC, f)));
+const all = files.map((f) => parse(path.join(SRC, f))).sort((a, b) => (Number(a.fm.order) || 99) - (Number(b.fm.order) || 99) || a.fm.slug.localeCompare(b.fm.slug));
 
 // Remove pages of a slug that no longer has a source.
 if (fs.existsSync(OUT)) {
@@ -185,6 +185,7 @@ for (const { fm, body } of all) {
   const url = `https://bugit.dev/articles/${fm.slug}/`;
   const more = all
     .filter((a) => a.fm.slug !== fm.slug)
+    .slice(0, 3)
     .map((a) => `<li><a href="/articles/${a.fm.slug}/"><span class="mc-t">${esc(a.fm.title)}</span><span class="mc-d">${esc(a.fm.description)}</span></a></li>`)
     .join("\n");
   const tags = fm.tags.slice(0, 3).map((t) => `<li>${esc(t)}</li>`).join("");
@@ -194,7 +195,7 @@ for (const { fm, body } of all) {
     `
 <main id="main" class="article" tabindex="-1">
   <header class="a-hero">
-    <p class="crumbs"><a href="/articles/">Guides</a><span aria-hidden="true"> / </span><span>${esc(fm.tags[0] || "Guide")}</span></p>
+    <p class="crumbs"><a href="/articles/">Articles</a><span aria-hidden="true"> / </span><span>${esc(fm.tags[0] || "Article")}</span></p>
     <h1>${esc(fm.title)}</h1>
     <p class="a-sum">${esc(fm.description)}</p>
     <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="${DATE}">${DATE}</time></span><span>${fm.minutes} min read</span></p>
@@ -223,17 +224,17 @@ ${more}
 }
 
 const cards = all
-  .map(({ fm }, n) => `<li class="card"><a href="/articles/${fm.slug}/"><span class="card-n" aria-hidden="true">${String(n + 1).padStart(2, "0")}</span><span class="card-meta">${esc(fm.tags[0] || "Guide")} · ${fm.minutes} min read</span><h2>${esc(fm.title)}</h2><p>${esc(fm.description)}</p><span class="card-go">Read the guide <span aria-hidden="true">→</span></span></a></li>`)
+  .map(({ fm }, n) => `<li class="card"><a href="/articles/${fm.slug}/"><span class="card-n" aria-hidden="true">${String(n + 1).padStart(2, "0")}</span><span class="card-meta">${esc(fm.tags[0] || "Article")} · ${fm.minutes} min read</span><h2>${esc(fm.title)}</h2><p>${esc(fm.description)}</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>`)
   .join("\n");
 fs.writeFileSync(
   path.join(OUT, "index.html"),
-  head("Guides for developers and QA", "Practical guides on writing bug reports, catching duplicate bugs and reproducing a bug from a log, from the makers of BugIt.", "https://bugit.dev/articles/", "website", true) +
+  head("Articles for developers and QA", "Practical articles on writing bug reports, catching duplicate bugs, reproducing a bug and attaching useful evidence, from the makers of BugIt.", "https://bugit.dev/articles/", "website", true) +
     `
 <main id="main" class="article idx" tabindex="-1">
   <header class="a-hero idx-hero">
-    <p class="kicker">Guides</p>
+    <p class="kicker">Articles</p>
     <h1>Write better bugs. Fix them faster.</h1>
-    <p class="a-sum">Short, practical guides for people who write, triage and fix bugs, from the team behind <a href="https://bugit.dev/">BugIt</a>, a QA agent that turns a rough description into a complete bug report. More about the product is at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+    <p class="a-sum">Short, practical articles for people who write, triage and fix bugs, from the team behind <a href="https://bugit.dev/">BugIt</a>, a QA agent that turns a rough description into a complete bug report. More about the product is at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
   </header>
   <ul class="cards">
 ${cards}
@@ -242,4 +243,4 @@ ${cards}
 ` +
     foot,
 );
-console.log(`make-articles: ${all.length} guide(s) written`);
+console.log(`make-articles: ${all.length} article(s) written`);

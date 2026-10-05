@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Example runs of an intermittent bug</title>
+<desc id="d">A row of example test runs, some passing and some failing, above a short table of what differed between the runs.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">Sometimes is a clue, not a dead end</text>
+<text x="60" y="118" font-size="18" fill="#9a8fb0">Example runs, same steps each time</text>
+<g font-size="17" text-anchor="middle" fill="#cfc4e2">
+<circle cx="120" cy="190" r="34" fill="#32f28c" fill-opacity=".18" stroke="#32f28c"/><text x="120" y="196">Run 1</text>
+<circle cx="260" cy="190" r="34" fill="#ff5b72" fill-opacity=".22" stroke="#ff5b72"/><text x="260" y="196">Run 2</text>
+<circle cx="400" cy="190" r="34" fill="#32f28c" fill-opacity=".18" stroke="#32f28c"/><text x="400" y="196">Run 3</text>
+<circle cx="540" cy="190" r="34" fill="#32f28c" fill-opacity=".18" stroke="#32f28c"/><text x="540" y="196">Run 4</text>
+<circle cx="680" cy="190" r="34" fill="#ff5b72" fill-opacity=".22" stroke="#ff5b72"/><text x="680" y="196">Run 5</text>
+<circle cx="820" cy="190" r="34" fill="#32f28c" fill-opacity=".18" stroke="#32f28c"/><text x="820" y="196">Run 6</text>
+<circle cx="960" cy="190" r="34" fill="#ff5b72" fill-opacity=".22" stroke="#ff5b72"/><text x="960" y="196">Run 7</text>
+<circle cx="1100" cy="190" r="34" fill="#32f28c" fill-opacity=".18" stroke="#32f28c"/><text x="1100" y="196">Run 8</text>
+</g>
+<g font-size="16" fill="#9a8fb0"><circle cx="64" cy="258" r="7" fill="#32f28c"/><text x="80" y="263">Worked</text><circle cx="180" cy="258" r="7" fill="#ff5b72"/><text x="196" y="263">Failed</text></g>
+<rect x="60" y="300" width="1080" height="260" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<g font-size="19">
+<text x="90" y="346" font-weight="700" fill="#f6f1ff">What differed in the failing runs?</text>
+<text x="90" y="392" fill="#cfc4e2">Promo code applied</text><text x="560" y="392" fill="#ff7ad9">Yes in the failing runs</text>
+<text x="90" y="432" fill="#cfc4e2">Page open for a long time</text><text x="560" y="432" fill="#ff7ad9">Not clear yet, test next</text>
+<text x="90" y="472" fill="#cfc4e2">Browser</text><text x="560" y="472" fill="#9a8fb0">Same in all runs</text>
+<text x="90" y="512" fill="#cfc4e2">Build</text><text x="560" y="512" fill="#9a8fb0">Same in all runs</text>
+</g>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">Example values for illustration · BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

@@ -7,6 +7,7 @@ hero: images/duplicate-search-flow.svg
 hero_alt: "A flow from describing a bug, to searching by symptom and error text, to reviewing candidates, to adding evidence, linking as related or filing new."
 product: bugit
 canonical: https://bugit.dev/articles/catch-duplicate-bugs-before-filing/
+order: 2
 tags: [duplicate bugs, duplicate bug detection, bug triage, issue tracking, QA]
 hero_image_idea: "Clean diagram of a short decision flow: describe the bug, search by symptom and error text, see candidate tickets with a closeness score, then choose between adding evidence, linking as related or filing new."
 images:

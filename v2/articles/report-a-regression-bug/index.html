@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/articles/report-a-regression-bug/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="A bug that used to work: how to report a regression · BugIt">
+<meta property="og:description" content="How to report a regression: find the last version that worked, narrow the gap to the first one that failed, and give the developer a place to start.">
+<meta property="og:url" content="https://bugit.dev/articles/report-a-regression-bug/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A bug that used to work: how to report a regression · BugIt">
+<meta name="twitter:description" content="How to report a regression: find the last version that worked, narrow the gap to the first one that failed, and give the developer a place to start.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>A bug that used to work: how to report a regression · BugIt</title>
+<meta name="description" content="How to report a regression: find the last version that worked, narrow the gap to the first one that failed, and give the developer a place to start.">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<link rel="stylesheet" href="/v2/articles/articles.css">
+<script src="/v2/articles/articles.js" defer></script>
+</head>
+<body class="article-page is-home">
+<a class="skip" href="#main">Skip to content</a>
+<span class="read-progress" id="readProgress" aria-hidden="true"></span>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="/#how">How it works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/articles/">Articles</a>
+  </nav>
+  <div class="nav-end">
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing">Get BugIt</a>
+  </div>
+</header>
+
+<main id="main" class="article" tabindex="-1">
+  <header class="a-hero">
+    <p class="crumbs"><a href="/articles/">Articles</a><span aria-hidden="true"> / </span><span>regression</span></p>
+    <h1>A bug that used to work: how to report a regression</h1>
+    <p class="a-sum">How to report a regression: find the last version that worked, narrow the gap to the first one that failed, and give the developer a place to start.</p>
+    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="2026-10-05">2026-10-05</time></span><span>5 min read</span></p>
+    <ul class="a-tags" aria-label="Topics"><li>regression</li><li>regression bug</li><li>bug report</li></ul>
+  </header>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+<li><a href="#why-regressions-are-worth-reporting-well">Why regressions are worth reporting well</a></li>
+<li><a href="#step-one-confirm-it-really-is-a-regression">Step one: confirm it really is a regression</a></li>
+<li><a href="#step-two-find-the-last-good-version">Step two: find the last good version</a></li>
+<li><a href="#step-three-find-the-first-bad-version">Step three: find the first bad version</a></li>
+<li><a href="#step-four-note-what-changed-in-between">Step four: note what changed in between</a></li>
+<li><a href="#step-five-write-the-report">Step five: write the report</a></li>
+<li><a href="#habits-that-help">Habits that help</a></li>
+<li><a href="#where-bugit-fits">Where BugIt fits</a></li>
+<li><a href="#the-takeaway">The takeaway</a></li>
+</ol></nav>
+    <article class="a-body">
+<p>&quot;It worked last week.&quot; Few sentences make a developer perk up faster, and few are less useful on their own. A feature that used to behave and now does not is called a regression, and it is a gift to anyone who is trying to fix it, because it tells you something precious: the code was right once, so the answer lives in what changed.</p>
+<p>The trouble is that &quot;it worked last week&quot; is a feeling, not a fact. To make it useful you have to turn it into two pieces of evidence: the last time it worked and the first time it did not. Here is how to find them and how to write them down.</p>
+<figure class="hero"><img src="/v2/articles/images/regression-timeline.svg" alt="A timeline of example builds with the last known good and first known bad marked" width="1200" height="630" loading="lazy"></figure>
+<section id="why-regressions-are-worth-reporting-well" class="sec">
+<h2>Why regressions are worth reporting well</h2>
+<p>A regular bug asks the developer to work out what is wrong. A regression gives them a head start. If you can say &quot;it worked in build 2.13 and fails in build 2.14&quot;, the search shrinks from the whole product to the changes between two builds. A good regression report can cut a long investigation down to a short one.</p>
+</section>
+<section id="step-one-confirm-it-really-is-a-regression" class="sec">
+<h2>Step one: confirm it really is a regression</h2>
+<p>Before you write &quot;regression&quot; in the title, check that the old behavior was real.</p>
+<ul>
+<li><strong>Did it ever work?</strong> Maybe you used a different path last time, or a feature flag or setting was on.</li>
+<li><strong>Is it the same thing?</strong> A page that looks like the old one may be a redesigned flow with a different rule.</li>
+<li><strong>Was it a change in data?</strong> A new account or a larger file may trigger something the old data did not.</li>
+<li><strong>Was it intended?</strong> Release notes sometimes explain a change in behavior. Check them first.</li>
+</ul>
+<p>If you find the change was deliberate, it may not be a bug, but a report that quotes the release note is still worth filing as a question.</p>
+</section>
+<section id="step-two-find-the-last-good-version" class="sec">
+<h2>Step two: find the last good version</h2>
+<p>If you can run older builds, do it. Go back to a version you remember being fine and run the same steps.</p>
+<ul>
+<li>If it works there, you have your last known good build.</li>
+<li>If it fails there too, go back further, or reconsider whether it is a regression.</li>
+<li>If you cannot run old builds, look for evidence: a test result, a screenshot, a ticket from a customer who used it, or a log from a successful run.</li>
+</ul>
+<p>Write the version or build, not &quot;a while ago&quot;. Dates help too, but a build number is exact.</p>
+</section>
+<section id="step-three-find-the-first-bad-version" class="sec">
+<h2>Step three: find the first bad version</h2>
+<p>Now move forward from the good build and test the versions in between. When there are many, do not test them one by one. Pick the middle one. If it works, the problem is later. If it fails, the problem is earlier. Repeat on the half that remains. This is the same idea as looking up a name in a phone book by opening it near the middle, and it finds the first bad build in a handful of steps even across many builds.</p>
+<p>You do not need to be a developer to do this. You need access to the builds and the patience to run the same steps each time.</p>
+</section>
+<section id="step-four-note-what-changed-in-between" class="sec">
+<h2>Step four: note what changed in between</h2>
+<p>Once you have a last good and a first bad build, look at what lies between them. You are not expected to find the cause, but a few lines of context help.</p>
+<ul>
+<li>The release notes for the first bad build.</li>
+<li>A setting, configuration or dependency that changed.</li>
+<li>A feature that was added or reworked in the same area.</li>
+</ul>
+<p>A sentence such as &quot;the promo code flow was reworked in this release&quot; is a strong pointer, and a developer will thank you for it.</p>
+</section>
+<section id="step-five-write-the-report" class="sec">
+<h2>Step five: write the report</h2>
+<p>A regression report is a normal bug report with two extra fields. Here is a shape you can copy:</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Title: [Area] Symptom (regression)
+
+Last known good
+Build 2.13.2, steps below work as expected.
+
+First known bad
+Build 2.14.0, steps below fail.
+
+Steps to reproduce
+1. ...
+2. ...
+3. The step where it goes wrong
+
+Expected
+What happened in the last good build.
+
+Actual
+What happens now.
+
+Environment
+Platform, account type, settings that matter.
+
+Evidence
+Log excerpt, screenshot, request id.
+
+What changed in between
+Release notes mention a reworked promo flow.
+
+Related
+The earlier ticket that fixed this, if there was one.</code></pre></div>
+<p>The Related field is easy to forget and worth the effort. A regression often reopens an old problem, and the ticket that fixed it the first time holds the history of how.</p>
+</section>
+<section id="habits-that-help" class="sec">
+<h2>Habits that help</h2>
+<ul>
+<li><strong>Say &quot;regression&quot; in the title,</strong> so triage can route it to the team that touched the area.</li>
+<li><strong>Link the old ticket,</strong> if the same symptom was fixed before.</li>
+<li><strong>Keep the steps identical between builds,</strong> so the comparison is fair.</li>
+<li><strong>Report the version where you first noticed it,</strong> even if you cannot narrow it further. A partial answer is still an answer.</li>
+</ul>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>BugIt is a QA agent that runs in the assistant you already use. You describe the problem in a rough sentence, and it writes the report in your team's shape. Before you see the draft, it searches your tracker, read only, for tickets like yours and gives each a score, so an earlier ticket about the same symptom can surface as a related ticket. You still supply what only you know, such as the last good build, and BugIt asks for what is missing, including the build and how often it happens. BugIt redacts common personal data, a best effort, so read the draft. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT.</p>
+<p>Learn more at <a href="https://bugit.dev/">bugit.dev</a> and <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+<section id="the-takeaway" class="sec takeaway">
+<h2>The takeaway</h2>
+<p>A regression is a bug with a head start. Confirm the old behavior was real, find the last good build, then halve the gap to find the first bad one, and note what changed in between. Put both builds in the report, link an earlier ticket, and the developer knows where to look first.</p>
+</section>
+    </article>
+  </div>
+  <section class="more" aria-labelledby="more-h">
+    <h2 id="more-h">Keep reading</h2>
+    <ul class="more-grid">
+<li><a href="/articles/bug-report-template-developers-read/"><span class="mc-t">A bug report template developers will actually read</span><span class="mc-d">A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.</span></a></li>
+<li><a href="/articles/catch-duplicate-bugs-before-filing/"><span class="mc-t">Catch duplicate bugs before you file them</span><span class="mc-d">Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.</span></a></li>
+<li><a href="/articles/reproduce-a-bug-from-logs/"><span class="mc-t">Reproduce a bug from a log file: a detective's guide</span><span class="mc-d">How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+</footer>
+
+<script src="/v2/nav.js"></script>
+<script src="/v2/consent-ui.js"></script>
+</body>
+</html>
