@@ -9,7 +9,7 @@
  "t008": "Obter BugIt",
  "t009": "<span class=\"dot\"></span>Agente de QA · roda no seu assistente de IA",
  "t010": "Diga o que quebrou.<br><span class=\"grad\">O BugIt escreve o ticket.</span>",
- "t011": "Uma frase solta vira um relatório de bug completo. Cinco verificações rodam na sua máquina e nada chega ao seu rastreador até você digitar <kbd>FILE IT</kbd>.",
+ "t011": "Uma frase solta vira um relatório de bug completo. Você revisa cada rascunho, e nada é gravado no seu rastreador até você digitar <kbd>FILE IT</kbd>.",
  "t012": "Obter BugIt",
  "t013": "Teste grátis",
  "t014": "Pergunte ao BugIt",
@@ -72,10 +72,10 @@
  "t071": "Título, passos, esperado e obtido, severidade e plataforma, no idioma e no estilo da sua equipe.",
  "t072": "Você digita FILE IT",
  "t073": "Aí ele vai para o seu rastreador com o seu próprio token. Nem um instante antes.",
- "t074": "Sempre ativo, na sua máquina",
- "t075": "Cinco verificações antes de você ver o rascunho.",
+ "t074": "Integrado, nada para ativar",
+ "t075": "Até cinco verificações antes de você ver o rascunho.",
  "t076": "Duplicatas",
- "t077": "Busca no seu rastreador tickets parecidos com o seu e dá uma pontuação a cada um.",
+ "t077": "Busca no seu rastreador, só leitura, tickets parecidos com o seu e dá uma pontuação a cada um. Bugs rápidos pulam essa busca.",
  "t078": "KAN-148 O spinner de login nunca para",
  "t079": "KAN-131 Mensagem de limite de tentativas de login",
  "t080": "Severidade",
@@ -256,5 +256,7 @@
  "js.q16": "Pode registrar o mesmo bug duas vezes?",
  "js.a16": "O BugIt pode abrir o mesmo chamado duas vezes por engano?",
  "t184": "Transações Comerciais",
- "t185": "Segurança"
+ "t185": "Segurança",
+ "lang.ariaLabel": "Idioma: {language}",
+ "menu.label": "Menu"
 }

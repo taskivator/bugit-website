@@ -9,7 +9,7 @@
  "t008": "Obtenir BugIt",
  "t009": "<span class=\"dot\"></span>Agent QA · fonctionne dans votre assistant IA",
  "t010": "Dites ce qui ne va pas.<br><span class=\"grad\">BugIt rédige le ticket.</span>",
- "t011": "Une phrase en vrac devient un rapport de bug complet. Cinq contrôles tournent sur votre machine, et rien n’arrive dans votre outil de suivi tant que vous n’avez pas tapé <kbd>FILE IT</kbd>.",
+ "t011": "Une phrase en vrac devient un rapport de bug complet. Vous relisez chaque brouillon, et rien n’est écrit dans votre outil de suivi tant que vous n’avez pas tapé <kbd>FILE IT</kbd>.",
  "t012": "Obtenir BugIt",
  "t013": "Essayer gratuitement",
  "t014": "Demander à BugIt",
@@ -72,10 +72,10 @@
  "t071": "Titre, étapes, attendu et obtenu, sévérité et plateforme, dans la langue et le style maison de votre équipe.",
  "t072": "Vous tapez FILE IT",
  "t073": "Alors le ticket part vers votre outil de suivi avec votre propre jeton. Pas un instant avant.",
- "t074": "Toujours actif, sur votre machine",
- "t075": "Cinq contrôles avant que vous voyiez le brouillon.",
+ "t074": "Intégré, rien à activer",
+ "t075": "Jusqu’à cinq contrôles avant que vous voyiez le brouillon.",
  "t076": "Doublons",
- "t077": "Cherche dans votre outil de suivi des tickets proches du vôtre et note chacun.",
+ "t077": "Cherche dans votre outil de suivi, en lecture seule, des tickets proches du vôtre et note chacun. Les bugs rapides sautent cette étape.",
  "t078": "KAN-148 Le spinner de connexion ne s’arrête jamais",
  "t079": "KAN-131 Message de limite de connexions",
  "t080": "Sévérité",
@@ -256,5 +256,7 @@
  "js.q16": "Peut-il créer le même bug deux fois ?",
  "js.a16": "BugIt peut-il déposer le même ticket deux fois par accident ?",
  "t184": "Transactions Commerciales",
- "t185": "Sécurité"
+ "t185": "Sécurité",
+ "lang.ariaLabel": "Langue : {language}",
+ "menu.label": "Menu"
 }

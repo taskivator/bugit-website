@@ -9,7 +9,7 @@
  "t008": "Get BugIt",
  "t009": "<span class=\"dot\"></span>QA agent · runs in your AI assistant",
  "t010": "Say what broke.<br><span class=\"grad\">BugIt writes the ticket.</span>",
- "t011": "One rough sentence becomes a complete bug report. Five checks run on your machine, and nothing reaches your tracker until you type <kbd>FILE IT</kbd>.",
+ "t011": "One rough sentence becomes a complete bug report. You review every draft, and nothing is written to your tracker until you type <kbd>FILE IT</kbd>.",
  "t012": "Get BugIt",
  "t013": "Try it free",
  "t014": "Ask BugIt",
@@ -72,10 +72,10 @@
  "t071": "Title, steps, expected and actual, severity and platform, in your team's language and house style.",
  "t072": "You type FILE IT",
  "t073": "Then it goes to your tracker with your own token. Not a moment before.",
- "t074": "Always on, on your machine",
- "t075": "Five checks before you see the draft.",
+ "t074": "Built in, nothing to switch on",
+ "t075": "Up to five checks before you see the draft.",
  "t076": "Duplicates",
- "t077": "Searches your tracker for tickets like yours and gives each a score.",
+ "t077": "Searches your tracker, read only, for tickets like yours and gives each a score. Quick bugs skip it.",
  "t078": "KAN-148 Sign in spinner never stops",
  "t079": "KAN-131 Login rate limit message",
  "t080": "Severity",
@@ -256,5 +256,7 @@
  "js.q16": "Could it file the same bug twice?",
  "js.a16": "Can BugIt accidentally file the same ticket twice?",
  "t184": "Commercial Transactions",
- "t185": "Security"
+ "t185": "Security",
+ "lang.ariaLabel": "Language: {language}",
+ "menu.label": "Menu"
 }

@@ -18,6 +18,8 @@ import { fileURLToPath } from "node:url";
 import { performance } from "node:perf_hooks";
 
 import { ANSWER_AT, answerFor, buildPreparedBank, contentWords, guessLanguage, languageFromBank, matchPrepared, normalizeExact, relatedTo, termsOf, undash } from "../public/guide/match.js";
+import { amounts, money as usd, PLANS } from "./lib/copy-offers.mjs";
+import { htmlText, publishedCopy } from "./lib/published-copy.mjs";
 
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
 // Read a source file with its line endings NORMALISED.
@@ -374,51 +376,210 @@ test("no other way of speaking to the network is in the widget at all", () => {
   assert.match(code, /allowedLink\(l\.href\)/, "the Sources chips no longer check their address");
 });
 
-test("every price the Guide states is a price the site states", () => {
-  /* THE BANK IS A CLAIM SURFACE, AND IT WAS IN NONE OF THE CLAIM GUARDS.
-   *
-   * This repository has ten guards over what the site CLAIMS -- the tracker list, capabilities,
-   * billing copy, the price against what checkout actually offers, attachments, legal copy,
-   * activation copy, retired vocabulary, untranslated strings, doc hygiene. Measured 2026-09-22:
-   * NONE of them reads public/guide/prepared/*.json. The Guide answers 410 questions in eleven
-   * languages and states the prices in every one of them, and nothing would have noticed if one
-   * moved. A price is a public offer.
-   *
-   * The same shape has now appeared three times: the FAQ was a surface a claim-scan passed over,
-   * the online doc pages were a third copy of the package guides that nothing compared, and this
-   * is the Guide. A guard is written against the surfaces that exist the day it is written.
-   *
-   * WHAT THIS ASSERTS, and what it deliberately does not. It compares the SET of amounts, not
-   * their placement: the bank may mention a price as often as it likes and in whatever sentence,
-   * but it may not name an amount the site does not. check-billing-copy owns what the site says,
-   * and check-price-matches-checkout owns whether Stripe agrees, so this one hop is the piece
-   * that was missing rather than a fourth opinion about the number.
-   *
-   * Spanish and Brazilian Portuguese write a decimal comma, correctly, so amounts are compared
-   * after normalising the separator.
-   */
-  const money = (s) => new Set(
-    [...s.matchAll(/(?:US\s?\$|\$)\s?(\d{1,3}(?:[.,]\d{2})?)/g)].map((m) => m[1].replace(",", ".")),
-  );
-  const site = money(readText("../index.html"));
-  assert.ok(site.size >= 2, `only found ${site.size} prices on the site; the scan is broken`);
+// ---------------------------------------------------------------- the Guide's prices, bound to their plan
+//
+// THE BANK IS A CLAIM SURFACE, AND IT WAS IN NONE OF THE CLAIM GUARDS (measured 2026-09-22): the
+// Guide answers 410 questions in eleven languages and states the prices in many of them, and no
+// claim guard read public/guide/prepared/*.json. A price is a public offer.
+//
+// WHAT THE FIRST VERSION OF THIS GUARD GOT WRONG (audit 2026-10-05, F-11). It compared the SET of
+// amounts in each bank with the set in ../index.html. Two defects, each enough on its own:
+//   - ../index.html is the RETIRED single page. Since 2026-10-04 build.js publishes v2/index.html
+//     as the homepage, so the baseline was a page nobody is served: the homepage could move a
+//     price and this guard would keep comparing the Guide with the old one.
+//   - A set forgets which plan a number belongs to. "Solo $249.99; Team $59.99" produces the same
+//     set as the true sentence, so swapped prices passed.
+//
+// WHAT IT DOES NOW.
+//   - The baseline is the published homepage, found through scripts/lib/published-copy.mjs (the one
+//     place that knows where the published copy lives), read from its plan cards the way
+//     check-price-matches-checkout reads them: the plan comes from the card's checkout link
+//     (?plan=solo), its heading must name the same plan, and the price is the single amount in
+//     <p class="price"><b>. Amounts are parsed by scripts/lib/copy-offers.mjs `amounts`, which
+//     already handles a decimal comma and a trailing currency (59,99 $). No price is written here:
+//     check-billing-copy owns the approved figures and check-price-matches-checkout owns whether
+//     Stripe agrees; this guard only says the Guide and the published page name the same price for
+//     the same plan.
+//   - Every amount in every answer is bound to a plan. The banks write the plan names in Latin
+//     script in every language ("Solo", "Team"), and in one of two orders: plan first ("Solo:
+//     $59.99", "Soloが$59.99", "Solo 版 $59.99", "Team license ... at $249.99") or amount first
+//     ("$59.99 for Solo", "$59.99 لخطة Solo", "59,99 $ для Solo"). Within one sentence, the order
+//     is decided by whichever comes first, a plan name or an amount, and each amount is bound to the
+//     plan name on that side of it with no other amount in between. An amount that cannot be bound
+//     is a failure, not a skip: it is a price no check knows the plan of.
+//   - The unknown-amount scan stays: an amount that is no plan's price fails on its own.
+//   - A bank that names no price at all is also wrong.
+const GUIDE_LANGS = ["en", "ar", "de", "es", "fr", "it", "ja", "ko", "pt-br", "ru", "zh"];
+const PLAN_NAME = { solo: "Solo", team: "Team" };
 
-  for (const lang of ["en", "ar", "de", "es", "fr", "it", "ja", "ko", "pt-br", "ru", "zh"]) {
-    const doc = load(lang);
-    const bank = money(doc.items.map((i) => `${i.answer ?? ""}\n${i.reply ?? ""}`).join("\n"));
-    const unknown = [...bank].filter((v) => !site.has(v));
-    assert.deepEqual(
-      unknown,
-      [],
-      `the ${lang} Guide states ${unknown.map((v) => "$" + v).join(", ")}, which the site does not. ` +
-        `The site states ${[...site].map((v) => "$" + v).join(", ")}. A price is a public offer, ` +
-        "so the Guide and the page have to name the same ones.",
-    );
-    assert.ok(bank.size > 0, `${lang} names no price at all, which is also wrong`);
+/** Each plan's price on a published page's plan cards, as { solo: cents, team: cents }. */
+function publishedPlanPrices(html) {
+  const out = {};
+  const problems = [];
+  const cards = [...html.replace(/<!--[\s\S]*?-->/g, " ").matchAll(/<article\b[^>]*class="plan\b[^"]*"[^>]*>([\s\S]*?)<\/article>/g)];
+  for (const [, card] of cards) {
+    const links = [...new Set([...card.matchAll(/[?&]plan=(\w+)/g)].map((x) => x[1]))];
+    const plan = links.length === 1 && PLANS.includes(links[0]) ? links[0] : null;
+    if (!plan) { problems.push(`a plan card sells [${links.join(", ")}], not exactly one known plan`); continue; }
+    const head = /<h3\b[^>]*>([\s\S]*?)<\/h3>/.exec(card);
+    if (!head || htmlText(head[1]).trim().toLowerCase() !== plan) problems.push(`the ${plan} card's heading does not name ${plan}`);
+    const b = /<p\b[^>]*class="price\b[^"]*"[^>]*>\s*<b\b[^>]*>([\s\S]*?)<\/b>/.exec(card);
+    const found = b ? amounts(htmlText(b[1])) : [];
+    if (found.length !== 1) { problems.push(`the ${plan} card has ${found.length} amounts in <p class="price"><b>`); continue; }
+    if (plan in out) problems.push(`two cards sell ${plan}`);
+    out[plan] = found[0].cents;
   }
+  for (const plan of PLANS) if (!(plan in out)) problems.push(`no plan card for ${plan}`);
+  if (problems.length) throw new Error(`the published homepage's plan cards could not be read: ${problems.join("; ")}`);
+  return out;
+}
 
-  // POSITIVE CONTROL: the comparison can fail, and the normaliser does its job.
-  assert.deepEqual([...money("costs $39.99 or US $199 today")].sort(), ["199", "39.99"]);
-  assert.deepEqual([...money("custa $39,99")].sort(), ["39.99"]);
-  assert.ok(!money("costs $39.99").has("49.99"), "the comparison would accept any amount");
+/** Every amount in one answer, each with the plan it is bound to (or null), sentence by sentence. */
+function boundAmounts(text) {
+  const out = [];
+  const plain = String(text).replace(/\*\*|__|`/g, "");
+  // A sentence ends at a line break, at CJK full stops, or at . ! ? followed by a space. A decimal
+  // point is never followed by a space, so "$59.99" is never split.
+  for (const sentence of plain.split(/\n|[。！？]|[.!?](?=\s)/)) {
+    const tokens = [];
+    let from = 0;
+    for (const a of amounts(sentence)) {
+      const at = sentence.indexOf(a.raw, from);
+      tokens.push({ type: "amount", at, cents: a.cents, raw: a.raw });
+      from = at + a.raw.length;
+    }
+    if (!tokens.length) continue;
+    for (const [plan, name] of Object.entries(PLAN_NAME)) {
+      for (const m of sentence.matchAll(new RegExp(`(?<![A-Za-z])${name}(?![a-z])`, "g"))) {
+        tokens.push({ type: "plan", at: m.index, plan });
+      }
+    }
+    tokens.sort((x, y) => x.at - y.at);
+    const planFirst = tokens[0].type === "plan";
+    tokens.forEach((t, i) => {
+      if (t.type !== "amount") return;
+      let plan = null;
+      const step = planFirst ? -1 : 1;
+      for (let j = i + step; j >= 0 && j < tokens.length; j += step) {
+        if (tokens[j].type === "amount") break;
+        plan = tokens[j].plan;
+        break;
+      }
+      out.push({ cents: t.cents, raw: t.raw, plan, sentence: sentence.trim() });
+    });
+  }
+  return out;
+}
+
+/** What is wrong with one language's bank against the published plan prices. */
+function guidePriceProblems(doc, prices) {
+  const problems = [];
+  const known = new Set(Object.values(prices));
+  let stated = 0;
+  for (const item of doc.items) {
+    for (const field of ["answer", "reply"]) {
+      if (!item[field]) continue;
+      for (const a of boundAmounts(item[field])) {
+        stated++;
+        const where = `${doc.lang} ${item.id} ${field}: "${a.raw}" in "${a.sentence.slice(0, 120)}"`;
+        if (!known.has(a.cents)) {
+          problems.push(`${where} is no plan's price; the published homepage states ` +
+            PLANS.map((p) => `${PLAN_NAME[p]} ${usd(prices[p])}`).join(", "));
+        } else if (!a.plan) {
+          problems.push(`${where} is not bound to a plan name in its sentence, so nothing checks which plan it prices`);
+        } else if (a.cents !== prices[a.plan]) {
+          problems.push(`${where} is stated as the ${PLAN_NAME[a.plan]} price; the published homepage's ` +
+            `${PLAN_NAME[a.plan]} card says ${usd(prices[a.plan])}`);
+        }
+      }
+    }
+  }
+  if (!stated) problems.push(`${doc.lang} names no price at all, which is also wrong`);
+  return problems;
+}
+
+const homepage = () => {
+  const page = publishedCopy().find((e) => e.kind === "page" && /<article\b[^>]*class="plan\b/.test(e.text));
+  assert.ok(page, "no published page carries the plan cards; published-copy.mjs and the homepage disagree");
+  return page;
+};
+
+test("every price the Guide states is the published price of the plan it names", () => {
+  const page = homepage();
+  assert.equal(page.file, "v2/index.html", "the plan cards moved; this guard must follow the published homepage");
+  const prices = publishedPlanPrices(page.text);
+  for (const lang of GUIDE_LANGS) {
+    assert.deepEqual(guidePriceProblems(load(lang), prices), [], `the ${lang} Guide disagrees with the published homepage`);
+  }
+});
+
+test("the Guide price guard rejects what the amount-set comparison let through (negative controls)", () => {
+  // Every control is a copy held in memory. Nothing is written to a bank or a page.
+  const page = homepage();
+  const prices = publishedPlanPrices(page.text);
+  const clean = (doc) => guidePriceProblems(doc, prices);
+  const swapAmounts = (s, a, b) => s.split(a).map((part) => part.split(b).join("\u0000")).join(b).split("\u0000").join(a);
+  const editOne = (doc, id, edit) => {
+    let hit = 0;
+    const items = doc.items.map((i) => {
+      if (i.id !== id) return i;
+      const answer = edit(i.answer);
+      if (answer !== i.answer) hit++;
+      return { ...i, answer };
+    });
+    assert.equal(hit, 1, `${doc.lang} ${id}: the control could not be planted; the answer changed shape`);
+    return { ...doc, items };
+  };
+  // The old predicate, kept here only to prove each control is one it missed.
+  const oldSet = (s) => new Set([...s.matchAll(/(?:US\s?\$|\$)\s?(\d{1,3}(?:[.,]\d{2})?)/g)].map((m) => m[1].replace(",", ".")));
+  const oldPasses = (doc, baseline) => {
+    const site = oldSet(baseline);
+    return [...oldSet(doc.items.map((i) => `${i.answer ?? ""}\n${i.reply ?? ""}`).join("\n"))].every((v) => site.has(v));
+  };
+  const retired = readText("../index.html");
+
+  // 0. The predicates themselves: binding in both orders, and a decimal comma read as cents.
+  const bound = (s) => boundAmounts(s).map((a) => [a.plan, a.cents]);
+  assert.deepEqual(bound("Solo: $59.99. Team: $249.99."), [["solo", 5999], ["team", 24999]]);
+  assert.deepEqual(bound("BugIt costs $59.99 for Solo and $249.99 for Team."), [["solo", 5999], ["team", 24999]]);
+  assert.deepEqual(bound("Solo 59,99 $ und Team 249,99 $."), [["solo", 5999], ["team", 24999]]);
+  assert.deepEqual(bound("BugItの料金はSoloが$59.99、Teamが$249.99です。"), [["solo", 5999], ["team", 24999]]);
+  assert.deepEqual(bound("It costs $59.99."), [[null, 5999]], "an amount with no plan in its sentence must stay unbound");
+
+  // 1. Swapped plans, both original amounts still present (the audit's own example).
+  const en = load("en");
+  assert.deepEqual(clean(en), []);
+  const swapped = editOne(en, "lb-001", (s) => swapAmounts(s, "$59.99", "$249.99"));
+  assert.ok(oldPasses(swapped, retired), "control 1 is not one the amount-set comparison missed");
+  assert.ok(clean(swapped).some((p) => /lb-001 .* is stated as the Solo price/.test(p)), "Solo $249.99 / Team $59.99 was accepted");
+  const auditExample = { lang: "en", items: [{ id: "x", answer: "Solo $249.99; Team $59.99" }] };
+  assert.equal(clean(auditExample).length, 2, "the audit's swapped sentence was accepted");
+
+  // 2. A wrong price in one translated answer only: German states the Solo price for Team, written
+  //    with the decimal comma and trailing currency German uses. Every other answer and language is
+  //    untouched, and both amounts remain elsewhere in the bank.
+  const de = load("de");
+  assert.deepEqual(clean(de), []);
+  const deWrong = editOne(de, "core:c-07", (s) => s.replace("**Team: 249,99 $**", "**Team: 59,99 $**"));
+  assert.ok(oldPasses(deWrong, retired), "control 2 is not one the amount-set comparison missed");
+  const deProblems = clean(deWrong);
+  assert.equal(deProblems.length, 1, deProblems.join("\n"));
+  assert.match(deProblems[0], /^de core:c-07 answer: .* stated as the Team price/);
+  // ...and a translated answer with an amount that is no plan's price is still caught by the scan.
+  const jaWrong = editOne(load("ja"), "lb-004", (s) => s.replace("$249.99", "$199.99"));
+  assert.ok(clean(jaWrong).some((p) => /^ja lb-004 .* is no plan's price/.test(p)), "an unknown amount in Japanese was accepted");
+
+  // 3. The published homepage moves a price while the retired index.html is unchanged. The Guide
+  //    still says $59.99, so it must now be rejected, which the old baseline could never do.
+  const solo = /<article\b[^>]*class="plan\b[\s\S]*?\?plan=solo[\s\S]*?<\/article>/.exec(page.text)[0];
+  const moved = page.text.replace(solo, solo.replace(/(<p\b[^>]*class="price[^>]*>\s*<b>)[^<]*/, (_m, a) => `${a}$69.99`));
+  assert.notEqual(moved, page.text, "control 3 could not be planted; the homepage's plan card changed shape");
+  const movedPrices = publishedPlanPrices(moved);
+  assert.equal(movedPrices.solo, 6999);
+  assert.ok(oldPasses(en, retired), "control 3 is not one the retired baseline missed");
+  assert.ok(guidePriceProblems(en, movedPrices).some((p) => /is no plan's price/.test(p)), "a v2 price change did not reach the Guide check");
+
+  // 4. A bank that states no price, and a price with no plan beside it, are failures too.
+  assert.deepEqual(clean({ lang: "xx", items: [{ id: "x", answer: "No prices here." }] }), ["xx names no price at all, which is also wrong"]);
+  assert.match(clean({ lang: "xx", items: [{ id: "x", answer: "It costs $59.99." }] })[0], /not bound to a plan name/);
 });

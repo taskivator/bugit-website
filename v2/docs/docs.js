@@ -267,16 +267,39 @@
   }
   function openSearch() {
     var dlg = $("#search"); if (dlg.open) return;
-    dlg.showModal(); var q = $("#q"); q.value = ""; q.focus(); results("");
-    buildIndex().then(function () { results(q.value); });
+    dlg.showModal(); var q = $("#q"); q.value = ""; q.setAttribute("aria-expanded", "true"); q.focus(); results("");
+    buildIndex().then(function () { if (dlg.open) results(q.value); });
   }
+  /* Search is a combobox (audit 2026-10-05 F-08). Focus never leaves #q, so typing keeps refining,
+     and the result the arrows have chosen is announced through aria-activedescendant. The class
+     "sel" (what the eye sees), aria-selected (what a screen reader is told) and the input's
+     aria-activedescendant are set in ONE place, here, so the three cannot disagree; before this the
+     arrows moved the class only and the listbox held no options at all. Every render replaces the
+     list, so every render ends by calling this: the old descendant id is removed first, and only
+     an element in the list now can be named. i < 0 selects nothing. */
+  function selectResult(i, scroll) {
+    var q = $("#q"), all = [].slice.call(document.querySelectorAll("#results a[role=option]"));
+    q.removeAttribute("aria-activedescendant");
+    all.forEach(function (a, n) {
+      var on = n === i;
+      a.classList.toggle("sel", on); a.setAttribute("aria-selected", String(on));
+      if (on) q.setAttribute("aria-activedescendant", a.id);
+    });
+    if (scroll && all[i]) all[i].scrollIntoView({ block: "nearest" });
+  }
+  // A row that is only a message (loading, no results) is a disabled option: a listbox may hold
+  // nothing else, and the arrows and Enter skip it because they only look at the result links.
+  function note(text) { return '<li class="r-empty" role="option" aria-disabled="true" aria-selected="false">' + text + "</li>"; }
+  var asked = 0;
   function results(q) {
-    var list = $("#results"); q = q.trim().toLowerCase();
+    var list = $("#results"), my = ++asked; q = q.trim().toLowerCase();
     if (!q) {
-      list.innerHTML = DOCS.map(function (d, i) { return item(d, null, esc(d.desc || ""), i === 0); }).join(""); return;
+      list.innerHTML = DOCS.map(function (d, i) { return item(d, null, esc(d.desc || ""), i); }).join(""); selectResult(0); return;
     }
-    if (!index) { list.innerHTML = '<li class="r-empty">' + T("d.loading", "Loading…") + '</li>'; return; }
+    if (!index) { list.innerHTML = note(T("d.loading", "Loading…")); selectResult(-1); return; }
     index.then(function (rows) {
+      // A slower answer for an older query must not replace the list the newer one drew.
+      if (my !== asked) return;
       var seen = {}, hits = [];
       rows.forEach(function (r) {
         var i = r.text.toLowerCase().indexOf(q); if (i < 0) return;
@@ -286,11 +309,14 @@
         hits.push({ d: r.d, h: r.h, s: esc(snip).replace(re, "<mark>$1</mark>"), score: (r.h ? 0 : 4) + (r.h && r.text === r.h.text ? 2 : 0) + (r.d.t.toLowerCase().indexOf(q) >= 0 ? 1 : 0) });
       });
       hits.sort(function (x, y) { return y.score - x.score; });
-      list.innerHTML = hits.length ? hits.slice(0, 12).map(function (h, i) { return item(h.d, h.h, h.s, i === 0); }).join("") : '<li class="r-empty">' + T("d.noResults", "No results for “{q}”").replace("{q}", esc(q)) + "</li>";
+      list.innerHTML = hits.length ? hits.slice(0, 12).map(function (h, i) { return item(h.d, h.h, h.s, i); }).join("") : note(T("d.noResults", "No results for “{q}”").replace("{q}", esc(q)));
+      selectResult(hits.length ? 0 : -1);
     });
   }
-  function item(d, h, snip, first) {
-    return '<li><a class="r' + (first ? " sel" : "") + '" href="#/' + d.r + '"' + (h ? ' data-section="' + h.id + '"' : "") + '><span class="ic">' + icon(d.i) + '</span><span class="r-t"><b>' + esc(d.t) + (h ? ' <em>› ' + esc(h.text) + "</em>" : "") + "</b><small>" + snip + "</small></span></a></li>";
+  // The id is the row's position in this render: unique by construction, and selectResult()
+  // re-points the input after every render, so it never names a row that has gone.
+  function item(d, h, snip, n) {
+    return '<li role="presentation"><a id="docs-result-' + n + '" role="option" aria-selected="false" class="r" href="#/' + d.r + '"' + (h ? ' data-section="' + h.id + '"' : "") + '><span class="ic">' + icon(d.i) + '</span><span class="r-t"><b>' + esc(d.t) + (h ? ' <em>› ' + esc(h.text) + "</em>" : "") + "</b><small>" + snip + "</small></span></a></li>";
   }
 
   /* ── wiring ────────────────────────────────────────────────────────────────────────────── */
@@ -319,15 +345,15 @@
     });
     $("#q").addEventListener("input", function () { results(this.value); });
     $("#q").addEventListener("keydown", function (e) {
-      var all = [].slice.call(document.querySelectorAll("#results a")), i = all.findIndex(function (a) { return a.classList.contains("sel"); });
+      var all = [].slice.call(document.querySelectorAll("#results a[role=option]")), i = all.findIndex(function (a) { return a.classList.contains("sel"); });
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault(); if (!all.length) return;
-        if (i >= 0) all[i].classList.remove("sel");
-        i = (i + (e.key === "ArrowDown" ? 1 : -1) + all.length) % all.length;
-        all[i].classList.add("sel"); all[i].scrollIntoView({ block: "nearest" });
+        selectResult((i + (e.key === "ArrowDown" ? 1 : -1) + all.length) % all.length, true);
       } else if (e.key === "Enter" && i >= 0) { e.preventDefault(); all[i].click(); }
     });
     $("#search").addEventListener("click", function (e) { if (e.target === this) this.close(); });
+    // Every way the dialog closes (Esc, a click outside, choosing a result) ends here.
+    $("#search").addEventListener("close", function () { var q = $("#q"); q.setAttribute("aria-expanded", "false"); q.removeAttribute("aria-activedescendant"); });
     // reading progress in the nav
     var bar = $("#progress");
     window.addEventListener("scroll", function () {

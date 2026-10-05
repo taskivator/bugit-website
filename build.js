@@ -254,7 +254,7 @@ console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of d
     try {
       const out = execFileSync(
         'git',
-        ['log', '-1', '--format=%cs', '--', 'index.html', 'app.js', 'styles.css', 'public'],
+        ['log', '-1', '--format=%cs', '--', 'v2', 'consent.js', 'public'],
         { cwd: root, encoding: 'utf8' },
       ).trim();
       if (/^\d{4}-\d{2}-\d{2}$/.test(out)) stamped = out;

@@ -9,7 +9,7 @@
  "t008": "Obtener BugIt",
  "t009": "<span class=\"dot\"></span>Agente de QA · se ejecuta en tu asistente de IA",
  "t010": "Cuenta qué falló.<br><span class=\"grad\">BugIt escribe el ticket.</span>",
- "t011": "Una frase suelta se convierte en un reporte de error completo. Cinco comprobaciones se ejecutan en tu equipo y nada llega a tu tracker hasta que escribes <kbd>FILE IT</kbd>.",
+ "t011": "Una frase suelta se convierte en un reporte de error completo. Revisas cada borrador y no se escribe nada en tu tracker hasta que escribes <kbd>FILE IT</kbd>.",
  "t012": "Obtener BugIt",
  "t013": "Pruébalo gratis",
  "t014": "Pregunta a BugIt",
@@ -72,10 +72,10 @@
  "t071": "Título, pasos, esperado y real, severidad y plataforma, en el idioma y el estilo de tu equipo.",
  "t072": "Tú escribes FILE IT",
  "t073": "Entonces pasa a tu tracker con tu propio token. Ni un momento antes.",
- "t074": "Siempre activo, en tu equipo",
- "t075": "Cinco comprobaciones antes de ver el borrador.",
+ "t074": "Integrado, sin nada que activar",
+ "t075": "Hasta cinco comprobaciones antes de ver el borrador.",
  "t076": "Duplicados",
- "t077": "Busca en tu tracker tickets parecidos al tuyo y puntúa cada uno.",
+ "t077": "Busca en tu tracker, solo en modo lectura, tickets parecidos al tuyo y puntúa cada uno. Los reportes rápidos se lo saltan.",
  "t078": "KAN-148 El spinner de inicio de sesión nunca se detiene",
  "t079": "KAN-131 Mensaje de límite de intentos de login",
  "t080": "Severidad",
@@ -256,5 +256,7 @@
  "js.q16": "¿Puede registrar un bug dos veces?",
  "js.a16": "¿BugIt puede enviar el mismo ticket dos veces por accidente?",
  "t184": "Transacciones Comerciales",
- "t185": "Seguridad"
+ "t185": "Seguridad",
+ "lang.ariaLabel": "Idioma: {language}",
+ "menu.label": "Menú"
 }

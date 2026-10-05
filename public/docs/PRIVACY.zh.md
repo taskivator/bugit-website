@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**最后更新：2026年9月26日**
+**最后更新：2026年10月5日**
 
 本政策说明当您使用 BugIt 网站（bugit.dev）、BugIt Portal（账户、购买及许可证管理）以及 BugIt QA Agent 软件时，我们会处理哪些个人数据，以及您拥有哪些选择与权利。
 
@@ -104,7 +104,7 @@ Portal 提供“询问 BugIt”助手，用于回答有关 BugIt 和您账户的
 
 本网站使用运行所必需的 Cookie。广告 Cookie 默认关闭，仅在您通过 Cookie 提示条或 **Cookie 偏好设置**开启后才会加载。我们使用 Cloudflare Web Analytics 了解网站整体性能，该服务不使用 Cookie，也不会跨站点追踪您。您可以随时更改或撤回您的选择。
 
-网站上的视频嵌入自 YouTube。在您按下播放之前，不会向 YouTube 发出任何请求，在此之前页面只显示由我们提供的图片。当您按下播放时，播放器会从 YouTube 的隐私增强主机 youtube-nocookie.com 加载，Google 会收到您的 IP 地址和所选视频以便播放。如果您从不按下播放，视频板块不会向 Google 发送任何内容。
+网站上的介绍视频是一个指向 YouTube 的链接。在您打开该链接之前，页面只显示由 bugit.dev 提供的图片，不会从 YouTube 加载任何内容。打开链接后，youtube.com 会在新标签页中打开，YouTube 将依据其自身的隐私政策和 Cookie 政策处理您的访问。您在 bugit.dev 上的 Cookie 选择并不控制 YouTube 的行为。
 
 ## 您的权利
 

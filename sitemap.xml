@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- bugit.dev is a single-page application with hash-based routing (for example
-     /#/docs/privacy). Hash fragments are not valid sitemap entries: every hash
-     route serves the same HTML document, whose canonical URL is https://bugit.dev/.
-     Files under /public/docs/ are fetchable raw assets (Markdown, plain text, PDF),
-     not canonical HTML pages, so the homepage is intentionally the only URL listed.
-     Add entries here only if a real standalone HTML page with its own canonical tag
-     is introduced. -->
+<!-- bugit.dev has two standalone HTML pages, each with its own canonical tag: the homepage and
+     /docs/. The docs reader routes inside /docs/ with hash fragments (for example
+     /docs/#/docs/privacy); fragments are not valid sitemap entries and every one of them serves
+     the /docs/ document, so they are not listed. Files under /public/docs/ are fetchable raw
+     assets (Markdown, plain text, PDF), not canonical HTML pages, and are not listed either.
+     Add an entry only for a real standalone HTML page with its own canonical tag. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bugit.dev/</loc>
     <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/</loc>
+    <lastmod>2026-07-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

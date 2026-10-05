@@ -13,7 +13,8 @@
  * WHAT IT HOLDS, each in Chromium:
  *   1. The old single page addresses still land. Links to /#/docs/privacy, /#/support, /#features
  *      are printed in the VS Code agent (frozen releases included), the PDF guides and the portal;
- *      v2/route.js forwards them, and a fragment never reaches _redirects.
+ *      v2/route.js forwards them, and a fragment never reaches _redirects. Also AFTER load: a Guide
+ *      source chip on the homepage changes only the fragment, and must land on /docs/ too.
  *   2. Both pages render in every language at a phone and a desktop width with no page error, no
  *      failed request and no sideways scroll, and the language the visitor chose is the one shown.
  *   3. A first visit shows the consent banner and makes no request to Google.
@@ -98,10 +99,48 @@ async function forwards(blockRoute) {
   return wrong;
 }
 
+/* AN OLD ADDRESS REACHED AFTER LOAD (audit 2026-10-05 F-03). The Guide's source chips are written
+   "#/docs/getting-started", so on the homepage a chip only changes the fragment; route.js looked
+   once, at load, and the visitor stayed on the homepage with no document. Both ways in are driven:
+   a real Guide answer's chip, clicked (at a phone width too, where the chip also closes the panel),
+   and the fragment set by script after load. Each must end on /docs/ with a document heading. */
+async function afterLoad(blockRoute) {
+  const wrong = [];
+  const land = async (page, how) => {
+    await page.waitForURL(/\/docs\/#\/docs\//, { timeout: 8000 }).catch(() => {});
+    await page.waitForSelector("#docsMain h1", { timeout: 8000 }).catch(() => {});
+    const u = new URL(page.url());
+    const h1 = await page.evaluate(() => (document.querySelector("#docsMain h1")?.textContent || "").trim()).catch(() => "");
+    if (!(u.pathname === "/docs/" && u.hash.startsWith("#/docs/") && h1)) wrong.push(`${how} -> ${u.pathname + u.hash}${h1 ? "" : " (no document heading)"}`);
+  };
+  for (const w of [1440, 360]) {
+    const { ctx, page } = await open(w, "en", { blockRoute });
+    await page.goto(B + "/", { waitUntil: "networkidle" });
+    await page.waitForFunction(() => window.BugitGuide && typeof window.BugitGuide.ask === "function", null, { timeout: 15000 }).catch(() => {});
+    await page.evaluate(() => window.BugitGuide.ask("What is BugIt?")).catch(() => {});
+    const chip = await page.waitForSelector('.bgd-chip[href^="#/docs"]', { timeout: 15000 }).catch(() => null);
+    if (!chip) wrong.push(`${w}px: the Guide's answer to "What is BugIt?" showed no docs source chip`);
+    else { await chip.click(); await land(page, `${w}px: Guide source chip`); }
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await open(1440, "en", { blockRoute });
+    await page.goto(B + "/", { waitUntil: "networkidle" });
+    await page.evaluate(() => { location.hash = "#/docs/getting-started"; });
+    await land(page, "fragment set after load");
+    await ctx.close();
+  }
+  return wrong;
+}
+
 try {
   console.log("check-redesign: old single page addresses land on the new pages");
   const wrong = await forwards(false);
   check(wrong.length === 0, "every old address is forwarded", wrong.join("; "));
+
+  console.log("check-redesign: an old address reached after load (a Guide source chip) lands too");
+  const late = await afterLoad(false);
+  check(late.length === 0, "an old address reached after load is forwarded", late.join("; "));
 
   console.log("check-redesign: both pages, every language, phone and desktop");
   for (const route of ["/", "/docs/", "/docs/#/docs/privacy"]) {
@@ -155,6 +194,9 @@ try {
   const controlWrong = await forwards(true);
   if (controlWrong.length === 0) failures.push("[control] with route.js emptied, every old address still landed, so the forwarding check proves nothing");
   else console.log(`  negative control fired: ${controlWrong.length} of ${FORWARDS.length} addresses went wrong without route.js`);
+  const lateControl = await afterLoad(true);
+  if (lateControl.length === 0) failures.push("[control] with route.js emptied, an old address reached after load still landed, so that check proves nothing");
+  else console.log(`  negative control fired: ${lateControl.length} of 3 after-load cases went wrong without route.js`);
 } finally {
   await browser.close();
   server.kill();

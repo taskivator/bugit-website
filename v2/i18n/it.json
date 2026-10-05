@@ -9,7 +9,7 @@
  "t008": "Ottieni BugIt",
  "t009": "<span class=\"dot\"></span>Agente QA · funziona nel tuo assistente IA",
  "t010": "Di’ cosa non va.<br><span class=\"grad\">BugIt scrive il ticket.</span>",
- "t011": "Una frase buttata lì diventa una segnalazione di bug completa. Cinque controlli girano sul tuo computer e nulla arriva al tuo tracker finché non scrivi <kbd>FILE IT</kbd>.",
+ "t011": "Una frase buttata lì diventa una segnalazione di bug completa. Rivedi ogni bozza e nel tuo tracker non viene scritto nulla finché non scrivi <kbd>FILE IT</kbd>.",
  "t012": "Ottieni BugIt",
  "t013": "Provalo gratis",
  "t014": "Chiedi a BugIt",
@@ -72,10 +72,10 @@
  "t071": "Titolo, passaggi, atteso e ottenuto, gravità e piattaforma, nella lingua e nello stile del tuo team.",
  "t072": "Tu scrivi FILE IT",
  "t073": "Solo allora arriva al tuo tracker con il tuo token. Non un attimo prima.",
- "t074": "Sempre attivo, sul tuo computer",
- "t075": "Cinque controlli prima che tu veda la bozza.",
+ "t074": "Integrato, niente da attivare",
+ "t075": "Fino a cinque controlli prima che tu veda la bozza.",
  "t076": "Duplicati",
- "t077": "Cerca nel tuo tracker ticket simili al tuo e dà un punteggio a ciascuno.",
+ "t077": "Cerca nel tuo tracker, in sola lettura, ticket simili al tuo e dà un punteggio a ciascuno. I bug rapidi saltano questo passaggio.",
  "t078": "KAN-148 Lo spinner di accesso non si ferma mai",
  "t079": "KAN-131 Messaggio di limite sugli accessi",
  "t080": "Gravità",
@@ -256,5 +256,7 @@
  "js.q16": "Può registrare lo stesso bug due volte?",
  "js.a16": "BugIt può inviare per errore lo stesso ticket due volte?",
  "t184": "Transazioni Commerciali",
- "t185": "Sicurezza"
+ "t185": "Sicurezza",
+ "lang.ariaLabel": "Lingua: {language}",
+ "menu.label": "Menu"
 }

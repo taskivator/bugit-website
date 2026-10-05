@@ -9,7 +9,11 @@
   var T = function (k, en) { return window.V2T ? window.V2T(k, en) : en; };
   var NOTE = function () { return T("js.note", "checkout total wrong with SAVE20 after switching to annual. jane@acme.com saw it too, prod. log attached"); };
   var ANSWER = function () { return T("js.answer", "2.14.1, every time"); };
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* The preference is kept as the live MediaQueryList, not a value read once (audit 2026-10-05
+     F-07): a visitor who turns on reduced motion with the page open got the demo typing on to the
+     end. The change listener is installed after finish() below. */
+  var motion = null; try { motion = window.matchMedia("(prefers-reduced-motion: reduce)"); } catch (e) {}
+  var reduce = !!(motion && motion.matches);
   var $ = function (id) { return document.getElementById(id); };
   var demo = $("demo"), typed = $("typed"), typed2 = $("typed2"), ask = $("ask"), answer = $("answer"),
       attach = $("attach"), gate = $("gate"), input = $("gateInput"), btn = $("gateBtn"), filed = $("filed");
@@ -100,7 +104,9 @@
       if (i < text.length) later(tick, 16 + Math.random() * 24); else done();
     })();
   }
+  var started = false;
   function play() {
+    started = true;
     reset();
     if (reduce) { finish(); return; }
     type(typed, NOTE(), function () {
@@ -145,6 +151,22 @@
   });
   $("replay").addEventListener("click", play);
 
+  /* Reduced motion switched on mid play: every scheduled step is cancelled and the demo jumps to
+     its finished state, which is exactly what a cold reduced motion load shows. finish(), never
+     reset(): reset() would empty the gate and erase what the visitor typed. A demo that has not
+     started yet, or has already reached the gate, is left as it is, so a refused FILE IT hint is
+     not overwritten. Switched back off, nothing restarts on its own; Replay plays it with motion. */
+  function onMotion(e) {
+    reduce = !!e.matches;
+    if (!reduce) return;
+    timers.forEach(clearTimeout); timers = [];
+    if (started && !demo.classList.contains("done")) finish();
+  }
+  if (motion) {
+    if (motion.addEventListener) motion.addEventListener("change", onMotion);
+    else if (motion.addListener) motion.addListener(onMotion);
+  }
+
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (es) {
       if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); play(); }
@@ -158,7 +180,8 @@
     var co = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
         if (!e.isIntersecting) return;
-        co.unobserve(e.target); e.target.classList.add("lit");
+        co.unobserve(e.target); if (reduce) return; // turned on after load: no more lighting
+        e.target.classList.add("lit");
         setTimeout(function () { e.target.classList.remove("lit"); }, 1400);
       });
     }, { threshold: 0.6 });
@@ -205,8 +228,14 @@
   ];
   var qs = QS.map(function (q) { return q[1]; }), asks = QS.map(function (q) { return q[3]; });
   document.addEventListener("v2:lang", function () { qs = QS.map(function (q) { return window.V2T(q[0], q[1]); }); asks = QS.map(function (q) { return window.V2T(q[2], q[3]); }); qi = 0; ci = qs[0].length; dir = -1; out.textContent = qs[0]; base = 0; fit(qs[0]); });
-  var reduce = false; try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
-  if (reduce) { out.textContent = qs[0]; fit(qs[0]); return; }
+  /* Reduced motion is followed LIVE (audit 2026-10-05 F-07). It used to be read once, and a
+     reduced load returned before any listener existed, so turning the preference on with the page
+     open left the question typing and turning it off never started it. Now there is ONE timer
+     chain, its id is kept in `timer` on every scheduling path, and tick() checks the preference
+     before it touches the text. The language listener above changes only the text and position,
+     never schedules, so a language switch cannot start a second chain. */
+  var motion = null; try { motion = matchMedia("(prefers-reduced-motion: reduce)"); } catch (e) {}
+  var reduce = !!(motion && motion.matches);
   // Each question stays on screen 7 seconds once typed (owner, 2026-10-03: "make it stay 5 seconds longer").
   // ONE LINE, THE WHOLE QUESTION. Before a question types, its full width is measured and the
   // type eased down just enough to fit, never below 13px; check-ask-questions keeps them short
@@ -221,15 +250,35 @@
     out.textContent = keep;
   }
   window.addEventListener("resize", function () { base = 0; fit(qs[qi % qs.length]); });
-  fit(qs[0]);
-  var qi = 0, ci = qs[0].length, dir = -1;
-  (function tick() {
+  var qi = 0, ci = qs[0].length, dir = -1, timer = 0;
+  // The whole current question, still: the reduced motion state, and where a change to it lands.
+  function still() {
+    clearTimeout(timer); timer = 0;
     var q = qs[qi % qs.length];
-    if (dir > 0) { ci++; if (ci >= q.length) { dir = -1; return setTimeout(tick, 7200); } }
-    else { ci--; if (ci <= 0) { dir = 1; qi++; q = qs[qi % qs.length]; fit(q); return setTimeout(tick, 300); } }
+    ci = q.length; dir = -1; out.textContent = q; fit(q);
+  }
+  function tick() {
+    timer = 0;
+    if (reduce) return;
+    var q = qs[qi % qs.length];
+    if (dir > 0) { ci++; if (ci >= q.length) { dir = -1; timer = setTimeout(tick, 7200); return; } }
+    else { ci--; if (ci <= 0) { dir = 1; qi++; q = qs[qi % qs.length]; fit(q); timer = setTimeout(tick, 300); return; } }
     out.textContent = q.slice(0, ci);
-    setTimeout(tick, dir > 0 ? 45 : 22);
-  })();
+    timer = setTimeout(tick, dir > 0 ? 45 : 22);
+  }
+  function onMotion(e) {
+    reduce = !!e.matches;
+    if (reduce) still();
+    // Back to motion: the full question is on screen, so it holds its usual 7 seconds, then the
+    // one chain resumes. `!timer` keeps it to one even if the event fires twice.
+    else if (!timer) timer = setTimeout(tick, 7200);
+  }
+  if (motion) {
+    if (motion.addEventListener) motion.addEventListener("change", onMotion);
+    else if (motion.addListener) motion.addListener(onMotion);
+  }
+  if (reduce) still();
+  else { fit(qs[0]); tick(); }
 })();
 
 /* A language change replays the demo in the new language. */

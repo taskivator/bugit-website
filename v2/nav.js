@@ -22,7 +22,7 @@
 
   var menu = document.createElement("div");
   menu.className = "mnav"; menu.id = "mnav"; menu.hidden = true;
-  var ul = document.createElement("nav"); ul.className = "mnav-links"; ul.setAttribute("aria-label", "Menu");
+  var ul = document.createElement("nav"); ul.className = "mnav-links"; ul.setAttribute("aria-label", "Menu"); ul.dataset.ka = "aria-label:menu.label"; // translated by i18n.js, which runs after this
   if (links) [].forEach.call(links.querySelectorAll("a"), function (a) { ul.appendChild(a.cloneNode(true)); });
   if (signin) ul.appendChild(signin.cloneNode(true)).className = "mnav-signin";
   menu.appendChild(ul);

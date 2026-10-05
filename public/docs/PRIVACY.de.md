@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Zuletzt aktualisiert: 26. September 2026**
+**Zuletzt aktualisiert: 5. Oktober 2026**
 
 Diese Erklärung beschreibt, welche personenbezogenen Daten wir verarbeiten, wenn Sie
 die BugIt Website (bugit.dev), das BugIt Portal (Konto, Kauf und Lizenzverwaltung)
@@ -208,7 +208,7 @@ Website-Performance nutzen wir Cloudflare Web Analytics; dies kommt ohne Cookies
 und verfolgt Sie nicht websiteübergreifend. Sie können Ihre Entscheidung jederzeit
 ändern oder widerrufen.
 
-Videos auf der Website sind von YouTube eingebettet. Bis Sie auf Wiedergabe drücken, wird nichts von YouTube angefordert: bis dahin zeigt die Seite nur ein von uns ausgeliefertes Bild. Wenn Sie die Wiedergabe starten, wird der Player von youtube-nocookie.com geladen, dem datenschutzfreundlichen Host von YouTube, und Google erhält Ihre IP-Adresse und das gewählte Video, um es abspielen zu können. Wenn Sie nie auf Wiedergabe drücken, sendet der Videobereich nichts an Google.
+Das Einführungsvideo auf der Website ist ein Link zu YouTube. Bis Sie ihm folgen, zeigt die Seite nur ein von bugit.dev ausgeliefertes Bild und lädt nichts von YouTube. Wenn Sie dem Link folgen, öffnet sich youtube.com in einem neuen Tab, und YouTube verarbeitet Ihren Besuch nach seinen eigenen Datenschutz- und Cookie-Richtlinien. Ihre Cookie-Auswahl auf bugit.dev hat keinen Einfluss darauf, was YouTube tut.
 
 ## Ihre Rechte
 

@@ -91,9 +91,12 @@
   function set(l, chosen, transient) {
     l = norm(l) || "en";
     var my = ++seq;
-    // The value is written for a guess too, marked 'auto', because the portal reads it across
-    // .bugit.dev and an auto-detected Japanese should carry into it. Only a click marks 'user'.
-    if (!transient) { writeCookie("bugitLang", l); try { localStorage.setItem("bugitLang", l); } catch (e) {} mark(chosen ? "user" : "auto"); }
+    // Only a CLICK is stored. A guess from the browser language is shown and not written: storing
+    // it put two values in the visitor's cookies and storage before any consent decision, which
+    // the consent contract (2.4) does not allow, and the portal never needed it, because it reads
+    // Accept-Language itself and treats bugitLang as a click (portal lib/i18n/server.ts).
+    // External audit 2026-10-05, F-04.
+    if (chosen && !transient) { writeCookie("bugitLang", l); try { localStorage.setItem("bugitLang", l); } catch (e) {} mark("user"); }
     // Only the latest request may paint: choosing Japanese and then English while Japanese is
     // still loading must end in English.
     return load(l).then(function (d) { if (my === seq) apply(l, d); }).catch(function () { if (my === seq) apply("en", {}); });
@@ -132,7 +135,9 @@
   function paintPicker() {
     if (!btn) return;
     btn.querySelector(".lang-now").textContent = LANGS[CODES.indexOf(lang)][1];
-    btn.setAttribute("aria-label", "Language: " + LANGS[CODES.indexOf(lang)][1]);
+    // The whole spoken name comes from the dictionary: a native language name behind an English
+    // "Language:" left screen reader users with a half translated control.
+    btn.setAttribute("aria-label", window.V2T("lang.ariaLabel", "Language: {language}").replace("{language}", LANGS[CODES.indexOf(lang)][1]));
     [].forEach.call(list.querySelectorAll("[data-lang]"), function (o) { o.setAttribute("aria-selected", String(o.dataset.lang === lang)); });
   }
 

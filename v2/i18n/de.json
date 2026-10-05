@@ -9,7 +9,7 @@
  "t008": "BugIt holen",
  "t009": "<span class=\"dot\"></span>QA-Agent · läuft in Ihrem KI-Assistenten",
  "t010": "Sagen Sie, was kaputt ist.<br><span class=\"grad\">BugIt schreibt das Ticket.</span>",
- "t011": "Aus einem groben Satz wird ein vollständiger Fehlerbericht. Fünf Prüfungen laufen auf Ihrem Rechner, und nichts erreicht Ihren Tracker, bevor Sie <kbd>FILE IT</kbd> eingeben.",
+ "t011": "Aus einem groben Satz wird ein vollständiger Fehlerbericht. Sie prüfen jeden Entwurf, und in Ihren Tracker wird nichts geschrieben, bevor Sie <kbd>FILE IT</kbd> eingeben.",
  "t012": "BugIt holen",
  "t013": "Kostenlos testen",
  "t014": "BugIt fragen",
@@ -72,10 +72,10 @@
  "t071": "Titel, Schritte, erwartet und tatsächlich, Schweregrad und Plattform, in der Sprache und im Hausstil Ihres Teams.",
  "t072": "Sie geben FILE IT ein",
  "t073": "Dann geht es mit Ihrem eigenen Token an Ihren Tracker. Keinen Moment früher.",
- "t074": "Immer aktiv, auf Ihrem Rechner",
- "t075": "Fünf Prüfungen, bevor Sie den Entwurf sehen.",
+ "t074": "Eingebaut, nichts einzuschalten",
+ "t075": "Bis zu fünf Prüfungen, bevor Sie den Entwurf sehen.",
  "t076": "Duplikate",
- "t077": "Durchsucht Ihren Tracker nach ähnlichen Tickets und bewertet jedes mit einem Score.",
+ "t077": "Durchsucht Ihren Tracker nur lesend nach ähnlichen Tickets und bewertet jedes mit einem Score. Schnellberichte überspringen das.",
  "t078": "KAN-148 Anmelde-Spinner hört nie auf",
  "t079": "KAN-131 Meldung zum Login-Limit",
  "t080": "Schweregrad",
@@ -256,5 +256,7 @@
  "js.q16": "Legt es denselben Bug doppelt an?",
  "js.a16": "Kann BugIt versehentlich dasselbe Ticket zweimal einreichen?",
  "t184": "Handelsrechtliche Angaben",
- "t185": "Sicherheit"
+ "t185": "Sicherheit",
+ "lang.ariaLabel": "Sprache: {language}",
+ "menu.label": "Menü"
 }

@@ -67,10 +67,10 @@
 <dialog class="search" id="search" aria-label="Search the docs" data-ka="aria-label:d.search">
   <div class="search-box">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
-    <input id="q" type="search" placeholder="Search guides, policies and answers" data-ka="placeholder:d.searchPh" autocomplete="off" spellcheck="false" aria-controls="results">
+    <input id="q" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-label="Search the docs" placeholder="Search guides, policies and answers" data-ka="placeholder:d.searchPh,aria-label:d.search" autocomplete="off" spellcheck="false" aria-controls="results">
     <kbd>Esc</kbd>
   </div>
-  <ul class="results" id="results" role="listbox"></ul>
+  <ul class="results" id="results" role="listbox" aria-label="Search the docs" data-ka="aria-label:d.search"></ul>
   <p class="search-foot"><span data-k="d.toMove"><kbd>↑</kbd><kbd>↓</kbd> to move</span><span data-k="d.toOpen"><kbd>Enter</kbd> to open</span></p>
 </dialog>
 
