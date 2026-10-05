@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/articles/catch-duplicate-bugs-before-filing/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="Catch duplicate bugs before you file them · BugIt">
+<meta property="og:description" content="Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.">
+<meta property="og:url" content="https://bugit.dev/articles/catch-duplicate-bugs-before-filing/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Catch duplicate bugs before you file them · BugIt">
+<meta name="twitter:description" content="Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>Catch duplicate bugs before you file them · BugIt</title>
+<meta name="description" content="Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<link rel="stylesheet" href="/v2/articles/articles.css">
+<script src="/v2/articles/articles.js" defer></script>
+</head>
+<body class="article-page is-home">
+<a class="skip" href="#main">Skip to content</a>
+<span class="read-progress" id="readProgress" aria-hidden="true"></span>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="/#how">How it works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/articles/">Guides</a>
+  </nav>
+  <div class="nav-end">
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing">Get BugIt</a>
+  </div>
+</header>
+
+<main id="main" class="article" tabindex="-1">
+  <header class="a-hero">
+    <p class="crumbs"><a href="/articles/">Guides</a><span aria-hidden="true"> / </span><span>duplicate bugs</span></p>
+    <h1>Catch duplicate bugs before you file them</h1>
+    <p class="a-sum">Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.</p>
+    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="2026-10-05">2026-10-05</time></span><span>5 min read</span></p>
+    <ul class="a-tags" aria-label="Topics"><li>duplicate bugs</li><li>duplicate bug detection</li><li>bug triage</li></ul>
+  </header>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+<li><a href="#why-a-plain-keyword-search-misses">Why a plain keyword search misses</a></li>
+<li><a href="#six-moves-before-you-hit-file">Six moves before you hit file</a></li>
+<li><a href="#duplicate-related-or-different">Duplicate, related or different?</a></li>
+<li><a href="#what-to-do-when-you-find-a-match">What to do when you find a match</a></li>
+<li><a href="#keeping-duplicates-down-as-a-team">Keeping duplicates down as a team</a></li>
+<li><a href="#a-quick-worked-example">A quick worked example</a></li>
+<li><a href="#where-bugit-fits">Where BugIt fits</a></li>
+<li><a href="#the-takeaway">The takeaway</a></li>
+</ol></nav>
+    <article class="a-body">
+<p>Picture a bug in the sign in screen. On Monday a tester writes &quot;login spinner keeps spinning.&quot; On Tuesday a support engineer writes &quot;cannot sign in after the password page.&quot; On Wednesday a developer finds a third report that mentions a timeout on token refresh.</p>
+<p>Three tickets, three people, one bug. Each ticket holds a piece of the answer. The first has the steps, the second has a customer waiting, the third has the log. Nobody can see the whole picture, and someone will triage the same problem three times.</p>
+<p>Duplicates are not a sign of careless people. They are what happens when different people describe the same thing in different words. The good news is that a short search before filing prevents most of them, and a few habits keep the rest manageable.</p>
+<figure class="hero"><img src="/v2/articles/images/duplicate-search-flow.svg" alt="A flow from describing a bug to searching, reviewing candidates and choosing what to do" width="1200" height="630" loading="lazy"></figure>
+<section id="why-a-plain-keyword-search-misses" class="sec">
+<h2>Why a plain keyword search misses</h2>
+<p>A search for &quot;spinner&quot; will not find &quot;cannot sign in.&quot; A search for &quot;login&quot; will not find &quot;authenticate.&quot; Trackers also grow. The ticket you need may be closed, renamed, or sitting under hundreds of newer ones.</p>
+<p>So the search needs a little craft. Here is a routine that takes a couple of minutes.</p>
+</section>
+<section id="six-moves-before-you-hit-file" class="sec">
+<h2>Six moves before you hit file</h2>
+<ol>
+<li><strong>Search the symptom, not your title.</strong> Use the words a user would see: the message on screen, the screen name, the action that failed.</li>
+<li><strong>Search the error text.</strong> If you have an exception name or a status code, search for it. Developers often paste these into tickets, and they match exactly.</li>
+<li><strong>Try synonyms.</strong> Crash, freeze, hang and spinner can describe one fault. So can login, sign in and authenticate.</li>
+<li><strong>Narrow by area.</strong> Filter by the component or label for the part of the product you were using, so the list shrinks to something you can read.</li>
+<li><strong>Include closed tickets.</strong> A fixed bug that came back is a regression, and the old ticket holds the history and sometimes the cause.</li>
+<li><strong>Follow the links.</strong> The match is sometimes one link away from a ticket you already found.</li>
+</ol>
+</section>
+<section id="duplicate-related-or-different" class="sec">
+<h2>Duplicate, related or different?</h2>
+<p>A similar ticket is not necessarily a duplicate, and merging the wrong ones hides bugs.</p>
+<ul>
+<li><strong>Duplicate:</strong> same symptom and same cause. The tickets describe one problem.</li>
+<li><strong>Related:</strong> same symptom with a different cause, or the same area with a different symptom. Keep them separate and link them.</li>
+<li><strong>Different:</strong> only the vocabulary matches. Leave it alone.</li>
+</ul>
+<p>When you cannot tell, call it related and link it. A link costs a few seconds, and the person who owns the area can merge later with more knowledge than you have.</p>
+</section>
+<section id="what-to-do-when-you-find-a-match" class="sec">
+<h2>What to do when you find a match</h2>
+<p>Finding the earlier ticket is the start, not the end. Make the match useful.</p>
+<ul>
+<li><strong>Add what is new.</strong> Your build, your steps, a log, or a note that another customer is affected. Evidence is the one thing a ticket can use more of.</li>
+<li><strong>Skip the &quot;me too&quot; ticket.</strong> Opening a second ticket to say you see it too splits the evidence again. Comment on the first one.</li>
+<li><strong>Reopen with care.</strong> If the match is closed and you can still repeat the problem, follow your team's practice: reopen it, or file a new ticket that links back.</li>
+<li><strong>Ask for a second opinion.</strong> If you are unsure, file your ticket and link the candidate as related. The triager decides.</li>
+</ul>
+</section>
+<section id="keeping-duplicates-down-as-a-team" class="sec">
+<h2>Keeping duplicates down as a team</h2>
+<p>Individual searching helps, but team habits help more. A tracker is a shared memory, and it only works if people write to it in a way the next person can find.</p>
+<ul>
+<li><strong>Agree on a title format.</strong> When tickets for one area read alike, they sort together and duplicates stand out.</li>
+<li><strong>Use a small set of labels for components.</strong> Apply them consistently, so a filter finds what it should.</li>
+<li><strong>Close duplicates by linking.</strong> Point them at the ticket that survives, so the history stays findable.</li>
+<li><strong>Skim the newest tickets at triage.</strong> A five minute scan of what arrived since yesterday catches pairs while they are fresh.</li>
+</ul>
+</section>
+<section id="a-quick-worked-example" class="sec">
+<h2>A quick worked example</h2>
+<p>You hit a crash when exporting a report to PDF. Your first search, &quot;export crash&quot;, finds nothing. So you search the message on screen, &quot;could not generate file&quot;, and a ticket appears, titled &quot;PDF button does nothing on large reports&quot;. Different words, same symptom, and the steps match yours.</p>
+<p>You do not file a new ticket. You comment with your build and the log line, and you link the one other ticket you found that mentions the same export screen. Two minutes, no new ticket, and the next developer to open it sees the whole picture.</p>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>Searching a tracker properly takes patience, and it is exactly the step people skip when they are in a hurry. BugIt does it for you. When you describe a bug, BugIt searches your tracker for tickets like yours before you see the draft. The search only reads. It gives each candidate a score so you can judge how close it is, and it lists related tickets in the draft so the link is one click away. A quick bug skips the search.</p>
+<p>It is a pointer, not a verdict. You review every draft before it is filed, BugIt redacts common personal data as a best effort, and nothing is written to your tracker until you type FILE IT.</p>
+<p>Find out more at <a href="https://bugit.dev/">bugit.dev</a> and <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+<section id="the-takeaway" class="sec takeaway">
+<h2>The takeaway</h2>
+<p>Duplicates come from different words for the same problem. Search the symptom and the error text, try synonyms, include closed tickets, and follow the links. When you find a match, add your evidence to it instead of opening another ticket. Two minutes of searching spares a team from fixing, triaging and explaining the same bug more than once.</p>
+</section>
+    </article>
+  </div>
+  <section class="more" aria-labelledby="more-h">
+    <h2 id="more-h">Keep reading</h2>
+    <ul class="more-grid">
+<li><a href="/articles/bug-report-template-developers-read/"><span class="mc-t">A bug report template developers will actually read</span><span class="mc-d">A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.</span></a></li>
+<li><a href="/articles/reproduce-a-bug-from-logs/"><span class="mc-t">Reproduce a bug from a log file: a detective's guide</span><span class="mc-d">How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Guides</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+</footer>
+
+<script src="/v2/nav.js"></script>
+<script src="/v2/consent-ui.js"></script>
+</body>
+</html>

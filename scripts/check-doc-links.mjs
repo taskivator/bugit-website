@@ -145,6 +145,7 @@ function publishedLinkProblem(entry, href) {
   let file;
   if (abs === "/" || abs === "/index.html") file = join(root, "v2", "index.html");
   else if (/^\/docs\/?(?:index\.html)?$/.test(abs)) file = join(root, "v2", "docs", "index.html");
+  else if (abs.startsWith("/articles/")) file = join(root, "v2", abs.replace(/\/$/, "/index.html").slice(1));
   else file = join(root, abs.replace(/\/$/, "/index.html"));
   if (!existsSync(file)) return `nothing at ${abs} in the source tree`;
   if (fragment.startsWith("#/")) {

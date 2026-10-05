@@ -127,6 +127,11 @@
   Cache-Control: public, max-age=0, must-revalidate
 /docs/index.html
   Cache-Control: public, max-age=0, must-revalidate
+# The guides (2026-10-05), revalidated like the pages they sit beside.
+/articles/*
+  Cache-Control: public, max-age=0, must-revalidate
+/v2/articles/images/*
+  Cache-Control: public, max-age=604800
 /robots.txt
   Cache-Control: public, max-age=0, must-revalidate
 /sitemap.xml

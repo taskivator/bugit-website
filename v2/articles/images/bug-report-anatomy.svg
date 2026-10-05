@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Anatomy of a bug report</title>
+<desc id="d">A bug report card with six labelled parts, each beside the developer question it answers.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">What a developer looks for in a bug report</text>
+<g font-size="20">
+<rect x="60" y="100" width="560" height="64" rx="14" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="140" font-weight="700" fill="#f6f1ff">Title</text><text x="190" y="140" fill="#cfc4e2">[Checkout] Promo applies the wrong price</text>
+<rect x="60" y="180" width="560" height="64" rx="14" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="220" font-weight="700" fill="#f6f1ff">Steps to reproduce</text><text x="300" y="220" fill="#cfc4e2">1, 2, 3, then the failing step</text>
+<rect x="60" y="260" width="560" height="64" rx="14" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="300" font-weight="700" fill="#f6f1ff">Expected</text><text x="220" y="300" fill="#cfc4e2">What should have happened</text>
+<rect x="60" y="340" width="560" height="64" rx="14" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="380" font-weight="700" fill="#f6f1ff">Actual</text><text x="180" y="380" fill="#cfc4e2">What happened instead</text>
+<rect x="60" y="420" width="560" height="64" rx="14" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="460" font-weight="700" fill="#f6f1ff">Environment</text><text x="250" y="460" fill="#cfc4e2">Build, platform, how often</text>
+<rect x="60" y="500" width="560" height="64" rx="14" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="540" font-weight="700" fill="#f6f1ff">Evidence</text><text x="210" y="540" fill="#cfc4e2">Trimmed log, screenshot</text>
+</g>
+<g font-size="20" fill="#ff7ad9">
+<path d="M640 132h60M640 212h60M640 292h60M640 372h60M640 452h60M640 532h60" stroke="#ff4fc9" stroke-width="2" stroke-linecap="round"/>
+<text x="720" y="140">Where should I look?</text>
+<text x="720" y="220">Can I see it myself?</text>
+<text x="720" y="300">What did you want?</text>
+<text x="720" y="380">What did you see?</text>
+<text x="720" y="460">Which build is this?</text>
+<text x="720" y="540">Can I read the proof?</text>
+</g>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

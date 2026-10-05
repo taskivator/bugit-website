@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">From a log to steps to reproduce</title>
+<desc id="d">A short example log with the error line highlighted, an arrow labelled read the clues, and three numbered steps to reproduce the failure.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">A log is a witness. Ask it the right questions.</text>
+<rect x="60" y="110" width="560" height="400" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="148" font-size="16" fill="#9a8fb0">Example log, shortened</text>
+<g font-family="Geist Mono,Consolas,Menlo,monospace" font-size="17" fill="#cfc4e2">
+<text x="84" y="196">12:04:09 INFO  cart loaded</text>
+<text x="84" y="228">12:04:11 INFO  billing period: annual</text>
+<text x="84" y="260">12:04:12 INFO  promo submitted: SAVE20</text>
+<rect x="74" y="284" width="532" height="36" rx="8" fill="#ff5b72" fill-opacity=".22" stroke="#ff5b72"/>
+<text x="84" y="309" fill="#ffd0d6">12:04:13 ERROR TypeError: plan.period is undefined</text>
+<text x="84" y="348">    at applyPromo (pricing.ts:88)</text>
+<text x="84" y="380">    at updateTotal (cart.ts:41)</text>
+<text x="84" y="412">    at onPromoSubmit (checkout.ts:130)</text>
+</g>
+<g stroke="#ff4fc9" stroke-width="3" stroke-linecap="round" fill="none"><path d="M650 310h120M770 310l-14-10M770 310l-14 10"/></g>
+<text x="636" y="290" font-size="18" fill="#ff7ad9" font-weight="700">Read the clues</text>
+<g font-size="21">
+<rect x="800" y="150" width="340" height="320" rx="16" fill="#140f22" stroke="#32f28c" stroke-opacity=".7"/>
+<text x="824" y="192" font-weight="700" fill="#f6f1ff">Steps to reproduce</text>
+<text x="824" y="246" fill="#cfc4e2">1. Add a plan to the cart</text>
+<text x="824" y="296" fill="#cfc4e2">2. Switch billing to annual</text>
+<text x="824" y="346" fill="#cfc4e2">3. Apply promo code SAVE20</text>
+<text x="824" y="410" fill="#9a8fb0" font-size="17">Then check the order total.</text>
+</g>
+<text x="60" y="560" font-size="16" fill="#9a8fb0">Example values for illustration.</text>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

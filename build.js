@@ -462,8 +462,9 @@ if (fs.existsSync(guideDir)) {
 // Nothing under v2/tools/ (authoring scripts) or any path starting with _ (scratch) ships.
 {
   const v2Src = path.join(root,'v2');
-  const PAGES = [['index.html','index.html'],['docs/index.html','docs/index.html']];
-  const NEEDED = ['index.html','docs/index.html','v2.css','v2.js','i18n.js','nav.js','logos.js','route.js','docs/docs.js','docs/docs.css','i18n/en.json','docs/content.en.json'];
+  const articleSlugs = fs.existsSync(path.join(v2Src,'articles')) ? fs.readdirSync(path.join(v2Src,'articles'),{withFileTypes:true}).filter((e) => e.isDirectory() && e.name !== 'images').map((e) => e.name) : [];
+  const PAGES = [['index.html','index.html'],['docs/index.html','docs/index.html'],['articles/index.html','articles/index.html'],...articleSlugs.map((s) => [`articles/${s}/index.html`,`articles/${s}/index.html`])];
+  const NEEDED = ['index.html','docs/index.html','articles/index.html','articles/articles.css','articles/articles.js','v2.css','v2.js','i18n.js','nav.js','logos.js','route.js','docs/docs.js','docs/docs.css','i18n/en.json','docs/content.en.json'];
   const missing = NEEDED.filter((f) => !fs.existsSync(path.join(v2Src,...f.split('/'))));
   if (missing.length) { console.error(`build: the site's pages need v2/${missing.join(', v2/')}, and they are missing.`); process.exit(1); }
   const v2Dist = path.join(dist,'v2');
@@ -473,6 +474,8 @@ if (fs.existsSync(guideDir)) {
     if (rel === '') return true;
     if (rel.split('/').some((seg) => seg.startsWith('_'))) return false;
     if (rel === 'tools' || rel.startsWith('tools/')) return false;
+    // The guides' pages are written out below, hashed; only their stylesheet and images are copied here.
+    if (/^articles\/[^/]+/.test(rel) && !/^articles\/(?:images(?:\/|$)|articles\.(?:css|js)$)/.test(rel)) return false;
     return !pageSet.has(rel);
   }});
   // Minify, then hash, every script and stylesheet. A file's hash is of the bytes served.
@@ -511,7 +514,7 @@ if (fs.existsSync(guideDir)) {
   console.log(`build: the site's pages are the redesign (${Object.keys(v2Assets).length} hashed assets under /v2/).`);
 }
 
-for (const html of ['index.html','docs/index.html','404.html']) {
+for (const html of ['index.html','docs/index.html','404.html','articles/index.html',...(fs.existsSync(path.join(dist,'articles')) ? fs.readdirSync(path.join(dist,'articles'),{withFileTypes:true}).filter((e) => e.isDirectory()).map((e) => `articles/${e.name}/index.html`) : [])]) {
   const p = path.join(dist,html);
   if (!fs.existsSync(p)) continue;
   let s = fs.readFileSync(p,'utf8');

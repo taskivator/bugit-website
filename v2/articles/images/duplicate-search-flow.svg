@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Checking for duplicates before you file</title>
+<desc id="d">A flow from describing a bug, to searching by symptom and error text, to comparing candidate tickets, to one of three choices.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif" font-size="21">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">A few minutes of searching before you file</text>
+<rect x="60" y="120" width="300" height="110" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="162" font-weight="700" fill="#f6f1ff">1 Describe it</text><text x="84" y="196" fill="#cfc4e2">The symptom in plain words</text>
+<rect x="450" y="120" width="300" height="110" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="474" y="162" font-weight="700" fill="#f6f1ff">2 Search</text><text x="474" y="196" fill="#cfc4e2">Symptom, error text, synonyms</text>
+<rect x="840" y="120" width="300" height="110" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="864" y="162" font-weight="700" fill="#f6f1ff">3 Compare</text><text x="864" y="196" fill="#cfc4e2">Read the closest candidates</text>
+<g stroke="#ff4fc9" stroke-width="3" stroke-linecap="round" fill="none"><path d="M366 175h78M456 175"/><path d="M756 175h78"/><path d="M834 175l-12-9M834 175l-12 9M444 175l-12-9M444 175l-12 9"/></g>
+<g stroke="#9a8fb0" stroke-width="2" fill="none"><path d="M990 232v40H225v50M990 272H600v50M990 272h165v50"/></g>
+<text x="620" y="268" font-size="18" fill="#ff7ad9" font-weight="700">Then decide</text>
+<rect x="60" y="326" width="330" height="170" rx="16" fill="#140f22" stroke="#32f28c" stroke-opacity=".7"/>
+<text x="84" y="370" font-weight="700" fill="#f6f1ff">Same symptom, same cause</text>
+<text x="84" y="410" fill="#cfc4e2">Add your build, steps and</text><text x="84" y="438" fill="#cfc4e2">log to the existing ticket.</text>
+<rect x="435" y="326" width="330" height="170" rx="16" fill="#140f22" stroke="#18e1ff" stroke-opacity=".7"/>
+<text x="459" y="370" font-weight="700" fill="#f6f1ff">Similar, cause unclear</text>
+<text x="459" y="410" fill="#cfc4e2">File yours and link the</text><text x="459" y="438" fill="#cfc4e2">candidate as related.</text>
+<rect x="810" y="326" width="330" height="170" rx="16" fill="#140f22" stroke="#ffc24d" stroke-opacity=".7"/>
+<text x="834" y="370" font-weight="700" fill="#f6f1ff">Nothing close</text>
+<text x="834" y="410" fill="#cfc4e2">File a new ticket with the</text><text x="834" y="438" fill="#cfc4e2">full report.</text>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

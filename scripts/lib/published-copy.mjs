@@ -33,6 +33,14 @@ export function publishedLangs() {
   return langs;
 }
 
+/** The guides under /articles/, English pages with their own copy. */
+function articlePages() {
+  const dir = join(ROOT, "v2", "articles");
+  if (!existsSync(dir)) return [];
+  const slugs = readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory() && e.name !== "images").map((e) => `v2/articles/${e.name}/index.html`);
+  return ["v2/articles/index.html", ...slugs];
+}
+
 /** Every string value in a JSON tree, in document order. */
 function strings(v, out = []) {
   if (typeof v === "string") out.push(v);
@@ -51,7 +59,7 @@ function strings(v, out = []) {
  */
 export function publishedCopy() {
   const out = [];
-  for (const file of ["v2/index.html", "v2/docs/index.html"]) {
+  for (const file of ["v2/index.html", "v2/docs/index.html", ...articlePages()]) {
     out.push({ file, lang: "en", kind: "page", text: rd(file) });
   }
   for (const lang of publishedLangs()) {
