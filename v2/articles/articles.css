@@ -86,3 +86,16 @@
 @media (max-width:560px){.article{font-size:16.5px}.a-hero{padding-top:36px}.a-body .takeaway,.a-body .fits{padding:20px}}
 @media (prefers-reduced-motion:reduce){.card a,.more-grid a{transition:none}.card a:hover,.more-grid a:hover{transform:none}}
 .article-page{overflow-x:clip}
+
+/* The same arrival as the homepage (v2.css), for the blocks of an article and the cards. Fails open. */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .a-body .sec,.a-body figure,.more,.cards>li{
+      animation:riseIn linear backwards;
+      animation-timeline:view();
+      animation-range:entry 4% cover 26%;
+    }
+    .cards>li:nth-child(3n+2){animation-range:entry 4% cover 30%}
+    .cards>li:nth-child(3n+3){animation-range:entry 4% cover 34%}
+  }
+}

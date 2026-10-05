@@ -595,3 +595,24 @@ h1,h2,h3{text-wrap:balance}
   .poster-cap b{font-size:18px}
   .poster-cap span{font-size:13px}
 }
+
+/* ── Scroll reveal (2026-10-05) ──────────────────────────────────────────────
+   The rise and fade the previous bugit.dev had, brought back on the redesign: each block of a
+   section arrives as it scrolls into view. Pure CSS, driven by the scroll position, so nothing
+   listens and nothing can fail to fire. It FAILS OPEN: where animation-timeline is unsupported, or
+   motion is reduced, the content is simply there. `backwards` (not `both`) so that once a block has
+   arrived the animation lets go of it and cannot override a transform it declares for itself.
+   The hero is left out on purpose: it is the first thing seen and must never start hidden. */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    main>section:not(.hero)>*{
+      animation:riseIn linear backwards;
+      animation-timeline:view();
+      animation-range:entry 4% cover 26%;
+    }
+    @keyframes riseIn{
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:none}
+    }
+  }
+}
