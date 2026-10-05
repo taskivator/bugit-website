@@ -258,5 +258,6 @@
  "t184": "Commercial Transactions",
  "t185": "Security",
  "lang.ariaLabel": "Language: {language}",
- "menu.label": "Menu"
+ "menu.label": "Menu",
+ "nav.guides": "Guides"
 }
