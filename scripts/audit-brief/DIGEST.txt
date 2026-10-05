@@ -1,5 +1,5 @@
-DIGESTED UP TO: 2026-10-04
-This is the FIRST review dedicated to bugit.dev. Until now the site was reviewed only in passing,
+DIGESTED UP TO: 2026-10-05
+The first review dedicated to bugit.dev was on 2026-10-05 (below). Before it the site was reviewed only in passing,
 as part of the BugIt agent's external audits (bugit.dev was in their scope signed out, by URL),
 and by our own internal reviews. What those found and what we changed, so you do not report it
 again:
@@ -19,6 +19,22 @@ again:
   * Delivery. On 2026-09-23 a deploy built from the wrong branch removed two features from
     production. Since then every deploy refuses a build that would remove something production
     serves, and verifies every file on the edge byte for byte afterwards.
+
+THE FIRST DEDICATED ROUND, 2026-10-05, on snapshot 51a3fc6. Eleven findings; every FIXED is in later
+snapshots, so it is fair game and we would rather you broke it now:
+  * FIXED: one Guide answer (gs-039, all eleven languages) still said BugIt "compares the entire
+    message", which the 2026-10-04 sweep missed, and the English wrongly required exact capitals.
+  * FIXED: the privacy policy and five Guide answers described an embedded YouTube player, demo
+    clips and a films section; the redesign has one link to YouTube. Two Guide answers said
+    "one-time" purchase (zh, ja).
+  * FIXED: Guide source chips did nothing after load; a guessed language was stored before consent;
+    the picker and mobile menu labels were English; reduced motion switched on mid-visit did not
+    stop the scripted motion; docs search had no real options; /docs/ was not in the sitemap; the
+    Guide price guard read the retired page and did not bind price to plan.
+  * The agent's own round the same day also fixed the homepage: nothing is WRITTEN to the tracker
+    before FILE IT (the duplicate search reads it), up to five checks, quick bugs skip the search.
+  * WE DISAGREED: the legal documents keep their formal register (they are contract text). Deferred:
+    an explicit publication allowlist instead of copy-with-exclusions (nothing stray is published).
 
 STATED LIMITS, not findings unless you show they are worse than described:
   * Redaction in the product is pattern based (the site says so).
