@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/articles/severity-vs-priority-bug-triage-matrix/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="Severity vs priority: a bug triage matrix · BugIt">
+<meta property="og:description" content="What severity and priority mean in bug triage, how they differ, and a copyable matrix with examples to decide which bug gets fixed first.">
+<meta property="og:url" content="https://bugit.dev/articles/severity-vs-priority-bug-triage-matrix/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Severity vs priority: a bug triage matrix · BugIt">
+<meta name="twitter:description" content="What severity and priority mean in bug triage, how they differ, and a copyable matrix with examples to decide which bug gets fixed first.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>Severity vs priority: a bug triage matrix · BugIt</title>
+<meta name="description" content="What severity and priority mean in bug triage, how they differ, and a copyable matrix with examples to decide which bug gets fixed first.">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<link rel="stylesheet" href="/v2/articles/articles.css">
+<script src="/v2/articles/articles.js" defer></script>
+</head>
+<body class="article-page is-home">
+<a class="skip" href="#main">Skip to content</a>
+<span class="read-progress" id="readProgress" aria-hidden="true"></span>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="/#how">How it works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/articles/">Articles</a>
+  </nav>
+  <div class="nav-end">
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing">Get BugIt</a>
+  </div>
+</header>
+
+<main id="main" class="article" tabindex="-1">
+  <header class="a-hero">
+    <p class="crumbs"><a href="/articles/">Articles</a><span aria-hidden="true"> / </span><span>severity vs priority</span></p>
+    <h1>Severity vs priority: a bug triage matrix</h1>
+    <p class="a-sum">What severity and priority mean in bug triage, how they differ, and a copyable matrix with examples to decide which bug gets fixed first.</p>
+    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="2026-10-08">2026-10-08</time></span><span>3 min read</span></p>
+    <ul class="a-tags" aria-label="Topics"><li>severity vs priority</li><li>bug triage</li><li>bug severity</li></ul>
+  </header>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+<li><a href="#the-two-definitions">The two definitions</a></li>
+<li><a href="#a-severity-scale-you-can-copy">A severity scale you can copy</a></li>
+<li><a href="#a-priority-scale-you-can-copy">A priority scale you can copy</a></li>
+<li><a href="#the-four-corners">The four corners</a></li>
+<li><a href="#a-rule-for-settling-disagreements">A rule for settling disagreements</a></li>
+<li><a href="#what-the-reporter-should-supply">What the reporter should supply</a></li>
+<li><a href="#where-bugit-fits">Where BugIt fits</a></li>
+<li><a href="#the-takeaway">The takeaway</a></li>
+</ol></nav>
+    <article class="a-body">
+<p>Severity and priority are two different questions, and mixing them up is how a typo on the home page ends up outranking a crash that loses data. This page defines both, shows a matrix with an example in each corner, and gives a rule for settling arguments.</p>
+<figure class="hero"><img src="/v2/articles/images/severity-vs-priority-matrix.svg" alt="A grid with severity on one axis and priority on the other, with an example bug in each corner" width="1200" height="630" loading="lazy"></figure>
+<section id="the-two-definitions" class="sec">
+<h2>The two definitions</h2>
+<p><strong>Severity is how bad the bug is.</strong> It describes the damage when the bug happens: data lost, a feature broken, a screen misaligned. The person who found the bug can usually judge it, because it is about the bug itself.</p>
+<p><strong>Priority is how soon it should be fixed.</strong> It describes the order of the work, and it depends on things outside the bug: how many people are affected, a release date, a customer waiting, how much effort the fix takes. The team or product owner sets it.</p>
+<p>A bug can score high on one and low on the other. That is the whole point of keeping them apart.</p>
+</section>
+<section id="a-severity-scale-you-can-copy" class="sec">
+<h2>A severity scale you can copy</h2>
+<ul>
+<li><strong>Critical.</strong> Data is lost or corrupted, the product will not start, a payment is wrong, or there is a security hole. There is no workaround.</li>
+<li><strong>High.</strong> A main feature does not work and the workaround is painful or unknown.</li>
+<li><strong>Medium.</strong> A feature misbehaves but a reasonable workaround exists.</li>
+<li><strong>Low.</strong> Cosmetic issues, small text errors, and anything a user would not notice or mind.</li>
+</ul>
+</section>
+<section id="a-priority-scale-you-can-copy" class="sec">
+<h2>A priority scale you can copy</h2>
+<ul>
+<li><strong>Now.</strong> Stop other work. Fix and release as soon as it is safe.</li>
+<li><strong>This release.</strong> Fix before the next release goes out.</li>
+<li><strong>Next.</strong> Plan it for the following cycle.</li>
+<li><strong>Later.</strong> Keep it on the list and look again when the list is reviewed.</li>
+</ul>
+</section>
+<section id="the-four-corners" class="sec">
+<h2>The four corners</h2>
+<ul>
+<li><strong>High severity, high priority.</strong> Fix first. Example: checkout charges the wrong amount.</li>
+<li><strong>High severity, low priority.</strong> Rare, so ask whether the severity is right. Example: a crash in a feature almost nobody uses.</li>
+<li><strong>Low severity, high priority.</strong> The one people forget. Example: the company name is misspelled on the home page the day before a launch.</li>
+<li><strong>Low severity, low priority.</strong> Backlog. Example: a button is two pixels off in one browser.</li>
+</ul>
+<p>A low severity bug can deserve a high priority when many people will see it or someone important is waiting. A critical bug left for later is the corner worth questioning, because it is rarely safe.</p>
+</section>
+<section id="a-rule-for-settling-disagreements" class="sec">
+<h2>A rule for settling disagreements</h2>
+<p>When the reporter and the team disagree, ask three questions in order.</p>
+<ol>
+<li>Does it lose data, money or trust? If yes, the severity is high no matter how rare it is.</li>
+<li>How many people hit it, and how often? A bug in a path everyone uses outranks a bug in a path one person uses.</li>
+<li>Is there a workaround that a user will find without help? If not, move it up.</li>
+</ol>
+<p>Write the answer in the ticket so the next person does not reopen the argument.</p>
+</section>
+<section id="what-the-reporter-should-supply" class="sec">
+<h2>What the reporter should supply</h2>
+<p>The reporter does not need to set priority, but should give the facts that decide it: what happened, what was expected, how to repeat it, how often it happens and who is affected. The article on <a href="/articles/how-to-write-reproduction-steps-checklist/">how to write reproduction steps</a> covers the first part, and <a href="/articles/bug-report-template-developers-read/">a bug report template developers will read</a> gives a layout with a place for each fact.</p>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>When you describe what broke in a rough sentence, BugIt turns it into a structured draft with steps, expected and actual results, and the environment, so the facts that decide severity and priority are on the page when the team triages. You review every draft, and nothing is written to your tracker until you type FILE IT.</p>
+<p>Learn more at <a href="https://bugit.dev/">bugit.dev</a> and <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+<section id="the-takeaway" class="sec takeaway">
+<h2>The takeaway</h2>
+<p>Severity is the damage, priority is the order. Score them separately, look at the odd corners, and write down why. A short note in the ticket saves the same argument next week.</p>
+</section>
+    </article>
+  </div>
+  <section class="more" aria-labelledby="more-h">
+    <h2 id="more-h">Keep reading</h2>
+    <ul class="more-grid">
+<li><a href="/articles/bug-report-template-developers-read/"><span class="mc-t">A bug report template developers will actually read</span><span class="mc-d">A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.</span></a></li>
+<li><a href="/articles/catch-duplicate-bugs-before-filing/"><span class="mc-t">Catch duplicate bugs before you file them</span><span class="mc-d">Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.</span></a></li>
+<li><a href="/articles/reproduce-a-bug-from-logs/"><span class="mc-t">Reproduce a bug from a log file: a detective's guide</span><span class="mc-d">How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+</footer>
+
+<script src="/v2/nav.js"></script>
+<script src="/v2/consent-ui.js"></script>
+</body>
+</html>

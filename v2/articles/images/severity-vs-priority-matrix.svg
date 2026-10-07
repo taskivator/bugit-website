@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Severity against priority</title>
+<desc id="d">A grid with severity on one axis and priority on the other. Each corner has an example: checkout charges the wrong amount, a crash in a rarely used feature, a misspelled company name before a launch, and a button two pixels off.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">Severity is the damage. Priority is the order.</text>
+<text x="330" y="124" font-size="20" font-weight="700" fill="#cfc4e2">High priority</text>
+<text x="780" y="124" font-size="20" font-weight="700" fill="#cfc4e2">Low priority</text>
+<text x="60" y="262" font-size="20" font-weight="700" fill="#cfc4e2">High severity</text>
+<text x="60" y="462" font-size="20" font-weight="700" fill="#cfc4e2">Low severity</text>
+<rect x="250" y="140" width="430" height="190" rx="16" fill="#140f22" stroke="#ff4fc9" stroke-opacity=".7"/>
+<text x="274" y="190" font-size="24" font-weight="700" fill="#f6f1ff">Fix first</text>
+<text x="274" y="230" font-size="18" fill="#cfc4e2">Checkout charges the wrong amount</text>
+<rect x="710" y="140" width="430" height="190" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="734" y="190" font-size="24" font-weight="700" fill="#f6f1ff">Check the severity</text>
+<text x="734" y="230" font-size="18" fill="#cfc4e2">A crash in a feature almost nobody uses</text>
+<rect x="250" y="350" width="430" height="190" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="274" y="400" font-size="24" font-weight="700" fill="#f6f1ff">Easy to forget</text>
+<text x="274" y="440" font-size="18" fill="#cfc4e2">Company name misspelled before a launch</text>
+<rect x="710" y="350" width="430" height="190" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".3"/>
+<text x="734" y="400" font-size="24" font-weight="700" fill="#f6f1ff">Backlog</text>
+<text x="734" y="440" font-size="18" fill="#cfc4e2">A button two pixels off in one browser</text>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">Example text for illustration · BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

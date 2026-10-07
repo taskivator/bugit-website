@@ -198,7 +198,7 @@ for (const { fm, body } of all) {
     <p class="crumbs"><a href="/articles/">Articles</a><span aria-hidden="true"> / </span><span>${esc(fm.tags[0] || "Article")}</span></p>
     <h1>${esc(fm.title)}</h1>
     <p class="a-sum">${esc(fm.description)}</p>
-    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="${DATE}">${DATE}</time></span><span>${fm.minutes} min read</span></p>
+    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="${fm.date || DATE}">${fm.date || DATE}</time></span><span>${fm.minutes} min read</span></p>
     <ul class="a-tags" aria-label="Topics">${tags}</ul>
   </header>
   <div class="a-grid">

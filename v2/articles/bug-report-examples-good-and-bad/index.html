@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/articles/bug-report-examples-good-and-bad/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="Bug report examples: good and bad, side by side · BugIt">
+<meta property="og:description" content="Bug report examples, good and bad, side by side: four weak reports rewritten so a developer can act on them, with notes on what changed.">
+<meta property="og:url" content="https://bugit.dev/articles/bug-report-examples-good-and-bad/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bug report examples: good and bad, side by side · BugIt">
+<meta name="twitter:description" content="Bug report examples, good and bad, side by side: four weak reports rewritten so a developer can act on them, with notes on what changed.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>Bug report examples: good and bad, side by side · BugIt</title>
+<meta name="description" content="Bug report examples, good and bad, side by side: four weak reports rewritten so a developer can act on them, with notes on what changed.">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<link rel="stylesheet" href="/v2/articles/articles.css">
+<script src="/v2/articles/articles.js" defer></script>
+</head>
+<body class="article-page is-home">
+<a class="skip" href="#main">Skip to content</a>
+<span class="read-progress" id="readProgress" aria-hidden="true"></span>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="/#how">How it works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/articles/">Articles</a>
+  </nav>
+  <div class="nav-end">
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing">Get BugIt</a>
+  </div>
+</header>
+
+<main id="main" class="article" tabindex="-1">
+  <header class="a-hero">
+    <p class="crumbs"><a href="/articles/">Articles</a><span aria-hidden="true"> / </span><span>bug report examples</span></p>
+    <h1>Bug report examples: good and bad, side by side</h1>
+    <p class="a-sum">Bug report examples, good and bad, side by side: four weak reports rewritten so a developer can act on them, with notes on what changed.</p>
+    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="2026-10-08">2026-10-08</time></span><span>3 min read</span></p>
+    <ul class="a-tags" aria-label="Topics"><li>bug report examples</li><li>good bug report</li><li>bad bug report</li></ul>
+  </header>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+<li><a href="#example-1-the-vague-complaint">Example 1: the vague complaint</a></li>
+<li><a href="#example-2-no-way-to-repeat-it">Example 2: no way to repeat it</a></li>
+<li><a href="#example-3-two-bugs-in-one">Example 3: two bugs in one</a></li>
+<li><a href="#example-4-an-opinion-instead-of-a-fact">Example 4: an opinion instead of a fact</a></li>
+<li><a href="#the-pattern-behind-all-four">The pattern behind all four</a></li>
+<li><a href="#where-bugit-fits">Where BugIt fits</a></li>
+<li><a href="#the-takeaway">The takeaway</a></li>
+</ol></nav>
+    <article class="a-body">
+<p>It is easier to see what a good bug report looks like next to a bad one. Below are four weak reports, each rewritten, with a short note on what changed. The product details and numbers are made up for illustration.</p>
+<figure class="hero"><img src="/v2/articles/images/bug-report-examples.svg" alt="Two cards side by side, a vague bug report on the left and a clear one on the right" width="1200" height="630" loading="lazy"></figure>
+<section id="example-1-the-vague-complaint" class="sec">
+<h2>Example 1: the vague complaint</h2>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Weak
+Search is broken.</code></pre></div>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Strong
+Title: Search returns no results for names with an apostrophe
+
+Steps to reproduce
+1. Open the customer list
+2. Type O'Brien in the search box
+3. Press Enter
+
+Expected
+The customer O'Brien Ltd appears.
+
+Actual
+&quot;No results&quot; is shown. Searching for OBrien finds the customer.
+
+Environment
+Web app, build 3.2.0, Chrome, happens each time.</code></pre></div>
+<p><strong>What changed.</strong> The title names the symptom and the trigger. The steps use the real value. Expected and actual are one line each, and the strong version adds the clue that a search without the apostrophe works.</p>
+</section>
+<section id="example-2-no-way-to-repeat-it" class="sec">
+<h2>Example 2: no way to repeat it</h2>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Weak
+The app crashed when I exported. Please fix.</code></pre></div>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Strong
+Title: Export to CSV crashes when the report has more than 50,000 rows
+
+Steps to reproduce
+1. Open Reports and choose Order history
+2. Set the date range to the last 12 months (about 63,000 rows)
+3. Click Export, then CSV
+
+Expected
+A CSV file downloads.
+
+Actual
+The window closes with no message. With a 30 day range it works.
+
+Environment
+Desktop app 3.2.0, Windows 11, 16 GB memory. 3 of 3 tries.
+Attached: the log from the minute of the crash, with names removed.</code></pre></div>
+<p><strong>What changed.</strong> The weak report names the action but not the data. The strong one gives a size threshold, a comparison that works, a count of tries and the log.</p>
+</section>
+<section id="example-3-two-bugs-in-one" class="sec">
+<h2>Example 3: two bugs in one</h2>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Weak
+The settings page is a mess. Dark mode is wrong, save does nothing and the
+language list is in the wrong order.</code></pre></div>
+<p>Split it into three tickets, each with its own steps:</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Title: Save button on Settings does nothing after changing the time zone
+Title: Dark mode shows white text on a white card in the Billing tab
+Title: Language list is not in alphabetical order</code></pre></div>
+<p><strong>What changed.</strong> One ticket, one bug. Each can now be assigned, fixed and closed on its own, and one hard bug no longer holds up two easy ones.</p>
+</section>
+<section id="example-4-an-opinion-instead-of-a-fact" class="sec">
+<h2>Example 4: an opinion instead of a fact</h2>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Weak
+The new checkout is confusing and customers will hate it.</code></pre></div>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Strong
+Title: Order total is not visible without scrolling on a 13 inch laptop
+
+Steps to reproduce
+1. Add any item to the cart
+2. Open Checkout on a 1366 by 768 screen
+
+Expected
+The total and the Pay button are visible.
+
+Actual
+Only the address form is visible. The total is 400 pixels below the fold.
+
+Impact
+In a test with five people, two did not find the Pay button.</code></pre></div>
+<p><strong>What changed.</strong> The feeling became an observation anyone can check, with a measure and a small piece of evidence. The strong report also says who is affected.</p>
+</section>
+<section id="the-pattern-behind-all-four" class="sec">
+<h2>The pattern behind all four</h2>
+<ul>
+<li>A title that names the symptom and where it happens.</li>
+<li>Numbered steps with the real values.</li>
+<li>One line each for expected and actual.</li>
+<li>The environment and how often it happens.</li>
+<li>Evidence, trimmed of personal data.</li>
+<li>One bug per ticket.</li>
+</ul>
+<p>For the checklist version, see <a href="/articles/how-to-write-reproduction-steps-checklist/">how to write reproduction steps</a>, and for layouts to copy into Jira, GitHub or Azure DevOps, see <a href="/articles/bug-report-template-jira-github-azure-devops/">bug report templates</a>.</p>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>BugIt takes a rough sentence like the weak examples above and drafts the stronger version: a title, numbered steps, expected and actual results and the environment. It redacts common personal data as a best effort, so you read the draft before it is filed. You review every draft, and nothing is written to your tracker until you type FILE IT.</p>
+<p>Learn more at <a href="https://bugit.dev/">bugit.dev</a> and <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+<section id="the-takeaway" class="sec takeaway">
+<h2>The takeaway</h2>
+<p>A good report gives the reader something to do on the first read. Name the symptom, give the steps, say what you expected, say what you saw, and keep to one bug.</p>
+</section>
+    </article>
+  </div>
+  <section class="more" aria-labelledby="more-h">
+    <h2 id="more-h">Keep reading</h2>
+    <ul class="more-grid">
+<li><a href="/articles/bug-report-template-developers-read/"><span class="mc-t">A bug report template developers will actually read</span><span class="mc-d">A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.</span></a></li>
+<li><a href="/articles/catch-duplicate-bugs-before-filing/"><span class="mc-t">Catch duplicate bugs before you file them</span><span class="mc-d">Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.</span></a></li>
+<li><a href="/articles/reproduce-a-bug-from-logs/"><span class="mc-t">Reproduce a bug from a log file: a detective's guide</span><span class="mc-d">How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+</footer>
+
+<script src="/v2/nav.js"></script>
+<script src="/v2/consent-ui.js"></script>
+</body>
+</html>

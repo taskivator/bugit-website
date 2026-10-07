@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">A weak and a strong bug report</title>
+<desc id="d">Two cards side by side. The left card is a vague report that says search is broken. The right card is a clear report with a title, numbered steps, expected and actual results and the environment.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">The same bug, two ways</text>
+<rect x="60" y="110" width="500" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".35"/>
+<text x="92" y="162" font-size="22" font-weight="700" fill="#9a8fb0">Weak</text>
+<text x="92" y="220" font-size="26" fill="#cfc4e2">Search is broken.</text>
+<text x="92" y="270" font-size="20" fill="#9a8fb0">Which search? What input?</text>
+<text x="92" y="305" font-size="20" fill="#9a8fb0">What did you expect?</text>
+<text x="92" y="340" font-size="20" fill="#9a8fb0">Where, and how often?</text>
+<rect x="620" y="110" width="520" height="440" rx="16" fill="#140f22" stroke="#ff4fc9" stroke-opacity=".7"/>
+<text x="652" y="162" font-size="22" font-weight="700" fill="#ff4fc9">Strong</text>
+<text x="652" y="212" font-size="22" font-weight="700" fill="#f6f1ff">No results for names with an apostrophe</text>
+<text x="652" y="262" font-size="20" fill="#cfc4e2">1. Open the customer list</text>
+<text x="652" y="296" font-size="20" fill="#cfc4e2">2. Type O'Brien and press Enter</text>
+<text x="652" y="346" font-size="20" fill="#cfc4e2">Expected: O'Brien Ltd appears</text>
+<text x="652" y="380" font-size="20" fill="#cfc4e2">Actual: "No results" is shown</text>
+<text x="652" y="430" font-size="20" fill="#cfc4e2">Web app, build 3.2.0, Chrome</text>
+<text x="652" y="464" font-size="20" fill="#cfc4e2">Happens each time</text>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">Example text for illustration · BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">Five steps of bug triage</title>
+<desc id="d">Five boxes in a row: confirm the report, check for duplicates, set severity and priority, assign an owner, decide the next step.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">Triage in five steps</text>
+<g fill="#140f22" stroke="#8b45ff" stroke-opacity=".6">
+<rect x="60" y="200" width="196" height="230" rx="16"/><rect x="276" y="200" width="196" height="230" rx="16"/><rect x="492" y="200" width="196" height="230" rx="16"/><rect x="708" y="200" width="196" height="230" rx="16"/><rect x="924" y="200" width="196" height="230" rx="16" stroke="#ff4fc9" stroke-opacity=".8"/>
+</g>
+<g font-size="44" font-weight="700" fill="#ff4fc9"><text x="84" y="262">1</text><text x="300" y="262">2</text><text x="516" y="262">3</text><text x="732" y="262">4</text><text x="948" y="262">5</text></g>
+<g font-size="24" font-weight="700" fill="#f6f1ff"><text x="84" y="316">Confirm</text><text x="300" y="316">Duplicate?</text><text x="516" y="316">Size it</text><text x="732" y="316">Assign</text><text x="948" y="316">Decide</text></g>
+<g font-size="17" fill="#cfc4e2"><text x="84" y="352">Usable and</text><text x="84" y="376">repeatable</text><text x="300" y="352">Search the</text><text x="300" y="376">tracker first</text><text x="516" y="352">Severity and</text><text x="516" y="376">priority apart</text><text x="732" y="352">A name and</text><text x="732" y="376">a date</text><text x="948" y="352">Fix, wait or</text><text x="948" y="376">close</text></g>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>
