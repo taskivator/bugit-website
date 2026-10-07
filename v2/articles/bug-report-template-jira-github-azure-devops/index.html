@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/articles/bug-report-template-jira-github-azure-devops/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="Bug report templates for Jira, GitHub and Azure DevOps · BugIt">
+<meta property="og:description" content="Free copy and paste bug report templates for Jira, GitHub Issues and Azure DevOps, including a GitHub issue form file you can add to a repository.">
+<meta property="og:url" content="https://bugit.dev/articles/bug-report-template-jira-github-azure-devops/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bug report templates for Jira, GitHub and Azure DevOps · BugIt">
+<meta name="twitter:description" content="Free copy and paste bug report templates for Jira, GitHub Issues and Azure DevOps, including a GitHub issue form file you can add to a repository.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>Bug report templates for Jira, GitHub and Azure DevOps · BugIt</title>
+<meta name="description" content="Free copy and paste bug report templates for Jira, GitHub Issues and Azure DevOps, including a GitHub issue form file you can add to a repository.">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<link rel="stylesheet" href="/v2/articles/articles.css">
+<script src="/v2/articles/articles.js" defer></script>
+</head>
+<body class="article-page is-home">
+<a class="skip" href="#main">Skip to content</a>
+<span class="read-progress" id="readProgress" aria-hidden="true"></span>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="/#how">How it works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/articles/">Articles</a>
+  </nav>
+  <div class="nav-end">
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing">Get BugIt</a>
+  </div>
+</header>
+
+<main id="main" class="article" tabindex="-1">
+  <header class="a-hero">
+    <p class="crumbs"><a href="/articles/">Articles</a><span aria-hidden="true"> / </span><span>bug report template</span></p>
+    <h1>Bug report templates for Jira, GitHub and Azure DevOps</h1>
+    <p class="a-sum">Free copy and paste bug report templates for Jira, GitHub Issues and Azure DevOps, including a GitHub issue form file you can add to a repository.</p>
+    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="2026-10-05">2026-10-05</time></span><span>5 min read</span></p>
+    <ul class="a-tags" aria-label="Topics"><li>bug report template</li><li>Jira</li><li>GitHub Issues</li></ul>
+  </header>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+<li><a href="#the-parts-the-versions-share">The parts the versions share</a></li>
+<li><a href="#jira-paste-it-into-the-description">Jira: paste it into the description</a></li>
+<li><a href="#github-issues-add-an-issue-form-to-the-repository">GitHub Issues: add an issue form to the repository</a></li>
+<li><a href="#azure-devops-one-entry-per-field">Azure DevOps: one entry per field</a></li>
+<li><a href="#habits-that-work-in-any-tracker">Habits that work in any tracker</a></li>
+<li><a href="#where-bugit-fits">Where BugIt fits</a></li>
+<li><a href="#the-takeaway">The takeaway</a></li>
+</ol></nav>
+    <article class="a-body">
+<p>A bug report template is only useful if it fits where people write the report. A block of text that pastes cleanly into Jira is awkward in Azure DevOps, where the fields are already split up. A GitHub repository can go further and show reporters a form.</p>
+<p>This page gives you one template in the shape each tracker likes. Copy the one that matches your tracker, change the headings to your team's words, and keep the parts that answer a developer's first questions: where, how, what you expected, what happened, on which build, and how bad it is.</p>
+<figure class="hero"><img src="/v2/articles/images/bug-report-template-by-tracker.svg" alt="One bug report template shown for each tracker" width="1200" height="630" loading="lazy"></figure>
+<section id="the-parts-the-versions-share" class="sec">
+<h2>The parts the versions share</h2>
+<p>The versions below carry the same parts, because a developer asks for the same things whatever the tool.</p>
+<ul>
+<li><strong>Title:</strong> the symptom in a few words, with an area tag at the front.</li>
+<li><strong>Steps to reproduce:</strong> numbered, starting somewhere a stranger can reach.</li>
+<li><strong>Expected and actual:</strong> two short lines that settle what went wrong.</li>
+<li><strong>Environment:</strong> the build, the platform and how often it happens.</li>
+<li><strong>Evidence:</strong> a trimmed log, a screenshot or a short recording.</li>
+<li><strong>Severity with a reason:</strong> how bad it is and who it affects.</li>
+</ul>
+<p>If you want the reasoning behind each part, read <a href="/articles/bug-report-template-developers-read/">A bug report template developers will actually read</a>.</p>
+</section>
+<section id="jira-paste-it-into-the-description" class="sec">
+<h2>Jira: paste it into the description</h2>
+<p>In Jira the title goes in the Summary field and everything else goes in the Description. This block pastes cleanly into the Description in plain text, so it survives a change of editor.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Steps to reproduce
+1. Where you start (page, screen, command)
+2. What you do
+3. What you do next
+4. The step where it goes wrong
+
+Expected
+What should have happened.
+
+Actual
+What happened instead, including the message shown.
+
+Environment
+Version or build, platform, browser or operating system,
+account type, and how often it happens.
+
+Evidence
+Log excerpt, screenshot, request id or a short recording.
+
+Severity and reason
+How bad it is and who it affects.
+
+Related
+Tickets that look similar or touch the same area.</code></pre></div>
+<p>A few Jira habits help. Put the area in the Summary as a short tag, such as [Checkout]. Use the Components or Labels field for the same area, so people can filter. Attach the screenshot to the issue instead of describing it, and remove personal data before you do.</p>
+</section>
+<section id="github-issues-add-an-issue-form-to-the-repository" class="sec">
+<h2>GitHub Issues: add an issue form to the repository</h2>
+<p>GitHub lets a repository offer issue forms. A form shows reporters labelled boxes instead of an empty text area, and it can mark some of them as required. Save this file in your repository as <code>.github/ISSUE_TEMPLATE/bug_report.yml</code>.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>name: Bug report
+description: Report something that does not work as expected
+title: &quot;[Bug]: &quot;
+labels: [&quot;bug&quot;]
+body:
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps that start somewhere a stranger can reach.
+      placeholder: |
+        1. Open the page or run the command
+        2. Do this
+        3. Then this
+        4. The step where it goes wrong
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should have happened.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happened instead, including any message shown.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or build
+      description: The release, commit or build you saw this on.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Platform, browser or operating system, and how often it happens.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Log excerpt, request id or a screenshot. Remove personal data first.
+      render: shell
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Blocks work
+        - Wrong result
+        - Cosmetic</code></pre></div>
+<p>Two notes. The <code>render: shell</code> line formats the evidence box as code, which keeps log lines readable. And the form file only changes what new reporters see; it does not touch issues that already exist.</p>
+</section>
+<section id="azure-devops-one-entry-per-field" class="sec">
+<h2>Azure DevOps: one entry per field</h2>
+<p>Azure DevOps already splits a bug into fields, so the template is a guide for what goes where. Which fields you see depends on the process your project uses.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Title
+[Area] What goes wrong, in a few words
+
+Repro Steps
+1. Where you start
+2. What you do
+3. What you do next
+4. The step where it goes wrong
+Expected: what should have happened.
+Actual: what happened instead, including the message shown.
+
+System Info (or the Environment area of your form)
+Build, platform, browser or operating system, how often it happens.
+
+Attachments
+Trimmed log, screenshot or recording.
+
+Severity
+Pick the value that matches the impact, and say why in the discussion.
+
+Related
+Link similar work items with the Related link type.</code></pre></div>
+<p>In the common Agile, Scrum and CMMI processes the Bug type has a Repro Steps field, so the numbered steps, Expected and Actual go together there. The Basic process tracks bugs as Issues, which have a Description instead. Use the area path and tags to say which part of the product the bug touches.</p>
+</section>
+<section id="habits-that-work-in-any-tracker" class="sec">
+<h2>Habits that work in any tracker</h2>
+<ul>
+<li><strong>One bug per ticket.</strong> Two problems in one report get fixed at different times, so file them separately and link them.</li>
+<li><strong>Search before you file.</strong> Someone may have reported it already. The <a href="/articles/search-for-duplicate-bugs-jira-github-azure-devops/">duplicate search cheat sheet</a> has the searches for each tracker.</li>
+<li><strong>Run your own steps once more.</strong> If the bug does not repeat, say how often it did. The checklist in <a href="/articles/how-to-write-reproduction-steps-checklist/">How to write reproduction steps</a> shows how.</li>
+<li><strong>Trim before you attach.</strong> Look for email addresses and access tokens in logs and screenshots.</li>
+</ul>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>A template is easy to agree with and hard to follow at the end of a long day. BugIt closes that gap. You describe what broke in a rough sentence, and BugIt writes the report in your team's wording, then files it to your tracker, which can be Jira, Azure DevOps or GitHub Issues, among others. It redacts common personal data as a best effort, so you read the draft before it is filed. You review every draft, and nothing is written to your tracker until you type FILE IT.</p>
+<p>Learn more at <a href="https://bugit.dev/">bugit.dev</a> and <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+<section id="the-takeaway" class="sec takeaway">
+<h2>The takeaway</h2>
+<p>Use the shape your tracker likes and keep the same parts: steps, expected, actual, environment, evidence and a severity with a reason. Copy a template, change the headings to your team's words, and share it so everyone starts from the same page.</p>
+</section>
+    </article>
+  </div>
+  <section class="more" aria-labelledby="more-h">
+    <h2 id="more-h">Keep reading</h2>
+    <ul class="more-grid">
+<li><a href="/articles/bug-report-template-developers-read/"><span class="mc-t">A bug report template developers will actually read</span><span class="mc-d">A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.</span></a></li>
+<li><a href="/articles/catch-duplicate-bugs-before-filing/"><span class="mc-t">Catch duplicate bugs before you file them</span><span class="mc-d">Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.</span></a></li>
+<li><a href="/articles/reproduce-a-bug-from-logs/"><span class="mc-t">Reproduce a bug from a log file: a detective's guide</span><span class="mc-d">How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+</footer>
+
+<script src="/v2/nav.js"></script>
+<script src="/v2/consent-ui.js"></script>
+</body>
+</html>

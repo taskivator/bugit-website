@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">A checklist for reproduction steps</title>
+<desc id="d">A checklist card: start where a stranger can reach, number each action, use the real values, end where it goes wrong, state expected and actual, and run the steps once more.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">Reproduction steps, ticked off</text>
+<rect x="60" y="110" width="1080" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<rect x="96" y="143" width="28" height="28" rx="7" fill="none" stroke="#8b45ff" stroke-width="3"/><path d="M103 159 l7 8 l12 -15" stroke="#ff4fc9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="148" y="165" font-size="24" font-weight="700" fill="#f6f1ff">Start where a stranger can reach</text><text x="720" y="165" font-size="18" fill="#cfc4e2">Name the page, screen or command</text>
+<rect x="96" y="211" width="28" height="28" rx="7" fill="none" stroke="#8b45ff" stroke-width="3"/><path d="M103 227 l7 8 l12 -15" stroke="#ff4fc9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="148" y="233" font-size="24" font-weight="700" fill="#f6f1ff">One action per numbered step</text><text x="720" y="233" font-size="18" fill="#cfc4e2">So a reader can point at one</text>
+<rect x="96" y="279" width="28" height="28" rx="7" fill="none" stroke="#8b45ff" stroke-width="3"/><path d="M103 295 l7 8 l12 -15" stroke="#ff4fc9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="148" y="301" font-size="24" font-weight="700" fill="#f6f1ff">Use the real values</text><text x="720" y="301" font-size="18" fill="#cfc4e2">The code, file or amount you used</text>
+<rect x="96" y="347" width="28" height="28" rx="7" fill="none" stroke="#8b45ff" stroke-width="3"/><path d="M103 363 l7 8 l12 -15" stroke="#ff4fc9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="148" y="369" font-size="24" font-weight="700" fill="#f6f1ff">End where it goes wrong</text><text x="720" y="369" font-size="18" fill="#cfc4e2">Put what follows in Actual</text>
+<rect x="96" y="415" width="28" height="28" rx="7" fill="none" stroke="#8b45ff" stroke-width="3"/><path d="M103 431 l7 8 l12 -15" stroke="#ff4fc9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="148" y="437" font-size="24" font-weight="700" fill="#f6f1ff">State expected and actual</text><text x="720" y="437" font-size="18" fill="#cfc4e2">Two short lines</text>
+<rect x="96" y="483" width="28" height="28" rx="7" fill="none" stroke="#8b45ff" stroke-width="3"/><path d="M103 499 l7 8 l12 -15" stroke="#ff4fc9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="148" y="505" font-size="24" font-weight="700" fill="#f6f1ff">Run the steps once more</text><text x="720" y="505" font-size="18" fill="#cfc4e2">Say how often it repeats</text>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">Example text for illustration · BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

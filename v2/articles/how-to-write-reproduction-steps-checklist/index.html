@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/articles/how-to-write-reproduction-steps-checklist/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="How to write reproduction steps: a checklist · BugIt">
+<meta property="og:description" content="A short checklist for writing steps to reproduce a bug that a stranger can follow, with a before and after example and a template you can copy.">
+<meta property="og:url" content="https://bugit.dev/articles/how-to-write-reproduction-steps-checklist/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to write reproduction steps: a checklist · BugIt">
+<meta name="twitter:description" content="A short checklist for writing steps to reproduce a bug that a stranger can follow, with a before and after example and a template you can copy.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>How to write reproduction steps: a checklist · BugIt</title>
+<meta name="description" content="A short checklist for writing steps to reproduce a bug that a stranger can follow, with a before and after example and a template you can copy.">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<link rel="stylesheet" href="/v2/articles/articles.css">
+<script src="/v2/articles/articles.js" defer></script>
+</head>
+<body class="article-page is-home">
+<a class="skip" href="#main">Skip to content</a>
+<span class="read-progress" id="readProgress" aria-hidden="true"></span>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="/#how">How it works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/articles/">Articles</a>
+  </nav>
+  <div class="nav-end">
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing">Get BugIt</a>
+  </div>
+</header>
+
+<main id="main" class="article" tabindex="-1">
+  <header class="a-hero">
+    <p class="crumbs"><a href="/articles/">Articles</a><span aria-hidden="true"> / </span><span>steps to reproduce</span></p>
+    <h1>How to write reproduction steps: a checklist</h1>
+    <p class="a-sum">A short checklist for writing steps to reproduce a bug that a stranger can follow, with a before and after example and a template you can copy.</p>
+    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="2026-10-05">2026-10-05</time></span><span>4 min read</span></p>
+    <ul class="a-tags" aria-label="Topics"><li>steps to reproduce</li><li>reproduction steps</li><li>bug report</li></ul>
+  </header>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+<li><a href="#the-checklist">The checklist</a></li>
+<li><a href="#a-before-and-after-example">A before and after example</a></li>
+<li><a href="#a-template-to-paste">A template to paste</a></li>
+<li><a href="#when-the-bug-will-not-repeat">When the bug will not repeat</a></li>
+<li><a href="#where-bugit-fits">Where BugIt fits</a></li>
+<li><a href="#the-takeaway">The takeaway</a></li>
+</ol></nav>
+    <article class="a-body">
+<p>Steps to reproduce are the part of a bug report a developer reads first and trusts least. If the steps work, the bug is real and the fix can start. If they do not, the ticket goes back to the reporter with a question, and the wait begins.</p>
+<p>Good steps are not long. They are specific, ordered and tested. This page gives you a checklist you can run in a minute before you file, a before and after example, and a template to paste.</p>
+<figure class="hero"><img src="/v2/articles/images/reproduction-steps-checklist.svg" alt="A checklist card for reproduction steps" width="1200" height="630" loading="lazy"></figure>
+<section id="the-checklist" class="sec">
+<h2>The checklist</h2>
+<p>Read each line and ask whether your steps pass.</p>
+<ul>
+<li><strong>They start somewhere a stranger can reach.</strong> Name the page, the screen or the command, and the account type if it matters. &quot;Open the app&quot; is not a starting point. &quot;Sign in as a user without a subscription and open Settings&quot; is.</li>
+<li><strong>Each step is one action.</strong> If a step holds two actions, a reader cannot tell which one mattered. Number the steps so you can point at one.</li>
+<li><strong>They use the real values.</strong> Bugs like specific inputs. Write the promo code, the file name, the amount or the setting you used, not &quot;some value&quot;.</li>
+<li><strong>They include the waits and the clicks that are easy to forget.</strong> A step like &quot;wait for the list to load&quot; or &quot;close the dialog&quot; is the one that makes the bug repeat.</li>
+<li><strong>They end at the moment it goes wrong.</strong> The last step is the one where the problem shows. Everything after it belongs in Actual.</li>
+<li><strong>They say what you expected and what happened.</strong> Two short lines, one for each, including the message shown.</li>
+<li><strong>They name the build and the environment.</strong> The version, the platform and how often it happens. A bug that appears each time and one that appears now and then are different investigations.</li>
+<li><strong>You ran them once more.</strong> Follow your own steps from a clean start. If the bug does not repeat, say so and say how often it did.</li>
+<li><strong>Evidence is attached and trimmed.</strong> A short log excerpt, a cropped screenshot or a brief recording, with personal data removed.</li>
+</ul>
+</section>
+<section id="a-before-and-after-example" class="sec">
+<h2>A before and after example</h2>
+<p>Here is a set of steps that sounds fine and helps nobody.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Before
+The discount does not work on annual plans. Tried it a few times.</code></pre></div>
+<p>The developer has to ask which plan, which discount, what &quot;does not work&quot; means and where to look. Here is the same bug with the checklist applied.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>After
+Steps to reproduce
+1. Sign in as a user without a subscription
+2. Add the Pro plan to the cart, billed monthly
+3. Switch the billing period to annual
+4. Apply promo code SAVE20
+5. Read the order summary
+
+Expected
+20% off the annual price.
+
+Actual
+20% off the monthly price, shown as the annual total.
+
+Environment
+Production, web, build 2.14.1, happens each time.</code></pre></div>
+<p>Nothing in the second version is clever. It names the starting point, uses the real code, puts each action on its own line and ends at the step where the total is wrong.</p>
+</section>
+<section id="a-template-to-paste" class="sec">
+<h2>A template to paste</h2>
+<div class="code"><button type="button" class="copy" aria-label="Copy this text">Copy</button><pre><code>Steps to reproduce
+1. Where you start, and which account or setup
+2. What you do, with the real values
+3. What you do next
+4. The step where it goes wrong
+
+Expected
+What should have happened.
+
+Actual
+What happened instead, including the message shown.
+
+Environment
+Build, platform, and how often it happens.
+
+I ran these steps again: yes or no, and what happened.</code></pre></div>
+<p>This pairs with the full report layouts in <a href="/articles/bug-report-template-jira-github-azure-devops/">Bug report templates for Jira, GitHub and Azure DevOps</a>.</p>
+</section>
+<section id="when-the-bug-will-not-repeat" class="sec">
+<h2>When the bug will not repeat</h2>
+<p>Some bugs appear now and then. Do not leave the steps out because you cannot make it happen on demand. Write the steps you followed, say how many times you tried and how many times it appeared, and add what was different when it did. Change one thing at a time, such as the account, the data or the order of the steps, and note which change made a difference. The article on <a href="/articles/report-a-bug-that-only-happens-sometimes/">reporting a bug that only happens sometimes</a> goes deeper, and <a href="/articles/reproduce-a-bug-from-logs/">reproducing a bug from logs</a> shows how a log can fill in steps you did not see yourself.</p>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>Writing steps this carefully is easy to agree with and hard to do at the end of a long day. When you describe what broke in a rough sentence, BugIt turns it into numbered steps with expected and actual results, and it uses a log you paste to fill in the environment. It redacts common personal data as a best effort, so you read the draft before it is filed. You review every draft, and nothing is written to your tracker until you type FILE IT.</p>
+<p>Learn more at <a href="https://bugit.dev/">bugit.dev</a> and <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+<section id="the-takeaway" class="sec takeaway">
+<h2>The takeaway</h2>
+<p>Start where a stranger can reach, number the actions, use the real values, end where it goes wrong, and run the steps once more. A minute with this checklist is the difference between a ticket that gets fixed and one that comes back with a question.</p>
+</section>
+    </article>
+  </div>
+  <section class="more" aria-labelledby="more-h">
+    <h2 id="more-h">Keep reading</h2>
+    <ul class="more-grid">
+<li><a href="/articles/bug-report-template-developers-read/"><span class="mc-t">A bug report template developers will actually read</span><span class="mc-d">A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.</span></a></li>
+<li><a href="/articles/catch-duplicate-bugs-before-filing/"><span class="mc-t">Catch duplicate bugs before you file them</span><span class="mc-d">Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.</span></a></li>
+<li><a href="/articles/reproduce-a-bug-from-logs/"><span class="mc-t">Reproduce a bug from a log file: a detective's guide</span><span class="mc-d">How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+</footer>
+
+<script src="/v2/nav.js"></script>
+<script src="/v2/consent-ui.js"></script>
+</body>
+</html>

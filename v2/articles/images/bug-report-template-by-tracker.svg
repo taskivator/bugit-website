@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">One bug report template for each tracker</title>
+<desc id="d">A plain text block for Jira, a form file for GitHub Issues and field by field entries for Azure DevOps.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">One template, shaped for each tracker</text>
+<rect x="60" y="110" width="350" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="150" font-size="22" font-weight="700" fill="#f6f1ff">Jira</text>
+<text x="84" y="200" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Steps to reproduce</text>
+<text x="84" y="234" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Expected</text>
+<text x="84" y="268" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Actual</text>
+<text x="84" y="302" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Environment</text>
+<text x="84" y="336" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Evidence</text>
+<text x="84" y="370" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Severity and reason</text>
+<rect x="425" y="110" width="350" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="449" y="150" font-size="22" font-weight="700" fill="#f6f1ff">GitHub Issues</text>
+<text x="449" y="200" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">name: Bug report</text>
+<text x="449" y="234" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">body:</text>
+<text x="449" y="268" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">  - type: textarea</text>
+<text x="449" y="302" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">    label: Steps</text>
+<text x="449" y="336" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">    required: true</text>
+<text x="449" y="370" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">.github/ISSUE_TEMPLATE</text>
+<rect x="790" y="110" width="350" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="814" y="150" font-size="22" font-weight="700" fill="#f6f1ff">Azure DevOps</text>
+<text x="814" y="200" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Title</text>
+<text x="814" y="234" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Repro Steps</text>
+<text x="814" y="268" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">System Info</text>
+<text x="814" y="302" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Attachments</text>
+<text x="814" y="336" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Severity</text>
+<text x="814" y="370" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">Related</text>
+<g stroke="#ff4fc9" stroke-width="3" fill="none" stroke-linecap="round"><path d="M84 520H386"/><path d="M449 520H751"/><path d="M814 520H1116"/></g>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">Example text for illustration · BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>

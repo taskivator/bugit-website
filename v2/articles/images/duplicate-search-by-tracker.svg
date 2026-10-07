@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+<title id="t">A search for an existing bug in each tracker</title>
+<desc id="d">A JQL query for Jira, search qualifiers for GitHub Issues and a WIQL query for Azure DevOps.</desc>
+<rect width="1200" height="630" fill="#0b0614"/>
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+<text x="60" y="68" font-size="30" font-weight="700" fill="#f6f1ff">Search before you file, in your tracker</text>
+<rect x="60" y="110" width="350" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="84" y="150" font-size="22" font-weight="700" fill="#f6f1ff">Jira (JQL)</text>
+<text x="84" y="200" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">project = KAN AND</text>
+<text x="84" y="234" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">issuetype = Bug AND</text>
+<text x="84" y="268" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">statusCategory != Done</text>
+<text x="84" y="302" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">AND text ~ "sign in"</text>
+<text x="84" y="336" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace"></text>
+<text x="84" y="370" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace"></text>
+<rect x="425" y="110" width="350" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="449" y="150" font-size="22" font-weight="700" fill="#f6f1ff">GitHub (qualifiers)</text>
+<text x="449" y="200" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">is:issue is:open</text>
+<text x="449" y="234" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">"sign in"</text>
+<text x="449" y="268" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">in:title,body</text>
+<text x="449" y="302" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">label:bug</text>
+<text x="449" y="336" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">sort:updated-desc</text>
+<text x="449" y="370" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace"></text>
+<rect x="790" y="110" width="350" height="440" rx="16" fill="#140f22" stroke="#8b45ff" stroke-opacity=".6"/>
+<text x="814" y="150" font-size="22" font-weight="700" fill="#f6f1ff">Azure DevOps (WIQL)</text>
+<text x="814" y="200" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">SELECT [System.Id]</text>
+<text x="814" y="234" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">FROM workitems</text>
+<text x="814" y="268" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">WHERE [System.State]</text>
+<text x="814" y="302" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">  &lt;&gt; 'Closed'</text>
+<text x="814" y="336" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">AND [System.Title]</text>
+<text x="814" y="370" font-size="16" fill="#cfc4e2" font-family="Consolas,monospace">  CONTAINS 'sign in'</text>
+<g stroke="#ff4fc9" stroke-width="3" fill="none" stroke-linecap="round"><path d="M84 520H386"/><path d="M449 520H751"/><path d="M814 520H1116"/></g>
+<text x="60" y="605" font-size="16" fill="#9a8fb0">Example text for illustration · BugIt by Taskivator · bugit.dev</text>
+</g>
+</svg>
