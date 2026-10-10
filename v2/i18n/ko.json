@@ -260,5 +260,7 @@
  "t185": "보안",
  "lang.ariaLabel": "언어: {language}",
  "menu.label": "메뉴",
- "nav.articles": "아티클"
+ "nav.articles": "아티클",
+ "foot.templates": "템플릿",
+ "pricing.templates": "아직 결정하지 않으셨나요? <a href=\"/templates/\">무료 버그 보고서 템플릿</a>으로 시작해 보세요. BugIt이 대신 해 주는 일의 수동 버전입니다."
 }

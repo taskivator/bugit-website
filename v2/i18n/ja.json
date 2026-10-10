@@ -260,5 +260,7 @@
  "t185": "セキュリティ",
  "lang.ariaLabel": "言語：{language}",
  "menu.label": "メニュー",
- "nav.articles": "記事"
+ "nav.articles": "記事",
+ "foot.templates": "テンプレート",
+ "pricing.templates": "まだ決めかねている場合は、<a href=\"/templates/\">無料のバグレポートテンプレート</a>から始めてみてください。BugIt が代わりに行う作業の手作業版です。"
 }

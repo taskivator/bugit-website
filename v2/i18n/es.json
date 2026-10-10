@@ -260,5 +260,7 @@
  "t185": "Seguridad",
  "lang.ariaLabel": "Idioma: {language}",
  "menu.label": "Menú",
- "nav.articles": "Artículos"
+ "nav.articles": "Artículos",
+ "foot.templates": "Plantillas",
+ "pricing.templates": "¿Aún no te decides? Empieza con las <a href=\"/templates/\">plantillas gratuitas de informe de bug</a>, la versión manual de lo que BugIt hace por ti."
 }

@@ -260,5 +260,7 @@
  "t185": "Безопасность",
  "lang.ariaLabel": "Язык: {language}",
  "menu.label": "Меню",
- "nav.articles": "Статьи"
+ "nav.articles": "Статьи",
+ "foot.templates": "Шаблоны",
+ "pricing.templates": "Пока не готовы? Начните с <a href=\"/templates/\">бесплатных шаблонов баг-репортов</a>: это ручная версия того, что BugIt делает за вас."
 }

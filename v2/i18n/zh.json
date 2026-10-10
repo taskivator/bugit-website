@@ -260,5 +260,7 @@
  "t185": "安全",
  "lang.ariaLabel": "语言：{language}",
  "menu.label": "菜单",
- "nav.articles": "文章"
+ "nav.articles": "文章",
+ "foot.templates": "模板",
+ "pricing.templates": "还没决定？先从<a href=\"/templates/\">免费的缺陷报告模板</a>开始，它们是 BugIt 替你完成的工作的手动版本。"
 }

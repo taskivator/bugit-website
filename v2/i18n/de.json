@@ -184,7 +184,7 @@
  "t182": "BugIt auf LinkedIn (wird in einem neuen Tab geöffnet)",
  "t183": "BugIt auf YouTube (wird in einem neuen Tab geöffnet)",
  "meta.title": "BugIt: Bugreports schreiben für Jira, GitHub und Azure DevOps",
- "meta.description": "BugIt macht aus einer groben Notiz einen vollständigen Bugreport in deinem KI-Assistenten und legt ihn in Jira, GitHub oder Azure DevOps an, sobald du FILE IT tippst.",
+ "meta.description": "BugIt macht aus einer kurzen Notiz einen vollständigen Bugreport in Ihrem KI-Assistenten und legt ihn mit FILE IT in Jira, GitHub oder Azure DevOps an.",
  "js.note": "Checkout-Summe falsch mit SAVE20 nach Wechsel auf jährlich. jane@acme.com hat es auch gesehen, Produktion. Log angehängt",
  "js.answer": "2.14.1, jedes Mal",
  "js.hintReady": "Alles andere wird abgelehnt. Genau das ist der Sinn.",
@@ -260,5 +260,7 @@
  "t185": "Sicherheit",
  "lang.ariaLabel": "Sprache: {language}",
  "menu.label": "Menü",
- "nav.articles": "Artikel"
+ "nav.articles": "Artikel",
+ "foot.templates": "Vorlagen",
+ "pricing.templates": "Noch nicht so weit? Beginnen Sie mit den <a href=\"/templates/\">kostenlosen Bugreport-Vorlagen</a>, der manuellen Version dessen, was BugIt für Sie erledigt."
 }

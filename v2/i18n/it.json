@@ -260,5 +260,7 @@
  "t185": "Sicurezza",
  "lang.ariaLabel": "Lingua: {language}",
  "menu.label": "Menu",
- "nav.articles": "Articoli"
+ "nav.articles": "Articoli",
+ "foot.templates": "Modelli",
+ "pricing.templates": "Non hai ancora deciso? Inizia con i <a href=\"/templates/\">modelli gratuiti di bug report</a>, la versione manuale di ciò che BugIt fa per te."
 }

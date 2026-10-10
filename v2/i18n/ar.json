@@ -260,5 +260,7 @@
  "t185": "الأمان",
  "lang.ariaLabel": "اللغة: {language}",
  "menu.label": "القائمة",
- "nav.articles": "المقالات"
+ "nav.articles": "المقالات",
+ "foot.templates": "القوالب",
+ "pricing.templates": "لست مستعدًا بعد؟ ابدأ <a href=\"/templates/\">بقوالب تقارير الأخطاء المجانية</a>، فهي النسخة اليدوية لما يقوم به BugIt نيابةً عنك."
 }
