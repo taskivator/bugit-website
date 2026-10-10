@@ -475,7 +475,7 @@ ${Object.values(TOOLS).map((t) => `- [${t.title}](${t.url}): ${t.desc}`).join("\
 ## Company
 
 - [Taskivator](https://taskivator.com/): the company that makes BugIt
-- [BugIt on YouTube](https://www.youtube.com/@BugItByTaskivator): short videos on every feature
+- [BugIt on YouTube](https://www.youtube.com/@BugItByTaskivator): short films on BugIt's features
 `;
 fs.writeFileSync(path.join(V2, "..", "llms.txt"), llms);
 console.log("make-articles: llms.txt written");
