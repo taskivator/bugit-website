@@ -2,7 +2,7 @@
 
 > BugIt is a QA agent made by Taskivator. It runs inside the AI assistant you already use (GitHub Copilot Chat in VS Code, the Claude extension, or a terminal), turns a rough note into a complete bug report, and files it to your tracker, such as Jira, GitHub or Azure DevOps, only after you type FILE IT.
 
-Your tickets, specs and settings stay on your machine and go only to the tools you connect and your own AI model.
+Your tickets, specs and settings go only to the tools you connect and the AI assistant you choose.
 
 ## Product
 
