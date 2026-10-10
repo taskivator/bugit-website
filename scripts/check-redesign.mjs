@@ -80,11 +80,14 @@ async function open(width, lang, { consent = true, blockRoute = false } = {}) {
   return { ctx, page, errors, google };
 }
 
+// Since 2026-10-10 every document is its own page, so an old address ends on the REAL one:
+// route.js sends /#/docs/x to /docs/#/docs/x and docs.js sends that on to /docs/x/.
 const FORWARDS = [
-  ["/#/docs/privacy", "/docs/#/docs/privacy"], ["/#/docs/license", "/docs/#/docs/license"],
-  ["/#/support", "/docs/#/support"], ["/#/docs", "/docs/#/docs"],
-  ["/#/docs/getting-started", "/docs/#/docs/getting-started"],
-  ["/#features", "/#how"], ["/#faq", "/docs/#/docs/faq"], ["/#pricing", "/#pricing"],
+  ["/#/docs/privacy", "/docs/privacy/"], ["/#/docs/license", "/docs/license/"],
+  ["/#/support", "/docs/support/"], ["/#/docs", "/docs/"],
+  ["/#/docs/getting-started", "/docs/user-guide/"],
+  ["/#features", "/#how"], ["/#faq", "/docs/faq/"], ["/#pricing", "/#pricing"],
+  ["/docs/#/docs/refund", "/docs/refund/"], ["/docs/#/docs/commerce", "/docs/commerce/"],
 ];
 async function forwards(blockRoute) {
   const wrong = [];
@@ -107,11 +110,11 @@ async function forwards(blockRoute) {
 async function afterLoad(blockRoute) {
   const wrong = [];
   const land = async (page, how) => {
-    await page.waitForURL(/\/docs\/#\/docs\//, { timeout: 8000 }).catch(() => {});
+    await page.waitForURL(/\/docs\/[a-z-]+\/$/, { timeout: 8000 }).catch(() => {});
     await page.waitForSelector("#docsMain h1", { timeout: 8000 }).catch(() => {});
     const u = new URL(page.url());
     const h1 = await page.evaluate(() => (document.querySelector("#docsMain h1")?.textContent || "").trim()).catch(() => "");
-    if (!(u.pathname === "/docs/" && u.hash.startsWith("#/docs/") && h1)) wrong.push(`${how} -> ${u.pathname + u.hash}${h1 ? "" : " (no document heading)"}`);
+    if (!(/^\/docs\/[a-z-]+\/$/.test(u.pathname) && !u.hash && h1)) wrong.push(`${how} -> ${u.pathname + u.hash}${h1 ? "" : " (no document heading)"}`);
   };
   for (const w of [1440, 360]) {
     const { ctx, page } = await open(w, "en", { blockRoute });
@@ -143,7 +146,7 @@ try {
   check(late.length === 0, "an old address reached after load is forwarded", late.join("; "));
 
   console.log("check-redesign: both pages, every language, phone and desktop");
-  for (const route of ["/", "/docs/", "/docs/#/docs/privacy"]) {
+  for (const route of ["/", "/docs/", "/docs/privacy/", "/docs/faq/"]) {
     for (const lang of LANGS) {
       for (const w of WIDTHS) {
         const { ctx, page, errors } = await open(w, lang);

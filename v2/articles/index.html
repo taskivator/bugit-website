@@ -11,25 +11,73 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="canonical" href="https://bugit.dev/articles/">
 <meta name="theme-color" content="#0b0614">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
 <meta property="og:site_name" content="Taskivator">
-<meta property="og:title" content="Articles for developers and QA · BugIt">
-<meta property="og:description" content="Practical articles on writing bug reports, catching duplicate bugs, reproducing a bug and attaching useful evidence, from the makers of BugIt.">
+<meta property="og:title" content="How to write a bug report · BugIt">
+<meta property="og:description" content="How to write a bug report a developer can act on: check for duplicates, write clear steps, add evidence and set severity, with templates and examples.">
 <meta property="og:url" content="https://bugit.dev/articles/">
 <meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Articles for developers and QA · BugIt">
-<meta name="twitter:description" content="Practical articles on writing bug reports, catching duplicate bugs, reproducing a bug and attaching useful evidence, from the makers of BugIt.">
+<meta name="twitter:title" content="How to write a bug report · BugIt">
+<meta name="twitter:description" content="How to write a bug report a developer can act on: check for duplicates, write clear steps, add evidence and set severity, with templates and examples.">
 <meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
-<title>Articles for developers and QA · BugIt</title>
-<meta name="description" content="Practical articles on writing bug reports, catching duplicate bugs, reproducing a bug and attaching useful evidence, from the makers of BugIt.">
+<title>How to write a bug report · BugIt</title>
+<meta name="description" content="How to write a bug report a developer can act on: check for duplicates, write clear steps, add evidence and set severity, with templates and examples.">
 <link rel="stylesheet" href="/v2/v2.css">
 <link rel="stylesheet" href="/v2/consent.css">
 <link rel="stylesheet" href="/v2/articles/articles.css">
 <script src="/v2/articles/articles.js" defer></script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "Article",
+   "headline": "How to write a bug report: a practical guide",
+   "description": "How to write a bug report a developer can act on: check for duplicates, write clear steps, add evidence and set severity, with templates and examples.",
+   "image": "https://bugit.dev/public/brand/og-image.png",
+   "datePublished": "2026-10-10",
+   "dateModified": "2026-10-10",
+   "inLanguage": "en",
+   "mainEntityOfPage": "https://bugit.dev/articles/",
+   "author": {
+    "@type": "Organization",
+    "name": "Taskivator",
+    "url": "https://taskivator.com/"
+   },
+   "publisher": {
+    "@type": "Organization",
+    "name": "Taskivator",
+    "url": "https://taskivator.com/",
+    "logo": {
+     "@type": "ImageObject",
+     "url": "https://taskivator.com/assets/brand/icon-512.png"
+    }
+   }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    {
+     "@type": "ListItem",
+     "position": 1,
+     "name": "BugIt",
+     "item": "https://bugit.dev/"
+    },
+    {
+     "@type": "ListItem",
+     "position": 2,
+     "name": "How to write a bug report",
+     "item": "https://bugit.dev/articles/"
+    }
+   ]
+  }
+ ]
+}
+</script>
 </head>
 <body class="article-page is-home">
 <a class="skip" href="#main">Skip to content</a>
@@ -53,29 +101,87 @@
 
 <main id="main" class="article idx" tabindex="-1">
   <header class="a-hero idx-hero">
-    <p class="kicker">Articles</p>
-    <h1>Write better bugs. Fix them faster.</h1>
-    <p class="a-sum">Short, practical articles for people who write, triage and fix bugs, from the team behind <a href="https://bugit.dev/">BugIt</a>, a QA agent that turns a rough description into a complete bug report. More about the product is at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+    <p class="kicker">Guide</p>
+    <h1>How to write a bug report</h1>
+    <p class="a-sum">A good bug report lets someone who has never seen the problem find it, understand it and fix it. This guide walks through the parts of a report in the order you write them, with a deeper article for each step. It comes from the team behind <a href="https://bugit.dev/">BugIt</a>, a QA agent that turns a rough description into a complete bug report; more about the product is at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
   </header>
-  <ul class="cards">
-<li class="card"><a href="/articles/bug-report-template-developers-read/"><span class="card-n" aria-hidden="true">01</span><span class="card-meta">bug report · 5 min read</span><h2>A bug report template developers will actually read</h2><p>A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/catch-duplicate-bugs-before-filing/"><span class="card-n" aria-hidden="true">02</span><span class="card-meta">duplicate bugs · 5 min read</span><h2>Catch duplicate bugs before you file them</h2><p>Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/reproduce-a-bug-from-logs/"><span class="card-n" aria-hidden="true">03</span><span class="card-meta">reproduce a bug · 4 min read</span><h2>Reproduce a bug from a log file: a detective's guide</h2><p>How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/report-a-bug-that-only-happens-sometimes/"><span class="card-n" aria-hidden="true">04</span><span class="card-meta">intermittent bug · 5 min read</span><h2>How to report a bug that only happens sometimes</h2><p>How to report an intermittent bug: count your runs, find what changes between them, and write the conditions down so a developer can chase it.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/screenshots-and-recordings-for-bug-reports/"><span class="card-n" aria-hidden="true">05</span><span class="card-meta">bug report screenshot · 4 min read</span><h2>Screenshots and recordings that help fix the bug</h2><p>What to capture in a bug report screenshot or recording, how to crop and annotate it, and how to keep personal data and secrets out of the picture.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/report-a-regression-bug/"><span class="card-n" aria-hidden="true">06</span><span class="card-meta">regression · 5 min read</span><h2>A bug that used to work: how to report a regression</h2><p>How to report a regression: find the last version that worked, narrow the gap to the first one that failed, and give the developer a place to start.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/bug-report-template-jira-github-azure-devops/"><span class="card-n" aria-hidden="true">07</span><span class="card-meta">bug report template · 5 min read</span><h2>Bug report templates for Jira, GitHub and Azure DevOps</h2><p>Free copy and paste bug report templates for Jira, GitHub Issues and Azure DevOps, including a GitHub issue form file you can add to a repository.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/search-for-duplicate-bugs-jira-github-azure-devops/"><span class="card-n" aria-hidden="true">08</span><span class="card-meta">duplicate bugs · 6 min read</span><h2>Find duplicate bugs: Jira, GitHub and Azure DevOps searches</h2><p>Copy and paste searches to find an existing bug before you file one: JQL for Jira, GitHub issue search qualifiers, and WIQL and search tips for Azure DevOps.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/how-to-write-reproduction-steps-checklist/"><span class="card-n" aria-hidden="true">09</span><span class="card-meta">steps to reproduce · 4 min read</span><h2>How to write reproduction steps: a checklist</h2><p>A short checklist for writing steps to reproduce a bug that a stranger can follow, with a before and after example and a template you can copy.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/severity-vs-priority-bug-triage-matrix/"><span class="card-n" aria-hidden="true">10</span><span class="card-meta">severity vs priority · 3 min read</span><h2>Severity vs priority: a bug triage matrix</h2><p>What severity and priority mean in bug triage, how they differ, and a copyable matrix with examples to decide which bug gets fixed first.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/bug-report-examples-good-and-bad/"><span class="card-n" aria-hidden="true">11</span><span class="card-meta">bug report examples · 3 min read</span><h2>Bug report examples: good and bad, side by side</h2><p>Bug report examples, good and bad, side by side: four weak reports rewritten so a developer can act on them, with notes on what changed.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-<li class="card"><a href="/articles/bug-triage-checklist/"><span class="card-n" aria-hidden="true">12</span><span class="card-meta">bug triage · 3 min read</span><h2>A bug triage checklist you can run in five minutes</h2><p>A bug triage checklist for a team: confirm the bug, check for duplicates, set severity and priority, assign an owner, and keep the meeting short.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
-  </ul>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+<li><a href="#check-it-is-new">Before you write, check it is new</a></li>
+<li><a href="#title">Write a title that names the problem</a></li>
+<li><a href="#steps">Write steps someone else can follow</a></li>
+<li><a href="#expected-actual">Say what you expected and what happened</a></li>
+<li><a href="#evidence">Add the environment and the evidence</a></li>
+<li><a href="#hard-bugs">When the bug is hard to pin down</a></li>
+<li><a href="#severity">Set severity and priority</a></li>
+<li><a href="#template">Use a template for your tracker</a></li>
+<li><a href="#all-articles">All articles</a></li>
+</ol></nav>
+    <article class="a-body">
+<section id="check-it-is-new" class="sec">
+<h2>Before you write, check it is new</h2>
+<p>A second ticket for the same bug splits the conversation and wastes the time of whoever picks up the copy. Search the tracker with the error text, the screen name and a word or two from the symptom before you start. <a href="/articles/catch-duplicate-bugs-before-filing/">Catch duplicate bugs before you file them</a> explains why duplicates happen, and <a href="/articles/search-for-duplicate-bugs-jira-github-azure-devops/">the duplicate search cheat sheet</a> gives searches you can paste into Jira, GitHub and Azure DevOps.</p>
+</section>
+<section id="title" class="sec">
+<h2>Write a title that names the problem</h2>
+<p>The title is what people scan in a list, so it should say what broke, where, and under what condition: "Checkout total ignores the discount code on mobile Safari" tells a developer more than "Checkout broken". Keep opinions and urgency out of it; severity has its own field.</p>
+</section>
+<section id="steps" class="sec">
+<h2>Write steps someone else can follow</h2>
+<p>Reproduction steps are the heart of the report. Start from a known place, number each action, include the exact data you typed, and stop at the moment it fails. <a href="/articles/how-to-write-reproduction-steps-checklist/">How to write reproduction steps</a> has a checklist and a before and after example, and the free <a href="https://taskivator.com/steps-to-reproduce-checklist/">steps to reproduce checklist</a> gives you a template to fill in.</p>
+</section>
+<section id="expected-actual" class="sec">
+<h2>Say what you expected and what happened</h2>
+<p>Write the two side by side. "Expected: the total drops by 10%. Actual: the total stays the same and no error appears." The gap between them is the bug, and writing it down makes it hard to misread.</p>
+</section>
+<section id="evidence" class="sec">
+<h2>Add the environment and the evidence</h2>
+<p>Name the version or build, the device, the browser or OS, and the account type. Then attach what shows the failure: <a href="/articles/screenshots-and-recordings-for-bug-reports/">a cropped screenshot or a short recording</a>, and the part of the log around the failing moment. <a href="/articles/reproduce-a-bug-from-logs/">Reproduce a bug from a log file</a> shows how to find that moment and trim the rest. Keep passwords, tokens and personal data out of everything you attach.</p>
+</section>
+<section id="hard-bugs" class="sec">
+<h2>When the bug is hard to pin down</h2>
+<p>Some bugs do not appear on every run. Count your attempts, note what changes between them, and say so in the report: <a href="/articles/report-a-bug-that-only-happens-sometimes/">how to report a bug that only happens sometimes</a>. If something that used to work has stopped, find the last version that worked and the first that failed: <a href="/articles/report-a-regression-bug/">how to report a regression</a>.</p>
+</section>
+<section id="severity" class="sec">
+<h2>Set severity and priority</h2>
+<p>Severity is how bad the failure is; priority is how soon the team should fix it. They are separate decisions, often made by different people. <a href="/articles/severity-vs-priority-bug-triage-matrix/">Severity vs priority</a> has a matrix with examples, <a href="/articles/bug-triage-checklist/">the bug triage checklist</a> keeps the triage meeting short, and the free <a href="https://taskivator.com/bug-severity-helper/">bug severity helper</a> suggests a severity with a reason you can paste into the ticket.</p>
+</section>
+<section id="template" class="sec">
+<h2>Use a template for your tracker</h2>
+<p>A template makes reports arrive with the same parts in the same place. <a href="/articles/bug-report-template-developers-read/">A bug report template developers will actually read</a> explains each part, <a href="/articles/bug-report-template-jira-github-azure-devops/">the tracker templates</a> give a version for Jira, GitHub Issues and Azure DevOps, and <a href="/articles/bug-report-examples-good-and-bad/">the good and bad examples</a> show weak reports rewritten. The free <a href="https://taskivator.com/bug-report-template-builder/">bug report template builder</a> lays a report out for Jira or Azure DevOps.</p>
+</section>
+<section id="in-short" class="sec takeaway">
+<h2>The short version</h2>
+<p>Check it is new, name the problem in the title, write steps a stranger can follow, say what you expected and what happened, attach the evidence without personal data, and set severity and priority as two separate calls.</p>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>BugIt writes a report with these parts filled in from a rough note, checks it, and files it to your tracker after you type FILE IT. See how it works at <a href="https://bugit.dev/">bugit.dev</a> or read about it at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+    </article>
+  </div>
+  <section class="more" id="all-articles" aria-labelledby="all-h">
+    <h2 id="all-h">All articles</h2>
+    <ul class="cards">
+<li class="card"><a href="/articles/bug-report-template-developers-read/"><span class="card-n" aria-hidden="true">01</span><span class="card-meta">bug report · 5 min read</span><h3>A bug report template developers will actually read</h3><p>A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/catch-duplicate-bugs-before-filing/"><span class="card-n" aria-hidden="true">02</span><span class="card-meta">duplicate bugs · 5 min read</span><h3>Catch duplicate bugs before you file them</h3><p>Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/reproduce-a-bug-from-logs/"><span class="card-n" aria-hidden="true">03</span><span class="card-meta">reproduce a bug · 4 min read</span><h3>Reproduce a bug from a log file: a detective's guide</h3><p>How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/report-a-bug-that-only-happens-sometimes/"><span class="card-n" aria-hidden="true">04</span><span class="card-meta">intermittent bug · 5 min read</span><h3>How to report a bug that only happens sometimes</h3><p>How to report an intermittent bug: count your runs, find what changes between them, and write the conditions down so a developer can chase it.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/screenshots-and-recordings-for-bug-reports/"><span class="card-n" aria-hidden="true">05</span><span class="card-meta">bug report screenshot · 4 min read</span><h3>Screenshots and recordings that help fix the bug</h3><p>What to capture in a bug report screenshot or recording, how to crop and annotate it, and how to keep personal data and secrets out of the picture.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/report-a-regression-bug/"><span class="card-n" aria-hidden="true">06</span><span class="card-meta">regression · 5 min read</span><h3>A bug that used to work: how to report a regression</h3><p>How to report a regression: find the last version that worked, narrow the gap to the first one that failed, and give the developer a place to start.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/bug-report-template-jira-github-azure-devops/"><span class="card-n" aria-hidden="true">07</span><span class="card-meta">bug report template · 5 min read</span><h3>Bug report templates for Jira, GitHub and Azure DevOps</h3><p>Free copy and paste bug report templates for Jira, GitHub Issues and Azure DevOps, including a GitHub issue form file you can add to a repository.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/search-for-duplicate-bugs-jira-github-azure-devops/"><span class="card-n" aria-hidden="true">08</span><span class="card-meta">duplicate bugs · 6 min read</span><h3>Find duplicate bugs: Jira, GitHub and Azure DevOps searches</h3><p>Copy and paste searches to find an existing bug before you file one: JQL for Jira, GitHub issue search qualifiers, and WIQL and search tips for Azure DevOps.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/how-to-write-reproduction-steps-checklist/"><span class="card-n" aria-hidden="true">09</span><span class="card-meta">steps to reproduce · 4 min read</span><h3>How to write reproduction steps: a checklist</h3><p>A short checklist for writing steps to reproduce a bug that a stranger can follow, with a before and after example and a template you can copy.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/severity-vs-priority-bug-triage-matrix/"><span class="card-n" aria-hidden="true">10</span><span class="card-meta">severity vs priority · 3 min read</span><h3>Severity vs priority: a bug triage matrix</h3><p>What severity and priority mean in bug triage, how they differ, and a copyable matrix with examples to decide which bug gets fixed first.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/bug-report-examples-good-and-bad/"><span class="card-n" aria-hidden="true">11</span><span class="card-meta">bug report examples · 3 min read</span><h3>Bug report examples: good and bad, side by side</h3><p>Bug report examples, good and bad, side by side: four weak reports rewritten so a developer can act on them, with notes on what changed.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+<li class="card"><a href="/articles/bug-triage-checklist/"><span class="card-n" aria-hidden="true">12</span><span class="card-meta">bug triage · 3 min read</span><h3>A bug triage checklist you can run in five minutes</h3><p>A bug triage checklist for a team: confirm the bug, check for duplicates, set severity and priority, assign an owner, and keep the meeting short.</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>
+    </ul>
+  </section>
 </main>
 
 <footer class="foot">
   <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
-  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/privacy/">Privacy</a><a href="/docs/refund/">Refunds</a><a href="/docs/commerce/">Commercial Transactions</a><a href="/docs/security/">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
 </footer>
 
 <script src="/v2/nav.js"></script>

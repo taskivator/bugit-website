@@ -180,10 +180,17 @@ function liftV2(name) {
   }
   throw new Error(`${name}() is unterminated in v2/docs/docs.js`);
 }
+// inline() turns an old #/docs/... link into the page's real address (2026-10-10) through pathOf(),
+// which reads ALIAS: both are one-line declarations, lifted as they ship.
+function liftV2Line(prefix) {
+  const start = v2Source.indexOf(prefix);
+  if (start === -1) throw new Error(`v2/docs/docs.js declares no ${prefix}`);
+  return v2Source.slice(start, v2Source.indexOf("\n", start));
+}
 // `C` is docs.js's loaded content.<lang>.json; faq() reads it, the document renderers do not.
 const v2Renderers = new Function(
   "C",
-  ["esc", "bdi", "inline", "markdown", "license", "faq"].map(liftV2).join("\n") + "; return { markdown, license, faq };"
+  [liftV2Line("var ALIAS ="), liftV2Line("var pathOf ="), ...["esc", "bdi", "inline", "markdown", "license", "faq"].map(liftV2)].join("\n") + "; return { markdown, license, faq };"
 );
 // markdown() renders a blockquote as <aside class="callout"> and license() a clause number as <b>;
 // faq() wraps each answer in details/summary/div and an <i> marker. Nothing else is expected.

@@ -606,14 +606,15 @@ for (const base of ["REFUND", "TOKUSHOHO"]) {
     const f = html.match(/<footer[\s\S]*?<\/footer>/);
     if (!f) return [`${file} has no footer`];
     const out = [];
-    if (!/#\/docs\/commerce\b/.test(f[0])) out.push(`${file}: the footer does not link the Commercial Transactions page`);
-    if (!/#\/docs\/security\b/.test(f[0])) out.push(`${file}: the footer does not link the Security page`);
+    // Either address of the page: the real one (/docs/commerce/, since 2026-10-10) or the old route.
+    if (!/(?:#\/docs\/commerce\b|\/docs\/commerce\/)/.test(f[0])) out.push(`${file}: the footer does not link the Commercial Transactions page`);
+    if (!/(?:#\/docs\/security\b|\/docs\/security\/)/.test(f[0])) out.push(`${file}: the footer does not link the Security page`);
     return out;
   };
   const pricingProblems = (file, html) => {
     const s = html.match(/<section[^>]*\bid="pricing"[\s\S]*?<\/section>/);
     if (!s) return [`${file}: no pricing section found, so the purchase flow could not be checked`];
-    return /#\/docs\/commerce\b/.test(s[0]) ? []
+    return /(?:#\/docs\/commerce\b|\/docs\/commerce\/)/.test(s[0]) ? []
       : [`${file}: the purchase flow (pricing section) does not link the Commercial Transactions page`];
   };
   const chromeProblems = (file, code, c) => {

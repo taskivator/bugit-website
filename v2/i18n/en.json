@@ -140,7 +140,7 @@
  "t138": "Managed in the Portal",
  "t139": "Priority support",
  "t140": "Get Team",
- "t141": "All prices are in US dollars (USD). Each license runs for one year and does not renew automatically: nothing is charged again unless you choose to renew. Backed by a <a href=\"/docs/#/docs/refund\">7 day refund policy</a>.",
+ "t141": "All prices are in US dollars (USD). Each license runs for one year and does not renew automatically: nothing is charged again unless you choose to renew. Backed by a <a href=\"/docs/refund/\">7 day refund policy</a>.",
  "t142": "Do I need GitHub Copilot?",
  "t143": "No. BugIt runs in any assistant that can run a command: Copilot Chat, the Claude extension in VS Code, or a plain terminal. It can also run standalone with your own OpenAI or Anthropic key.",
  "t144": "Does Taskivator see my tickets?",

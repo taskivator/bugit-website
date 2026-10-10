@@ -34,6 +34,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { docPaths } from "./lib/doc-pages.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (f) => fs.readFileSync(path.join(root, f), "utf8");
@@ -116,6 +117,9 @@ check(
     " -- if this is empty the declaration moved and every check below is vacuous",
 );
 
+const DOC_PAGES = new Set(docPaths(root));
+check(DOC_PAGES.size >= 9, "the documentation pages were read out of the docs registry", [...DOC_PAGES].join(" "));
+
 const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
 check(
   ids.has("pricing") && ids.has("how"),
@@ -154,6 +158,13 @@ for (const { from, to, code } of redirects) {
   } else if (to === "/" || to === "/docs/") {
     // The two pages, published by build.js from v2/index.html and v2/docs/index.html.
     check(fs.existsSync(path.join(root, "v2", ...(to === "/" ? [] : ["docs"]), "index.html")), from + " -> " + to + " is a published page");
+  } else if (/^\/docs\/[^/]+\/$/.test(to)) {
+    // A documentation page (2026-10-10). build.js writes exactly the pages in the docs registry.
+    check(
+      DOC_PAGES.has(to),
+      from + " -> " + to + " is a documentation page build.js writes",
+      "build.js writes only " + [...DOC_PAGES].join(" "),
+    );
   } else if (/^\/#\//.test(to)) {
     check(false, from + " -> " + to + " is an old single page address", "the documentation moved to /docs/#/...; v2/route.js forwards these in the browser, but a redirect should name the new address");
   } else if (!to.startsWith("http")) {

@@ -49,14 +49,26 @@
   var ALIAS = { "docs/getting-started": "docs/user-guide" };
   var find = function (r) { r = ALIAS[r] || r; for (var i = 0; i < DOCS.length; i++) if (DOCS[i].r === r) return DOCS[i]; return null; };
 
+  /* REAL ADDRESSES since 2026-10-10 (SEO audit, owner OK). Every page is /docs/<slug>/, written out
+     by build.js with its English content already in it, so a crawler gets one URL, one title and one
+     H1 per page instead of a single /docs/ that turned into everything. The page is still read from
+     the address here, so a language switch re-renders it exactly as before.
+     The old #/docs/... addresses are printed where nothing can edit them any more (frozen agent
+     releases, downloaded PDFs, posts, emails), and a fragment never reaches the server, so
+     _redirects cannot see them: forwardLegacy() replaces them with the real address. */
+  var pathOf = function (r) { r = ALIAS[r] || r; return r === "docs" ? "/docs/" : "/docs/" + r.replace(/^docs\//, "") + "/"; };
+  var LEGACY = /^#\/((?:docs|support)(?:\/[a-z-]+)?)\/?$/;
+  function forwardLegacy() { var m = LEGACY.exec(location.hash); if (!m) return false; location.replace(pathOf(m[1])); return true; }
+
   /* ── renderers ─────────────────────────────────────────────────────────────────────────── */
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function bdi(s) { return s.replace(/&lt;bdi dir=(?:&quot;|')ltr(?:&quot;|')&gt;([\s\S]*?)&lt;\/bdi&gt;/g, '<bdi dir="ltr">$1</bdi>'); }
   function inline(s) {
     return bdi(esc(s)
       .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (_m, label, href) {
-        // a docs link inside a document stays in the new docs, not the old page
-        var h = href.replace(/^\/?#\/(docs|support)/, "#/$1");
+        // a docs link inside a document (#/docs/x, /#/docs/x, /docs/#/docs/x) goes to the real page
+        var lm = /^(?:\/|\/docs\/)?#\/((?:docs|support)(?:\/[a-z-]+)?)$/.exec(href);
+        var h = lm ? pathOf(lm[1]) : href;
         return /^(?:https?:\/\/|mailto:|\/|#)[^\s"'<>]+$/.test(h) ? '<a href="' + h + '">' + label + "</a>" : label;
       })
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
@@ -105,7 +117,7 @@
       + '<p class="sup-fine">' + esc(d.englishOnly) + "</p></div>"
       + '<div class="sup-card"><span class="ic">' + icon("security") + "</span><h2>" + esc(d.before) + "</h2><p>" + esc(d.beforeText) + "</p></div>"
       + '<div class="sup-card"><span class="ic">' + icon("faq") + "</span><h2>" + T("d.supCheck", "Check the answers first") + "</h2><p>" + T("d.supCheckText", "Most setup questions are answered in the FAQ and the User Guide.") + "</p>"
-      + '<div class="sup-links"><a href="#/docs/faq">' + esc(C.docPages.faqTitle) + ' <span aria-hidden="true">→</span></a><a href="#/docs/user-guide">' + esc((C.dl && C.dl.userGuide) || "User Guide") + ' <span aria-hidden="true">→</span></a></div></div>'
+      + '<div class="sup-links"><a href="' + pathOf("docs/faq") + '">' + esc(C.docPages.faqTitle) + ' <span aria-hidden="true">→</span></a><a href="' + pathOf("docs/user-guide") + '">' + esc((C.dl && C.dl.userGuide) || "User Guide") + ' <span aria-hidden="true">→</span></a></div></div>'
       + "</div>";
   }
 
@@ -123,11 +135,11 @@
   function sidebar(active) {
     var groups = {}, order = [];
     DOCS.forEach(function (d) { if (!groups[d.g]) { groups[d.g] = []; order.push(d.g); } groups[d.g].push(d); });
-    return '<a class="side-home' + (active === "docs" ? " on" : "") + '" href="#/docs">' + T("d.overview", "Overview") + '</a>'
+    return '<a class="side-home' + (active === "docs" ? " on" : "") + '" href="/docs/">' + T("d.overview", "Overview") + '</a>'
       + order.map(function (g) {
         return '<p class="side-group">' + g + "</p>" + groups[g].map(function (d) {
           var on = d.r === active;
-          return '<a class="side-link' + (on ? " on" : "") + '"' + (on ? ' aria-current="page"' : "") + ' href="#/' + d.r + '">' + icon(d.i) + "<span>" + esc(d.t) + "</span></a>";
+          return '<a class="side-link' + (on ? " on" : "") + '"' + (on ? ' aria-current="page"' : "") + ' href="' + pathOf(d.r) + '">' + icon(d.i) + "<span>" + esc(d.t) + "</span></a>";
         }).join("");
       }).join("");
   }
@@ -142,26 +154,27 @@
       + '<section class="guides">' + guides.map(function (g, n) {
         return '<article class="guide g' + n + '"><span class="ic">' + icon(g.i) + "</span>"
           + '<p class="eyebrow">' + T("d.guideN", "Guide {n} · PDF + web").replace("{n}", String(n + 1).padStart(2, "0")) + "</p><h2>" + esc(g.t) + "</h2><p>" + esc(g.desc) + "</p>"
-          + '<div class="guide-cta"><a class="btn btn-primary btn-sm" href="#/' + g.r + '">' + T("d.readOnline", "Read online") + ' <span aria-hidden="true">→</span></a>'
+          + '<div class="guide-cta"><a class="btn btn-primary btn-sm" href="' + pathOf(g.r) + '">' + T("d.readOnline", "Read online") + ' <span aria-hidden="true">→</span></a>'
           + '<a class="btn btn-ghost btn-sm" href="' + g.pdf + '" download="' + g.pdfName + '">' + T("d.downloadPdf", "Download PDF") + '</a></div></article>';
       }).join("") + "</section>"
       + '<section class="shelf">' + rest.map(function (x) {
-        return '<a class="shelf-card" href="#/' + x.r + '"><span class="ic">' + icon(x.i) + '</span><span class="shelf-t">' + esc(x.t) + '</span><span class="shelf-d">' + esc(x.desc || "") + '</span><span class="go" aria-hidden="true">→</span></a>';
+        return '<a class="shelf-card" href="' + pathOf(x.r) + '"><span class="ic">' + icon(x.i) + '</span><span class="shelf-t">' + esc(x.t) + '</span><span class="shelf-d">' + esc(x.desc || "") + '</span><span class="go" aria-hidden="true">→</span></a>';
       }).join("") + "</section>"
       + '<p class="note">' + esc(d.englishOnly) + "</p>";
   }
-  function docPage(doc) {
+  // bodyHtml is given only at build time, when the page is written out with its content in it.
+  function docPage(doc, bodyHtml) {
     var i = DOCS.indexOf(doc), prev = DOCS[i - 1], next = DOCS[i + 1];
     var pn = '<nav class="pn" aria-label="' + T("d.prevNext", "Previous and next") + '">'
-      + (prev ? '<a class="pn-prev" href="#/' + prev.r + '"><small>' + T("d.prev", "Previous") + '</small><b>' + esc(prev.t) + "</b></a>" : "<span></span>")
-      + (next ? '<a class="pn-next" href="#/' + next.r + '"><small>' + T("d.next", "Next") + '</small><b>' + esc(next.t) + "</b></a>" : "<span></span>")
+      + (prev ? '<a class="pn-prev" href="' + pathOf(prev.r) + '"><small>' + T("d.prev", "Previous") + '</small><b>' + esc(prev.t) + "</b></a>" : "<span></span>")
+      + (next ? '<a class="pn-next" href="' + pathOf(next.r) + '"><small>' + T("d.next", "Next") + '</small><b>' + esc(next.t) + "</b></a>" : "<span></span>")
       + "</nav>";
     var tools = doc.pdf ? '<div class="doc-tools"><a class="btn btn-ghost btn-sm" href="' + doc.pdf + '" target="_blank" rel="noopener">' + T("d.openPdf", "Open PDF") + '</a><a class="btn btn-ghost btn-sm" href="' + doc.pdf + '" download="' + doc.pdfName + '">' + T("d.downloadPdf", "Download PDF") + '</a></div>' : "";
-    return '<article class="doc"><header class="doc-head"><nav class="crumb" aria-label="' + esc((C.ui && C.ui.breadcrumb) || "Breadcrumb") + '"><a href="#/docs">' + T("d.docs", "Docs") + '</a><span aria-hidden="true">/</span><span>' + esc(doc.g) + "</span></nav>"
+    return '<article class="doc"><header class="doc-head"><nav class="crumb" aria-label="' + esc((C.ui && C.ui.breadcrumb) || "Breadcrumb") + '"><a href="/docs/">' + T("d.docs", "Docs") + '</a><span aria-hidden="true">/</span><span>' + esc(doc.g) + "</span></nav>"
       + '<div class="doc-title"><span class="ic">' + icon(doc.i) + "</span><h1>" + esc(doc.t) + "</h1></div>"
       + (doc.lede ? '<p class="doc-lede">' + esc(doc.lede) + "</p>" : "")
       + '<p class="doc-meta" id="docMeta"></p>' + tools + "</header>"
-      + '<div class="prose" id="docBody" aria-busy="true">' + skeleton() + "</div>" + pn + "</article>";
+      + (bodyHtml == null ? '<div class="prose" id="docBody" aria-busy="true">' + skeleton() + "</div>" : '<div class="prose" id="docBody">' + bodyHtml + "</div>") + pn + "</article>";
   }
   function skeleton() {
     return '<div class="skel">' + [60, 96, 88, 92, 70, 0, 45, 94, 90, 82, 66].map(function (w) { return w ? '<span style="width:' + w + '%"></span>' : "<br>"; }).join("") + "</div>";
@@ -207,20 +220,36 @@
   }
 
   /* ── router ────────────────────────────────────────────────────────────────────────────── */
-  var token = 0, pendingSection = null;
-  function route() { return location.hash.replace(/^#\/?/, "") || "docs"; }
+  var token = 0;
+  function route() { var m = /^\/docs\/([a-z-]+)\/?$/.exec(location.pathname); return m ? (m[1] === "support" ? "support" : "docs/" + m[1]) : "docs"; }
+  // A fragment that is not a route ("#install") is a section of this page: a search result or a
+  // shared link to a heading. Its id exists only once the contents list has named the headings.
+  function toSection() { var h = location.hash; if (h.length < 2 || h.charAt(1) === "/") return; var t = document.getElementById(decodeURIComponent(h.slice(1))); if (t) t.scrollIntoView(); }
+  function minRead(body) {
+    var words = body.textContent.trim().split(/\s+/).length;
+    $("#docMeta").textContent = T("d.minRead", "{n} min read").replace("{n}", Math.max(1, Math.round((/^(ja|zh|ko)$/.test(LANG()) ? body.textContent.length / 2.2 : words) / 230)));
+  }
   function render() {
     var r = route();
-    // A bare "#section" is an in-page jump the contents list made: not a route.
-    if (!/^#\//.test(location.hash) && location.hash.length > 1) return;
     var main = $("#docsMain"), my = ++token;
+    /* The build wrote this page out in English with its content in place. In English the first
+       render keeps it (no skeleton flash, nothing fetched) and only adds what needs a browser: the
+       reading time, the contents list and its scroll spy. Any other language, and every later
+       render, builds the page as before. */
+    var pre = main.getAttribute("data-prerendered");
+    if (pre !== null) main.removeAttribute("data-prerendered");
+    if (pre !== null && pre === r && LANG() === "en") {
+      var kept = r === "docs" ? null : find(r);
+      if (kept && $("#docBody")) { var pb = $("#docBody"); minRead(pb); buildToc(pb); toSection(); }
+      return;
+    }
     var doc = r === "docs" ? null : find(r);
     $("#side").innerHTML = sidebar(doc ? doc.r : "docs");
     $("#sideCurrent").textContent = doc ? doc.t : T("d.overview", "Overview");
     document.body.classList.toggle("is-home", !doc);
     closeSide();
     if (r !== "docs" && !doc) {
-      main.innerHTML = '<section class="nf"><p class="kicker">404</p><h1>' + T("d.nfTitle", "Page not found") + '</h1><p class="lede">' + T("d.nfBody", "That page doesn’t exist. The link may be mistyped, or the page may have moved.") + '</p><p><a class="btn btn-primary" href="#/docs">' + T("d.nfBack", "Back to the docs") + '</a></p></section>';
+      main.innerHTML = '<section class="nf"><p class="kicker">404</p><h1>' + T("d.nfTitle", "Page not found") + '</h1><p class="lede">' + T("d.nfBody", "That page doesn’t exist. The link may be mistyped, or the page may have moved.") + '</p><p><a class="btn btn-primary" href="/docs/">' + T("d.nfBack", "Back to the docs") + '</a></p></section>';
       $("#toc").hidden = true; document.title = T("d.nfTitle", "Page not found") + " · BugIt"; return;
     }
     if (!doc) {
@@ -234,10 +263,9 @@
     bodyFor(doc).then(function (html) {
       if (my !== token) return;
       body.innerHTML = html; body.removeAttribute("aria-busy");
-      var words = body.textContent.trim().split(/\s+/).length;
-      $("#docMeta").textContent = T("d.minRead", "{n} min read").replace("{n}", Math.max(1, Math.round((/^(ja|zh|ko)$/.test(LANG()) ? body.textContent.length / 2.2 : words) / 230)));
+      minRead(body);
       buildToc(body);
-      if (pendingSection) { var t = document.getElementById(pendingSection); pendingSection = null; if (t) t.scrollIntoView(); }
+      toSection();
     }).catch(function () {
       if (my !== token) return;
       body.removeAttribute("aria-busy");
@@ -316,12 +344,12 @@
   // The id is the row's position in this render: unique by construction, and selectResult()
   // re-points the input after every render, so it never names a row that has gone.
   function item(d, h, snip, n) {
-    return '<li role="presentation"><a id="docs-result-' + n + '" role="option" aria-selected="false" class="r" href="#/' + d.r + '"' + (h ? ' data-section="' + h.id + '"' : "") + '><span class="ic">' + icon(d.i) + '</span><span class="r-t"><b>' + esc(d.t) + (h ? ' <em>› ' + esc(h.text) + "</em>" : "") + "</b><small>" + snip + "</small></span></a></li>";
+    return '<li role="presentation"><a id="docs-result-' + n + '" role="option" aria-selected="false" class="r" href="' + pathOf(d.r) + (h ? "#" + h.id : "") + '"' + (h ? ' data-section="' + h.id + '"' : "") + '><span class="ic">' + icon(d.i) + '</span><span class="r-t"><b>' + esc(d.t) + (h ? ' <em>› ' + esc(h.text) + "</em>" : "") + "</b><small>" + snip + "</small></span></a></li>";
   }
 
   /* ── wiring ────────────────────────────────────────────────────────────────────────────── */
   function wire() {
-    window.addEventListener("hashchange", render);
+    window.addEventListener("hashchange", forwardLegacy);
     document.addEventListener("click", function (e) {
       var t = e.target.closest("[data-open-search]"); if (t) { e.preventDefault(); openSearch(); return; }
       var to = e.target.closest("a[data-to]");
@@ -330,10 +358,9 @@
       var r = e.target.closest("#results a");
       if (r) {
         $("#search").close();
-        if (r.dataset.section) {
-          pendingSection = r.dataset.section;
-          if (location.hash === r.getAttribute("href")) { e.preventDefault(); var s = document.getElementById(pendingSection); pendingSection = null; if (s) s.scrollIntoView({ behavior: "smooth" }); }
-        }
+        // A section of the page already open: scroll there. Another page: let the link load it,
+        // and toSection() finds the heading once that page has drawn its contents list.
+        if (r.dataset.section && r.pathname === location.pathname) { e.preventDefault(); var s = document.getElementById(r.dataset.section); if (s) s.scrollIntoView({ behavior: "smooth" }); }
       }
     });
     $("#sideToggle").addEventListener("click", function () {
@@ -361,6 +388,18 @@
       bar.style.transform = "scaleX(" + (max > 0 && !document.body.classList.contains("is-home") ? h.scrollTop / max : 0) + ")";
     }, { passive: true });
   }
+
+  /* BUILD TIME. build.js runs this same file in a sandbox with no document, so the pages it writes
+     out come from the renderers above and cannot drift from what the browser draws. */
+  if (typeof document === "undefined") {
+    globalThis.BugItDocs = {
+      load: function (c) { C = c; buildDocs(); return DOCS; },
+      pathOf: pathOf, markdown: markdown, license: license, faq: faq, support: support,
+      sidebar: sidebar, homePage: homePage, docPage: docPage
+    };
+    return;
+  }
+  if (forwardLegacy()) return;
 
   var wired = false;
   function boot() {

@@ -50,7 +50,10 @@ const server = http.createServer((req,res)=>{ try {
   let clean;
   try { clean = decodeURIComponent(req.url.split('?')[0]); }
   catch { res.writeHead(400); return res.end('Bad Request'); }
-  let file = path.join(root, SOURCE_PAGES[clean] || (clean === '/' ? 'index.html' : clean));
+  // Since 2026-10-10 each document is its own page, /docs/<slug>/. build.js writes those out; in
+  // the source tree they are the same docs shell, which reads the page from the address.
+  const docPage = SOURCE_PAGES['/docs/'] && /^\/docs\/[a-z-]+\/(?:index\.html)?$/.test(clean) ? SOURCE_PAGES['/docs/'] : null;
+  let file = path.join(root, SOURCE_PAGES[clean] || docPage || (clean === '/' ? 'index.html' : clean));
   // A STRING PREFIX IS NOT A DIRECTORY BOUNDARY, and a path is not the file it names.
   //
   // `startsWith(root)` answers yes for a SIBLING whose name merely begins with the root's:

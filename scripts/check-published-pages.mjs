@@ -229,11 +229,20 @@ try {
   for (const lang of ["en", "ar"]) {
     const { ctx, page, errors } = await open(1280, lang);
     await page.goto(B + "/docs/#/docs", { waitUntil: "networkidle" });
-    const nf = await page.evaluate(() => { location.hash = "#/no-such-page"; return new Promise((r) => setTimeout(() => r({ h1: document.querySelector("#docsMain h1")?.textContent.trim(), nf: !!document.querySelector("#docsMain .nf") }), 400)); });
+    // Since 2026-10-10 a docs page is a real address (/docs/<slug>/) and an old #/docs/... link is
+    // forwarded to it, so an unknown OLD link must end on an unknown page that says not found. (In
+    // production that address is the site's 404 page; this gate serves the source tree, where the
+    // docs shell draws its own not-found heading.)
+    await page.evaluate(() => { location.hash = "#/docs/no-such-page"; });
+    await page.waitForURL(/\/docs\/no-such-page\/$/, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(400);
+    const nf = await page.evaluate(() => ({ path: location.pathname, h1: document.querySelector("#docsMain h1")?.textContent.trim(), nf: !!document.querySelector("#docsMain .nf") }));
     check(nf.nf && !!nf.h1, `[${lang}] an unknown docs route renders the not-found heading`, JSON.stringify(nf));
     const seen = new Set(), heads = {};
     for (const r of ROUTES) {
+      // An old #/ link, as the agent and the PDFs print it: forwarded to the page's real address.
       await page.evaluate((r) => { location.hash = "#/" + r; }, r);
+      await page.waitForURL((u) => u.pathname === "/docs/" + r.replace(/^docs\//, "") + "/", { timeout: 8000 }).catch(() => {});
       await page.waitForFunction(() => { const m = document.querySelector("#docsMain"); return m && !m.querySelector(".nf") && m.querySelector("h1") && m.textContent.trim().length > 200; }, null, { timeout: 15000 }).catch(() => {});
       const got = await page.evaluate(() => ({ h1: document.querySelector("#docsMain h1")?.textContent.trim() || "", nf: !!document.querySelector("#docsMain .nf"), chars: document.querySelector("#docsMain")?.textContent.trim().length || 0 }));
       check(!got.nf && got.h1 && got.chars > 200, `[${lang}] #/${r} renders its page`, JSON.stringify(got));
@@ -242,14 +251,16 @@ try {
     check(seen.size === ROUTES.length, `[${lang}] every docs route has its own heading`, `${seen.size} distinct of ${ROUTES.length}`);
     // The PAGE shown, not only the address: a router that changed the hash and left the previous
     // document on screen would pass an address check (Codex review, 2026-10-04).
-    const shown = () => page.evaluate(() => ({ hash: location.hash, h1: document.querySelector("#docsMain h1")?.textContent.trim() || "" }));
+    // Each route is now its own address: docs/x lives at /docs/x/, support at /docs/support/.
+    const shown = () => page.evaluate(() => ({ path: location.pathname, h1: document.querySelector("#docsMain h1")?.textContent.trim() || "" }));
+    const addr = (r) => "/docs/" + r.replace(/^docs\//, "") + "/";
     const prev = ROUTES[ROUTES.length - 2], last = ROUTES[ROUTES.length - 1];
-    await page.goBack(); await page.waitForTimeout(600);
+    await page.goBack(); await page.waitForLoadState("networkidle"); await page.waitForTimeout(600);
     const back = await shown();
-    check(back.hash === "#/" + prev && back.h1 === heads[prev], `[${lang}] Back shows the previous docs page`, JSON.stringify(back));
-    await page.goForward(); await page.waitForTimeout(600);
+    check(back.path === addr(prev) && back.h1 === heads[prev], `[${lang}] Back shows the previous docs page`, JSON.stringify(back));
+    await page.goForward(); await page.waitForLoadState("networkidle"); await page.waitForTimeout(600);
     const fwd = await shown();
-    check(fwd.hash === "#/" + last && fwd.h1 === heads[last], `[${lang}] Forward shows it again`, JSON.stringify(fwd));
+    check(fwd.path === addr(last) && fwd.h1 === heads[last], `[${lang}] Forward shows it again`, JSON.stringify(fwd));
     check(errors.length === 0, `[${lang}] no page error while routing`, errors.slice(0, 2).join(" | "));
     await ctx.close();
   }

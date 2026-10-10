@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- bugit.dev has two standalone HTML pages, each with its own canonical tag: the homepage and
-     /docs/. The docs reader routes inside /docs/ with hash fragments (for example
-     /docs/#/docs/privacy); fragments are not valid sitemap entries and every one of them serves
-     the /docs/ document, so they are not listed. Files under /public/docs/ are fetchable raw
-     assets (Markdown, plain text, PDF), not canonical HTML pages, and are not listed either.
-     Add an entry only for a real standalone HTML page with its own canonical tag. -->
+<!-- Every entry is a real standalone HTML page with its own canonical tag: the homepage, the
+     documentation home and one page per document under /docs/<slug>/ (written by build.js from
+     the docs registry in v2/docs/docs.js, 2026-10-10), the articles hub and each article. The old
+     /docs/#/docs/... fragments are not listed: a fragment is not a valid sitemap entry, and they
+     now forward to the real pages. Files under /public/docs/ are raw sources (Markdown, plain
+     text, PDF) and are not listed either. lastmod is restamped per page by build.js. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bugit.dev/</loc>
@@ -17,6 +17,60 @@
     <lastmod>2026-07-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/user-guide/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/overview/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/faq/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/license/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/privacy/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/security/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/refund/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/commerce/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bugit.dev/docs/support/</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://bugit.dev/articles/</loc>

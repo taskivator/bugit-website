@@ -127,6 +127,44 @@
   Cache-Control: public, max-age=0, must-revalidate
 /docs/index.html
   Cache-Control: public, max-age=0, must-revalidate
+# One page per document since 2026-10-10 (build.js, scripts/lib/doc-pages.mjs). Listed one by one:
+# /docs/* would also match /docs/index.html above, and Cloudflare joins every matching rule.
+/docs/user-guide/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/user-guide/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/overview/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/overview/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/faq/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/faq/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/license/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/license/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/privacy/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/privacy/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/security/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/security/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/refund/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/refund/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/commerce/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/commerce/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/support/
+  Cache-Control: public, max-age=0, must-revalidate
+/docs/support/index.html
+  Cache-Control: public, max-age=0, must-revalidate
 # The guides (2026-10-05), revalidated like the pages they sit beside.
 /articles/*
   Cache-Control: public, max-age=0, must-revalidate

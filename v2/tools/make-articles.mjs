@@ -11,6 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadDocs } from "../../scripts/lib/doc-pages.mjs";
 
 const V2 = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(V2, "tools", "articles-src");
@@ -178,7 +179,7 @@ ${ld}</head>
 const foot = `
 <footer class="foot">
   <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
-  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/#/docs/privacy">Privacy</a><a href="/docs/#/docs/refund">Refunds</a><a href="/docs/#/docs/commerce">Commercial Transactions</a><a href="/docs/#/docs/security">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/privacy/">Privacy</a><a href="/docs/refund/">Refunds</a><a href="/docs/commerce/">Commercial Transactions</a><a href="/docs/security/">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
 </footer>
 
 <script src="/v2/nav.js"></script>
@@ -277,21 +278,91 @@ ${more}
 }
 
 const cards = all
-  .map(({ fm }, n) => `<li class="card"><a href="/articles/${fm.slug}/"><span class="card-n" aria-hidden="true">${String(n + 1).padStart(2, "0")}</span><span class="card-meta">${esc(fm.tags[0] || "Article")} · ${fm.minutes} min read</span><h2>${esc(fm.title)}</h2><p>${esc(fm.description)}</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>`)
+  .map(({ fm }, n) => `<li class="card"><a href="/articles/${fm.slug}/"><span class="card-n" aria-hidden="true">${String(n + 1).padStart(2, "0")}</span><span class="card-meta">${esc(fm.tags[0] || "Article")} · ${fm.minutes} min read</span><h3>${esc(fm.title)}</h3><p>${esc(fm.description)}</p><span class="card-go">Read the article <span aria-hidden="true">→</span></span></a></li>`)
   .join("\n");
+
+/* THE ARTICLES HUB IS THE PILLAR PAGE (owner 2026-10-10: "make it the articles hub", so the
+   article count stays where the owner set it). /articles/ is "How to write a bug report": the parts
+   of a report in the order you write them, each step linking the article that goes deeper, then
+   every article. Owner copy rules: no dashes, no prices, no counts, no absolutes. A link to an
+   article that has no source fails the build below, so a renamed slug cannot leave a dead link. */
+const A = (slug, text) => {
+  if (!all.some((a) => a.fm.slug === slug)) throw new Error(`make-articles: the hub links /articles/${slug}/, which has no source`);
+  return `<a href="/articles/${slug}/">${text}</a>`;
+};
+const T_ = (k) => `<a href="${TOOLS[k].url}">${TOOLS[k].title.toLowerCase()}</a>`;
+const GUIDE = [
+  ["check-it-is-new", "Before you write, check it is new", `<p>A second ticket for the same bug splits the conversation and wastes the time of whoever picks up the copy. Search the tracker with the error text, the screen name and a word or two from the symptom before you start. ${A("catch-duplicate-bugs-before-filing", "Catch duplicate bugs before you file them")} explains why duplicates happen, and ${A("search-for-duplicate-bugs-jira-github-azure-devops", "the duplicate search cheat sheet")} gives searches you can paste into Jira, GitHub and Azure DevOps.</p>`],
+  ["title", "Write a title that names the problem", `<p>The title is what people scan in a list, so it should say what broke, where, and under what condition: "Checkout total ignores the discount code on mobile Safari" tells a developer more than "Checkout broken". Keep opinions and urgency out of it; severity has its own field.</p>`],
+  ["steps", "Write steps someone else can follow", `<p>Reproduction steps are the heart of the report. Start from a known place, number each action, include the exact data you typed, and stop at the moment it fails. ${A("how-to-write-reproduction-steps-checklist", "How to write reproduction steps")} has a checklist and a before and after example, and the free ${T_("steps")} gives you a template to fill in.</p>`],
+  ["expected-actual", "Say what you expected and what happened", `<p>Write the two side by side. "Expected: the total drops by 10%. Actual: the total stays the same and no error appears." The gap between them is the bug, and writing it down makes it hard to misread.</p>`],
+  ["evidence", "Add the environment and the evidence", `<p>Name the version or build, the device, the browser or OS, and the account type. Then attach what shows the failure: ${A("screenshots-and-recordings-for-bug-reports", "a cropped screenshot or a short recording")}, and the part of the log around the failing moment. ${A("reproduce-a-bug-from-logs", "Reproduce a bug from a log file")} shows how to find that moment and trim the rest. Keep passwords, tokens and personal data out of everything you attach.</p>`],
+  ["hard-bugs", "When the bug is hard to pin down", `<p>Some bugs do not appear on every run. Count your attempts, note what changes between them, and say so in the report: ${A("report-a-bug-that-only-happens-sometimes", "how to report a bug that only happens sometimes")}. If something that used to work has stopped, find the last version that worked and the first that failed: ${A("report-a-regression-bug", "how to report a regression")}.</p>`],
+  ["severity", "Set severity and priority", `<p>Severity is how bad the failure is; priority is how soon the team should fix it. They are separate decisions, often made by different people. ${A("severity-vs-priority-bug-triage-matrix", "Severity vs priority")} has a matrix with examples, ${A("bug-triage-checklist", "the bug triage checklist")} keeps the triage meeting short, and the free ${T_("severity")} suggests a severity with a reason you can paste into the ticket.</p>`],
+  ["template", "Use a template for your tracker", `<p>A template makes reports arrive with the same parts in the same place. ${A("bug-report-template-developers-read", "A bug report template developers will actually read")} explains each part, ${A("bug-report-template-jira-github-azure-devops", "the tracker templates")} give a version for Jira, GitHub Issues and Azure DevOps, and ${A("bug-report-examples-good-and-bad", "the good and bad examples")} show weak reports rewritten. The free ${T_("template")} lays a report out for Jira or Azure DevOps.</p>`],
+];
+const guideToc = GUIDE.map(([id, h]) => `<li><a href="#${id}">${esc(h)}</a></li>`).join("\n");
+const guideBody = GUIDE.map(([id, h, body]) => `<section id="${id}" class="sec">\n<h2>${esc(h)}</h2>\n${body}\n</section>`).join("\n");
+const HUB_TITLE = "How to write a bug report: a practical guide";
+const HUB_DESC = "How to write a bug report a developer can act on: check for duplicates, write clear steps, add evidence and set severity, with templates and examples.";
+if (HUB_TITLE.length > 60 || HUB_DESC.length > 160) throw new Error("make-articles: the hub title or description is too long");
+const hubLd = jsonLd({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: HUB_TITLE,
+      description: HUB_DESC,
+      image: "https://bugit.dev/public/brand/og-image.png",
+      datePublished: "2026-10-10",
+      dateModified: "2026-10-10",
+      inLanguage: "en",
+      mainEntityOfPage: "https://bugit.dev/articles/",
+      author: { "@type": "Organization", name: "Taskivator", url: "https://taskivator.com/" },
+      publisher: { "@type": "Organization", name: "Taskivator", url: "https://taskivator.com/", logo: { "@type": "ImageObject", url: "https://taskivator.com/assets/brand/icon-512.png" } },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "BugIt", item: "https://bugit.dev/" },
+        { "@type": "ListItem", position: 2, name: "How to write a bug report", item: "https://bugit.dev/articles/" },
+      ],
+    },
+  ],
+});
 fs.writeFileSync(
   path.join(OUT, "index.html"),
-  head("Articles for developers and QA", "Practical articles on writing bug reports, catching duplicate bugs, reproducing a bug and attaching useful evidence, from the makers of BugIt.", "https://bugit.dev/articles/", "website", true) +
+  head(HUB_TITLE.replace(/: a practical guide$/, ""), HUB_DESC, "https://bugit.dev/articles/", "article", true, hubLd) +
     `
 <main id="main" class="article idx" tabindex="-1">
   <header class="a-hero idx-hero">
-    <p class="kicker">Articles</p>
-    <h1>Write better bugs. Fix them faster.</h1>
-    <p class="a-sum">Short, practical articles for people who write, triage and fix bugs, from the team behind <a href="https://bugit.dev/">BugIt</a>, a QA agent that turns a rough description into a complete bug report. More about the product is at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+    <p class="kicker">Guide</p>
+    <h1>How to write a bug report</h1>
+    <p class="a-sum">A good bug report lets someone who has never seen the problem find it, understand it and fix it. This guide walks through the parts of a report in the order you write them, with a deeper article for each step. It comes from the team behind <a href="https://bugit.dev/">BugIt</a>, a QA agent that turns a rough description into a complete bug report; more about the product is at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
   </header>
-  <ul class="cards">
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+${guideToc}
+<li><a href="#all-articles">All articles</a></li>
+</ol></nav>
+    <article class="a-body">
+${guideBody}
+<section id="in-short" class="sec takeaway">
+<h2>The short version</h2>
+<p>Check it is new, name the problem in the title, write steps a stranger can follow, say what you expected and what happened, attach the evidence without personal data, and set severity and priority as two separate calls.</p>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>BugIt writes a report with these parts filled in from a rough note, checks it, and files it to your tracker after you type FILE IT. See how it works at <a href="https://bugit.dev/">bugit.dev</a> or read about it at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+    </article>
+  </div>
+  <section class="more" id="all-articles" aria-labelledby="all-h">
+    <h2 id="all-h">All articles</h2>
+    <ul class="cards">
 ${cards}
-  </ul>
+    </ul>
+  </section>
 </main>
 ` +
     foot,
@@ -300,6 +371,9 @@ console.log(`make-articles: ${all.length} article(s) written`);
 
 // /llms.txt (llmstxt.org): a plain summary for AI crawlers. Written here, from the same sources as
 // the articles, so the article list in it cannot fall behind the site. build.js publishes it.
+// The documentation pages, from the docs registry itself (titles and descriptions as the docs show them).
+const DOCS_REG = loadDocs(path.join(V2, ".."));
+const docsList = DOCS_REG.docs.map((d) => `- [${d.t}](https://bugit.dev${DOCS_REG.R.pathOf(d.r)})${d.desc ? ": " + d.desc : ""}`).join("\n");
 const llms = `# BugIt
 
 > BugIt is a QA agent made by Taskivator. It runs inside the AI assistant you already use (GitHub Copilot Chat in VS Code, the Claude extension, or a terminal), turns a rough note into a complete bug report, and files it to your tracker, such as Jira, GitHub or Azure DevOps, only after you type FILE IT.
@@ -309,11 +383,16 @@ Your tickets, specs and settings stay on your machine and go only to the tools y
 ## Product
 
 - [BugIt home](https://bugit.dev/): what BugIt does, how it works and pricing
-- [Documentation](https://bugit.dev/docs/): install, activate, user guide, FAQ and every BugIt policy
+- [Documentation](https://bugit.dev/docs/): install, activate, customize and use BugIt
 - [Get BugIt](https://portal.bugit.dev/pricing): plans and purchase
+
+## Documentation
+
+${docsList}
 
 ## Articles
 
+- [How to write a bug report](https://bugit.dev/articles/): the parts of a good report in the order you write them, with a deeper article for each step
 ${all.map(({ fm }) => `- [${fm.title}](https://bugit.dev/articles/${fm.slug}/): ${fm.description}`).join("\n")}
 
 ## Free tools

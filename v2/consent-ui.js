@@ -298,7 +298,7 @@
      pages move from /v2/ to the root. The fallback is where it lives today. */
   function privacyHref() {
     var a = document.querySelector('footer a[href*="docs/privacy"]') || document.querySelector('a[href*="#/docs/privacy"]');
-    return a ? a.getAttribute("href") : "/docs/#/docs/privacy";
+    return a ? a.getAttribute("href") : "/docs/privacy/";
   }
 
   var banner, prefs, adv, bManage, bSave, bReject, bAccept, link;

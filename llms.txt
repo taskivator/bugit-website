@@ -7,11 +7,24 @@ Your tickets, specs and settings stay on your machine and go only to the tools y
 ## Product
 
 - [BugIt home](https://bugit.dev/): what BugIt does, how it works and pricing
-- [Documentation](https://bugit.dev/docs/): install, activate, user guide, FAQ and every BugIt policy
+- [Documentation](https://bugit.dev/docs/): install, activate, customize and use BugIt
 - [Get BugIt](https://portal.bugit.dev/pricing): plans and purchase
+
+## Documentation
+
+- [User Guide](https://bugit.dev/docs/user-guide/): The complete step-by-step setup and usage guide.
+- [QA Agent Overview](https://bugit.dev/docs/overview/): A concise overview of the BugIt QA Agent.
+- [FAQ](https://bugit.dev/docs/faq/): Answers to common questions.
+- [License Agreement](https://bugit.dev/docs/license/): Read the terms for using BugIt.
+- [Privacy Policy](https://bugit.dev/docs/privacy/): How we collect, use and protect your data.
+- [Security](https://bugit.dev/docs/security/): Safeguards, known limits and how to report a vulnerability.
+- [Refund Policy](https://bugit.dev/docs/refund/): Our 7-day refund policy.
+- [Commercial Transactions](https://bugit.dev/docs/commerce/): Seller and transaction details (特定商取引法に基づく表記).
+- [Support](https://bugit.dev/docs/support/): Get help and open a support ticket.
 
 ## Articles
 
+- [How to write a bug report](https://bugit.dev/articles/): the parts of a good report in the order you write them, with a deeper article for each step
 - [A bug report template developers will actually read](https://bugit.dev/articles/bug-report-template-developers-read/): A copyable bug report template, what each part is for, and the habits that turn a vague complaint into a ticket a developer can fix.
 - [Catch duplicate bugs before you file them](https://bugit.dev/articles/catch-duplicate-bugs-before-filing/): Why one bug turns into several tickets, how to search a tracker so you find the earlier one, and what to do when you do.
 - [Reproduce a bug from a log file: a detective's guide](https://bugit.dev/articles/reproduce-a-bug-from-logs/): How to find the failing moment in a log, trim it to what matters, turn it into repeatable steps and share it safely.

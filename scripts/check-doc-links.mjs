@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, extname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { publishedCopy } from "./lib/published-copy.mjs";
+import { docPaths } from "./lib/doc-pages.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const docsRoot = join(root, "public", "docs");
@@ -111,6 +112,11 @@ if (v2Routes.size < 8) {
   console.error(`Read only ${v2Routes.size} route(s) out of v2/docs/docs.js; the route table moved, so no published link can be checked.`);
   process.exit(1);
 }
+const DOC_PAGES = new Set(docPaths(root));
+if (DOC_PAGES.size < 9) {
+  console.error(`Read only ${DOC_PAGES.size} documentation page(s) out of the docs registry; no /docs/<slug>/ link can be checked.`);
+  process.exit(1);
+}
 const homeIds = new Set(
   [...readFileSync(join(root, "v2", "index.html"), "utf8").matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]),
 );
@@ -145,6 +151,12 @@ function publishedLinkProblem(entry, href) {
   let file;
   if (abs === "/" || abs === "/index.html") file = join(root, "v2", "index.html");
   else if (/^\/docs\/?(?:index\.html)?$/.test(abs)) file = join(root, "v2", "docs", "index.html");
+  // A documentation page (2026-10-10): /docs/<slug>/ exists only if build.js writes it, and build.js
+  // writes exactly the pages in the docs registry (scripts/lib/doc-pages.mjs, the same list it uses).
+  else if (/^\/docs\/[^/]+\/(?:index\.html)?$/.test(abs)) {
+    if (!DOC_PAGES.has(abs.replace(/index\.html$/, ""))) return `no documentation page ${abs}: build.js writes only ${[...DOC_PAGES].join(" ")}`;
+    file = join(root, "v2", "docs", "index.html");
+  }
   else if (abs.startsWith("/articles/")) file = join(root, "v2", abs.replace(/\/$/, "/index.html").slice(1));
   else file = join(root, abs.replace(/\/$/, "/index.html"));
   if (!existsSync(file)) return `nothing at ${abs} in the source tree`;
@@ -174,6 +186,8 @@ function scanPublishedLinks(entry) {
     { href: "#/docs/nonesuch", bad: true },
     { href: "#nonesuch-section", bad: true },
     { href: "/docs/#/docs/refund", bad: false },
+    { href: "/docs/refund/", bad: false },
+    { href: "/docs/nonesuch/", bad: true },
   ];
   const synthetic = {
     file: "v2/i18n/xx.json", lang: "xx", kind: "home",

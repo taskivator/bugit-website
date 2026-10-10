@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
+import { writeDocPages, loadDocs, docSource } from './scripts/lib/doc-pages.mjs';
 const root = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(root,'dist');
 
@@ -265,6 +266,7 @@ console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of d
       } catch { return null; } // no git here; keep the literal
     };
     const sitewide = lastCommit(['v2', 'consent.js', 'public']);
+    const docsRegistry = loadDocs(root);
     const sourcesOf = (loc) => {
       const p = loc.replace(/^https:\/\/bugit\.dev/, '');
       if (p === '/') return ['v2/index.html', 'v2/i18n', 'v2/v2.css', 'v2/v2.js'];
@@ -272,7 +274,10 @@ console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of d
       const art = /^\/articles\/([a-z0-9-]+)\/$/.exec(p);
       if (art) return [`v2/articles/${art[1]}`, `v2/tools/articles-src/${art[1]}.md`];
       const doc = /^\/docs\/(?:([a-z0-9-]+)\/)?$/.exec(p);
-      if (doc) return ['v2/docs'];
+      if (doc) {
+        const d = doc[1] && docsRegistry.docs.find((x) => docsRegistry.R.pathOf(x.r) === p);
+        return d && docSource(d) ? ['v2/docs', docSource(d)] : ['v2/docs'];
+      }
       return null;
     };
     const before = fs.readFileSync(sp, 'utf8');
@@ -528,9 +533,13 @@ if (fs.existsSync(guideDir)) {
     fs.writeFileSync(out, html);
   }
   console.log(`build: the site's pages are the redesign (${Object.keys(v2Assets).length} hashed assets under /v2/).`);
+  // The documentation as real pages, one per document, rendered by docs.js itself (2026-10-10).
+  const docPages = writeDocPages({ root, dist });
+  console.log(`build: ${docPages.length} documentation pages written with their content (${docPages.join(' ')}).`);
 }
 
-for (const html of ['index.html','docs/index.html','404.html','articles/index.html',...(fs.existsSync(path.join(dist,'articles')) ? fs.readdirSync(path.join(dist,'articles'),{withFileTypes:true}).filter((e) => e.isDirectory()).map((e) => `articles/${e.name}/index.html`) : [])]) {
+const subPages = (dir) => fs.existsSync(path.join(dist,dir)) ? fs.readdirSync(path.join(dist,dir),{withFileTypes:true}).filter((e) => e.isDirectory() && fs.existsSync(path.join(dist,dir,e.name,'index.html'))).map((e) => `${dir}/${e.name}/index.html`) : [];
+for (const html of ['index.html','docs/index.html','404.html','articles/index.html',...subPages('articles'),...subPages('docs')]) {
   const p = path.join(dist,html);
   if (!fs.existsSync(p)) continue;
   let s = fs.readFileSync(p,'utf8');
