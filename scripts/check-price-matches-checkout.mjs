@@ -168,6 +168,13 @@ function publishedOffers(entries) {
         problems.push(`${e.file}: "${a.raw}" is a price in translated copy; translations do not carry the `
           + 'price, so no check knows which plan it is the price of');
       }
+    } else if (e.kind === 'file') {
+      // A plain text download (the template pack, 2026-10-10). Every amount is visible to the
+      // reader, so nothing is stripped and no $1 to $9 is excused: that exemption is for regex
+      // backreferences in scripts (audit 2026-10-10 found files were reaching that branch).
+      for (const a of amounts(e.text)) {
+        problems.push(`${e.file}: "${a.raw}" is a price in a downloadable file, so no check knows which plan it is the price of`);
+      }
     } else {
       const code = e.text.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[\s;{}(),])\/\/[^\n]*/g, '$1');
       for (const a of amounts(code)) {
@@ -298,6 +305,8 @@ try {
     ['a price in a translated homepage value', [...entries, { file: 'synthetic fr home', lang: 'fr', kind: 'home', text: 'Seulement 49,99 $' }]],
     ['a price in a docs JSON value', [...entries, { file: 'synthetic ja docs', lang: 'ja', kind: 'docs', text: '39.99 美元' }]],
     ['a price in a script fallback', [...entries, { file: 'synthetic.js', lang: null, kind: 'script', text: 'var p = "$9.99";' }]],
+    // A download gets no script allowance: "$5" is a price there, never a back reference.
+    ['a price in a downloadable file', [...entries, { file: 'synthetic template.md', lang: 'en', kind: 'file', text: 'BugIt Solo costs $5' }]],
   ];
   for (const [label, es] of plants) if (!(score(es) > base)) fail(`"${label}" was accepted`);
   // The allowance stays narrow: a back reference is not a price (the $9.99 plant above shows a real one still is).

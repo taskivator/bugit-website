@@ -38,6 +38,10 @@ Your tickets, specs and settings stay on your machine and go only to the tools y
 - [Bug report examples: good and bad, side by side](https://bugit.dev/articles/bug-report-examples-good-and-bad/): Bug report examples, good and bad, side by side: four weak reports rewritten so a developer can act on them, with notes on what changed.
 - [A bug triage checklist you can run in five minutes](https://bugit.dev/articles/bug-triage-checklist/): A bug triage checklist for a team: confirm the bug, check for duplicates, set severity and priority, assign an owner, and keep the meeting short.
 
+## Free templates
+
+- [Free bug report templates](https://bugit.dev/templates/): General bug report template, Jira bug report template, GitHub issue form, Azure DevOps bug template, Steps to reproduce checklist, Severity and priority guide, to copy or download
+
 ## Free tools
 
 - [Steps to reproduce checklist](https://taskivator.com/steps-to-reproduce-checklist/): A checklist and a live template you fill in and copy. It runs in your browser.

@@ -271,6 +271,7 @@ console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of d
       const p = loc.replace(/^https:\/\/bugit\.dev/, '');
       if (p === '/') return ['v2/index.html', 'v2/i18n', 'v2/v2.css', 'v2/v2.js'];
       if (p === '/articles/') return ['v2/articles/index.html'];
+      if (p === '/templates/') return ['v2/templates'];
       const art = /^\/articles\/([a-z0-9-]+)\/$/.exec(p);
       if (art) return [`v2/articles/${art[1]}`, `v2/tools/articles-src/${art[1]}.md`];
       const doc = /^\/docs\/(?:([a-z0-9-]+)\/)?$/.exec(p);
@@ -484,8 +485,8 @@ if (fs.existsSync(guideDir)) {
 {
   const v2Src = path.join(root,'v2');
   const articleSlugs = fs.existsSync(path.join(v2Src,'articles')) ? fs.readdirSync(path.join(v2Src,'articles'),{withFileTypes:true}).filter((e) => e.isDirectory() && e.name !== 'images').map((e) => e.name) : [];
-  const PAGES = [['index.html','index.html'],['docs/index.html','docs/index.html'],['articles/index.html','articles/index.html'],...articleSlugs.map((s) => [`articles/${s}/index.html`,`articles/${s}/index.html`])];
-  const NEEDED = ['index.html','docs/index.html','articles/index.html','articles/articles.css','articles/articles.js','v2.css','v2.js','i18n.js','nav.js','logos.js','route.js','docs/docs.js','docs/docs.css','i18n/en.json','docs/content.en.json'];
+  const PAGES = [['index.html','index.html'],['docs/index.html','docs/index.html'],['articles/index.html','articles/index.html'],['templates/index.html','templates/index.html'],...articleSlugs.map((s) => [`articles/${s}/index.html`,`articles/${s}/index.html`])];
+  const NEEDED = ['index.html','docs/index.html','articles/index.html','articles/articles.css','articles/articles.js','v2.css','v2.js','i18n.js','nav.js','logos.js','route.js','docs/docs.js','docs/docs.css','i18n/en.json','docs/content.en.json','templates/index.html'];
   const missing = NEEDED.filter((f) => !fs.existsSync(path.join(v2Src,...f.split('/'))));
   if (missing.length) { console.error(`build: the site's pages need v2/${missing.join(', v2/')}, and they are missing.`); process.exit(1); }
   const v2Dist = path.join(dist,'v2');
@@ -495,6 +496,9 @@ if (fs.existsSync(guideDir)) {
     if (rel === '') return true;
     if (rel.split('/').some((seg) => seg.startsWith('_'))) return false;
     if (rel === 'tools' || rel.startsWith('tools/')) return false;
+    // The template pack: its page is written out below like the others, its files are published at
+    // /templates/files/; nothing of it belongs under /v2/.
+    if (rel === 'templates' || rel.startsWith('templates/')) return false;
     // The guides' pages are written out below, hashed; only their stylesheet and images are copied here.
     if (/^articles\/[^/]+/.test(rel) && !/^articles\/(?:images(?:\/|$)|articles\.(?:css|js)$)/.test(rel)) return false;
     return !pageSet.has(rel);
@@ -533,13 +537,15 @@ if (fs.existsSync(guideDir)) {
     fs.writeFileSync(out, html);
   }
   console.log(`build: the site's pages are the redesign (${Object.keys(v2Assets).length} hashed assets under /v2/).`);
+  // The free template pack's files (2026-10-10), downloadable at /templates/files/<name>.
+  fs.cpSync(path.join(v2Src,'templates','files'), path.join(dist,'templates','files'), { recursive: true, filter: (src) => path.basename(src) !== 'desktop.ini' });
   // The documentation as real pages, one per document, rendered by docs.js itself (2026-10-10).
   const docPages = writeDocPages({ root, dist });
   console.log(`build: ${docPages.length} documentation pages written with their content (${docPages.join(' ')}).`);
 }
 
 const subPages = (dir) => fs.existsSync(path.join(dist,dir)) ? fs.readdirSync(path.join(dist,dir),{withFileTypes:true}).filter((e) => e.isDirectory() && fs.existsSync(path.join(dist,dir,e.name,'index.html'))).map((e) => `${dir}/${e.name}/index.html`) : [];
-for (const html of ['index.html','docs/index.html','404.html','articles/index.html',...subPages('articles'),...subPages('docs')]) {
+for (const html of ['index.html','docs/index.html','404.html','articles/index.html','templates/index.html',...subPages('articles'),...subPages('docs')]) {
   const p = path.join(dist,html);
   if (!fs.existsSync(p)) continue;
   let s = fs.readFileSync(p,'utf8');

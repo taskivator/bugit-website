@@ -179,7 +179,7 @@ ${ld}</head>
 const foot = `
 <footer class="foot">
   <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
-  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/docs/privacy/">Privacy</a><a href="/docs/refund/">Refunds</a><a href="/docs/commerce/">Commercial Transactions</a><a href="/docs/security/">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/templates/">Templates</a><a href="/docs/privacy/">Privacy</a><a href="/docs/refund/">Refunds</a><a href="/docs/commerce/">Commercial Transactions</a><a href="/docs/security/">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
 </footer>
 
 <script src="/v2/nav.js"></script>
@@ -299,7 +299,7 @@ const GUIDE = [
   ["evidence", "Add the environment and the evidence", `<p>Name the version or build, the device, the browser or OS, and the account type. Then attach what shows the failure: ${A("screenshots-and-recordings-for-bug-reports", "a cropped screenshot or a short recording")}, and the part of the log around the failing moment. ${A("reproduce-a-bug-from-logs", "Reproduce a bug from a log file")} shows how to find that moment and trim the rest. Keep passwords, tokens and personal data out of everything you attach.</p>`],
   ["hard-bugs", "When the bug is hard to pin down", `<p>Some bugs do not appear on every run. Count your attempts, note what changes between them, and say so in the report: ${A("report-a-bug-that-only-happens-sometimes", "how to report a bug that only happens sometimes")}. If something that used to work has stopped, find the last version that worked and the first that failed: ${A("report-a-regression-bug", "how to report a regression")}.</p>`],
   ["severity", "Set severity and priority", `<p>Severity is how bad the failure is; priority is how soon the team should fix it. They are separate decisions, often made by different people. ${A("severity-vs-priority-bug-triage-matrix", "Severity vs priority")} has a matrix with examples, ${A("bug-triage-checklist", "the bug triage checklist")} keeps the triage meeting short, and the free ${T_("severity")} suggests a severity with a reason you can paste into the ticket.</p>`],
-  ["template", "Use a template for your tracker", `<p>A template makes reports arrive with the same parts in the same place. ${A("bug-report-template-developers-read", "A bug report template developers will actually read")} explains each part, ${A("bug-report-template-jira-github-azure-devops", "the tracker templates")} give a version for Jira, GitHub Issues and Azure DevOps, and ${A("bug-report-examples-good-and-bad", "the good and bad examples")} show weak reports rewritten. The free ${T_("template")} lays a report out for Jira or Azure DevOps.</p>`],
+  ["template", "Use a template for your tracker", `<p>A template makes reports arrive with the same parts in the same place. ${A("bug-report-template-developers-read", "A bug report template developers will actually read")} explains each part, ${A("bug-report-template-jira-github-azure-devops", "the tracker templates")} give a version for Jira, GitHub Issues and Azure DevOps, and ${A("bug-report-examples-good-and-bad", "the good and bad examples")} show weak reports rewritten. The free ${T_("template")} lays a report out for Jira or Azure DevOps, and <a href="/templates/">the free template pack</a> has these templates as files to download.</p>`],
 ];
 const guideToc = GUIDE.map(([id, h]) => `<li><a href="#${id}">${esc(h)}</a></li>`).join("\n");
 const guideBody = GUIDE.map(([id, h, body]) => `<section id="${id}" class="sec">\n<h2>${esc(h)}</h2>\n${body}\n</section>`).join("\n");
@@ -369,6 +369,75 @@ ${cards}
 );
 console.log(`make-articles: ${all.length} article(s) written`);
 
+/* THE FREE TEMPLATE PACK (owner OK 2026-10-10), /templates/. A tools page, not an article, so it
+   does not count toward the article cap. The files are copies of the approved pack in
+   E:\Taskivator\_shared\templates\bugit\<date>\ (see PROVENANCE.md there), kept in
+   v2/templates/files/ so the build never reads outside the repo; build.js publishes them at
+   /templates/files/. Each one is shown in full with a Copy button and a Download link, and links the
+   article that explains it. A missing file or article fails here rather than shipping a dead link. */
+const TPL_DIR = path.join(V2, "templates");
+const PACK = [
+  ["bug-report-template.md", "General bug report template", "A template with a place for each fact a developer asks for first. Paste it into your tracker or a shared team template.", "bug-report-template-developers-read"],
+  ["jira-bug-report-template.txt", "Jira bug report template", "The same layout as plain text that pastes cleanly into a Jira description. The title goes in the Summary field.", "bug-report-template-jira-github-azure-devops"],
+  ["bug_report.yml", "GitHub issue form", "A form with labelled boxes for new bug reports. Save it in your repository as .github/ISSUE_TEMPLATE/bug_report.yml.", "bug-report-template-jira-github-azure-devops"],
+  ["azure-devops-bug-template.txt", "Azure DevOps bug template", "What goes in each field of an Azure DevOps bug, from Title to Related.", "bug-report-template-jira-github-azure-devops"],
+  ["steps-to-reproduce-checklist.md", "Steps to reproduce checklist", "A checklist for steps a stranger can follow, with a template to paste.", "how-to-write-reproduction-steps-checklist"],
+  ["severity-and-priority-guide.md", "Severity and priority guide", "Severity and priority scales you can copy, examples of each combination, and a rule for disagreements.", "severity-vs-priority-bug-triage-matrix"],
+];
+const tplSections = PACK.map(([file, title, desc, slug]) => {
+  const p = path.join(TPL_DIR, "files", file);
+  if (!fs.existsSync(p)) throw new Error(`make-articles: the template pack lacks ${file}`);
+  const text = fs.readFileSync(p, "utf8").replace(/\r\n/g, "\n").trimEnd();
+  const id = file.replace(/\.[a-z]+$/, "").replace(/_/g, "-");
+  return `<section id="${id}" class="sec">
+<h2>${esc(title)}</h2>
+<p>${esc(desc)} ${A(slug, "Read the article behind it")}.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this template">Copy</button><pre><code>${esc(text)}</code></pre></div>
+<p><a class="btn btn-ghost btn-sm" href="/templates/files/${file}" download="${file}">Download ${esc(file)}</a></p>
+</section>`;
+}).join("\n");
+const TPL_TITLE = "Free bug report templates";
+const TPL_DESC = "Free bug report templates to copy or download: a general template, Jira, GitHub issue form and Azure DevOps versions, a steps checklist and a severity guide.";
+if (TPL_DESC.length > 160) throw new Error("make-articles: the templates description is too long");
+const tplLd = jsonLd({
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", name: TPL_TITLE, description: TPL_DESC, url: "https://bugit.dev/templates/", inLanguage: "en", publisher: { "@type": "Organization", name: "Taskivator", url: "https://taskivator.com/" } },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "BugIt", item: "https://bugit.dev/" },
+      { "@type": "ListItem", position: 2, name: TPL_TITLE, item: "https://bugit.dev/templates/" },
+    ] },
+  ],
+});
+fs.writeFileSync(
+  path.join(TPL_DIR, "index.html"),
+  head(TPL_TITLE, TPL_DESC, "https://bugit.dev/templates/", "website", false, tplLd).replace('<body class="article-page is-home">', '<body class="article-page is-home templates-page">') +
+    `
+<main id="main" class="article" tabindex="-1">
+  <header class="a-hero">
+    <p class="kicker">Free templates</p>
+    <h1>${esc(TPL_TITLE)}</h1>
+    <p class="a-sum">Copy a template straight into your tracker, or download the file and share it with your team. They are free to use, copy and adapt. Each links the article that explains how to fill it in, and <a href="/articles/">How to write a bug report</a> walks through the whole report.</p>
+    <p class="a-sum">A template is the manual way: you fill in each box yourself. <a href="https://bugit.dev/">BugIt</a> does the filling in for you. From a rough note it writes the whole report in your team's house style, reads your glossary, searches your tracker for duplicates, checks that the steps, expected and actual results and build are there, and files it when you type FILE IT.</p>
+  </header>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+${PACK.map(([file, title]) => `<li><a href="#${file.replace(/\.[a-z]+$/, "").replace(/_/g, "-")}">${esc(title)}</a></li>`).join("\n")}
+</ol></nav>
+    <article class="a-body">
+${tplSections}
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>These templates show the shape of a good report. BugIt writes that report for you from a rough note, in your house style, after searching your tracker for duplicates and checking the draft, and files nothing until you type FILE IT. See how it works at <a href="https://bugit.dev/">bugit.dev</a> or read about it at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+    </article>
+  </div>
+</main>
+` +
+    foot,
+);
+console.log(`make-articles: templates page written (${PACK.length} templates)`);
+
 // /llms.txt (llmstxt.org): a plain summary for AI crawlers. Written here, from the same sources as
 // the articles, so the article list in it cannot fall behind the site. build.js publishes it.
 // The documentation pages, from the docs registry itself (titles and descriptions as the docs show them).
@@ -394,6 +463,10 @@ ${docsList}
 
 - [How to write a bug report](https://bugit.dev/articles/): the parts of a good report in the order you write them, with a deeper article for each step
 ${all.map(({ fm }) => `- [${fm.title}](https://bugit.dev/articles/${fm.slug}/): ${fm.description}`).join("\n")}
+
+## Free templates
+
+- [Free bug report templates](https://bugit.dev/templates/): ${PACK.map(([, title]) => title).join(", ")}, to copy or download
 
 ## Free tools
 

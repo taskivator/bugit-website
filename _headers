@@ -165,6 +165,15 @@
   Cache-Control: public, max-age=0, must-revalidate
 /docs/support/index.html
   Cache-Control: public, max-age=0, must-revalidate
+# The free template pack (2026-10-10): the page, revalidated like the others, and its files,
+# revalidated and kept out of search so the raw files do not compete with the page.
+/templates/
+  Cache-Control: public, max-age=0, must-revalidate
+/templates/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/templates/files/*
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Robots-Tag: noindex
 # The guides (2026-10-05), revalidated like the pages they sit beside.
 /articles/*
   Cache-Control: public, max-age=0, must-revalidate

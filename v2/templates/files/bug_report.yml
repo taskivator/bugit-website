@@ -1,0 +1,57 @@
+name: Bug report
+description: Report something that does not work as expected
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps that start somewhere a stranger can reach.
+      placeholder: |
+        1. Open the page or run the command
+        2. Do this
+        3. Then this
+        4. The step where it goes wrong
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should have happened.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happened instead, including any message shown.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or build
+      description: The release, commit or build you saw this on.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Platform, browser or operating system, and how often it happens.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Log excerpt, request id or a screenshot. Remove personal data first.
+      render: shell
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Blocks work
+        - Wrong result
+        - Cosmetic

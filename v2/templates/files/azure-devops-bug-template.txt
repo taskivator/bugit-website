@@ -1,0 +1,22 @@
+Title
+[Area] What goes wrong, in a few words
+
+Repro Steps
+1. Where you start
+2. What you do
+3. What you do next
+4. The step where it goes wrong
+Expected: what should have happened.
+Actual: what happened instead, including the message shown.
+
+System Info (or the Environment area of your form)
+Build, platform, browser or operating system, how often it happens.
+
+Attachments
+Trimmed log, screenshot or recording.
+
+Severity
+Pick the value that matches the impact, and say why in the discussion.
+
+Related
+Link similar work items with the Related link type.

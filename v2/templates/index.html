@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/consent.js"></script>
+<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="canonical" href="https://bugit.dev/templates/">
+<meta name="theme-color" content="#0b0614">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Taskivator">
+<meta property="og:title" content="Free bug report templates · BugIt">
+<meta property="og:description" content="Free bug report templates to copy or download: a general template, Jira, GitHub issue form and Azure DevOps versions, a steps checklist and a severity guide.">
+<meta property="og:url" content="https://bugit.dev/templates/">
+<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free bug report templates · BugIt">
+<meta name="twitter:description" content="Free bug report templates to copy or download: a general template, Jira, GitHub issue form and Azure DevOps versions, a steps checklist and a severity guide.">
+<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<title>Free bug report templates · BugIt</title>
+<meta name="description" content="Free bug report templates to copy or download: a general template, Jira, GitHub issue form and Azure DevOps versions, a steps checklist and a severity guide.">
+<link rel="stylesheet" href="/v2/v2.css">
+<link rel="stylesheet" href="/v2/consent.css">
+<link rel="stylesheet" href="/v2/articles/articles.css">
+<script src="/v2/articles/articles.js" defer></script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebPage",
+   "name": "Free bug report templates",
+   "description": "Free bug report templates to copy or download: a general template, Jira, GitHub issue form and Azure DevOps versions, a steps checklist and a severity guide.",
+   "url": "https://bugit.dev/templates/",
+   "inLanguage": "en",
+   "publisher": {
+    "@type": "Organization",
+    "name": "Taskivator",
+    "url": "https://taskivator.com/"
+   }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    {
+     "@type": "ListItem",
+     "position": 1,
+     "name": "BugIt",
+     "item": "https://bugit.dev/"
+    },
+    {
+     "@type": "ListItem",
+     "position": 2,
+     "name": "Free bug report templates",
+     "item": "https://bugit.dev/templates/"
+    }
+   ]
+  }
+ ]
+}
+</script>
+</head>
+<body class="article-page is-home templates-page">
+<a class="skip" href="#main">Skip to content</a>
+<span class="read-progress" id="readProgress" aria-hidden="true"></span>
+
+<header class="nav">
+  <a class="nav-brand" href="/" aria-label="BugIt home">
+    <img class="blip-logo" src="/public/brand/blip-logo.svg" alt="" width="54" height="54">
+    <span class="nav-name">BugIt<small>by Taskivator</small></span>
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="/#how">How it works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/docs/">Docs</a>
+    <a href="/articles/">Articles</a>
+  </nav>
+  <div class="nav-end">
+    <a class="btn btn-sm btn-primary" href="https://portal.bugit.dev/pricing">Get BugIt</a>
+  </div>
+</header>
+
+<main id="main" class="article" tabindex="-1">
+  <header class="a-hero">
+    <p class="kicker">Free templates</p>
+    <h1>Free bug report templates</h1>
+    <p class="a-sum">Copy a template straight into your tracker, or download the file and share it with your team. They are free to use, copy and adapt. Each links the article that explains how to fill it in, and <a href="/articles/">How to write a bug report</a> walks through the whole report.</p>
+    <p class="a-sum">A template is the manual way: you fill in each box yourself. <a href="https://bugit.dev/">BugIt</a> does the filling in for you. From a rough note it writes the whole report in your team's house style, reads your glossary, searches your tracker for duplicates, checks that the steps, expected and actual results and build are there, and files it when you type FILE IT.</p>
+  </header>
+  <div class="a-grid">
+    <nav class="a-toc" aria-label="On this page"><p class="a-toc-h">On this page</p><ol>
+<li><a href="#bug-report-template">General bug report template</a></li>
+<li><a href="#jira-bug-report-template">Jira bug report template</a></li>
+<li><a href="#bug-report">GitHub issue form</a></li>
+<li><a href="#azure-devops-bug-template">Azure DevOps bug template</a></li>
+<li><a href="#steps-to-reproduce-checklist">Steps to reproduce checklist</a></li>
+<li><a href="#severity-and-priority-guide">Severity and priority guide</a></li>
+</ol></nav>
+    <article class="a-body">
+<section id="bug-report-template" class="sec">
+<h2>General bug report template</h2>
+<p>A template with a place for each fact a developer asks for first. Paste it into your tracker or a shared team template. <a href="/articles/bug-report-template-developers-read/">Read the article behind it</a>.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this template">Copy</button><pre><code>Title: [Area] What goes wrong, in a few words
+
+Steps to reproduce
+1. Where you start (page, screen, command)
+2. What you do
+3. What you do next
+4. The step where it goes wrong
+
+Expected
+What should have happened.
+
+Actual
+What happened instead, including the message shown.
+
+Environment
+Version or build, platform, browser or operating system,
+account type, and how often it happens.
+
+Evidence
+Log excerpt, screenshot, request id or a short recording.
+
+Severity and reason
+How bad it is and who it affects.
+
+Related
+Tickets that look similar or touch the same area.</code></pre></div>
+<p><a class="btn btn-ghost btn-sm" href="/templates/files/bug-report-template.md" download="bug-report-template.md">Download bug-report-template.md</a></p>
+</section>
+<section id="jira-bug-report-template" class="sec">
+<h2>Jira bug report template</h2>
+<p>The same layout as plain text that pastes cleanly into a Jira description. The title goes in the Summary field. <a href="/articles/bug-report-template-jira-github-azure-devops/">Read the article behind it</a>.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this template">Copy</button><pre><code>Steps to reproduce
+1. Where you start (page, screen, command)
+2. What you do
+3. What you do next
+4. The step where it goes wrong
+
+Expected
+What should have happened.
+
+Actual
+What happened instead, including the message shown.
+
+Environment
+Version or build, platform, browser or operating system,
+account type, and how often it happens.
+
+Evidence
+Log excerpt, screenshot, request id or a short recording.
+
+Severity and reason
+How bad it is and who it affects.
+
+Related
+Tickets that look similar or touch the same area.</code></pre></div>
+<p><a class="btn btn-ghost btn-sm" href="/templates/files/jira-bug-report-template.txt" download="jira-bug-report-template.txt">Download jira-bug-report-template.txt</a></p>
+</section>
+<section id="bug-report" class="sec">
+<h2>GitHub issue form</h2>
+<p>A form with labelled boxes for new bug reports. Save it in your repository as .github/ISSUE_TEMPLATE/bug_report.yml. <a href="/articles/bug-report-template-jira-github-azure-devops/">Read the article behind it</a>.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this template">Copy</button><pre><code>name: Bug report
+description: Report something that does not work as expected
+title: &quot;[Bug]: &quot;
+labels: [&quot;bug&quot;]
+body:
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps that start somewhere a stranger can reach.
+      placeholder: |
+        1. Open the page or run the command
+        2. Do this
+        3. Then this
+        4. The step where it goes wrong
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should have happened.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happened instead, including any message shown.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or build
+      description: The release, commit or build you saw this on.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Platform, browser or operating system, and how often it happens.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Log excerpt, request id or a screenshot. Remove personal data first.
+      render: shell
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Blocks work
+        - Wrong result
+        - Cosmetic</code></pre></div>
+<p><a class="btn btn-ghost btn-sm" href="/templates/files/bug_report.yml" download="bug_report.yml">Download bug_report.yml</a></p>
+</section>
+<section id="azure-devops-bug-template" class="sec">
+<h2>Azure DevOps bug template</h2>
+<p>What goes in each field of an Azure DevOps bug, from Title to Related. <a href="/articles/bug-report-template-jira-github-azure-devops/">Read the article behind it</a>.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this template">Copy</button><pre><code>Title
+[Area] What goes wrong, in a few words
+
+Repro Steps
+1. Where you start
+2. What you do
+3. What you do next
+4. The step where it goes wrong
+Expected: what should have happened.
+Actual: what happened instead, including the message shown.
+
+System Info (or the Environment area of your form)
+Build, platform, browser or operating system, how often it happens.
+
+Attachments
+Trimmed log, screenshot or recording.
+
+Severity
+Pick the value that matches the impact, and say why in the discussion.
+
+Related
+Link similar work items with the Related link type.</code></pre></div>
+<p><a class="btn btn-ghost btn-sm" href="/templates/files/azure-devops-bug-template.txt" download="azure-devops-bug-template.txt">Download azure-devops-bug-template.txt</a></p>
+</section>
+<section id="steps-to-reproduce-checklist" class="sec">
+<h2>Steps to reproduce checklist</h2>
+<p>A checklist for steps a stranger can follow, with a template to paste. <a href="/articles/how-to-write-reproduction-steps-checklist/">Read the article behind it</a>.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this template">Copy</button><pre><code># Steps to reproduce: checklist and template
+
+Read each line and ask whether your steps pass.
+
+- They start somewhere a stranger can reach. Name the page, the screen or the command, and the account type if it matters.
+- Each action gets its own step. Number the steps so you can refer to a step by its number.
+- They use the real values: the promo code, the file name, the amount or the setting you used.
+- They include the waits and the clicks that are easy to forget, such as &quot;wait for the list to load&quot; or &quot;close the dialog&quot;.
+- They end at the moment it goes wrong. Everything after it belongs in Actual.
+- They say what you expected and what happened, including the message shown.
+- They name the build and the environment: the version, the platform and how often it happens.
+- You ran them once more from a clean start. If the bug does not repeat, say so and say how often it did.
+- Evidence is attached and trimmed: a short log excerpt, a cropped screenshot or a brief recording, with personal data removed.
+
+## Template
+
+Steps to reproduce
+1. Where you start, and which account or setup
+2. What you do, with the real values
+3. What you do next
+4. The step where it goes wrong
+
+Expected
+What should have happened.
+
+Actual
+What happened instead, including the message shown.
+
+Environment
+Build, platform, and how often it happens.
+
+I ran these steps again: yes or no, and what happened.</code></pre></div>
+<p><a class="btn btn-ghost btn-sm" href="/templates/files/steps-to-reproduce-checklist.md" download="steps-to-reproduce-checklist.md">Download steps-to-reproduce-checklist.md</a></p>
+</section>
+<section id="severity-and-priority-guide" class="sec">
+<h2>Severity and priority guide</h2>
+<p>Severity and priority scales you can copy, examples of each combination, and a rule for disagreements. <a href="/articles/severity-vs-priority-bug-triage-matrix/">Read the article behind it</a>.</p>
+<div class="code"><button type="button" class="copy" aria-label="Copy this template">Copy</button><pre><code># Severity and priority: a guide for bug triage
+
+Severity is how bad the bug is. Priority is how soon it should be fixed. Score them separately.
+
+## Severity
+
+- Critical: data is lost or corrupted, the product will not start, a payment is wrong, or there is a security hole. There is no workaround.
+- High: a main feature does not work and the workaround is painful or unknown.
+- Medium: a feature misbehaves but a reasonable workaround exists.
+- Low: cosmetic issues, small text errors, and anything a user would not notice or mind.
+
+## Priority
+
+- Now: stop other work. Fix and release as soon as it is safe.
+- This release: fix before the next release goes out.
+- Next: plan it for the following cycle.
+- Later: keep it on the list and look again when the list is reviewed.
+
+## Severity and priority together
+
+- High severity, high priority: fix first. Example: checkout charges the wrong amount.
+- High severity, low priority: rare, so ask whether the severity is right. Example: a crash in a feature few people use.
+- Low severity, high priority: the case people forget. Example: the company name is misspelled on the home page the day before a launch.
+- Low severity, low priority: backlog. Example: a button sits slightly out of line in an older browser.
+
+## Settling a disagreement
+
+1. Does it lose data, money or trust? If yes, treat the severity as high, even when it is rare.
+2. How many people hit it, and how often? A bug in a path most people use outranks a bug in a path few people use.
+3. Is there a workaround that a user will find without help? If not, move it up.
+
+Write the answer in the ticket so the next person does not reopen the argument.</code></pre></div>
+<p><a class="btn btn-ghost btn-sm" href="/templates/files/severity-and-priority-guide.md" download="severity-and-priority-guide.md">Download severity-and-priority-guide.md</a></p>
+</section>
+<section id="where-bugit-fits" class="sec fits">
+<h2>Where BugIt fits</h2>
+<p>These templates show the shape of a good report. BugIt writes that report for you from a rough note, in your house style, after searching your tracker for duplicates and checking the draft, and files nothing until you type FILE IT. See how it works at <a href="https://bugit.dev/">bugit.dev</a> or read about it at <a href="https://taskivator.com/bugit/">taskivator.com/bugit</a>.</p>
+</section>
+    </article>
+  </div>
+</main>
+
+<footer class="foot">
+  <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
+  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/templates/">Templates</a><a href="/docs/privacy/">Privacy</a><a href="/docs/refund/">Refunds</a><a href="/docs/commerce/">Commercial Transactions</a><a href="/docs/security/">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+</footer>
+
+<script src="/v2/nav.js"></script>
+<script src="/v2/consent-ui.js"></script>
+</body>
+</html>

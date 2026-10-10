@@ -41,6 +41,15 @@ function articlePages() {
   return ["v2/articles/index.html", ...slugs];
 }
 
+/** The free template pack (2026-10-10): the /templates/ page and the files it offers for download.
+    Audit 2026-10-10: the page shipped behind none of the copy guards until it was listed here. */
+function templatePages() {
+  const dir = join(ROOT, "v2", "templates");
+  if (!existsSync(join(dir, "index.html"))) return { page: null, files: [] };
+  const files = existsSync(join(dir, "files")) ? readdirSync(join(dir, "files")).filter((f) => !f.startsWith(".") && f !== "desktop.ini").sort().map((f) => `v2/templates/files/${f}`) : [];
+  return { page: "v2/templates/index.html", files };
+}
+
 /** Every string value in a JSON tree, in document order. */
 function strings(v, out = []) {
   if (typeof v === "string") out.push(v);
@@ -55,11 +64,13 @@ function strings(v, out = []) {
  *   kind "home"   the homepage strings of one language (JSON values joined by newlines)
  *   kind "docs"   the docs content of one language (JSON values joined by newlines)
  *   kind "script" raw source of a published script (English fallbacks)
- * `lang` is null for a page or script, whose text is English.
+ *   kind "file"   a plain text download (the template pack), English, no HTML, no page chrome
+ * `lang` is null for a script, whose text is English.
  */
 export function publishedCopy() {
   const out = [];
-  for (const file of ["v2/index.html", "v2/docs/index.html", ...articlePages()]) {
+  const tpl = templatePages();
+  for (const file of ["v2/index.html", "v2/docs/index.html", ...articlePages(), ...(tpl.page ? [tpl.page] : [])]) {
     out.push({ file, lang: "en", kind: "page", text: rd(file) });
   }
   for (const lang of publishedLangs()) {
@@ -75,6 +86,7 @@ export function publishedCopy() {
   const scripts = readdirSync(join(ROOT, "v2")).filter((f) => f.endsWith(".js")).map((f) => "v2/" + f);
   scripts.push("v2/docs/docs.js");
   for (const file of scripts) out.push({ file, lang: null, kind: "script", text: rd(file) });
+  for (const file of tpl.files) out.push({ file, lang: "en", kind: "file", text: rd(file) });
   return out;
 }
 
