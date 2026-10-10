@@ -41,6 +41,23 @@ function parse(file) {
 const asset = (s) => s.replace(/^images\//, "/v2/articles/images/");
 const link = (u) => u.replace(/^https:\/\/bugit\.dev(\/articles\/)/, "$1");
 
+// The free bug report tools on taskivator.com. Each article links all three, the one that matches
+// its subject first (SEO audit 2026-10-10: the tools already linked here, the articles did not link
+// back). Descriptions are the tools' own, shortened; the template builder lays out Jira and Azure
+// DevOps only, so it must not be described as covering GitHub.
+const TOOLS = {
+  steps: { url: "https://taskivator.com/steps-to-reproduce-checklist/", title: "Steps to reproduce checklist", desc: "A checklist and a live template you fill in and copy. It runs in your browser." },
+  severity: { url: "https://taskivator.com/bug-severity-helper/", title: "Bug severity helper", desc: "Answer three questions and copy a suggested severity with its reason into your ticket." },
+  template: { url: "https://taskivator.com/bug-report-template-builder/", title: "Bug report template builder", desc: "Fill in the parts and copy a report laid out for Jira or Azure DevOps." },
+};
+const toolOrder = (slug) =>
+  /reproduc|sometimes|regression|logs/.test(slug) ? ["steps", "template", "severity"]
+  : /severity|triage/.test(slug) ? ["severity", "template", "steps"]
+  : ["template", "steps", "severity"];
+
+// Structured data. No rating and no price: an article page makes no offer (owner copy rules).
+const jsonLd = (o) => `<script type="application/ld+json">\n${JSON.stringify(o, null, 1).replace(/</g, "\\u003c")}\n</script>\n`;
+
 function inline(text) {
   let s = esc(text);
   s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
@@ -104,7 +121,7 @@ function render(body) {
   return { html: out.join("\n"), toc };
 }
 
-const head = (title, desc, url, type, current) => `<!doctype html>
+const head = (title, desc, url, type, current, ld = "") => `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -136,7 +153,7 @@ const head = (title, desc, url, type, current) => `<!doctype html>
 <link rel="stylesheet" href="/v2/consent.css">
 <link rel="stylesheet" href="/v2/articles/articles.css">
 <script src="/v2/articles/articles.js" defer></script>
-</head>
+${ld}</head>
 <body class="article-page is-home">
 <a class="skip" href="#main">Skip to content</a>
 <span class="read-progress" id="readProgress" aria-hidden="true"></span>
@@ -190,15 +207,45 @@ for (const { fm, body } of all) {
     .join("\n");
   const tags = fm.tags.slice(0, 3).map((t) => `<li>${esc(t)}</li>`).join("");
   const tocHtml = toc.map((t) => `<li><a href="#${t.id}">${esc(t.text)}</a></li>`).join("\n");
+  const tools = toolOrder(fm.slug)
+    .map((k) => TOOLS[k])
+    .map((t) => `<li><a href="${t.url}"><span class="mc-t">${esc(t.title)}</span><span class="mc-d">${esc(t.desc)}</span></a></li>`)
+    .join("\n");
+  const date = fm.date || DATE;
+  const ld = jsonLd({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        headline: fm.title,
+        description: fm.description,
+        image: "https://bugit.dev" + asset(fm.hero),
+        datePublished: date,
+        dateModified: fm.updated || date,
+        inLanguage: "en",
+        mainEntityOfPage: url,
+        author: { "@type": "Organization", name: "Taskivator", url: "https://taskivator.com/" },
+        publisher: { "@type": "Organization", name: "Taskivator", url: "https://taskivator.com/", logo: { "@type": "ImageObject", url: "https://taskivator.com/assets/brand/icon-512.png" } },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "BugIt", item: "https://bugit.dev/" },
+          { "@type": "ListItem", position: 2, name: "Articles", item: "https://bugit.dev/articles/" },
+          { "@type": "ListItem", position: 3, name: fm.title, item: url },
+        ],
+      },
+    ],
+  });
   const page =
-    head(fm.title, fm.description, url, "article", false) +
+    head(fm.title, fm.description, url, "article", false, ld) +
     `
 <main id="main" class="article" tabindex="-1">
   <header class="a-hero">
     <p class="crumbs"><a href="/articles/">Articles</a><span aria-hidden="true"> / </span><span>${esc(fm.tags[0] || "Article")}</span></p>
     <h1>${esc(fm.title)}</h1>
     <p class="a-sum">${esc(fm.description)}</p>
-    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="${fm.date || DATE}">${fm.date || DATE}</time></span><span>${fm.minutes} min read</span></p>
+    <p class="a-meta"><span>BugIt by Taskivator</span><span><time datetime="${date}">${date}</time></span><span>${fm.minutes} min read</span></p>
     <ul class="a-tags" aria-label="Topics">${tags}</ul>
   </header>
   <div class="a-grid">
@@ -209,6 +256,12 @@ ${tocHtml}
 ${html}
     </article>
   </div>
+  <section class="more" aria-labelledby="tools-h">
+    <h2 id="tools-h">Free tools for this</h2>
+    <ul class="more-grid">
+${tools}
+    </ul>
+  </section>
   <section class="more" aria-labelledby="more-h">
     <h2 id="more-h">Keep reading</h2>
     <ul class="more-grid">
@@ -244,3 +297,33 @@ ${cards}
     foot,
 );
 console.log(`make-articles: ${all.length} article(s) written`);
+
+// /llms.txt (llmstxt.org): a plain summary for AI crawlers. Written here, from the same sources as
+// the articles, so the article list in it cannot fall behind the site. build.js publishes it.
+const llms = `# BugIt
+
+> BugIt is a QA agent made by Taskivator. It runs inside the AI assistant you already use (GitHub Copilot Chat in VS Code, the Claude extension, or a terminal), turns a rough note into a complete bug report, and files it to your tracker, such as Jira, GitHub or Azure DevOps, only after you type FILE IT.
+
+Your tickets, specs and settings stay on your machine and go only to the tools you connect and your own AI model.
+
+## Product
+
+- [BugIt home](https://bugit.dev/): what BugIt does, how it works and pricing
+- [Documentation](https://bugit.dev/docs/): install, activate, user guide, FAQ and every BugIt policy
+- [Get BugIt](https://portal.bugit.dev/pricing): plans and purchase
+
+## Articles
+
+${all.map(({ fm }) => `- [${fm.title}](https://bugit.dev/articles/${fm.slug}/): ${fm.description}`).join("\n")}
+
+## Free tools
+
+${Object.values(TOOLS).map((t) => `- [${t.title}](${t.url}): ${t.desc}`).join("\n")}
+
+## Company
+
+- [Taskivator](https://taskivator.com/): the company that makes BugIt
+- [BugIt on YouTube](https://www.youtube.com/@BugItByTaskivator): short videos on every feature
+`;
+fs.writeFileSync(path.join(V2, "..", "llms.txt"), llms);
+console.log("make-articles: llms.txt written");

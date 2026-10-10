@@ -110,9 +110,12 @@ fs.rmSync(dist,{recursive:true,force:true}); fs.mkdirSync(dist,{recursive:true})
 // a Cloudflare Pages control file whose absence is completely silent. Without it every
 // clean URL on this site answers 404 again -- /pricing, /privacy, /terms, /support and
 // twenty more -- and nothing in the build, the gates or the deploy would say a word.
-const REQUIRED_AT_ROOT = new Set(['index.html','styles.css','app.js','consent.js','404.html','_headers','_redirects']);
+// llms.txt and the IndexNow key file joined on 2026-10-10 (SEO audit). The key file is the only
+// file at the root named 32 hex characters + .txt; scripts/indexnow-ping.mjs finds it the same way.
+const INDEXNOW_KEY_FILES = fs.readdirSync(root).filter((f) => /^[0-9a-f]{32}\.txt$/.test(f));
+const REQUIRED_AT_ROOT = new Set(['index.html','styles.css','app.js','consent.js','404.html','_headers','_redirects','llms.txt']);
 const skippedOptional = [];
-for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','_redirects','.well-known','verify.json']) {
+for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','_redirects','.well-known','verify.json','llms.txt',...INDEXNOW_KEY_FILES]) {
   const src = path.join(root,item);
   if (!fs.existsSync(src)) {
     if (REQUIRED_AT_ROOT.has(item)) {
@@ -247,31 +250,44 @@ console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of d
 // with no content change must not claim the site changed, and `git log` is the only thing here
 // that knows the difference. Falls back to whatever is in the file if git cannot answer, which
 // is no worse than today.
+//
+// PER PAGE since 2026-10-10. One site-wide date stamped every entry with the same day, so an
+// article untouched for weeks claimed to have changed whenever anything else did (SEO audit
+// 2026-10-10 saw fifteen entries all dated 2026-10-08). Each entry is now dated by the sources
+// of THAT page; a page this map does not know keeps the site-wide date, which is no worse.
 {
   const sp = path.join(dist, 'sitemap.xml');
   if (fs.existsSync(sp)) {
-    let stamped = null;
-    try {
-      const out = execFileSync(
-        'git',
-        ['log', '-1', '--format=%cs', '--', 'v2', 'consent.js', 'public'],
-        { cwd: root, encoding: 'utf8' },
-      ).trim();
-      if (/^\d{4}-\d{2}-\d{2}$/.test(out)) stamped = out;
-    } catch { /* no git here; keep the literal */ }
-    if (stamped) {
-      const before = fs.readFileSync(sp, 'utf8');
-      const after = before.replace(
-        /<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/g,
-        `<lastmod>${stamped}</lastmod>`,
-      );
-      if (after !== before) {
-        fs.writeFileSync(sp, after);
-        console.log(`build: sitemap lastmod stamped ${stamped} (last content commit).`);
-      }
-    } else {
-      console.log('build: sitemap lastmod left as written (git could not date the content).');
-    }
+    const lastCommit = (paths) => {
+      try {
+        const out = execFileSync('git', ['log', '-1', '--format=%cs', '--', ...paths], { cwd: root, encoding: 'utf8' }).trim();
+        return /^\d{4}-\d{2}-\d{2}$/.test(out) ? out : null;
+      } catch { return null; } // no git here; keep the literal
+    };
+    const sitewide = lastCommit(['v2', 'consent.js', 'public']);
+    const sourcesOf = (loc) => {
+      const p = loc.replace(/^https:\/\/bugit\.dev/, '');
+      if (p === '/') return ['v2/index.html', 'v2/i18n', 'v2/v2.css', 'v2/v2.js'];
+      if (p === '/articles/') return ['v2/articles/index.html'];
+      const art = /^\/articles\/([a-z0-9-]+)\/$/.exec(p);
+      if (art) return [`v2/articles/${art[1]}`, `v2/tools/articles-src/${art[1]}.md`];
+      const doc = /^\/docs\/(?:([a-z0-9-]+)\/)?$/.exec(p);
+      if (doc) return ['v2/docs'];
+      return null;
+    };
+    const before = fs.readFileSync(sp, 'utf8');
+    let dated = 0;
+    const after = before.replace(/<url>([\s\S]*?)<\/url>/g, (block, inner) => {
+      const loc = /<loc>([^<]+)<\/loc>/.exec(inner);
+      const src = loc && sourcesOf(loc[1].trim());
+      const stamp = (src && lastCommit(src)) || sitewide;
+      if (!stamp) return block;
+      if (src) dated++;
+      return block.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/, `<lastmod>${stamp}</lastmod>`);
+    });
+    if (after !== before) fs.writeFileSync(sp, after);
+    if (sitewide || dated) console.log(`build: sitemap lastmod stamped per page (${dated} dated by their own sources).`);
+    else console.log('build: sitemap lastmod left as written (git could not date the content).');
   }
 }
 

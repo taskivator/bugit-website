@@ -136,6 +136,11 @@
   Cache-Control: public, max-age=0, must-revalidate
 /sitemap.xml
   Cache-Control: public, max-age=0, must-revalidate
+# llms.txt and the IndexNow key file (2026-10-10): crawler-facing like robots.txt, so revalidated.
+/llms.txt
+  Cache-Control: public, max-age=0, must-revalidate
+/43d2626718f87b43bfc08a9d6a174ae2.txt
+  Cache-Control: public, max-age=0, must-revalidate
 /favicon.ico
   Cache-Control: public, max-age=0, must-revalidate
 /manifest.webmanifest
