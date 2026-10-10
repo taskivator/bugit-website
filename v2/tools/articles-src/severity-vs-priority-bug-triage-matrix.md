@@ -47,7 +47,7 @@ A bug can score high on one and low on the other. That is the whole point of kee
 
 ## The four corners
 
-- **High severity, high priority.** Fix first. Example: checkout charges the wrong amount.
+- **High severity, high priority.** Fix first. Example: password reset emails are not sent.
 - **High severity, low priority.** Rare, so ask whether the severity is right. Example: a crash in a feature almost nobody uses.
 - **Low severity, high priority.** The one people forget. Example: the company name is misspelled on the home page the day before a launch.
 - **Low severity, low priority.** Backlog. Example: a button is two pixels off in one browser.
