@@ -40,7 +40,7 @@ Your tickets, specs and settings go only to the tools you connect and the AI ass
 
 ## Free templates
 
-- [Free bug report templates](https://bugit.dev/templates/): General bug report template, Jira bug report template, GitHub issue form, Azure DevOps bug template, Steps to reproduce checklist, Severity and priority guide, to copy or download
+- [Free bug report templates](https://bugit.dev/templates/): General bug report template, Jira bug report template, GitHub issue form, Azure DevOps bug template, Steps to reproduce checklist, Severity and priority guide, to copy or download. A template is the manual way: you fill in each box yourself. BugIt does the filling in for you, from a rough note.
 
 ## Free tools
 

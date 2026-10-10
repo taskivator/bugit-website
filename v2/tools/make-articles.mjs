@@ -397,7 +397,7 @@ const tplSections = PACK.map(([file, title, desc, slug]) => {
 </section>`;
 }).join("\n");
 const TPL_TITLE = "Free bug report templates";
-const TPL_DESC = "Free bug report templates to copy or download: a general template, Jira, GitHub issue form and Azure DevOps versions, a steps checklist and a severity guide.";
+const TPL_DESC = "The manual way: free bug report templates for Jira, GitHub and Azure DevOps, a steps checklist and a severity guide. BugIt fills them in for you.";
 if (TPL_DESC.length > 160) throw new Error("make-articles: the templates description is too long");
 const tplLd = jsonLd({
   "@context": "https://schema.org",
@@ -466,7 +466,7 @@ ${all.map(({ fm }) => `- [${fm.title}](https://bugit.dev/articles/${fm.slug}/): 
 
 ## Free templates
 
-- [Free bug report templates](https://bugit.dev/templates/): ${PACK.map(([, title]) => title).join(", ")}, to copy or download
+- [Free bug report templates](https://bugit.dev/templates/): ${PACK.map(([, title]) => title).join(", ")}, to copy or download. A template is the manual way: you fill in each box yourself. BugIt does the filling in for you, from a rough note.
 
 ## Free tools
 
