@@ -7,7 +7,7 @@
  "t006": "التوثيق",
  "t007": "تسجيل الدخول",
  "t008": "احصل على <bdi dir=\"ltr\">BugIt</bdi>",
- "t009": "<span class=\"dot\"></span>للمختبرين وفرق ضمان الجودة. يرسل التذاكر إلى <bdi dir=\"ltr\">Jira</bdi> و<bdi dir=\"ltr\">Azure DevOps</bdi> و<bdi dir=\"ltr\">GitHub</bdi> وغيرها.",
+ "t009": "<span class=\"dot\"></span><span>للمختبرين وفرق ضمان الجودة. يرسل التذاكر إلى <bdi dir=\"ltr\">Jira</bdi> و<bdi dir=\"ltr\">Azure DevOps</bdi> و<bdi dir=\"ltr\">GitHub</bdi> وغيرها.</span>",
  "t010": "قل ما الذي تعطّل.<br><span class=\"grad\"><bdi dir=\"ltr\">BugIt</bdi> يكتب التذكرة.</span>",
  "t011": "جملة واحدة مبسطة تتحول إلى تقرير خلل كامل. تراجع كل مسودة بنفسك، ولا يُكتب شيء في نظام التتبع حتى تكتب <kbd>FILE IT</kbd>.",
  "t012": "احصل على <bdi dir=\"ltr\">BugIt</bdi>",

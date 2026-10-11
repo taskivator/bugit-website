@@ -651,3 +651,21 @@ h1,h2,h3{text-wrap:balance}
   .lang-btn{padding:0 9px}
   .lang-btn .lang-caret{display:none}
 }
+
+/* ── Phone hero (owner approved 2026-10-12) ──────────────────────────────────
+   On a phone the cookie notice arrives over the bottom of the first screen, and it covered the
+   two hero buttons in most languages. So below 560px the hero is a column whose BUTTONS come
+   straight after the headline, then the trust line, then the lede. Only the visual order changes:
+   the DOM, and so the reading and keyboard order, is the page as written (the lede is text, not a
+   control). The headline is smaller here (never under 28px) and the eyebrow tighter. Measured in
+   every language, Chromium and WebKit, at 360x740 and 390x844: both buttons clear the notice. */
+@media (max-width:560px){
+  .hero{display:flex;flex-direction:column;align-items:stretch;padding-top:20px}
+  .hero>*{order:5;min-width:0}
+  .hero>.demo{width:100%}
+  .hero>.kicker{order:0;align-self:center;margin-bottom:14px;padding:5px 10px;font-size:10.5px;letter-spacing:.06em;line-height:1.45}
+  .hero>h1{order:1;font-size:34px;line-height:1.04}
+  .hero>.cta{order:2;margin-top:20px}
+  .hero>.hero-trust{order:3;margin-top:12px}
+  .hero>.lede{order:4;margin-top:18px;font-size:17px}
+}
