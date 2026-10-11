@@ -179,7 +179,7 @@ ${ld}</head>
 const foot = `
 <footer class="foot">
   <span>BugIt by <a href="https://taskivator.com/bugit/">Taskivator</a></span>
-  <nav aria-label="Footer"><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/templates/">Templates</a><a href="/docs/privacy/">Privacy</a><a href="/docs/refund/">Refunds</a><a href="/docs/commerce/">Commercial Transactions</a><a href="/docs/security/">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+  <nav aria-label="Footer"><a href="/#pricing">Pricing</a><a href="/docs/">Docs</a><a href="/articles/">Articles</a><a href="/templates/">Templates</a><a href="/docs/privacy/">Privacy</a><a href="/docs/refund/">Refunds</a><a href="/docs/commerce/">Commercial Transactions</a><a href="/docs/security/">Security</a><a href="/docs/support/">Support</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
   <div class="social"><a href="https://www.linkedin.com/company/bugitdev" target="_blank" rel="noopener" aria-label="BugIt on LinkedIn (opens in a new tab)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg><span>LinkedIn</span></a><a href="https://www.youtube.com/@BugItByTaskivator" target="_blank" rel="noopener" aria-label="BugIt on YouTube (opens in a new tab)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.13-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg><span>YouTube</span></a></div>
 </footer>
 
@@ -188,6 +188,24 @@ const foot = `
 </body>
 </html>
 `;
+
+/* THE TRIAL CARD (conversion audit 2026-10-12). Each article ends its "Where BugIt fits" section
+   with a way to act on it: see the product, or ask for a free trial. The trial is granted by hand
+   (no cap is stated, by ruling), and setup help is offered by email only. Placed straight after the
+   fits section, so an article without one gets no card and the build says so. */
+const CTA = `<aside class="a-cta" aria-labelledby="a-cta-h">
+<h2 id="a-cta-h">Let BugIt write the steps</h2>
+<p>Describe the bug in one sentence and review the draft before it is filed.</p>
+<p class="a-cta-help">We help you set it up by email.</p>
+<p class="a-cta-btns"><a class="btn btn-primary" href="https://bugit.dev/#how">See how it works</a><a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial">Ask for a free trial</a></p>
+</aside>`;
+const withCta = (html, where) => {
+  const at = html.indexOf('class="sec fits"');
+  if (at < 0) throw new Error(`make-articles: ${where} has no "Where BugIt fits" section for the trial card`);
+  const end = html.indexOf("</section>", at);
+  if (end < 0) throw new Error(`make-articles: ${where}: the fits section is not closed`);
+  return html.slice(0, end + 10) + "\n" + CTA + html.slice(end + 10);
+};
 
 const files = fs.readdirSync(SRC).filter((f) => f.endsWith(".md")).sort();
 const all = files.map((f) => parse(path.join(SRC, f))).sort((a, b) => (Number(a.fm.order) || 99) - (Number(b.fm.order) || 99) || a.fm.slug.localeCompare(b.fm.slug));
@@ -255,7 +273,7 @@ for (const { fm, body } of all) {
 ${tocHtml}
 </ol></nav>
     <article class="a-body">
-${html}
+${withCta(html, fm.slug)}
     </article>
   </div>
   <section class="more" aria-labelledby="tools-h">

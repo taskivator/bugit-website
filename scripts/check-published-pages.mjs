@@ -131,6 +131,12 @@ async function measure(route, width, lang, opts = {}) {
   const { ctx, page, errors } = await open(width, lang, opts);
   await page.goto(B + route, { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
+  // EVERY FAQ ANSWER OPEN (2026-10-12). The content of a closed <details> still has a box, so
+  // `shown` admitted it, but it is not rendered, so its innerText is empty: a link inside a closed
+  // answer read as "unnamed", and nothing inside a closed answer was ever really measured. Opening
+  // them measures the answers the way a reader who opens them sees them.
+  await page.evaluate(() => document.querySelectorAll("details:not([open])").forEach((d) => { d.open = true; }));
+  await page.waitForTimeout(100);
   // EVERY DEMO TAB. Below 980px the demo shows one pane at a time (v2.js), and a hidden pane's
   // text is not measured; a defect in the draft would pass while the chat tab was showing.
   const panes = await page.evaluate(() => { const g = document.querySelector(".demo-grid[data-show]"); return g ? ["chat", "work", "draft"] : [null]; });

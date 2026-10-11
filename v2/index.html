@@ -103,13 +103,14 @@
   <!-- ── 1. HERO ─────────────────────────────────────────────────────────────────────── -->
   <section class="hero" aria-labelledby="heroTitle">
     <div class="spot" aria-hidden="true"></div>
-    <p class="kicker" data-k="t009"><span class="dot"></span>QA agent · runs in your AI assistant</p>
+    <p class="kicker" data-k="t009"><span class="dot"></span>For testers and QA teams. Files to Jira, Azure DevOps, GitHub and more.</p>
     <h1 id="heroTitle" data-k="t010">Say what broke.<br><span class="grad">BugIt writes the ticket.</span></h1>
     <p class="lede" data-k="t011">One rough sentence becomes a complete bug report. You review every draft, and nothing is written to your tracker until you type <kbd>FILE IT</kbd>.</p>
     <div class="cta">
       <a class="btn btn-primary" href="https://portal.bugit.dev/pricing" data-k="t012">Get BugIt</a>
-      <a class="btn btn-ghost" href="#trial" data-k="t013">Try it free</a>
+      <a class="btn btn-ghost" href="#trial" data-k="t013">Ask for a free trial</a>
     </div>
+    <p class="hero-trust" data-k="hero.trust">No subscription. <a href="/docs/refund/">7 day refund window</a>, under the conditions in our refund policy.</p>
     <!-- ASK BUGIT: opens the same on-page Guide as bugit.dev (public/guide/guide.js): prepared
          answers matched in the browser, no model, no server. The rotating question is decoration;
          the button's accessible name is fixed. -->
@@ -262,7 +263,8 @@
   <section class="band" id="trial" aria-labelledby="trialTitle">
     <p class="eyebrow" data-k="t108">Free trial</p>
     <h2 id="trialTitle" data-k="t109">Try BugIt free, as one of our testers.</h2>
-    <p class="lede" data-k="t110">A limited number of free Solo licenses, for testers who will tell us honestly what works and what does not.</p>
+    <p class="trial-note" data-k="trial.note">Trial licenses are granted by hand. We reply on your Support ticket.</p>
+    <p class="lede" data-k="t110">Free Solo licenses, for testers who will tell us honestly what works and what does not.</p>
     <ol class="trial-steps">
       <li><span class="num">01</span><h3 data-k="t111">Create your account</h3><p data-k="t112">Free, in the BugIt Portal. It is the account you activate BugIt with later.</p></li>
       <li><span class="num">02</span><h3 data-k="t113">Ask for your trial</h3><p data-k="t114">Open Support, choose Request a free trial, and answer six quick questions.</p></li>
@@ -270,7 +272,7 @@
       <li><span class="num">04</span><h3 data-k="t117">Tell us how it went</h3><p data-k="t118">After about two weeks, share honest feedback: what worked and what did not.</p></li>
     </ol>
     <div class="cta"><a class="btn btn-primary" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t119">Request a free trial</a></div>
-    <p class="fine" data-k="t120">Places are limited and each request is reviewed by hand. A free license stops on its end date, with no grace period.</p>
+    <p class="fine" data-k="t120">We help you set it up by email. A free license stops on its end date, with no grace period.</p>
   </section>
 
   <!-- ── 7. PRICING + FAQ ────────────────────────────────────────────────────── -->
@@ -282,6 +284,10 @@
       <span data-k="t124">Testers can ask for a free Solo license first. See how it works.</span>
       <span class="arrow" aria-hidden="true">↑</span>
     </a>
+    <div class="needs" role="note" aria-labelledby="needsTitle">
+      <p class="needs-h" id="needsTitle" data-k="pricing.needs.h">What you need</p>
+      <p class="needs-b" data-k="pricing.needs">Runs in VS Code with GitHub Copilot Chat, the Claude extension or another assistant, or in a terminal. Needs Python 3.10 to 3.14 and your own AI assistant, or your own OpenAI or Anthropic key. Windows 11 fully supported; macOS and Linux in preview. You download a folder, unzip it, open it in VS Code and activate with your BugIt account.</p>
+    </div>
     <div class="plans">
       <article class="plan">
         <h3 data-k="t125">Solo</h3>
@@ -303,10 +309,14 @@
     <p class="fine" data-k="pricing.templates">Not ready yet? Start with the <a href="/templates/">free bug report templates</a>, the manual version of what BugIt does for you.</p>
 
     <div class="faq">
+      <details><summary data-k="faq.try.q">Can I try it first?</summary><p data-k="faq.try.a">Testers can ask for a free Solo license. Trial licenses are granted by hand, and each request is read by a person.</p></details>
       <details><summary data-k="t142">Do I need GitHub Copilot?</summary><p data-k="t143">No. BugIt runs in any assistant that can run a command: Copilot Chat, the Claude extension in VS Code, or a plain terminal. It can also run standalone with your own OpenAI or Anthropic key.</p></details>
+      <details><summary data-k="faq.model.q">Does BugIt include an AI model?</summary><p data-k="faq.model.a">No. It runs in the assistant you already use, or standalone with your own OpenAI or Anthropic key.</p></details>
       <details><summary data-k="t144">Does Taskivator see my tickets?</summary><p data-k="t145">No. Your tickets, specs and tokens do not pass through our servers. Only license and update data does, and every field is listed in the privacy notice.</p></details>
       <details><summary data-k="t146">What do I need to run it?</summary><p data-k="t147">An AI assistant that can run a command, Python 3.10 to 3.14, and the tracker you already use. Windows 11 is fully supported; macOS and Linux are in preview.</p></details>
+      <details><summary data-k="faq.download.q">What do I download?</summary><p data-k="faq.download.a">A folder you download from your BugIt account, unzip and open in VS Code. You activate it by signing in to your BugIt account in your browser.</p></details>
       <details><summary data-k="t148">What happens after a year?</summary><p data-k="t149">Your files and settings stay. Filing needs an active license, and nothing renews unless you buy again.</p></details>
+      <details><summary data-k="faq.refund.q">Can I get a refund?</summary><p data-k="faq.refund.a">You may request one within 7 days of purchase if BugIt does not work as advertised, a reproducible technical issue prevents normal use, or Support cannot resolve the issue. The <a href="/docs/refund/">refund policy</a> has the details.</p></details>
     </div>
   </section>
 
@@ -354,7 +364,7 @@
 
 <footer class="foot">
   <span data-k="t167">BugIt by <a href="https://taskivator.com">Taskivator</a></span>
-  <nav aria-label="Footer" data-ka="aria-label:t181"><a href="/docs/" data-k="t168">Docs</a><a href="/templates/" data-k="foot.templates">Templates</a><a href="/docs/privacy/" data-k="t169">Privacy</a><a href="/docs/refund/" data-k="t170">Refunds</a><a href="/docs/commerce/" data-k="t171">Commercial Transactions</a><a href="/docs/security/" data-k="t185">Security</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
+  <nav aria-label="Footer" data-ka="aria-label:t181"><a href="/#pricing" data-k="foot.pricing">Pricing</a><a href="/docs/" data-k="t168">Docs</a><a href="/templates/" data-k="foot.templates">Templates</a><a href="/docs/privacy/" data-k="t169">Privacy</a><a href="/docs/refund/" data-k="t170">Refunds</a><a href="/docs/commerce/" data-k="t171">Commercial Transactions</a><a href="/docs/security/" data-k="t185">Security</a><a href="/docs/support/" data-k="foot.support">Support</a><button type="button" class="foot-link" data-consent-open>Cookie preferences</button></nav>
   <div class="social"><a href="https://www.linkedin.com/company/bugitdev" target="_blank" rel="noopener" aria-label="BugIt on LinkedIn (opens in a new tab)" data-ka="aria-label:t182"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"></path></svg><span data-k="t172">LinkedIn</span></a><a href="https://www.youtube.com/@BugItByTaskivator" target="_blank" rel="noopener" aria-label="BugIt on YouTube (opens in a new tab)" data-ka="aria-label:t183"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.13-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"></path></svg><span data-k="t173">YouTube</span></a></div>
 </footer>
 

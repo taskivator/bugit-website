@@ -99,3 +99,15 @@
     .cards>li:nth-child(3n+3){animation-range:entry 4% cover 34%}
   }
 }
+
+/* The trial card after "Where BugIt fits" (2026-10-12): the article's way to act on what it said. */
+.a-body .a-cta{margin:-20px 0 44px;padding:26px 28px;border-radius:var(--r);border:1px solid rgba(255,79,201,.35);
+  background:linear-gradient(135deg,rgba(255,79,201,.08),rgba(139,69,255,.08))}
+.a-body .a-cta h2{margin:0 0 10px}
+.a-body .a-cta p{margin:0 0 10px}
+.a-body .a-cta .a-cta-help{font-size:.92em;color:var(--ink-3)}
+.a-body .a-cta .a-cta-btns{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 0}
+.article .a-cta .btn{text-decoration:none}
+.article .a-cta .btn-primary,.article .a-cta .btn-primary:hover{color:#0b0716}
+.article .a-cta .btn-ghost{color:var(--ink)}
+@media (max-width:560px){.a-body .a-cta{padding:20px}.a-body .a-cta .btn{width:100%}}

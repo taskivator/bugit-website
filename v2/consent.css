@@ -178,3 +178,18 @@ button[data-consent-open]{
   font:inherit;color:inherit;cursor:pointer;text-align:inherit;
 }
 button[data-consent-open]:hover{color:#fff}
+
+/* A phone in portrait (2026-10-12): on arrival the notice is a compact bottom sheet, about a
+   third of the screen at most, so the hero's two buttons are still on screen at first paint. The
+   copy scrolls inside it as before and the three answers sit on one row, equal width. Nothing
+   about what the buttons do changes; with the preferences open the managing ceiling above applies. */
+@media (max-width:480px){
+  html:not(.consent-managing) #consentBanner{max-height:30dvh;padding:10px 0 calc(10px + env(safe-area-inset-bottom))}
+  html:not(.consent-managing) .consent-inner{gap:8px}
+  html:not(.consent-managing) .consent-scroll{gap:6px}
+  html:not(.consent-managing) #consentBanner .consent-title{font-size:14px;margin-bottom:2px}
+  html:not(.consent-managing) .consent-copy p{font-size:12.5px;line-height:1.45}
+  html:not(.consent-managing) .consent-actions{flex-wrap:nowrap;gap:6px}
+  html:not(.consent-managing) .consent-btn{flex:1 1 0;min-width:0;padding:4px 6px;font-size:12.5px;line-height:1.15}
+  html:not(.consent-managing) #consentManage{flex-basis:0}
+}
