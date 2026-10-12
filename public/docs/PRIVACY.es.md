@@ -122,7 +122,7 @@ servicio.
   que se ha utilizado una prueba, junto con un hash unidireccional con clave de su
   dirección de correo electrónico (no la dirección en sí), para que la prueba gratuita
   solo pueda usarse una vez por persona. Conservamos este registro después de que se
-  elimine una cuenta, únicamente con esa finalidad.
+  elimine una cuenta, únicamente con esa finalidad. Si llegó desde uno de nuestros propios enlaces, también anotamos la campaña que indicaba (por ejemplo, un vídeo de YouTube), para saber qué canales traen pruebas.
 
 Utilizamos estos datos para prestar y dar soporte al producto que ha comprado, cobrar
 y cumplir nuestras obligaciones fiscales y contables, mantener seguras las cuentas y

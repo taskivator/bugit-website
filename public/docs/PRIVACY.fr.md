@@ -127,7 +127,7 @@ vous invitons à en prendre connaissance avant de connecter un service.
   enregistrons qu'un essai a été utilisé, avec un hachage à sens unique et à clé de
   votre adresse e-mail (et non l'adresse elle-même), afin que l'essai gratuit ne
   puisse être utilisé qu'une fois par personne. Nous conservons cet enregistrement
-  après la suppression d'un compte, uniquement à cette fin.
+  après la suppression d'un compte, uniquement à cette fin. Si vous êtes arrivé par l'un de nos propres liens, nous notons aussi la campagne qu'il indiquait (par exemple une vidéo YouTube), afin de savoir quels canaux amènent des essais.
 
 Nous utilisons ces données pour fournir et prendre en charge le produit que vous avez
 acheté, encaisser le paiement et respecter nos obligations fiscales et comptables,

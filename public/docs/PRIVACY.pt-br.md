@@ -119,7 +119,7 @@ recomendamos consultá-los antes de conectar um serviço.
   teste foi usado, com um hash unidirecional com chave do seu endereço de e-mail (não
   o endereço em si), para que o teste grátis possa ser usado uma única vez por pessoa.
   Mantemos esse registro depois que uma conta é excluída, somente para essa
-  finalidade.
+  finalidade. Se você chegou por um dos nossos próprios links, também registramos a campanha indicada nele (por exemplo, um vídeo do YouTube), para saber quais canais trazem testes.
 
 Usamos esses dados para fornecer e dar suporte ao produto que você comprou, receber o
 pagamento e cumprir nossas obrigações fiscais e contábeis, manter contas e licenças

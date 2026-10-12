@@ -123,7 +123,7 @@ informative sulla privacy: La invitiamo a consultarli prima di collegare un serv
   che è stata utilizzata una prova, con un hash unidirezionale con chiave del Suo
   indirizzo e-mail (non l'indirizzo stesso), affinché la prova gratuita possa essere
   utilizzata una sola volta per persona. Conserviamo questa registrazione anche dopo
-  la cancellazione di un account, esclusivamente per tale scopo.
+  la cancellazione di un account, esclusivamente per tale scopo. Se è arrivato da uno dei nostri link, annotiamo anche la campagna che indicava (ad esempio un video di YouTube), per capire quali canali portano prove.
 
 Utilizziamo questi dati per fornire e supportare il prodotto acquistato, incassare il
 pagamento e adempiere agli obblighi fiscali e contabili, mantenere sicuri account e

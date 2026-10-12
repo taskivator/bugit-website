@@ -109,7 +109,7 @@ and privacy policies, so please review those before connecting a service.
 - **Free trial records**: when you start the free trial we record that a trial was
   used, with a one way keyed hash of your email address (not the address itself), so
   the free trial can be used once per person. We keep this record after an account is
-  deleted, for that purpose only.
+  deleted, for that purpose only. If you came from one of our own links, we also note which campaign it named (for example a YouTube video), so we can see which channels bring trials.
 
 We use this data to provide and support the product you bought, to take payment and
 meet our tax and accounting obligations, to keep accounts and licenses secure, and,

@@ -125,7 +125,7 @@ Sie einen Dienst verbinden.
   schlüsselbasierten Einweg-Hash Ihrer E-Mail-Adresse (nicht der Adresse selbst),
   damit die kostenlose Testversion nur einmal pro Person genutzt werden kann. Wir
   bewahren diese Aufzeichnung auch nach der Löschung eines Kontos auf, ausschließlich
-  zu diesem Zweck.
+  zu diesem Zweck. Wenn Sie über einen unserer eigenen Links gekommen sind, vermerken wir außerdem die darin genannte Kampagne (zum Beispiel ein YouTube Video), damit wir sehen, welche Kanäle zu Testversionen führen.
 
 Wir nutzen diese Daten, um das gekaufte Produkt bereitzustellen und zu unterstützen,
 Zahlungen entgegenzunehmen und unsere steuerlichen und buchhalterischen Pflichten zu
