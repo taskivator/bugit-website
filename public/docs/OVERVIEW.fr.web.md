@@ -2,7 +2,7 @@
 
 > **Avertissement sur la traduction.** Ce document a été traduit automatiquement et n'a pas été relu par des locuteurs natifs. La version anglaise fait foi : en cas de divergence, le texte anglais prévaut. Pour la formulation la plus exacte et la plus à jour, veuillez vous reporter au document en anglais.
 
-BugIt est un agent commercial VS Code Copilot qui transforme des notes de test brutes en rapports de bogues cohérents. Il rédige localement dans votre espace de travail et affiche un aperçu des écritures dans le traqueur et des notifications qui contiennent votre rapport avant que vous les approuviez, et leur envoi exige que vous tapiez FILE IT. Un test de connexion que vous lancez vous-même envoie un message de test fixe sans aperçu.
+BugIt est un agent QA commercial pour VS Code qui fonctionne dans l’assistant IA que vous utilisez déjà et transforme des notes de test brutes en rapports de bogues cohérents. Il rédige localement dans votre espace de travail et affiche un aperçu des écritures dans le traqueur et des notifications qui contiennent votre rapport avant que vous les approuviez, et leur envoi exige que vous tapiez FILE IT. Un test de connexion que vous lancez vous-même envoie un message de test fixe sans aperçu.
 
 ## Fonctionnement essentiel
 
