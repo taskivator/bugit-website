@@ -198,7 +198,8 @@ jobs:
           # originals (commit 485782a), so verify the hashed bundles exist rather
           # than the fixed dist/styles.css / dist/app.js names, which never survive a build.
           ls dist/styles.*.css  >/dev/null 2>&1 || { echo "::error::hashed styles.*.css bundle missing from dist"; exit 1; }
-          ls dist/app.*.js      >/dev/null 2>&1 || { echo "::error::hashed app.*.js bundle missing from dist"; exit 1; }
+          # The old single page script (app.js) is no longer published (2026-10-12), so none may appear.
+          if ls dist/app*.js >/dev/null 2>&1; then echo "::error::an app.js bundle reached dist; the old page script is no longer published"; exit 1; fi
           test -d dist/public
           echo "Static build verified."
       # Strict prior-consent Google-tag gating — real-browser NETWORK PROOF. Consent

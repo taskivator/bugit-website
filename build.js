@@ -114,9 +114,13 @@ fs.rmSync(dist,{recursive:true,force:true}); fs.mkdirSync(dist,{recursive:true})
 // llms.txt and the IndexNow key file joined on 2026-10-10 (SEO audit). The key file is the only
 // file at the root named 32 hex characters + .txt; scripts/indexnow-ping.mjs finds it the same way.
 const INDEXNOW_KEY_FILES = fs.readdirSync(root).filter((f) => /^[0-9a-f]{32}\.txt$/.test(f));
-const REQUIRED_AT_ROOT = new Set(['index.html','styles.css','app.js','consent.js','404.html','_headers','_redirects','llms.txt']);
+const REQUIRED_AT_ROOT = new Set(['index.html','styles.css','consent.js','404.html','_headers','_redirects','llms.txt']);
 const skippedOptional = [];
-for (const item of ['index.html','styles.css','app.js','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','_redirects','.well-known','verify.json','llms.txt',...INDEXNOW_KEY_FILES]) {
+// app.js is NOT published (2026-10-12). It is the old single page's script: the redesign replaced
+// that page, nothing on the site has referenced it since, and it carried the retired trial request
+// path. The build still READS it (the 404 strings and the FAQ guard above), and so do the copy
+// checks, so the source stays; check-deploy-safety confirmed the live homepage does not reference it.
+for (const item of ['index.html','styles.css','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','_redirects','.well-known','verify.json','llms.txt',...INDEXNOW_KEY_FILES]) {
   const src = path.join(root,item);
   if (!fs.existsSync(src)) {
     if (REQUIRED_AT_ROOT.has(item)) {
@@ -344,7 +348,7 @@ if (adsId) {
 // site, which stays dependency-free at runtime. app.js is a classic <script>
 // (no import/export), so esbuild leaves top-level names intact and only strips
 // comments/whitespace + mangles locals — behavior-preserving.
-for (const [file,loader] of [['app.js','js'],['consent.js','js'],['styles.css','css']]) {
+for (const [file,loader] of [['consent.js','js'],['styles.css','css']]) {
   const p = path.join(dist,file);
   const src = fs.readFileSync(p,'utf8');
   // charset:'utf8' keeps embedded unicode (i18n strings) as-is; the esbuild
@@ -378,7 +382,7 @@ const built = {};
 // its CONTENT changes with a release while its PATH never did, and _headers asking for
 // max-age=0 did not save it: the edge bumps .js to its own four hour browser TTL regardless.
 // Same defect as the Guide's code, same remedy.
-for (const f of ['styles.css','app.js','consent.js','404.js'].filter((n) => fs.existsSync(path.join(dist,n)))) {
+for (const f of ['styles.css','consent.js','404.js'].filter((n) => fs.existsSync(path.join(dist,n)))) {
   const h = hashOf(f);
   const name = hashedName(f,h);
   fs.renameSync(path.join(dist,f), path.join(dist,name));
@@ -474,9 +478,9 @@ if (fs.existsSync(guideDir)) {
 // THE OWNER APPROVED THE NEW DESIGN, and it lives in v2/: v2/index.html is the homepage and
 // v2/docs/index.html the documentation. They are published as /index.html (over the old page,
 // which is still copied above so every check that reads it keeps a subject until it is retired)
-// and /docs/index.html. The old app.js and styles.css are still built and published, unreferenced:
-// check-deploy-safety refuses a build that drops a file the live homepage references, and the
-// first deploy of the new design is exactly that build. They can go in the deploy after this one.
+// and /docs/index.html. The old styles.css is still built and published, unreferenced. The old
+// app.js stopped being published on 2026-10-12 (see the copy list above): the live homepage no
+// longer references it, so check-deploy-safety has nothing to refuse.
 //
 // The design's code is minified and content-hashed like the old site's, for the same reason
 // (_headers caches hashed paths for a year as immutable). Its language files and the docs content
@@ -596,4 +600,8 @@ for (const rel of INTERNAL_ONLY) {
     process.exit(1);
   }
 }
-console.log(`Build complete: dist (${built['styles.css']}, ${built['app.js']}, ${built['consent.js']})`);
+if (fs.readdirSync(dist).some((f) => /^app(.[0-9a-f]+)?.js$/.test(f))) {
+  console.error('build: an app.js bundle reached dist. The old single page script is no longer published.');
+  process.exit(1);
+}
+console.log(`Build complete: dist (${built['styles.css']}, ${built['consent.js']})`);

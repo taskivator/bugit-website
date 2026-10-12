@@ -40,7 +40,9 @@ const SOURCES = [
   ...distJs.map((f) => [`dist/${f}`, read(`dist/${f}`)]),
 ];
 
-check(distJs.length === 1, `expected exactly one hashed app bundle in dist, found ${distJs.length}`);
+// The old single page script stopped being published on 2026-10-12 (build.js), so dist holds no
+// app bundle; one appearing means the build started publishing it again.
+check(distJs.length === 0, `expected no hashed app bundle in dist (the old page script is not published), found ${distJs.length}`);
 
 const TEAM_CTA = /href="https:\/\/portal\.bugit\.dev\/pricing\?plan=team"/;
 // Every stale Team "coming soon / being rebuilt / unavailable-for-purchase"
