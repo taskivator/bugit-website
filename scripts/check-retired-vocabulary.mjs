@@ -75,6 +75,43 @@ const RETIRED = {
     "LQA-0066..0069: إيداع reads as depositing or lodging, not filing a ticket"]],
 };
 
+/**
+ * RETIRED CLAIMS, 2026-10-12: the trial card's "We help you set it up by email." The self-serve
+ * trial has no set-up-by-email step; the sentence was replaced by "Questions? Email
+ * support@bugit.dev." in every language (decided by the BugIt session with the social media agent,
+ * owner authorized). Each translation the site carried is listed under its own locale, so the
+ * localized homepage, docs and Guide banks of that locale are held to it; the English sentence is
+ * one of the retired Latin PHRASES below, with the old trial request path it belonged to.
+ */
+const RETIRED_SETUP_BY_EMAIL = {
+  ar: /نساعدك في الإعداد عبر البريد الإلكتروني/gu,
+  de: /Wir helfen Ihnen per E-Mail bei der Einrichtung/gu,
+  es: /Te ayudamos a configurarlo por correo/gu,
+  fr: /Nous vous aidons à l['’]installer par e-mail/gu,
+  it: /Ti aiutiamo a configurarlo via email/gu,
+  ja: /セットアップはメールでお手伝いします/gu,
+  ko: /설정은 이메일로 도와드립니다/gu,
+  "pt-br": /Ajudamos você a configurar por e-mail/gu,
+  ru: /Мы поможем с настройкой по электронной почте/gu,
+  zh: /我们通过邮件帮你完成设置/gu,
+};
+for (const [locale, pattern] of Object.entries(RETIRED_SETUP_BY_EMAIL)) {
+  (RETIRED[locale] ??= []).push([pattern, "Questions? Email support@bugit.dev. (translated)",
+    "2026-10-12: the trial has no set-up-by-email step; the trial card says to email support"]);
+}
+/* The English sentence and the retired trial request path (2026-10-12), checked as Latin PHRASES
+   in the dictionary files and in every English or script entry of the published copy. */
+const RETIRED_TRIAL_PHRASES = [
+  [/We help you set it up by email/gi, "Questions? Email support@bugit.dev.",
+    "2026-10-12: the trial has no set-up-by-email step"],
+  [/Request a free trial/gi, "Try BugIt free for 14 days",
+    "2026-10-12: the trial request path is retired; the trial is self-serve"],
+  [/Places are limited/gi, "(nothing: the self-serve trial has no cap)",
+    "2026-10-12: the trial request path is retired"],
+  [/each request is reviewed by hand/gi, "(nothing: the self-serve trial is not reviewed by hand)",
+    "2026-10-12: the trial request path is retired"],
+];
+
 const isLegal = (name) => LEGAL.some((stem) => name.toUpperCase().startsWith(stem));
 
 /** Every Markdown page under public/docs, grouped by the locale in its filename. */
@@ -157,6 +194,7 @@ function scanDictionary() {
     [/BugIt archiva/g, "BugIt registra tickets", "LQA-0033, LQA-0036 (site dictionary)"],
     [/ao seu tracker/g, "ao seu rastreador", "LQA-0057 (site dictionary)"],
     [/contra[^.<>]{0,40}?destino/g, "en el destino elegido / no destino escolhido", "LQA-0033"],
+    ...RETIRED_TRIAL_PHRASES,
   ];
   for (const file of DICTIONARY_FILES) {
     let text;
@@ -242,6 +280,7 @@ const LATIN_PHRASES = [
   [/BugIt archiva/g, "BugIt registra tickets", "LQA-0033, LQA-0036 (published copy)"],
   [/ao seu tracker/g, "ao seu rastreador", "LQA-0057 (published copy)"],
   [/contra[^.<>]{0,40}?destino/g, "en el destino elegido / no destino escolhido", "LQA-0033"],
+  ...RETIRED_TRIAL_PHRASES,
 ];
 
 function scanPublishedEntry(entry) {
