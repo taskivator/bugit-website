@@ -47,7 +47,11 @@ const FORBIDDEN = [
   // English retired-model claims
   "your **license key**", "seat label", "License keys & seats",
   "activation with a valid license key", "Team allows 5", "5 devices at a time",
-  "14-day", "14 day",
+  /* The retired 14-DAY GRACE, not every "14 day": since 2026-10-12 the product has a free 14 day
+     trial (owner approved), so the bare fragment no longer names the retired model. These name the
+     grace in every phrasing the English copy used, and the self-test below proves both directions:
+     a planted 14 day grace is still caught, the trial sentence is not. */
+  "14-day grace", "14 day grace", "14-day post-expiry", "14 day post-expiry", "14 days of grace", "grace period of 14",
   // per-language retired "5 … devices at a time" shared framing
   "5 dispositivos a la vez", "5 appareils à la fois", "5 Geräte gleichzeitig",
   "5 dispositivi alla volta", "5 dispositivos por vez", "同時に5デバイス",
@@ -97,9 +101,9 @@ for (const rel of SCAN) {
 const { publishedCopy, publishedLangs } = await import("./lib/published-copy.mjs");
 const retiredIn = (text) => FORBIDDEN.filter((f) => text.includes(f));
 {
-  const blind = ["Team allows 5 devices at a time.", "Tras el vencimiento hay 14 días de gracia.", "同時に5デバイス"]
+  const blind = ["Team allows 5 devices at a time.", "Tras el vencimiento hay 14 días de gracia.", "同時に5デバイス", "A 14 day grace period follows.", "then a 14-day grace period"]
     .filter((t) => retiredIn(t).length === 0);
-  const clean = retiredIn("A 1-year license covers up to 5 members, each with one active device; a 3-day grace period follows.");
+  const clean = retiredIn("A 1-year license covers up to 5 members, each with one active device; a 3-day grace period follows. Try BugIt free for 14 days: start a free 14 day trial.");
   if (blind.length || clean.length) {
     console.error("SELF-TEST FAILED: negative control did not fire. "
       + (blind.length ? `The published-copy scan accepted ${JSON.stringify(blind)}. ` : "")

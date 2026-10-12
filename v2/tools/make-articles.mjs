@@ -190,14 +190,14 @@ const foot = `
 `;
 
 /* THE TRIAL CARD (conversion audit 2026-10-12). Each article ends its "Where BugIt fits" section
-   with a way to act on it: see the product, or ask for a free trial. The trial is granted by hand
-   (no cap is stated, by ruling), and setup help is offered by email only. Placed straight after the
+   with a way to act on it: see the product, or start the free 14 day trial in the Portal
+   (one device, no card; signed out, the Portal registers you first), and setup help is offered by email only. Placed straight after the
    fits section, so an article without one gets no card and the build says so. */
 const CTA = `<aside class="a-cta" aria-labelledby="a-cta-h">
 <h2 id="a-cta-h">Let BugIt write the steps</h2>
 <p>Describe the bug in one sentence and review the draft before it is filed.</p>
-<p class="a-cta-help">We help you set it up by email.</p>
-<p class="a-cta-btns"><a class="btn btn-primary" href="https://bugit.dev/#how">See how it works</a><a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial">Ask for a free trial</a></p>
+<p class="a-cta-help">Free trial: one device, no card needed. We help you set it up by email.</p>
+<p class="a-cta-btns"><a class="btn btn-primary" href="https://bugit.dev/#how">See how it works</a><a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial">Try BugIt free for 14 days</a></p>
 </aside>`;
 const withCta = (html, where) => {
   const at = html.indexOf('class="sec fits"');
@@ -473,6 +473,7 @@ Your tickets, specs and settings go only to the tools you connect and the AI ass
 - [BugIt home](https://bugit.dev/): what BugIt does, how it works and pricing
 - [Documentation](https://bugit.dev/docs/): install, activate, customize and use BugIt
 - [Get BugIt](https://portal.bugit.dev/pricing): plans and purchase
+- [Free trial](https://portal.bugit.dev/dashboard/free-trial): a free 14 day trial started from your BugIt account, on one device, with no card needed
 
 ## Documentation
 

@@ -2,7 +2,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Last updated: 5 October 2026**
+**Last updated: 12 October 2026**
 
 This policy explains what personal data we handle when you use the BugIt website
 (bugit.dev), the BugIt Portal (your account, purchase, and license management), and
@@ -106,6 +106,10 @@ and privacy policies, so please review those before connecting a service.
 - **Network details recorded with some requests**: the IP address and browser user agent
   stored with the acknowledgement you give at checkout, the IP address an activation
   request comes from, and the IP address and user agent of each software download
+- **Free trial records**: when you start the free trial we record that a trial was
+  used, with a one way keyed hash of your email address (not the address itself), so
+  the free trial can be used once per person. We keep this record after an account is
+  deleted, for that purpose only.
 
 We use this data to provide and support the product you bought, to take payment and
 meet our tax and accounting obligations, to keep accounts and licenses secure, and,

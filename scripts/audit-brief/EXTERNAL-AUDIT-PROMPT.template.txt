@@ -134,9 +134,10 @@ clearly separated.
       automatic renewal. The purchase is never described as one-time, lifetime or a one-off.
       There is no introductory, launch or discounted price. The pricing section, the docs, the
       Guide's answers, every language, and https://portal.bugit.dev/pricing must all agree.
-  2.3 The free trial. A limited number of free Solo licenses for testers who give honest
-      feedback, requested in the portal (Support, Request a free trial). The site never states how
-      many trials or testers there are.
+  2.3 The free trial. "Try BugIt free for 14 days": a verified portal account starts it at once
+      from the dashboard, on one device, with no card, once per account. It stops on its end date
+      with no grace period. Nothing anywhere asks for a trial by ticket, grants it by hand, or
+      hints at a limited number of places.
   2.4 Consent and tracking. The Google Ads tag runs under Consent Mode v2 with every signal
       DENIED by default; nothing advertising related is stored or sent until the visitor accepts.
       The decision is kept in one cookie, bugit_consent, shared with portal.bugit.dev, and can be

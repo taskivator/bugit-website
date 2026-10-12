@@ -108,8 +108,9 @@
     <p class="lede" data-k="t011">One rough sentence becomes a complete bug report. You review every draft, and nothing is written to your tracker until you type <kbd>FILE IT</kbd>.</p>
     <div class="cta">
       <a class="btn btn-primary" href="https://portal.bugit.dev/pricing" data-k="t012">Get BugIt</a>
-      <a class="btn btn-ghost" href="#trial" data-k="t013">Ask for a free trial</a>
+      <a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t013">Try BugIt free for 14 days</a>
     </div>
+    <p class="hero-trial" data-k="hero.trialNote">One device. No card needed.</p>
     <p class="hero-trust" data-k="hero.trust">No subscription. <a href="/docs/refund/">7 day refund window</a>, under the conditions in our refund policy.</p>
     <!-- ASK BUGIT: opens the same on-page Guide as bugit.dev (public/guide/guide.js): prepared
          answers matched in the browser, no model, no server. The rotating question is decoration;
@@ -262,17 +263,16 @@
   <!-- ── 6b. FREE TRIAL ──────────────────────────────────────────────────────────────── -->
   <section class="band" id="trial" aria-labelledby="trialTitle">
     <p class="eyebrow" data-k="t108">Free trial</p>
-    <h2 id="trialTitle" data-k="t109">Try BugIt free, as one of our testers.</h2>
-    <p class="trial-note" data-k="trial.note">Trial licenses are granted by hand. We reply on your Support ticket.</p>
-    <p class="lede" data-k="t110">Free Solo licenses, for testers who will tell us honestly what works and what does not.</p>
+    <h2 id="trialTitle" data-k="t109">Try before you buy.</h2>
+    <p class="lede" data-k="t110">Use BugIt on one device for 14 days, with the same features as a Solo license. When the trial ends, BugIt stops working until you buy a license.</p>
     <ol class="trial-steps">
-      <li><span class="num">01</span><h3 data-k="t111">Create your account</h3><p data-k="t112">Free, in the BugIt Portal. It is the account you activate BugIt with later.</p></li>
-      <li><span class="num">02</span><h3 data-k="t113">Ask for your trial</h3><p data-k="t114">Open Support, choose Request a free trial, and answer six quick questions.</p></li>
-      <li><span class="num">03</span><h3 data-k="t115">We read every request</h3><p data-k="t116">We reply on your ticket. If you are in, the license appears in your Portal.</p></li>
-      <li><span class="num">04</span><h3 data-k="t117">Tell us how it went</h3><p data-k="t118">After about two weeks, share honest feedback: what worked and what did not.</p></li>
+      <li><span class="num">01</span><h3 data-k="t111">Create your account</h3><p data-k="t112">Free, in the BugIt Portal. Confirm your email address; this is the account you activate BugIt with.</p></li>
+      <li><span class="num">02</span><h3 data-k="t113">Start your trial</h3><p data-k="t114">On your dashboard, choose Try BugIt free for 14 days. It starts at once, with no card.</p></li>
+      <li><span class="num">03</span><h3 data-k="t115">Download and activate</h3><p data-k="t116">Download BugIt, open it in VS Code and activate it on one device. We help you set it up by email.</p></li>
     </ol>
-    <div class="cta"><a class="btn btn-primary" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t119">Request a free trial</a></div>
-    <p class="fine" data-k="t120">We help you set it up by email. A free license stops on its end date, with no grace period.</p>
+    <div class="cta"><a class="btn btn-primary" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t119">Try BugIt free for 14 days</a></div>
+    <p class="trial-cta-note" data-k="trial.ctaNote">One device. No card needed.</p>
+    <p class="fine" data-k="t120">The trial stops on its end date, with no grace period, and is available once per account.</p>
   </section>
 
   <!-- ── 7. PRICING + FAQ ────────────────────────────────────────────────────── -->
@@ -281,7 +281,7 @@
     <h2 id="priceTitle" data-k="t122">Pay for a year. Renew only if you want to.</h2>
     <a class="trial-strip" href="#trial">
       <span class="tag" data-k="t123">Free trial</span>
-      <span data-k="t124">Testers can ask for a free Solo license first. See how it works.</span>
+      <span data-k="t124">Not sure yet? Try BugIt free for 14 days first. One device, no card needed.</span>
       <span class="arrow" aria-hidden="true">↑</span>
     </a>
     <div class="needs" role="note" aria-labelledby="needsTitle">
@@ -309,7 +309,7 @@
     <p class="fine" data-k="pricing.templates">Not ready yet? Start with the <a href="/templates/">free bug report templates</a>, the manual version of what BugIt does for you.</p>
 
     <div class="faq">
-      <details><summary data-k="faq.try.q">Can I try it first?</summary><p data-k="faq.try.a">Testers can ask for a free Solo license. Trial licenses are granted by hand, and each request is read by a person.</p></details>
+      <details><summary data-k="faq.try.q">Can I try it first?</summary><p data-k="faq.try.a">Yes. Start a free 14 day trial from your BugIt account: one device, no card needed. It stops on its end date.</p></details>
       <details><summary data-k="t142">Do I need GitHub Copilot?</summary><p data-k="t143">No. BugIt runs in any assistant that can run a command: Copilot Chat, the Claude extension in VS Code, or a plain terminal. It can also run standalone with your own OpenAI or Anthropic key.</p></details>
       <details><summary data-k="faq.model.q">Does BugIt include an AI model?</summary><p data-k="faq.model.a">No. It runs in the assistant you already use, or standalone with your own OpenAI or Anthropic key.</p></details>
       <details><summary data-k="t144">Does Taskivator see my tickets?</summary><p data-k="t145">No. Your tickets, specs and tokens do not pass through our servers. Only license and update data does, and every field is listed in the privacy notice.</p></details>
@@ -326,7 +326,7 @@
     <h2 id="closeTitle" data-k="t150">Your testers find the bugs.<br><span class="grad">BugIt writes them up.</span></h2>
     <div class="cta">
       <a class="btn btn-primary" href="https://portal.bugit.dev/pricing" data-k="t151">Get BugIt</a>
-      <a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t152">Request a free trial</a>
+      <a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t152">Try BugIt free for 14 days</a>
     </div>
   </section>
   <!-- ── 9. THE FAMILY ───────────────────────────────────────────────────────────────

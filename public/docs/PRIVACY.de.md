@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Zuletzt aktualisiert: 5. Oktober 2026**
+**Zuletzt aktualisiert: 12. Oktober 2026**
 
 Diese Erklärung beschreibt, welche personenbezogenen Daten wir verarbeiten, wenn Sie
 die BugIt Website (bugit.dev), das BugIt Portal (Konto, Kauf und Lizenzverwaltung)
@@ -120,6 +120,12 @@ Sie einen Dienst verbinden.
   User-Agent des Browsers, die mit der Bestätigung im Checkout gespeichert werden, die
   IP-Adresse, von der eine Aktivierungsanfrage kommt, sowie IP-Adresse und User-Agent
   jedes Software-Downloads
+- **Aufzeichnungen zur kostenlosen Testversion**: Wenn Sie die kostenlose Testversion
+  starten, erfassen wir, dass eine Testversion genutzt wurde, zusammen mit einem
+  schlüsselbasierten Einweg-Hash Ihrer E-Mail-Adresse (nicht der Adresse selbst),
+  damit die kostenlose Testversion nur einmal pro Person genutzt werden kann. Wir
+  bewahren diese Aufzeichnung auch nach der Löschung eines Kontos auf, ausschließlich
+  zu diesem Zweck.
 
 Wir nutzen diese Daten, um das gekaufte Produkt bereitzustellen und zu unterstützen,
 Zahlungen entgegenzunehmen und unsere steuerlichen und buchhalterischen Pflichten zu

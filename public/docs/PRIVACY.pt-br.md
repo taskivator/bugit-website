@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Última atualização: 5 de outubro de 2026**
+**Última atualização: 12 de outubro de 2026**
 
 Esta política explica quais dados pessoais tratamos quando você usa o site do BugIt
 (bugit.dev), o BugIt Portal (gerenciamento de conta, compra e licenças) e o software
@@ -115,6 +115,11 @@ recomendamos consultá-los antes de conectar um serviço.
   usuário do navegador armazenados com a confirmação que você dá na finalização da
   compra, o endereço IP de onde vem uma solicitação de ativação, e o endereço IP e o
   agente de usuário de cada download do software
+- **Registros do teste grátis**: quando você inicia o teste grátis, registramos que um
+  teste foi usado, com um hash unidirecional com chave do seu endereço de e-mail (não
+  o endereço em si), para que o teste grátis possa ser usado uma única vez por pessoa.
+  Mantemos esse registro depois que uma conta é excluída, somente para essa
+  finalidade.
 
 Usamos esses dados para fornecer e dar suporte ao produto que você comprou, receber o
 pagamento e cumprir nossas obrigações fiscais e contábeis, manter contas e licenças
