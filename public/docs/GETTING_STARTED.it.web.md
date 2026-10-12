@@ -6,7 +6,7 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 
 ## Prima di iniziare
 
-- Installa l'ultima versione di VS Code e accedi a GitHub Copilot.
+- Installa l'ultima versione di VS Code e un assistente in grado di eseguire un comando, come GitHub Copilot Chat o l’estensione Claude.
 - Installa un interprete Python dalla 3.10 alla 3.14, qualificato per la release.
 - Scarica BugIt dalla dashboard del tuo account ed estrailo in una cartella locale.
 - Tieni token, dati dei clienti e codice sorgente privato fuori dalla chat e dai file di configurazione.
@@ -14,7 +14,7 @@ BugIt trasforma appunti di test approssimativi in bug report revisionati diretta
 ## Attiva e configura
 
 - Apri la cartella BugIt estratta come workspace VS Code attendibile.
-- In Copilot Chat, seleziona il QA Agent di BugIt e digita `Activate` (aggiungi `--solo` o `--team` se il tuo account ha entrambi).
+- Nella chat del tuo assistente, digita `Activate` (aggiungi `--solo` o `--team` se il tuo account ha entrambi). In Copilot Chat, seleziona prima il QA Agent di BugIt; nell’estensione Claude, digitalo direttamente.
 - BugIt apre il BugIt Portal nel browser. Accedi con il tuo account BugIt: la password resta nel browser e non viene mai inserita in VS Code.
 - Scegli il diritto Solo o Team per questa macchina, quindi controlla e approva questo dispositivo.
 - Torna a VS Code. BugIt completa l'autorizzazione automaticamente: non c'è alcuna chiave di licenza da copiare, incollare o mostrare.

@@ -4,7 +4,7 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. It wor
 
 ## Before you begin
 
-- Install the latest VS Code and sign in to GitHub Copilot.
+- Install the latest VS Code and an assistant that can run a command, such as GitHub Copilot Chat or the Claude extension.
 - Install a release-qualified Python 3.10 through 3.14 interpreter.
 - Download BugIt from your account dashboard and unzip it to a local folder.
 - Keep tokens, customer data, and private source code out of chat and configuration files.
@@ -12,7 +12,7 @@ BugIt turns rough testing notes into reviewed bug reports inside VS Code. It wor
 ## Activate and configure
 
 - Open the unzipped BugIt folder as a trusted VS Code workspace.
-- In Copilot Chat, select the BugIt QA Agent and type `Activate` (add `--solo` or `--team` if your account has both).
+- In your assistant's chat, type `Activate` (add `--solo` or `--team` if your account has both). In Copilot Chat, select the BugIt QA Agent first; in the Claude extension, type it directly.
 - BugIt opens the BugIt Portal in your browser. Sign in with your own BugIt account; your password stays in the browser and is never entered in VS Code.
 - Choose the Solo or Team entitlement for this machine, then review and approve this device.
 - Return to VS Code. BugIt finishes authorizing automatically; there is no license key to copy, paste, or reveal.

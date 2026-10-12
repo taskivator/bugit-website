@@ -6,7 +6,7 @@ BugIt 可在 VS Code 内将粗略的测试记录转化为经过审阅的缺陷�
 
 ## 开始之前
 
-- 安装最新版 VS Code，并登录 GitHub Copilot。
+- 安装最新版 VS Code，以及一个能够运行命令的助手，例如 GitHub Copilot Chat 或 Claude 扩展。
 - 安装一个通过发布验证的 Python 3.10 至 3.14 解释器。
 - 从你的账户仪表板下载 BugIt，并将其解压到本地文件夹。
 - 请勿将令牌、客户数据及私有源代码置于聊天或配置文件中。
@@ -14,7 +14,7 @@ BugIt 可在 VS Code 内将粗略的测试记录转化为经过审阅的缺陷�
 ## 激活与配置
 
 - 将解压后的 BugIt 文件夹作为受信任的 VS Code 工作区打开。
-- 在 Copilot Chat 中选择 BugIt QA Agent，并输入 `Activate`（如果你的账户同时拥有两者，可加上 `--solo` 或 `--team`）。
+- 在你的助手聊天中输入 `Activate`（如果你的账户同时拥有两者，可加上 `--solo` 或 `--team`）。在 Copilot Chat 中请先选择 BugIt QA Agent；在 Claude 扩展中直接输入即可。
 - BugIt 会在浏览器中打开 BugIt 门户。使用你自己的 BugIt 账户登录：密码只保留在浏览器中，绝不会在 VS Code 中输入。
 - 为这台机器选择 Solo 或 Team 权益，然后查看并批准此设备。
 - 返回 VS Code。BugIt 会自动完成授权：没有任何许可密钥需要复制、粘贴或显示。

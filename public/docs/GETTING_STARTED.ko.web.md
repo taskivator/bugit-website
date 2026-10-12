@@ -6,7 +6,7 @@ BugIt은 대략적인 테스트 메모를 VS Code 안에서 검토된 버그 보
 
 ## 시작하기 전에
 
-- 최신 VS Code를 설치하고 GitHub Copilot에 로그인합니다.
+- 최신 VS Code와 명령을 실행할 수 있는 어시스턴트(GitHub Copilot Chat 또는 Claude 확장 등)를 설치합니다.
 - 릴리스 검증을 마친 Python 3.10부터 3.14까지의 인터프리터를 설치합니다.
 - 계정 대시보드에서 BugIt을 다운로드하고 로컬 폴더에 압축을 풉니다.
 - 토큰, 고객 데이터, 비공개 소스 코드는 채팅과 구성 파일에 포함하지 마세요.
@@ -14,7 +14,7 @@ BugIt은 대략적인 테스트 메모를 VS Code 안에서 검토된 버그 보
 ## 활성화 및 구성
 
 - 압축을 푼 BugIt 폴더를 신뢰할 수 있는 VS Code 작업 공간으로 엽니다.
-- Copilot Chat에서 BugIt QA Agent를 선택하고 `Activate`를 입력합니다(계정에 둘 다 있는 경우 `--solo` 또는 `--team`을 붙입니다).
+- 어시스턴트의 채팅에서 `Activate`를 입력합니다(계정에 둘 다 있는 경우 `--solo` 또는 `--team`을 붙입니다). Copilot Chat에서는 먼저 BugIt QA Agent를 선택하고, Claude 확장에서는 바로 입력하면 됩니다.
 - BugIt이 브라우저에서 BugIt 포털을 엽니다. 본인의 BugIt 계정으로 로그인하세요. 비밀번호는 브라우저에만 머무르며 VS Code에는 입력되지 않습니다.
 - 이 컴퓨터에서 사용할 Solo 또는 Team 권한을 선택한 다음 이 기기를 검토하고 승인합니다.
 - VS Code로 돌아옵니다. BugIt이 자동으로 인증을 완료합니다. 복사, 붙여넣기, 표시할 라이선스 키가 없습니다.

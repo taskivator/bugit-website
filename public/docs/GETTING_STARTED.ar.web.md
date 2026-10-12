@@ -6,7 +6,7 @@
 
 ## قبل أن تبدأ
 
-- ثبّت أحدث إصدار من <bdi dir="ltr">VS Code</bdi> وسجّل الدخول إلى <bdi dir="ltr">GitHub Copilot</bdi>.
+- ثبّت أحدث إصدار من <bdi dir="ltr">VS Code</bdi> ومساعدًا يستطيع تنفيذ أمر، مثل <bdi dir="ltr">GitHub Copilot Chat</bdi> أو إضافة <bdi dir="ltr">Claude</bdi>.
 - ثبّت مفسّر <bdi dir="ltr">Python</bdi> معتمدًا من الإصدارات <bdi dir="ltr">3.10</bdi> إلى <bdi dir="ltr">3.14</bdi>.
 - نزّل <bdi dir="ltr">BugIt</bdi> من لوحة تحكم حسابك وفك ضغطه في مجلد محلي.
 - لا تضع الرموز المميزة أو بيانات العملاء أو الشفرة المصدرية الخاصة في الدردشة أو ملفات الإعداد.
@@ -14,7 +14,7 @@
 ## التفعيل والتهيئة
 
 - افتح مجلد <bdi dir="ltr">BugIt</bdi> الذي فككت ضغطه كمساحة عمل موثوقة في <bdi dir="ltr">VS Code</bdi>.
-- في دردشة <bdi dir="ltr">Copilot Chat</bdi>، اختر وكيل <bdi dir="ltr">BugIt QA Agent</bdi> واكتب <bdi dir="ltr">`Activate`</bdi> (أضف <bdi dir="ltr">`--solo`</bdi> أو <bdi dir="ltr">`--team`</bdi> إذا كان حسابك يتضمن كلا النوعين).
+- في دردشة المساعد، اكتب <bdi dir="ltr">`Activate`</bdi> (أضف <bdi dir="ltr">`--solo`</bdi> أو <bdi dir="ltr">`--team`</bdi> إذا كان حسابك يتضمن كلا النوعين). في <bdi dir="ltr">Copilot Chat</bdi>، اختر وكيل <bdi dir="ltr">BugIt QA Agent</bdi> أولًا؛ وفي إضافة <bdi dir="ltr">Claude</bdi>، اكتبه مباشرة.
 - يفتح <bdi dir="ltr">BugIt</bdi> بوابة <bdi dir="ltr">BugIt Portal</bdi> في متصفحك. سجّل الدخول بحساب <bdi dir="ltr">BugIt</bdi> الخاص بك؛ تبقى كلمة مرورك في المتصفح ولا تُدخل أبدًا في <bdi dir="ltr">VS Code</bdi>.
 - اختر استحقاق ترخيص <bdi dir="ltr">Solo</bdi> أو <bdi dir="ltr">Team</bdi> لهذا الجهاز، ثم راجع هذا الجهاز ووافق عليه.
 - عُد إلى <bdi dir="ltr">VS Code</bdi>. يُنهي <bdi dir="ltr">BugIt</bdi> التفويض تلقائيًا؛ لا يوجد مفتاح ترخيص للنسخ أو اللصق أو الكشف عنه.

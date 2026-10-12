@@ -6,7 +6,7 @@ BugIt convierte notas de prueba preliminares en informes de errores revisados de
 
 ## Antes de empezar
 
-- Instala la versión más reciente de VS Code e inicia sesión en GitHub Copilot.
+- Instala la versión más reciente de VS Code y un asistente que pueda ejecutar un comando, como GitHub Copilot Chat o la extensión de Claude.
 - Instala un intérprete de Python 3.10 a 3.14 cualificado para la versión.
 - Descarga BugIt desde el panel de tu cuenta y descomprímelo en una carpeta local.
 - Mantén los tokens, los datos de clientes y el código fuente privado fuera del chat y de los archivos de configuración.
@@ -14,7 +14,7 @@ BugIt convierte notas de prueba preliminares en informes de errores revisados de
 ## Activa y configura
 
 - Abre la carpeta descomprimida de BugIt como un espacio de trabajo de confianza en VS Code.
-- En Copilot Chat, selecciona el Agente de QA de BugIt y escribe `Activate` (añade `--solo` o `--team` si tu cuenta tiene ambos).
+- En el chat de tu asistente, escribe `Activate` (añade `--solo` o `--team` si tu cuenta tiene ambos). En Copilot Chat, selecciona primero el Agente de QA de BugIt; en la extensión de Claude, escríbelo directamente.
 - BugIt abre el BugIt Portal en tu navegador. Inicia sesión con tu propia cuenta de BugIt: tu contraseña permanece en el navegador y nunca se introduce en VS Code.
 - Elige la titularidad Solo o Team para este equipo y luego revisa y aprueba este dispositivo.
 - Vuelve a VS Code. BugIt completa la autorización automáticamente: no hay ninguna clave de licencia que copiar, pegar ni mostrar.

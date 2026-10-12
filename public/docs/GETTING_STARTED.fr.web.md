@@ -6,7 +6,7 @@ BugIt transforme des notes de test sommaires en rapports de bogues révisés au 
 
 ## Avant de commencer
 
-- Installez la dernière version de VS Code et connectez-vous à GitHub Copilot.
+- Installez la dernière version de VS Code et un assistant capable d’exécuter une commande, comme GitHub Copilot Chat ou l’extension Claude.
 - Installez un interpréteur Python 3.10 à 3.14 qualifié pour la version.
 - Téléchargez BugIt depuis le tableau de bord de votre compte et décompressez-le dans un dossier local.
 - Ne laissez pas de jetons, de données client ni de code source privé dans les conversations et les fichiers de configuration.
@@ -14,7 +14,7 @@ BugIt transforme des notes de test sommaires en rapports de bogues révisés au 
 ## Activer et configurer
 
 - Ouvrez le dossier BugIt décompressé en tant qu'espace de travail VS Code approuvé.
-- Dans Copilot Chat, sélectionnez l'agent QA BugIt et saisissez `Activate` (ajoutez `--solo` ou `--team` si votre compte possède les deux).
+- Dans le chat de votre assistant, saisissez `Activate` (ajoutez `--solo` ou `--team` si votre compte possède les deux). Dans Copilot Chat, sélectionnez d’abord l’agent QA BugIt ; dans l’extension Claude, saisissez la commande directement.
 - BugIt ouvre le BugIt Portal dans votre navigateur. Connectez-vous avec votre propre compte BugIt : votre mot de passe reste dans le navigateur et n'est jamais saisi dans VS Code.
 - Choisissez le droit Solo ou Team pour cette machine, puis vérifiez et approuvez cet appareil.
 - Revenez à VS Code. BugIt termine l'autorisation automatiquement : il n'y a aucune clé de licence à copier, coller ou afficher.
