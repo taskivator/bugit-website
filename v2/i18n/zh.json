@@ -271,7 +271,7 @@
  "faq.download.q": "我要下载什么？",
  "faq.download.a": "一个文件夹：从你的 BugIt 账户下载，解压后在 VS Code 中打开。在浏览器里登录你的 BugIt 账户即可激活。",
  "faq.refund.q": "可以退款吗？",
- "faq.refund.a": "如果 BugIt 无法按描述工作、可复现的技术问题妨碍正常使用，或支持团队无法解决问题，你可以在购买后 7 天内申请退款。详情见<a href=\"/docs/refund/\">退款政策</a>。",
+ "faq.refund.a": "如果 BugIt 无法按描述工作、可复现的技术问题妨碍正常使用，或支持团队无法在合理时间内解决问题，你可以在购买后 7 天内申请退款。详情见<a href=\"/docs/refund/\">退款政策</a>。",
  "foot.pricing": "价格",
  "foot.support": "支持",
  "hero.trialNote": "一台设备。无需银行卡。",

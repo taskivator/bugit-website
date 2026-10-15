@@ -271,7 +271,7 @@
  "faq.download.q": "¿Qué descargo?",
  "faq.download.a": "Una carpeta que descargas desde tu cuenta de BugIt, descomprimes y abres en VS Code. La activas iniciando sesión en tu cuenta de BugIt en el navegador.",
  "faq.refund.q": "¿Puedo pedir un reembolso?",
- "faq.refund.a": "Puedes pedirlo en los 7 días siguientes a la compra si BugIt no funciona como se anuncia, un problema técnico reproducible impide el uso normal o Soporte no puede resolver el problema. Los detalles están en la <a href=\"/docs/refund/\">política de reembolso</a>.",
+ "faq.refund.a": "Puedes pedirlo en los 7 días siguientes a la compra si BugIt no funciona como se anuncia, un problema técnico reproducible impide el uso normal o Soporte no puede resolver el problema en un plazo razonable. Los detalles están en la <a href=\"/docs/refund/\">política de reembolso</a>.",
  "foot.pricing": "Precios",
  "foot.support": "Soporte",
  "hero.trialNote": "Un dispositivo. Sin tarjeta.",

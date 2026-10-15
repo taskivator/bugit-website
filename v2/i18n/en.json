@@ -271,7 +271,7 @@
  "faq.download.q": "What do I download?",
  "faq.download.a": "A folder you download from your BugIt account, unzip and open in VS Code. You activate it by signing in to your BugIt account in your browser.",
  "faq.refund.q": "Can I get a refund?",
- "faq.refund.a": "You may request one within 7 days of purchase if BugIt does not work as advertised, a reproducible technical issue prevents normal use, or Support cannot resolve the issue. The <a href=\"/docs/refund/\">refund policy</a> has the details.",
+ "faq.refund.a": "You may request one within 7 days of purchase if BugIt does not work as advertised, a reproducible technical issue prevents normal use, or Support cannot resolve the issue within a reasonable timeframe. The <a href=\"/docs/refund/\">refund policy</a> has the details.",
  "foot.pricing": "Pricing",
  "foot.support": "Support",
  "hero.trialNote": "One device. No card needed.",

@@ -271,7 +271,7 @@
  "faq.download.q": "Was lade ich herunter?",
  "faq.download.a": "Einen Ordner, den Sie aus Ihrem BugIt-Konto herunterladen, entpacken und in VS Code öffnen. Aktiviert wird er, indem Sie sich im Browser bei Ihrem BugIt-Konto anmelden.",
  "faq.refund.q": "Kann ich eine Rückerstattung bekommen?",
- "faq.refund.a": "Sie können innerhalb von 7 Tagen nach dem Kauf eine beantragen, wenn BugIt nicht wie beschrieben funktioniert, ein reproduzierbares technisches Problem die normale Nutzung verhindert oder der Support das Problem nicht lösen kann. Die Einzelheiten stehen in der <a href=\"/docs/refund/\">Rückerstattungsrichtlinie</a>.",
+ "faq.refund.a": "Sie können innerhalb von 7 Tagen nach dem Kauf eine beantragen, wenn BugIt nicht wie beschrieben funktioniert, ein reproduzierbares technisches Problem die normale Nutzung verhindert oder der Support das Problem nicht innerhalb einer angemessenen Frist lösen kann. Die Einzelheiten stehen in der <a href=\"/docs/refund/\">Rückerstattungsrichtlinie</a>.",
  "foot.pricing": "Preise",
  "foot.support": "Support",
  "hero.trialNote": "Ein Gerät. Keine Karte nötig.",
