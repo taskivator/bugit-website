@@ -190,6 +190,11 @@
     $('copy-title').addEventListener('click', onCopyTitle);
     $('copy-body').addEventListener('click', onCopyBody);
     enhancePick($('tracker')); enhancePick($('tracker2'));
+    if (window.__replay) {
+      // local review only: a recorded case sets the note and the tracker, as a visitor would
+      $('note').value = window.__replay.note; onCount();
+      $('tracker').value = window.__replay.tracker; $('tracker2').value = window.__replay.tracker; $('tracker')._refresh(); $('tracker2')._refresh();
+    }
     $('tracker').addEventListener('change', function () { $('tracker2').value = $('tracker').value; $('tracker2')._refresh(); resetSep(); renderCopyPane(); });
     $('tracker2').addEventListener('change', function () { $('tracker').value = $('tracker2').value; $('tracker')._refresh(); resetSep(); renderCopyPane(); });
     $('again').addEventListener('click', onAgain);
@@ -244,6 +249,7 @@
       inp.type = 'text'; inp.id = id; inp.maxLength = 600; inp.autocomplete = 'off'; inp.setAttribute('data-q', q.id);
       var idk = el('button', 'd-idk', "I don't know"); idk.type = 'button'; idk.setAttribute('aria-pressed', 'false');
       idk.addEventListener('click', function () { var on = idk.getAttribute('aria-pressed') !== 'true'; idk.setAttribute('aria-pressed', String(on)); inp.disabled = on; if (on) inp.value = ''; });
+      if (q.prefill) inp.value = q.prefill;
       row.appendChild(inp); row.appendChild(idk); wrap.appendChild(lab); wrap.appendChild(row);
       var quick = QUICK[q.field];
       if (quick) {

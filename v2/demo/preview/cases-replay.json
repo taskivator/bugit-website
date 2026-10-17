@@ -1,0 +1,3448 @@
+{
+ "C01": {
+  "note": "cant pay with saved card on brightcart, button just spins",
+  "tracker": "gitlab",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "cant pay with saved card on brightcart, button just spins",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps lead to the spinning button? Which page, and did you add items first?",
+     "field": "steps",
+     "prefill": "I added any item to the cart, went to checkout, picked my saved Visa ending in the test card, and hit Pay now, and the button just spins forever."
+    },
+    {
+     "id": "q2",
+     "text": "What should happen when you tap pay with the saved card?",
+     "field": "expected",
+     "prefill": "It should take me to the order confirmation page."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build of BrightCart are you using?",
+     "field": "build",
+     "prefill": "I'm on web release 2026.10.3, which is shown in the footer."
+    },
+    {
+     "id": "q4",
+     "text": "What operating system and version is the device running?",
+     "field": "os",
+     "prefill": "I'm on Windows 11."
+    },
+    {
+     "id": "q5",
+     "text": "What device or browser are you using (model, or browser name and version)?",
+     "field": "device",
+     "prefill": "I'm using Chrome 129 on a laptop."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time you try, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens every time with a saved card."
+    },
+    {
+     "id": "q7",
+     "text": "Did saved card payment work before? If so, since which version or date?",
+     "field": "since",
+     "prefill": "It started after Monday's release, so it was working before that."
+    },
+    {
+     "id": "q8",
+     "text": "Can you pay another way, such as a new card, and is there any other workaround?",
+     "field": "impact",
+     "prefill": "Typing in a new card works, and retyping the card is the workaround I'm using."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Checkout] Pay button spins forever when paying with a saved card",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Add any item to the cart.",
+     "basis": "stated"
+    },
+    {
+     "text": "Go to checkout.",
+     "basis": "stated"
+    },
+    {
+     "text": "Select the saved Visa card ending in the test card.",
+     "basis": "stated"
+    },
+    {
+     "text": "Tap Pay now.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "Payment completes and the user is taken to the order confirmation page.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The Pay now button spins indefinitely and payment does not complete.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Saved card payment is broken for the reporter, which blocks checkout for that payment method.",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: typing in a new card works.",
+      "basis": "stated"
+     },
+     {
+      "text": "Reporter says it happens every time with a saved card; number of affected users is not stated.",
+      "basis": "stated"
+     }
+    ],
+    "would_change_if": "Raise to High if many users are affected or no alternative payment works. Raise to Critical if payments are fully down or charges are duplicated."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "BrightCart checkout, saved card payment",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "Web release 2026.10.3 (shown in footer)",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Windows 11",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Chrome 129 on a laptop",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time with a saved card",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started after Monday's release; working before that (exact release version UNKNOWN)",
+     "basis": "inferred"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Browser console errors or network responses when Pay now is tapped",
+     "why": "Shows whether the payment request fails, hangs, or returns an error the UI does not display."
+    },
+    {
+     "item": "Whether the charge was made or an order was created despite the spinner",
+     "why": "Determines if this risks duplicate or missing charges and affects severity."
+    },
+    {
+     "item": "Whether other users or other saved cards are affected",
+     "why": "Needed to judge the number of affected users and the severity."
+    },
+    {
+     "item": "Whether the issue reproduces in another browser",
+     "why": "Helps separate a browser-specific problem from a server or release problem."
+    },
+    {
+     "item": "Exact date of Monday's release and the previous working version",
+     "why": "Lets developers compare the changes made in that release."
+    }
+   ],
+   "suspected_cause": {
+    "text": "Possibly caused by Monday's release, though the reporter did not identify a specific cause."
+   }
+  }
+ },
+ "C02": {
+  "note": "trailpal map goes blank when i zoom in past street level",
+  "tracker": "asana",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "trailpal map goes blank when i zoom in past street level",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps lead to the blank map? Which screen, and how do you zoom (pinch, buttons, scroll)?",
+     "field": "steps",
+     "prefill": "Open any saved route, go to the map tab, then pinch to zoom in past street level, and the map tiles turn white."
+    },
+    {
+     "id": "q2",
+     "text": "What should the map show when you zoom in past street level?",
+     "field": "expected",
+     "prefill": "It should keep showing detailed map tiles when you zoom in past street level."
+    },
+    {
+     "id": "q3",
+     "text": "Which TrailPal app version or build number are you using?",
+     "field": "build",
+     "prefill": "I'm on TrailPal app version 4.3.0, build 431."
+    },
+    {
+     "id": "q4",
+     "text": "What operating system and version is the device running?",
+     "field": "os",
+     "prefill": "I'm running iOS 18.2."
+    },
+    {
+     "id": "q5",
+     "text": "What device or browser model are you using?",
+     "field": "device",
+     "prefill": "I'm using an iPhone 14."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time you zoom past street level, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens every time I zoom past street level, on both Wifi and mobile data."
+    },
+    {
+     "id": "q7",
+     "text": "Did this work in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": "Yes, 4.2.5 was fine, and the problem started in 4.3.0."
+    },
+    {
+     "id": "q8",
+     "text": "Is anything blocked by this, and is there a workaround such as zooming out or reloading?",
+     "field": "impact",
+     "prefill": "Yes, I can't use the map when I'm hiking, and the only workaround I've found is restarting the app."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Maps] Map goes blank when zoomed in past street level",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Open any saved route.",
+     "basis": "stated"
+    },
+    {
+     "text": "Go to the map tab.",
+     "basis": "stated"
+    },
+    {
+     "text": "Pinch to zoom in past street level.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The map keeps showing detailed map tiles when zoomed in past street level.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The map tiles turn white (blank) when zoomed in past street level.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Map cannot be used when hiking, which is the main use case described.",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: restarting the app.",
+      "basis": "stated"
+     },
+     {
+      "text": "Happens every time past street level, on both Wifi and mobile data.",
+      "basis": "stated"
+     }
+    ],
+    "would_change_if": "Level would move to High if no workaround exists, or to Low if it only affects rarely used zoom levels."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "TrailPal map tab",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "TrailPal 4.3.0, build 431",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "iOS 18.2",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "iPhone 14",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "Happens on both Wifi and mobile data",
+     "basis": "stated"
+    },
+    {
+     "field": "How often",
+     "value": "Every time zoomed past street level",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Last good version 4.2.5; started in 4.3.0",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Exact zoom level at which tiles go blank",
+     "why": "Helps the developer reproduce and find the threshold in the map tile logic."
+    },
+    {
+     "item": "Whether the blank area appears for all saved routes or only some",
+     "why": "Shows whether the problem depends on route data or is global to the map view."
+    },
+    {
+     "item": "Whether any error message or log appears",
+     "why": "Could point to a tile loading or rendering failure."
+    },
+    {
+     "item": "Whether the problem occurs on Android or other iOS devices",
+     "why": "Narrows whether the cause is platform specific."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C03": {
+  "note": "GET /v2/customers?limit=0 returns all customers instead of an error",
+  "tracker": "linear",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "GET /v2/customers?limit=0 returns all customers instead of an error",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "Which API version or build were you testing against?",
+     "field": "build",
+     "prefill": "I was testing against version 2.14.1."
+    },
+    {
+     "id": "q2",
+     "text": "What did you expect to happen with limit=0, and what error or response did you expect?",
+     "field": "expected",
+     "prefill": "I expected a 400 error saying that limit must be at least 1."
+    },
+    {
+     "id": "q3",
+     "text": "Did this work correctly in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q4",
+     "text": "Does it happen every time you send this request, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens every time I send the request."
+    },
+    {
+     "id": "q5",
+     "text": "Which client or tool did you send the request from (for example curl, Postman, or a browser)?",
+     "field": "device",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q6",
+     "text": "How does this affect you or your integration, and is there a workaround?",
+     "field": "impact",
+     "prefill": "It makes responses heavy and slows down staging, but clients don't need a workaround."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[API] GET /v2/customers with limit=0 returns all customers instead of a 400 error",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Send GET /v2/customers?limit=0 to the API (version 2.14.1).",
+     "basis": "inferred"
+    },
+    {
+     "text": "Observe the response returned.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "A 400 error stating that limit must be at least 1.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The request returns all customers instead of an error.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Low",
+    "reasons": [
+     {
+      "text": "Reporter says clients do not need a workaround.",
+      "basis": "stated"
+     },
+     {
+      "text": "Reporter says responses are heavy and slow down staging.",
+      "basis": "stated"
+     },
+     {
+      "text": "Happens on every request, so frequency is high.",
+      "basis": "stated"
+     }
+    ],
+    "would_change_if": "Level rises if the behaviour exposes data to unauthorised callers or affects production clients, or if the response size causes outages."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "GET /v2/customers endpoint",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "2.14.1",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "UNKNOWN: not stated",
+     "basis": "unknown"
+    },
+    {
+     "field": "Device or browser",
+     "value": "UNKNOWN: client or tool not known",
+     "basis": "unknown"
+    },
+    {
+     "field": "Network or setup",
+     "value": "Staging environment",
+     "basis": "inferred"
+    },
+    {
+     "field": "How often",
+     "value": "Every time the request is sent",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "UNKNOWN: earlier versions not checked",
+     "basis": "unknown"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Exact request and full response body and status code",
+     "why": "Confirms the returned result and its size, and rules out a different status code."
+    },
+    {
+     "item": "Client or tool used to send the request",
+     "why": "Needed to reproduce the request exactly as sent."
+    },
+    {
+     "item": "Last version where limit=0 returned an error",
+     "why": "Helps locate the change that introduced the regression."
+    },
+    {
+     "item": "Whether limit values such as negative numbers or non-numeric values behave the same way",
+     "why": "Shows whether validation is missing entirely or only for zero."
+    },
+    {
+     "item": "Whether the same behaviour happens in production",
+     "why": "Establishes the reach of the problem beyond staging."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C04": {
+  "note": "draftdesk wont open docx files with tracked changes, just closes",
+  "tracker": "youtrack",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "draftdesk wont open docx files with tracked changes, just closes",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What are the exact steps you take before the app closes (e.g. File Open, choose the file)?",
+     "field": "steps",
+     "prefill": "I double click a .docx file that contains tracked changes."
+    },
+    {
+     "id": "q2",
+     "text": "What should happen when you open the file instead?",
+     "field": "expected",
+     "prefill": "The document should open with the tracked changes shown."
+    },
+    {
+     "id": "q3",
+     "text": "Which draftdesk version or build are you running? (Help About)?",
+     "field": "build",
+     "prefill": "I am running DraftDesk 7.3.1, build 7310."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system and version are you on?",
+     "field": "os",
+     "prefill": "I am on Windows 10 22H2."
+    },
+    {
+     "id": "q5",
+     "text": "What device are you using (model, or browser if it is web-based)?",
+     "field": "device",
+     "prefill": "It is a desktop PC."
+    },
+    {
+     "id": "q6",
+     "text": "Does it close every time with this file, or only sometimes?",
+     "field": "often",
+     "prefill": "It closes every time with files that have tracked changes, and plain files open fine."
+    },
+    {
+     "id": "q7",
+     "text": "Did this work in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": "It started after I updated to 7.3.1, but I do not know which earlier version it worked in."
+    },
+    {
+     "id": "q8",
+     "text": "Is it blocking your work, and is there a workaround such as accepting or removing the tracked changes first?",
+     "field": "impact",
+     "prefill": "Yes, it is blocking the legal team from opening contracts, and the workaround is accepting all changes in Word first."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[DraftDesk] App closes when opening .docx files with tracked changes",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Double click a .docx file that contains tracked changes.",
+     "basis": "stated"
+    },
+    {
+     "text": "The app closes.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The document opens with the tracked changes shown.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "DraftDesk closes instead of opening the file. Plain .docx files without tracked changes open fine.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Opening files with tracked changes is broken and blocks the legal team from opening contracts.",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: accept all changes in Word first.",
+      "basis": "stated"
+     },
+     {
+      "text": "It happens every time with files that have tracked changes.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of affected users beyond the legal team is unknown.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Raise to High if many users are blocked with no workaround; lower to Low if only rare files are affected."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "DraftDesk, opening .docx files",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "DraftDesk 7.3.1, build 7310",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Windows 10 22H2",
+     "basis": "inferred"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Desktop PC",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time with files that have tracked changes; plain files open fine",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started after updating to 7.3.1; earlier version that worked is unknown",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Error message or crash log",
+     "why": "Any message or log written when the app closes would show the failing component."
+    },
+    {
+     "item": "A sample file with tracked changes",
+     "why": "A reproducible test file would let a developer confirm the bug and find the trigger."
+    },
+    {
+     "item": "Last good version",
+     "why": "Knowing the version that worked narrows the change that caused the regression."
+    },
+    {
+     "item": "Number of affected users",
+     "why": "Needed to set the severity level beyond the one team reported."
+    },
+    {
+     "item": "Whether the app works when opening the file via File Open",
+     "why": "Shows whether the bug is in the double click file association or in parsing."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C05": {
+  "note": "emails from the notification service go to spam for gmail users only",
+  "tracker": "asana",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "emails from the notification service go to spam for gmail users only",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps trigger the notification email, and which Gmail account and sender address do you use?",
+     "field": "steps",
+     "prefill": "Just place a test order with a Gmail address and wait for the confirmation email, but I do not know which exact sender address it comes from."
+    },
+    {
+     "id": "q2",
+     "text": "Where should the email land, and what did you expect to see in the inbox?",
+     "field": "expected",
+     "prefill": "It should land in the inbox, which is what I expected to see there."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build of the notification service were you testing?",
+     "field": "build",
+     "prefill": "I was testing mail service release 1.18."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system is the device running, if relevant to the mail client?",
+     "field": "os",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q5",
+     "text": "Which device or browser did you use to view the Gmail inbox and spam folder?",
+     "field": "device",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time, or only for some emails or some Gmail accounts?",
+     "field": "often",
+     "prefill": "It happens with every Gmail test address I tried."
+    },
+    {
+     "id": "q7",
+     "text": "Did this work before, and if so, since which version or date did it start?",
+     "field": "since",
+     "prefill": "It started about a week ago, right after the sender domain changed."
+    },
+    {
+     "id": "q8",
+     "text": "Who is affected, and is there a workaround such as marking the sender as not spam?",
+     "field": "impact",
+     "prefill": "Customers miss their order updates and there's no workaround for them."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Notifications] Order confirmation emails to Gmail addresses land in spam",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Place a test order with a Gmail address.",
+     "basis": "stated"
+    },
+    {
+     "text": "Wait for the confirmation email.",
+     "basis": "stated"
+    },
+    {
+     "text": "Check the Gmail inbox and spam folder; the email is in spam.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The notification email arrives in the Gmail inbox.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The notification email goes to the spam folder for Gmail addresses. Happens with every Gmail test address tried. Customers miss their order updates.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "High",
+    "reasons": [
+     {
+      "text": "Customers miss their order updates, a main notification feature.",
+      "basis": "stated"
+     },
+     {
+      "text": "No workaround is stated for affected customers.",
+      "basis": "stated"
+     },
+     {
+      "text": "Affects every Gmail test address tried; overall number of users not stated.",
+      "basis": "stated"
+     }
+    ],
+    "would_change_if": "A workaround for customers is found, or the impact is shown to be limited to a few users, which would lower it to Medium."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Notification service (mail)",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "Mail service release 1.18",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "UNKNOWN: reporter did not check",
+     "basis": "unknown"
+    },
+    {
+     "field": "Device or browser",
+     "value": "UNKNOWN: reporter did not check",
+     "basis": "unknown"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every Gmail test address tried",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "About one week ago, right after the sender domain changed",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Exact sender address and domain before and after the change",
+     "why": "The domain change is the likely trigger, and the old and new sender values are needed to compare."
+    },
+    {
+     "item": "Email headers or authentication results (SPF, DKIM, DMARC) for a test email",
+     "why": "Gmail spam placement often depends on these, and they show whether the new domain passes checks."
+    },
+    {
+     "item": "Whether non-Gmail addresses are also affected",
+     "why": "The report says Gmail only, but this is not confirmed with other providers."
+    },
+    {
+     "item": "Mail client or device used to view the spam folder",
+     "why": "Needed to rule out client-side filtering."
+    },
+    {
+     "item": "Number of affected customers or the exact date the issue started",
+     "why": "Needed to confirm severity and to link the start to a release."
+    }
+   ],
+   "suspected_cause": {
+    "text": "The sender domain change made about one week ago, which may fail Gmail sender checks."
+   }
+  }
+ },
+ "C06": {
+  "note": "game crashes to desktop when loading the third level",
+  "tracker": "trello",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "game crashes to desktop when loading the third level",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps lead to the crash, from launching the game to loading the third level?",
+     "field": "steps",
+     "prefill": "So I start a new game, finish level 2, then hit continue to load level 3, and the game just closes to the desktop with no error."
+    },
+    {
+     "id": "q2",
+     "text": "What should have happened when loading the third level?",
+     "field": "expected",
+     "prefill": "Level 3 should have loaded when I hit continue."
+    },
+    {
+     "id": "q3",
+     "text": "Which game version or build number are you running?",
+     "field": "build",
+     "prefill": "I'm on game build 0.9.4 from Steam."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system and version are you on?",
+     "field": "os",
+     "prefill": "I'm on Windows 11."
+    },
+    {
+     "id": "q5",
+     "text": "What hardware or device are you using (for example GPU or console model)?",
+     "field": "device",
+     "prefill": "I'm running an RTX 3060 with 16 GB of RAM."
+    },
+    {
+     "id": "q6",
+     "text": "Does it crash every time you load the third level, or only sometimes?",
+     "field": "often",
+     "prefill": "It crashes every time I try, 5 out of 5 tries so far."
+    },
+    {
+     "id": "q7",
+     "text": "Did the third level load fine in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": "Yeah, it loaded fine in 0.9.3, but it started crashing in 0.9.4."
+    },
+    {
+     "id": "q8",
+     "text": "Can you get past the third level in any way, or does it block your progress completely?",
+     "field": "impact",
+     "prefill": "It blocks me completely, since I can't get past level 2 and I haven't found any workaround."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Game] Game crashes to desktop when loading level 3 in build 0.9.4",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Start a new game.",
+     "basis": "stated"
+    },
+    {
+     "text": "Finish level 2.",
+     "basis": "stated"
+    },
+    {
+     "text": "Click continue to load level 3.",
+     "basis": "stated"
+    },
+    {
+     "text": "Game closes to the desktop with no error message.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "Level 3 loads when the player clicks continue.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The game crashes to the desktop when loading level 3. Happened 5 out of 5 attempts. Level 3 loaded fine in build 0.9.3.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "High",
+    "reasons": [
+     {
+      "text": "Blocks progress completely past level 2; the reporter states there is no workaround.",
+      "basis": "stated"
+     },
+     {
+      "text": "Crash happens every time (5 of 5), so it is consistent.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of users affected is not stated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Users affected is confirmed to be a small group, or a workaround is found, which would lower the level to Medium."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Game, level loading (level 3)",
+     "basis": "inferred"
+    },
+    {
+     "field": "Build or version",
+     "value": "0.9.4 (Steam); last good version 0.9.3",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Windows 11",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "RTX 3060 GPU, 16 GB RAM",
+     "basis": "inferred"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time, 5 out of 5 attempts",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started in 0.9.4; 0.9.3 loaded level 3 fine",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Crash log or error dump from the game or Windows Event Viewer",
+     "why": "A log would show the faulting module or exception behind the crash to desktop."
+    },
+    {
+     "item": "Whether the crash happens when starting a fresh level 3 instead of continuing from a save",
+     "why": "Narrows whether the bug is in the level load itself or in the save data."
+    },
+    {
+     "item": "Number of users affected",
+     "why": "Needed to confirm the severity level."
+    },
+    {
+     "item": "Whether the crash reproduces on a different PC or with different drivers",
+     "why": "Shows whether the issue is tied to this hardware or driver setup."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C07": {
+  "note": "search results page shows results from the wrong language",
+  "tracker": "github",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "search results page shows results from the wrong language",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps lead to the search results showing the wrong language? Please list them in order.?",
+     "field": "steps",
+     "prefill": "Switch the site language to German, then search for the word Schuhe."
+    },
+    {
+     "id": "q2",
+     "text": "Which language should the search results have shown instead, and what did you expect to see?",
+     "field": "expected",
+     "prefill": "I expected only German results, not a mix with English product names and descriptions."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build of the product were you using?",
+     "field": "build",
+     "prefill": "I was on build 2026.10.3."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system were you running (name and version)?",
+     "field": "os",
+     "prefill": "I was running macOS 14."
+    },
+    {
+     "id": "q5",
+     "text": "Which device or browser did you use?",
+     "field": "device",
+     "prefill": "I used Chrome on macOS 14."
+    },
+    {
+     "id": "q6",
+     "text": "Does this happen every time you search, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens every time I search in German, but French is fine."
+    },
+    {
+     "id": "q7",
+     "text": "Did this work correctly before? If so, in which version or since when did it start?",
+     "field": "since",
+     "prefill": "It started after the catalogue import last week, so I don't think it worked right before that."
+    },
+    {
+     "id": "q8",
+     "text": "What is blocked by this, and is there any workaround you found?",
+     "field": "impact",
+     "prefill": "It mostly makes German customers see the wrong products, which is cosmetic to medium, and I found no workaround."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Search] German search results include English products and descriptions",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Switch the site language to German.",
+     "basis": "stated"
+    },
+    {
+     "text": "Search for the word Schuhe.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "Search results show only German results.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "Search results show a mix of English product names and descriptions along with German results.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "German customers see wrong-language products in search results.",
+      "basis": "stated"
+     },
+     {
+      "text": "Reporter says no workaround was found.",
+      "basis": "stated"
+     },
+     {
+      "text": "Reporter describes the impact as cosmetic to medium, so the exact level is unclear.",
+      "basis": "stated"
+     }
+    ],
+    "would_change_if": "Level would drop to Low if confirmed cosmetic only, or rise to High if many German users cannot find correct products; a workaround would cap it at Medium."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Search results page",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "2026.10.3",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "macOS 14",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Chrome on macOS 14",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time a search is run in German; French is not affected",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started after the catalogue import last week",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Catalogue import details",
+     "why": "The import is the likely trigger, so developers need what changed in it and whether German product data is incomplete or mislabelled."
+    },
+    {
+     "item": "Screenshot of the search results",
+     "why": "Shows exactly which English items appear and confirms the mix described."
+    },
+    {
+     "item": "Whether the German locale is set in the URL or in the account",
+     "why": "Helps narrow where the wrong language is chosen."
+    },
+    {
+     "item": "Whether other search terms show the same problem",
+     "why": "Tells whether the issue is limited to the word Schuhe or affects all German searches."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C08": {
+  "note": "android app notifications arrive hours late",
+  "tracker": "bugzilla",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "android app notifications arrive hours late",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps trigger the late notifications (what events cause them, and what do you do in the app)?",
+     "field": "steps",
+     "prefill": "Turn on weather alerts in the app, then wait for a storm alert to come in."
+    },
+    {
+     "id": "q2",
+     "text": "When should the notifications have arrived, and how long after the event did they actually show up?",
+     "field": "expected",
+     "prefill": "They should have arrived within a minute, but they actually showed up 2 to 4 hours late."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build number are you running?",
+     "field": "build",
+     "prefill": "I'm on app version 4.3.0."
+    },
+    {
+     "id": "q4",
+     "text": "Which Android version is on the device?",
+     "field": "os",
+     "prefill": "The phone is running Android 15."
+    },
+    {
+     "id": "q5",
+     "text": "What phone or tablet model are you using?",
+     "field": "device",
+     "prefill": "It's a Pixel 7."
+    },
+    {
+     "id": "q6",
+     "text": "Does this happen every time, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens most times, but not every time."
+    },
+    {
+     "id": "q7",
+     "text": "Did it ever work correctly, and if so, since which version did it start?",
+     "field": "since",
+     "prefill": "It started about 10 days ago, but I do not know which version it began with."
+    },
+    {
+     "id": "q8",
+     "text": "How does this affect you, and is there any workaround such as opening the app to see the update?",
+     "field": "impact",
+     "prefill": "It's a real problem on hikes since the safety alerts come in late, and there's no workaround, not even opening the app to check."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Notifications] Android weather alert notifications arrive 2 to 4 hours late",
+    "basis": "stated"
+   },
+   "steps": [
+    {
+     "text": "Turn on weather alerts in the app.",
+     "basis": "stated"
+    },
+    {
+     "text": "Wait for a storm alert to come in.",
+     "basis": "stated"
+    },
+    {
+     "text": "Observe that the notification arrives 2 to 4 hours after it should have (expected within about a minute).",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "Weather alert notifications arrive within about a minute of the event.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "Weather alert notifications arrive 2 to 4 hours late. Happens most times, not every time. Reporter says it is a real problem on hikes because safety alerts arrive late.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "High",
+    "reasons": [
+     {
+      "text": "Safety weather alerts are delayed by hours, which matters on hikes.",
+      "basis": "stated"
+     },
+     {
+      "text": "Reporter states there is no workaround, not even opening the app to check.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of users affected is not stated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Lower to Medium if a workaround is found, or if the issue affects only a small number of users."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Weather alert notifications",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "App version 4.3.0",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Android 15",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Google Pixel 7",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Most times, not every time",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started about 10 days ago; last good version UNKNOWN",
+     "basis": "inferred"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Whether the delay also happens on other Android devices or versions",
+     "why": "Shows whether the problem is tied to the Pixel 7 or Android 15 or is general."
+    },
+    {
+     "item": "Whether the delay appears in the app's own notification log or only in the system tray",
+     "why": "Separates a delivery delay from a problem generating the alert on the server."
+    },
+    {
+     "item": "Battery optimization or background restriction settings on the device",
+     "why": "Background restrictions are a common cause of delayed notifications on Android."
+    },
+    {
+     "item": "Network type and connectivity during the delay",
+     "why": "Helps determine whether the delay comes from the network or from push delivery."
+    },
+    {
+     "item": "Last known good version or the exact date the delay started",
+     "why": "Lets developers check release changes made around that time."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C09": {
+  "note": "csv export drops the last column when there are more than 50 columns",
+  "tracker": "gitlab",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "csv export drops the last column when there are more than 50 columns",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What are the exact steps to reproduce, from opening the app to the CSV export?",
+     "field": "steps",
+     "prefill": "So you open a report that has 52 columns and click Export CSV."
+    },
+    {
+     "id": "q2",
+     "text": "What should the exported CSV contain, and what did you see instead?",
+     "field": "expected",
+     "prefill": "It should spit out all 52 columns, but the file only has 51 and the last one is just gone."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build were you using?",
+     "field": "build",
+     "prefill": "I was on Ledgerline web 5.2.0."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system were you on?",
+     "field": "os",
+     "prefill": "I was on Ubuntu 24.04."
+    },
+    {
+     "id": "q5",
+     "text": "Which device or browser did you export from?",
+     "field": "device",
+     "prefill": "I used Firefox 131 on Ubuntu 24.04."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time with more than 50 columns, or only sometimes?",
+     "field": "often",
+     "prefill": "Yep, it happens every time I've got more than 50 columns."
+    },
+    {
+     "id": "q7",
+     "text": "Did this work in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": "It started in 5.2.0."
+    },
+    {
+     "id": "q8",
+     "text": "Is there a workaround, such as exporting fewer columns, and how much does this block your work?",
+     "field": "impact",
+     "prefill": "Yeah, I split the report into two exports, but finance is still missing data, so it's a real pain."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Export] CSV export drops the last column when a report has more than 50 columns",
+    "basis": "stated"
+   },
+   "steps": [
+    {
+     "text": "Open a report that has 52 columns.",
+     "basis": "stated"
+    },
+    {
+     "text": "Click Export CSV.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The exported CSV contains all 52 columns.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The exported file has only 51 columns and the last column is missing.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Data is missing from the export, and the reporter says finance is still missing data.",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: the reporter split the report into two exports.",
+      "basis": "stated"
+     },
+     {
+      "text": "Happens every time with more than 50 columns.",
+      "basis": "stated"
+     }
+    ],
+    "would_change_if": "Level would move to High if no workaround is possible, or to Critical if the missing data causes financial or data loss beyond reports."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Ledgerline web, CSV export",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "5.2.0",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Ubuntu 24.04",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Firefox 131",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time the report has more than 50 columns",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started in 5.2.0; earlier version not stated",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Exact column count threshold and whether the export is cut off at column 51 specifically",
+     "why": "A developer needs to confirm the trigger is the count itself and not a specific column or width."
+    },
+    {
+     "item": "A sample exported CSV showing the missing column",
+     "why": "Shows what was actually written and confirms the column is dropped rather than hidden."
+    },
+    {
+     "item": "Last good version before 5.2.0",
+     "why": "Narrows which change introduced the regression."
+    },
+    {
+     "item": "Whether the same report exports correctly in other browsers or with other report sizes",
+     "why": "Separates a browser-specific issue from a server-side export limit."
+    },
+    {
+     "item": "Any error messages or console logs during export",
+     "why": "May show a silent truncation or exception that points to the cause."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C10": {
+  "note": "installer fails at 98 percent with error 1603",
+  "tracker": "shortcut",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "installer fails at 98 percent with error 1603",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps did you take before the installer failed at 98 percent?",
+     "field": "steps",
+     "prefill": "Yeah, I just ran DraftDeskSetup 7.3.1 as a normal user and let it install."
+    },
+    {
+     "id": "q2",
+     "text": "What should have happened instead of the error 1603?",
+     "field": "expected",
+     "prefill": "It should have finished installing instead of throwing error 1603."
+    },
+    {
+     "id": "q3",
+     "text": "Which installer version or build number are you running?",
+     "field": "build",
+     "prefill": "I'm on DraftDeskSetup 7.3.1."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system and version is the machine running?",
+     "field": "os",
+     "prefill": "It's Windows 11 23H2 on a laptop."
+    },
+    {
+     "id": "q5",
+     "text": "Does it fail every time you run the installer, or only sometimes?",
+     "field": "often",
+     "prefill": "It fails every time on this machine, but it works on two others."
+    },
+    {
+     "id": "q6",
+     "text": "Did an earlier version install successfully, and if so which one?",
+     "field": "since",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q7",
+     "text": "Who or what is blocked by this, and is there any workaround?",
+     "field": "impact",
+     "prefill": "One user can't install it right now, and the workaround is running the installer as administrator."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Installer] DraftDesk 7.3.1 install fails at 98 percent with error 1603",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Ran DraftDeskSetup 7.3.1 as a normal user.",
+     "basis": "stated"
+    },
+    {
+     "text": "Let the installer run.",
+     "basis": "stated"
+    },
+    {
+     "text": "Installer fails at 98 percent with error 1603.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The installer should finish installing without error 1603.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "Installer fails at 98 percent with error 1603.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Install is blocked on this machine, and one user cannot install the product.",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: running the installer as administrator.",
+      "basis": "stated"
+     },
+     {
+      "text": "Fails every time on this machine but works on two others.",
+      "basis": "stated"
+     }
+    ],
+    "would_change_if": "Level would move to High if the workaround does not work for affected users or if many users are blocked. Would move to Low if only this one machine is affected and it is rare."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "DraftDesk installer",
+     "basis": "inferred"
+    },
+    {
+     "field": "Build or version",
+     "value": "DraftDeskSetup 7.3.1",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Windows 11 23H2",
+     "basis": "inferred"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Laptop",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "Run as a normal user, not elevated",
+     "basis": "stated"
+    },
+    {
+     "field": "How often",
+     "value": "Every time on this machine; works on two other machines",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "UNKNOWN: earlier version installs were not checked",
+     "basis": "unknown"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Full error log from the installer (MSI log)",
+     "why": "Error 1603 is generic and the log shows the failing action behind the 98 percent failure."
+    },
+    {
+     "item": "Whether an earlier version installs on this machine",
+     "why": "Shows if the problem is specific to 7.3.1 or to this machine."
+    },
+    {
+     "item": "Differences between this laptop and the two working machines",
+     "why": "Helps find the environment factor such as antivirus, disk space, or existing install."
+    },
+    {
+     "item": "Whether a previous DraftDesk install or leftover files exist on this machine",
+     "why": "Leftover components are a common cause of 1603 during install."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C11": {
+  "note": "profile photo upload says failed but the photo is actually saved",
+  "tracker": "bugzilla",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "profile photo upload says failed but the photo is actually saved",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "Which app version or build number were you using?",
+     "field": "build",
+     "prefill": "I was on build 2026.10.3."
+    },
+    {
+     "id": "q2",
+     "text": "What operating system and version were you on?",
+     "field": "os",
+     "prefill": "I was on iOS 17.6."
+    },
+    {
+     "id": "q3",
+     "text": "Which device or browser were you using?",
+     "field": "device",
+     "prefill": "I was using Safari 17 on an iPhone 15."
+    },
+    {
+     "id": "q4",
+     "text": "Did this work in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": "I do not know, I did not check that."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Profile] Profile photo upload shows failed but the photo is saved",
+    "basis": "stated"
+   },
+   "steps": [
+    {
+     "text": "Upload a profile photo",
+     "basis": "inferred"
+    },
+    {
+     "text": "UNKNOWN: the note does not say how the upload was started or which photo was used",
+     "basis": "unknown"
+    },
+    {
+     "text": "Observe that the upload is reported as failed",
+     "basis": "stated"
+    },
+    {
+     "text": "Check the profile and find the photo is actually saved",
+     "basis": "inferred"
+    }
+   ],
+   "expected": {
+    "text": "UNKNOWN: UNKNOWN: the note does not state the expected result, but a successful save would presumably show a success message",
+    "basis": "unknown"
+   },
+   "actual": {
+    "text": "The upload reports failed, but the profile photo is saved.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "UNKNOWN",
+    "reasons": [
+     {
+      "text": "UNKNOWN: Impact on users is not stated beyond a misleading failure message",
+      "basis": "unknown"
+     },
+     {
+      "text": "UNKNOWN: Workaround and frequency are not stated",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Knowing how many users see the false failure, and whether users retry (which would create duplicate uploads), would set the level."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Profile photo upload",
+     "basis": "inferred"
+    },
+    {
+     "field": "Build or version",
+     "value": "2026.10.3",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "iOS 17.6",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Safari 17 on iPhone 15",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "UNKNOWN: reporter did not check an earlier version",
+     "basis": "unknown"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Exact steps to reproduce the upload",
+     "why": "The note does not say how the upload was started, so a developer cannot reproduce it."
+    },
+    {
+     "item": "Whether the failure appears every time or only sometimes",
+     "why": "Frequency decides whether this is a systematic bug or an intermittent one."
+    },
+    {
+     "item": "The exact error message shown, if any",
+     "why": "The message text can point to the failing stage, such as the client or the server response."
+    },
+    {
+     "item": "Whether the photo is saved on the first try or after retrying",
+     "why": "Retrying could create duplicate uploads and changes the impact."
+    },
+    {
+     "item": "Last version where the upload did not show a false failure",
+     "why": "This narrows the change that introduced the problem."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C12": {
+  "note": "button text is cut off in the german translation of the settings screen",
+  "tracker": "youtrack",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "button text is cut off in the german translation of the settings screen",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps lead to the cut-off button text? (e.g. which language setting, which menu path to Settings)?",
+     "field": "steps",
+     "prefill": ""
+    },
+    {
+     "id": "q2",
+     "text": "What should the button text look like, and is it fully readable in German?",
+     "field": "expected",
+     "prefill": ""
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build number shows this issue?",
+     "field": "build",
+     "prefill": ""
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system and version are you using?",
+     "field": "os",
+     "prefill": ""
+    },
+    {
+     "id": "q5",
+     "text": "Which device model (or browser, if web) are you using?",
+     "field": "device",
+     "prefill": ""
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time you open the Settings screen in German?",
+     "field": "often",
+     "prefill": ""
+    },
+    {
+     "id": "q7",
+     "text": "Did this work in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": ""
+    },
+    {
+     "id": "q8",
+     "text": "Can you still use the buttons, or is the cut-off text blocking any action? Is there a workaround?",
+     "field": "impact",
+     "prefill": ""
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Settings] Button text cut off on German translation of settings screen",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "UNKNOWN: Switch the app language to German (exact path UNKNOWN).",
+     "basis": "unknown"
+    },
+    {
+     "text": "Open the settings screen.",
+     "basis": "stated"
+    },
+    {
+     "text": "Look at the buttons on the settings screen.",
+     "basis": "inferred"
+    }
+   ],
+   "expected": {
+    "text": "UNKNOWN: UNKNOWN: the note does not say what the button text should look like; a fully readable German label is implied but not stated.",
+    "basis": "unknown"
+   },
+   "actual": {
+    "text": "Button text is cut off in the German translation of the settings screen.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "UNKNOWN",
+    "reasons": [
+     {
+      "text": "UNKNOWN: Impact on the user's ability to complete actions is not stated.",
+      "basis": "unknown"
+     },
+     {
+      "text": "UNKNOWN: No workaround is mentioned in the note or answers.",
+      "basis": "unknown"
+     },
+     {
+      "text": "UNKNOWN: Frequency and number of affected users are not stated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Knowing whether the cut-off text blocks any button action (High if many users are blocked with no workaround, Medium if a workaround exists, Low if cosmetic only)."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Settings screen, German translation",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "Operating system",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "Device or browser",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Exact steps to reach the settings screen in German",
+     "why": "Needed to reproduce the issue reliably."
+    },
+    {
+     "item": "Screenshot of the cut-off button",
+     "why": "Shows which buttons and how much text is clipped."
+    },
+    {
+     "item": "App version or build number",
+     "why": "Needed to check whether the issue is already fixed or to locate the translation file."
+    },
+    {
+     "item": "Operating system and device model",
+     "why": "Text clipping often depends on screen size and OS font rendering."
+    },
+    {
+     "item": "Whether the issue happens every time",
+     "why": "Shows if it is consistent or intermittent."
+    },
+    {
+     "item": "Whether any action is blocked by the cut-off text",
+     "why": "Determines the severity level."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C13": {
+  "note": "cli tool hangs forever on windows when the path has a space",
+  "tracker": "asana",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "cli tool hangs forever on windows when the path has a space",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact command did you run, and where was the path with the space (e.g. input file or working directory)?",
+     "field": "steps",
+     "prefill": "I ran ledgerctl import C:\\Users\\Jo Smith\\data.csv, and the space is in the input file path."
+    },
+    {
+     "id": "q2",
+     "text": "What should have happened instead of the hang: a result, an error message, or completion?",
+     "field": "expected",
+     "prefill": "I expected the import to run, but it printed nothing and never returned."
+    },
+    {
+     "id": "q3",
+     "text": "Which version or build of the CLI tool are you using?",
+     "field": "build",
+     "prefill": "I'm using ledgerctl 2.1.0."
+    },
+    {
+     "id": "q4",
+     "text": "Which Windows version are you on (e.g. Windows 10 or 11, 64-bit)?",
+     "field": "os",
+     "prefill": "I'm on Windows 11."
+    },
+    {
+     "id": "q5",
+     "text": "Which shell are you running the command in (e.g. cmd, PowerShell, Git Bash)?",
+     "field": "device",
+     "prefill": "I'm running the command in PowerShell 7.4."
+    },
+    {
+     "id": "q6",
+     "text": "Does it hang every time when the path has a space, or only sometimes?",
+     "field": "often",
+     "prefill": "It hangs every time when the path has a space, whether or not it's quoted."
+    },
+    {
+     "id": "q7",
+     "text": "Did this work in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": "Yes, it worked in 2.0.9, and it broke in 2.1.0."
+    },
+    {
+     "id": "q8",
+     "text": "Are you blocked completely, and is there a workaround such as moving the files to a path without spaces?",
+     "field": "impact",
+     "prefill": "I'm blocked for any path with a space, but moving the file to C:\\temp works around it."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[CLI] ledgerctl import hangs forever on Windows when the file path contains a space",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Open PowerShell 7.4 on Windows 11.",
+     "basis": "stated"
+    },
+    {
+     "text": "Run: ledgerctl import C:\\Users\\Jo Smith\\data.csv (the input file path contains a space).",
+     "basis": "stated"
+    },
+    {
+     "text": "Observe that the command prints nothing and never returns.",
+     "basis": "stated"
+    },
+    {
+     "text": "Quoting the path does not change the result; it still hangs.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The import runs and the command completes, or it returns a result or error message.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The command hangs indefinitely with no output and never returns.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Any path containing a space causes a hang, so the import feature is blocked for those paths.",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: moving the file to a path without spaces (C:\\temp) works.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of users affected is not stated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Raise to High if many users are affected with no workaround; lower to Low if only rare paths are affected."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "ledgerctl import command (CLI)",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "ledgerctl 2.1.0",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Windows 11",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "PowerShell 7.4",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time a path contains a space, quoted or not",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Worked in 2.0.9, broken in 2.1.0",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Whether the hang also occurs in cmd or Git Bash",
+     "why": "Tells the developer if the bug is in the tool or in PowerShell argument handling."
+    },
+    {
+     "item": "Output with verbose or debug logging enabled",
+     "why": "Shows where the process stops, such as file open or argument parsing."
+    },
+    {
+     "item": "Whether paths with a space in a directory (not the file) also hang",
+     "why": "Narrows which part of path handling is affected."
+    },
+    {
+     "item": "Diff or changelog entries between 2.0.9 and 2.1.0 touching path handling",
+     "why": "Points to the change that introduced the regression."
+    },
+    {
+     "item": "Whether the process can be interrupted and what it is waiting on",
+     "why": "Helps identify a deadlock or blocked input read."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C14": {
+  "note": "two factor code accepted twice, saw it in the audit log",
+  "tracker": "linear",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "two factor code accepted twice, saw it in the audit log",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps did you take to trigger the double acceptance (login flow, which screen, how many attempts)?",
+     "field": "steps",
+     "prefill": "Yeah, I logged in as an admin with a valid one-time code, logged out, then logged back in with that same code within 30 seconds, and the second login went through."
+    },
+    {
+     "id": "q2",
+     "text": "What should have happened when the same two factor code was submitted a second time?",
+     "field": "expected",
+     "prefill": "The second submission should have been rejected as already used."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build were you using?",
+     "field": "build",
+     "prefill": "I was on build 2026.10.3."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system was the device running?",
+     "field": "os",
+     "prefill": "I was on Windows 11."
+    },
+    {
+     "id": "q5",
+     "text": "Which device or browser did you use?",
+     "field": "device",
+     "prefill": "I used Chrome 129."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time you reuse a code, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens every time I reuse the code within the 30 second window."
+    },
+    {
+     "id": "q7",
+     "text": "Did this work correctly in an earlier version? If so, which one?",
+     "field": "since",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q8",
+     "text": "Does this block any user or action, and is there a workaround?",
+     "field": "impact",
+     "prefill": "It's a high-impact security weakness, and the only workaround is to just ignore it."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Auth] Two factor code accepted a second time within 30 seconds",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Logged in as an admin with a valid one-time two factor code.",
+     "basis": "stated"
+    },
+    {
+     "text": "Logged out.",
+     "basis": "stated"
+    },
+    {
+     "text": "Logged back in using the same one-time code within 30 seconds.",
+     "basis": "stated"
+    },
+    {
+     "text": "The second login succeeded. The reporter saw the double acceptance in the audit log.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The second submission of the same two factor code should be rejected as already used.",
+    "basis": "inferred"
+   },
+   "actual": {
+    "text": "The same two factor code was accepted a second time, and the second login went through. Seen in the audit log.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "High",
+    "reasons": [
+     {
+      "text": "Reporter describes it as a high-impact security weakness.",
+      "basis": "stated"
+     },
+     {
+      "text": "Two factor reuse is a security problem, which is the Critical category on the scale, but the reporter did not state data loss or payments impact.",
+      "basis": "inferred"
+     },
+     {
+      "text": "Reporter states the only workaround is to ignore it, so no real workaround exists.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of users affected is not stated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Level would become Critical if confirmed as a security bypass usable by an attacker, or drop to Medium if reuse only occurs within a narrow window that limits exposure. Confirm exploitability and affe"
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "UNKNOWN: login with two factor authentication (area name not given)",
+     "basis": "unknown"
+    },
+    {
+     "field": "Build or version",
+     "value": "2026.10.3",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Windows 11",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Chrome 129",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time the same code is reused within 30 seconds",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "UNKNOWN: reporter did not check earlier versions",
+     "basis": "unknown"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Whether the reuse window is exactly 30 seconds or longer",
+     "why": "Shows how long a captured code stays usable and sets the real exposure."
+    },
+    {
+     "item": "Whether the account used was a regular user or only admin",
+     "why": "Shows whether the weakness affects all users or only admin accounts."
+    },
+    {
+     "item": "Whether the issue reproduces on another browser or device",
+     "why": "Separates a browser-specific cause from a server-side check."
+    },
+    {
+     "item": "Last version where the behavior was correct",
+     "why": "Lets a developer find the change that introduced the problem."
+    },
+    {
+     "item": "Audit log entries for the two logins (with personal data removed)",
+     "why": "Confirms the timestamps and that both logins used the same code."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C15": {
+  "note": "video playback stutters on the product page after the autoplay change",
+  "tracker": "linear",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "video playback stutters on the product page after the autoplay change",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps lead to the stutter? Which product page and which browser or app screen?",
+     "field": "steps",
+     "prefill": "On a laptop in Edge, open any product with a video, and it autoplays and stutters on the Brightcart product page."
+    },
+    {
+     "id": "q2",
+     "text": "How should the video play instead? Smooth playback without stutter, or something else?",
+     "field": "expected",
+     "prefill": "It should play smoothly without stutter."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build shows the stutter, and which version was the autoplay change in?",
+     "field": "build",
+     "prefill": "Build 2026.10.3 shows the stutter, but I do not know which build had the autoplay change, I did not check that."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system is the device running?",
+     "field": "os",
+     "prefill": "The device runs Windows 11."
+    },
+    {
+     "id": "q5",
+     "text": "Which device or browser (model or name and version) do you see it on?",
+     "field": "device",
+     "prefill": "It's a laptop with integrated graphics running Edge 130."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time the page loads, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens most times, though not every time."
+    },
+    {
+     "id": "q7",
+     "text": "Did playback work smoothly before the autoplay change? If so, which version was the last good one?",
+     "field": "since",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q8",
+     "text": "Is the video unusable, or can users still watch it, and is there any workaround?",
+     "field": "impact",
+     "prefill": "The video is still watchable but drops frames about every 2 seconds, and pausing and then playing again works around it."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Product page] Video playback stutters after autoplay change",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Open a product page with a video on a laptop in Edge (Brightcart product page)",
+     "basis": "stated"
+    },
+    {
+     "text": "Video autoplays",
+     "basis": "stated"
+    },
+    {
+     "text": "Video stutters, dropping frames about every 2 seconds",
+     "basis": "stated"
+    },
+    {
+     "text": "Pause the video, then play it again",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "Video plays smoothly without stutter",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "Video stutters during autoplay on the product page, dropping frames about every 2 seconds. Video is still watchable. Pausing and playing again works around it.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Video is still watchable, so the feature is degraded rather than broken",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: pause and play again",
+      "basis": "stated"
+     },
+     {
+      "text": "Happens most times, though not every time",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of users affected is not stated",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Level would rise to High if the video becomes unwatchable or many users are affected with no workaround; it would drop to Low if the issue is rare."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Brightcart product page, video autoplay",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "2026.10.3",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Windows 11",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Laptop with integrated graphics, Edge 130",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Most times, not every time",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "UNKNOWN: reporter did not check which build had the autoplay change or the last good version",
+     "basis": "unknown"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Last good build and build containing the autoplay change",
+     "why": "Lets a developer diff the change that introduced the stutter."
+    },
+    {
+     "item": "Whether the issue reproduces in other browsers or on other devices",
+     "why": "Narrows whether the cause is Edge-specific or related to integrated graphics."
+    },
+    {
+     "item": "Network conditions during playback",
+     "why": "Stutter may be caused by bandwidth or buffering rather than rendering."
+    },
+    {
+     "item": "Video format, resolution and length",
+     "why": "Helps reproduce the frame drops with the same media."
+    },
+    {
+     "item": "Browser console or performance trace during stutter",
+     "why": "Shows whether the frame drops come from decoding, scripts or layout."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C16": {
+  "note": "printing an invoice from draftdesk cuts off the right margin",
+  "tracker": "linear",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "printing an invoice from draftdesk cuts off the right margin",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps do you take to print the invoice (menu path, print settings, paper size)?",
+     "field": "steps",
+     "prefill": "I open an invoice template, go to File then Print, and print to a PDF or a real printer on A4 paper."
+    },
+    {
+     "id": "q2",
+     "text": "What should the printed invoice look like instead, with the full right margin visible?",
+     "field": "expected",
+     "prefill": "It should show the full page, so the right 1 cm isn't cut off and the whole right margin is visible."
+    },
+    {
+     "id": "q3",
+     "text": "Which DraftDesk app version or build are you running?",
+     "field": "build",
+     "prefill": "I'm on DraftDesk 7.3.1."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system are you using?",
+     "field": "os",
+     "prefill": "I'm on macOS 14.6."
+    },
+    {
+     "id": "q5",
+     "text": "Which printer and device or browser are you printing from?",
+     "field": "device",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time you print an invoice, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens every time I print."
+    },
+    {
+     "id": "q7",
+     "text": "Did it work before, and if so, since which version or date did it start?",
+     "field": "since",
+     "prefill": "It started with version 7.3.0, so it worked before that."
+    },
+    {
+     "id": "q8",
+     "text": "Is anything blocked by this, and is there a workaround such as adjusting margins or scaling?",
+     "field": "impact",
+     "prefill": "Printed invoices look wrong, and the workaround I use is shrinking the print to 95 percent."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Printing] Invoice right margin cut off when printing from DraftDesk 7.3.1",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Open an invoice template.",
+     "basis": "stated"
+    },
+    {
+     "text": "Go to File, then Print.",
+     "basis": "stated"
+    },
+    {
+     "text": "Print to a PDF or a real printer on A4 paper.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The full page is shown, the right 1 cm margin is not cut off, and the whole right margin is visible on the printed invoice.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The right margin of the printed invoice is cut off, about 1 cm. Printing happens every time.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Printed invoices are wrong, which affects a core output of the product.",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: the reporter shrinks the print to 95 percent.",
+      "basis": "stated"
+     },
+     {
+      "text": "Happens on every print, so frequency is high.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of affected users is not stated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Level would rise to High if the workaround does not work for other users or if many users are affected. It would drop to Low if only a cosmetic issue on a specific printer is found."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "DraftDesk, invoice printing",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "DraftDesk 7.3.1",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "macOS 14.6",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "UNKNOWN: printer and print target not checked by reporter, printed to PDF or a real printer",
+     "basis": "unknown"
+    },
+    {
+     "field": "Network or setup",
+     "value": "A4 paper size",
+     "basis": "stated"
+    },
+    {
+     "field": "How often",
+     "value": "Every time an invoice is printed",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started with 7.3.0; worked before that",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Printer model and driver, or confirmation it also happens with PDF output",
+     "why": "Shows whether the cut-off comes from DraftDesk layout or from the printer or driver."
+    },
+    {
+     "item": "Screenshot or PDF of the printed invoice showing the cut-off margin",
+     "why": "Lets a developer see exactly how much is cut and which element overflows."
+    },
+    {
+     "item": "Whether other templates or document types are also affected",
+     "why": "Shows if the problem is limited to invoices."
+    },
+    {
+     "item": "Print settings used (scale, margins, fit to page)",
+     "why": "Helps reproduce the 95 percent scaling workaround and the default setting."
+    },
+    {
+     "item": "Whether other users or devices show the same issue",
+     "why": "Determines the number of users affected and the severity."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C17": {
+  "note": "the api returns 200 with an empty body on invoice delete when the invoice is locked",
+  "tracker": "shortcut",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "the api returns 200 with an empty body on invoice delete when the invoice is locked",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact requests did you send, in order, to lock and then delete the invoice?",
+     "field": "steps",
+     "prefill": ""
+    },
+    {
+     "id": "q2",
+     "text": "What should the API have returned instead of 200 with an empty body, such as an error code and message?",
+     "field": "expected",
+     "prefill": ""
+    },
+    {
+     "id": "q3",
+     "text": "Which app or API version or build were you testing against?",
+     "field": "build",
+     "prefill": ""
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system is the client machine running?",
+     "field": "os",
+     "prefill": ""
+    },
+    {
+     "id": "q5",
+     "text": "Which client did you use to send the request, such as curl, Postman, or a browser?",
+     "field": "device",
+     "prefill": ""
+    },
+    {
+     "id": "q6",
+     "text": "Does this happen every time the invoice is locked, or only sometimes?",
+     "field": "often",
+     "prefill": ""
+    },
+    {
+     "id": "q7",
+     "text": "Did this work correctly in an earlier version, and if so which one?",
+     "field": "since",
+     "prefill": ""
+    },
+    {
+     "id": "q8",
+     "text": "Who or what is blocked by this, and is there a workaround?",
+     "field": "impact",
+     "prefill": ""
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[API] Invoice delete returns 200 with empty body when invoice is locked",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Lock an invoice (exact request not given; UNKNOWN)",
+     "basis": "inferred"
+    },
+    {
+     "text": "Send a delete request for the locked invoice",
+     "basis": "stated"
+    },
+    {
+     "text": "Receive HTTP 200 with an empty body",
+     "basis": "inferred"
+    }
+   ],
+   "expected": {
+    "text": "The API should reject the delete of a locked invoice with an error code and message (exact expected response not given by reporter).",
+    "basis": "inferred"
+   },
+   "actual": {
+    "text": "The API returns 200 with an empty body on invoice delete when the invoice is locked.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "UNKNOWN",
+    "reasons": [
+     {
+      "text": "UNKNOWN: Impact on users is not stated.",
+      "basis": "unknown"
+     },
+     {
+      "text": "UNKNOWN: No workaround is stated.",
+      "basis": "unknown"
+     },
+     {
+      "text": "UNKNOWN: Frequency is not stated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Knowing how many users or integrations are affected, whether the locked invoice is actually deleted or only reported as deleted, and whether a workaround exists."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Invoice API, invoice delete endpoint",
+     "basis": "inferred"
+    },
+    {
+     "field": "Build or version",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "Operating system",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "Device or browser",
+     "value": "UNKNOWN: client tool not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Exact requests sent, in order, to lock and then delete the invoice",
+     "why": "Needed to reproduce the problem exactly."
+    },
+    {
+     "item": "Actual response headers and status line, and the expected error code and message",
+     "why": "Confirms the 200 status and shows what the correct response should be."
+    },
+    {
+     "item": "Build or API version tested",
+     "why": "Needed to check whether the defect exists in a specific release."
+    },
+    {
+     "item": "Whether the locked invoice was actually deleted afterwards",
+     "why": "Determines whether this is only a wrong response or also data loss."
+    },
+    {
+     "item": "Frequency and whether it happens every time the invoice is locked",
+     "why": "Needed to judge how reliably the issue reproduces."
+    },
+    {
+     "item": "Impact on users or integrations and any workaround",
+     "why": "Needed to set the severity level."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C18": {
+  "note": "dark mode makes the checkout total unreadable",
+  "tracker": "clickup",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "dark mode makes the checkout total unreadable",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps lead to the checkout total being unreadable in dark mode?",
+     "field": "steps",
+     "prefill": "Set your system to dark mode, then open checkout."
+    },
+    {
+     "id": "q2",
+     "text": "What should the checkout total look like instead, and which part is unreadable?",
+     "field": "expected",
+     "prefill": "The total should be readable with proper contrast, but right now it's dark grey on a black background, so the total is the part you can't read."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build are you using?",
+     "field": "build",
+     "prefill": "It's build 2026.10.3."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system are you on?",
+     "field": "os",
+     "prefill": "I'm on Android 14."
+    },
+    {
+     "id": "q5",
+     "text": "Which device or browser are you using?",
+     "field": "device",
+     "prefill": "I'm using Chrome on a Samsung S23."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time you open checkout in dark mode, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens every time I open checkout in dark mode."
+    },
+    {
+     "id": "q7",
+     "text": "Did it work in light mode or in an earlier version? If so, since when?",
+     "field": "since",
+     "prefill": "It started after the redesign two weeks ago, and switching to light mode is what I've been doing."
+    },
+    {
+     "id": "q8",
+     "text": "Can you still complete the purchase, or is it blocked? Is there a workaround such as switching to light mode?",
+     "field": "impact",
+     "prefill": "I do not know, I did not check that whether I can still finish the purchase, but switching to light mode is the workaround."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Checkout] Checkout total unreadable in dark mode",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Set the system to dark mode.",
+     "basis": "stated"
+    },
+    {
+     "text": "Open checkout.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The checkout total is readable with proper contrast in dark mode.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "The checkout total is dark grey on a black background and cannot be read.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Switching to light mode is a workaround, so the level is capped at Medium.",
+      "basis": "stated"
+     },
+     {
+      "text": "Only the total is affected; the reporter did not say whether the purchase can still be completed.",
+      "basis": "stated"
+     },
+     {
+      "text": "Reporter says it happens every time in dark mode, so frequency is high for affected users.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of affected users is not given.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Lower to Low if the total is still readable from another view; raise is not possible above Medium because a workaround exists."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Checkout",
+     "basis": "inferred"
+    },
+    {
+     "field": "Build or version",
+     "value": "2026.10.3",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Android 14",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Samsung S23, Chrome",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time checkout is opened in dark mode",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started after the redesign two weeks ago",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Whether the purchase can still be completed in dark mode",
+     "why": "Determines impact and whether the issue blocks checkout."
+    },
+    {
+     "item": "Screenshot of the checkout screen in dark mode",
+     "why": "Shows exactly which element is unreadable and its colours."
+    },
+    {
+     "item": "Whether the issue occurs on other devices or Android versions",
+     "why": "Shows how widely the problem reaches."
+    },
+    {
+     "item": "Exact last good build before the redesign",
+     "why": "Helps narrow down the change that caused the issue."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C19": {
+  "note": "saved routes disappear after the app update",
+  "tracker": "jira",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "saved routes disappear after the app update",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps lead to the saved routes disappearing? Please list them in order.?",
+     "field": "steps",
+     "prefill": "So I updated from 4.2.5 to 4.3.0, then opened My routes and the list was empty."
+    },
+    {
+     "id": "q2",
+     "text": "What should have happened instead after the update?",
+     "field": "expected",
+     "prefill": "Honestly, my 12 routes should have still been there after the update."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build were you on before and after the update?",
+     "field": "build",
+     "prefill": "I was on 4.2.5 before the update and I'm on 4.3.0 after it."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system and version are you running?",
+     "field": "os",
+     "prefill": "I'm on iOS 18.2."
+    },
+    {
+     "id": "q5",
+     "text": "Which device model (or browser, if web) are you using?",
+     "field": "device",
+     "prefill": "I'm using an iPhone 13."
+    },
+    {
+     "id": "q6",
+     "text": "Does it happen every time you open the app, or only sometimes?",
+     "field": "often",
+     "prefill": "I do not know, I did not check that."
+    },
+    {
+     "id": "q7",
+     "text": "Did saved routes work in the previous version, and which update caused the problem?",
+     "field": "since",
+     "prefill": "Yeah, my saved routes worked fine on 4.2.5, and the 4.3.0 update is what broke them."
+    },
+    {
+     "id": "q8",
+     "text": "What is blocked now, and is there any workaround, such as re-creating the routes?",
+     "field": "impact",
+     "prefill": "My routes are all gone, there's no workaround, and reinstalling the app doesn't bring them back."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[Routes] Saved routes disappear after updating from 4.2.5 to 4.3.0",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Had 12 saved routes in the app on version 4.2.5.",
+     "basis": "stated"
+    },
+    {
+     "text": "Updated the app from 4.2.5 to 4.3.0.",
+     "basis": "stated"
+    },
+    {
+     "text": "Opened My routes.",
+     "basis": "stated"
+    },
+    {
+     "text": "The routes list was empty.",
+     "basis": "stated"
+    },
+    {
+     "text": "Reinstalled the app; the routes did not come back.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "The 12 saved routes should still be present after the update to 4.3.0.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "After the update to 4.3.0, My routes is empty and all saved routes are gone. Reinstalling does not restore them.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "High",
+    "reasons": [
+     {
+      "text": "All 12 saved routes are lost, which is data loss.",
+      "basis": "stated"
+     },
+     {
+      "text": "The reporter states there is no workaround and reinstalling does not help.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of affected users is not stated; the problem may affect everyone who updated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Level drops to Medium if a workaround or recovery path is found, or if only a small number of users are affected. Rises to Critical if data loss is confirmed for many users."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "Saved routes (My routes)",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "Updated from 4.2.5 to 4.3.0",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "iOS 18.2",
+     "basis": "stated"
+    },
+    {
+     "field": "Device or browser",
+     "value": "iPhone 13",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "UNKNOWN: reporter did not check whether it happens every time the app opens",
+     "basis": "unknown"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "4.2.5 (routes worked there)",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Whether the routes are stored locally or on the server, and whether they were deleted or just not lo",
+     "why": "Tells the developer whether this is a migration, sync, or storage problem."
+    },
+    {
+     "item": "Whether other users on 4.3.0 see the same empty list",
+     "why": "Shows how widespread the problem is and sets the severity."
+    },
+    {
+     "item": "Whether the routes reappear after signing out and back in, or on another device",
+     "why": "Checks whether the data still exists on the server."
+    },
+    {
+     "item": "App logs or error messages shown during or after the update",
+     "why": "May point to a failed data migration."
+    },
+    {
+     "item": "Whether the app was updated fresh or over an existing install",
+     "why": "Helps narrow the update path that loses data."
+    }
+   ],
+   "suspected_cause": null
+  }
+ },
+ "C20": {
+  "note": "typing in the notes field lags a lot on long documents",
+  "tracker": "ado",
+  "start": {
+   "runToken": "replay",
+   "redactedNote": "typing in the notes field lags a lot on long documents",
+   "redactions": {
+    "email": 0,
+    "token": 0,
+    "phone": 0,
+    "ip": 0,
+    "card": 0,
+    "other": 0
+   },
+   "questions": [
+    {
+     "id": "q1",
+     "text": "What exact steps do you take to reproduce the lag, from opening the document to typing in the notes field?",
+     "field": "steps",
+     "prefill": "Open a document that's about 200 pages, open the notes panel, then type, and each character shows up about a second late."
+    },
+    {
+     "id": "q2",
+     "text": "How fast should typing feel in the notes field, and what did you expect to happen?",
+     "field": "expected",
+     "prefill": "It should feel instant, and right now every character lags about one second behind."
+    },
+    {
+     "id": "q3",
+     "text": "Which app version or build are you using?",
+     "field": "build",
+     "prefill": "I'm on DraftDesk 7.3.1."
+    },
+    {
+     "id": "q4",
+     "text": "Which operating system are you on, and which version?",
+     "field": "os",
+     "prefill": "I'm on Windows 11 23H2."
+    },
+    {
+     "id": "q5",
+     "text": "What device or browser are you using?",
+     "field": "device",
+     "prefill": "It's a desktop with 32 GB RAM."
+    },
+    {
+     "id": "q6",
+     "text": "Does the lag happen every time on long documents, or only sometimes?",
+     "field": "often",
+     "prefill": "It happens every time on long documents, but short ones are fine."
+    },
+    {
+     "id": "q7",
+     "text": "Did this start with a specific version, or has it always been slow?",
+     "field": "since",
+     "prefill": "It started with 7.3.0, since then it's been slow."
+    },
+    {
+     "id": "q8",
+     "text": "How much does the lag get in the way of your work, and is there a workaround?",
+     "field": "impact",
+     "prefill": "It's a medium hit that slows me down, and I work around it by closing the notes panel."
+    }
+   ],
+   "canSkip": true
+  },
+  "draft": {
+   "title": {
+    "text": "[DraftDesk] Typing in notes field lags on long documents",
+    "basis": "inferred"
+   },
+   "steps": [
+    {
+     "text": "Open a document of about 200 pages.",
+     "basis": "stated"
+    },
+    {
+     "text": "Open the notes panel.",
+     "basis": "stated"
+    },
+    {
+     "text": "Type in the notes field.",
+     "basis": "stated"
+    },
+    {
+     "text": "Observe that each character appears about one second late.",
+     "basis": "stated"
+    }
+   ],
+   "expected": {
+    "text": "Typing in the notes field should feel instant, with characters appearing as they are typed.",
+    "basis": "stated"
+   },
+   "actual": {
+    "text": "Each typed character appears about one second after it is typed, on long documents (about 200 pages). Short documents are fine.",
+    "basis": "stated"
+   },
+   "severity": {
+    "level": "Medium",
+    "reasons": [
+     {
+      "text": "Reporter says the lag slows them down, which is a feature broken in a degraded way.",
+      "basis": "stated"
+     },
+     {
+      "text": "A workaround exists: closing the notes panel.",
+      "basis": "stated"
+     },
+     {
+      "text": "Happens every time on long documents.",
+      "basis": "stated"
+     },
+     {
+      "text": "UNKNOWN: Number of affected users is not stated.",
+      "basis": "unknown"
+     }
+    ],
+    "would_change_if": "Level would move to High if many users are affected with no workaround, or to Low if the impact is only cosmetic or rare."
+   },
+   "environment": [
+    {
+     "field": "Product or area",
+     "value": "DraftDesk, notes field and notes panel",
+     "basis": "stated"
+    },
+    {
+     "field": "Build or version",
+     "value": "DraftDesk 7.3.1",
+     "basis": "stated"
+    },
+    {
+     "field": "Operating system",
+     "value": "Windows 11 23H2",
+     "basis": "inferred"
+    },
+    {
+     "field": "Device or browser",
+     "value": "Desktop with 32 GB RAM",
+     "basis": "stated"
+    },
+    {
+     "field": "Network or setup",
+     "value": "UNKNOWN: not given",
+     "basis": "unknown"
+    },
+    {
+     "field": "How often",
+     "value": "Every time on long documents (about 200 pages); short documents are fine",
+     "basis": "stated"
+    },
+    {
+     "field": "Since when or last good version",
+     "value": "Started with 7.3.0",
+     "basis": "stated"
+    }
+   ],
+   "evidence_missing": [
+    {
+     "item": "Whether the lag scales with document length or with a specific size threshold",
+     "why": "Helps developers find the cause, such as per-character re-processing of the whole document."
+    },
+    {
+     "item": "Whether the lag also happens with the notes panel closed or in other fields",
+     "why": "Shows whether the problem is limited to the notes field."
+    },
+    {
+     "item": "Whether other users or other operating systems see the same lag",
+     "why": "Needed to judge how many users are affected."
+    },
+    {
+     "item": "Diagnostic data such as CPU or memory use during typing",
+     "why": "Shows whether the app is busy on the main thread or waiting on something."
+    },
+    {
+     "item": "Whether the lag also occurs in 7.3.0 and when it changed exactly",
+     "why": "Confirms the regression point between 7.3.0 and 7.3.1."
+    }
+   ],
+   "suspected_cause": null
+  }
+ }
+}

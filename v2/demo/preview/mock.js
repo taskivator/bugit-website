@@ -2,7 +2,16 @@
 (function () {
   var real = window.fetch.bind(window);
   function json(status, body, wait) { return new Promise(function (res) { setTimeout(function () { res(new Response(status === 204 ? null : JSON.stringify(body), { status: status, headers: { 'content-type': 'application/json' } })); }, wait); }); }
+  // Replay mode: ?mock=1&case=C07 plays back a recorded real run (note, questions, draft) for that case.
+  var caseId = (/[?&]case=([A-Za-z0-9]+)/.exec(location.search) || [])[1], R = null;
+  if (caseId) {
+    try { var x = new XMLHttpRequest(); x.open('GET', '/v2/demo/preview/cases-replay.json', false); x.send(); R = JSON.parse(x.responseText)[caseId] || null; } catch (e) { R = null; }
+    if (R) window.__replay = { note: R.note, tracker: R.tracker, id: caseId };
+  }
+  var baseFetch;
   window.fetch = function (url, opts) {
+    if (R && String(url).indexOf('/__mock/start') === 0) return json(200, R.start, 1200);
+    if (R && String(url).indexOf('/__mock/draft') === 0) return json(200, { feedbackToken: 'replay', redactions: null, draft: R.draft, notices: [] }, 1200);
     if (String(url).indexOf('/__mock') !== 0) return real(url, opts);
     var path = String(url).slice(7), body = {}; try { body = JSON.parse((opts && opts.body) || '{}'); } catch (e) { /* none */ }
     if (path === '/status') return json(200, { state: 'open', limits: { noteMaxChars: 1500, answerMaxChars: 600 }, botCheck: null }, 100);
