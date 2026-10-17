@@ -348,6 +348,8 @@ jobs:
       # the source tree, which nobody is served any more. This one renders the BUILT pages: old
       # addresses forwarded, eleven languages at phone and desktop, consent before measurement,
       # Ask BugIt answering, with a negative control on the forwarding.
+      - name: The preview page sends the draft request the engine verifies
+        run: node scripts/check-preview-contract.mjs
       - name: The published pages work as published
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: SKIP_BUILD=1 node scripts/check-redesign.mjs
