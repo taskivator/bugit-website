@@ -515,6 +515,7 @@
   /* local preview only: a canned server so the page can be reviewed without the portal */
   function boot() {
     var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && /[?&]mock=1\b/.test(location.search);
+    if (local) window.__demoTest = { layout: layout, sepCards: sepCards, picksOf: picksOf, TRK: TRK, S: S };
     if (!local) { init(); return; }
     var s = document.createElement('script'); s.src = '/v2/demo/preview/mock.js'; s.onload = function () { window.BUGIT_DEMO_API = '/__mock'; API = '/__mock'; TRIAL_BEACON = '/__mock/event'; init(); }; s.onerror = init; document.head.appendChild(s);
   }
