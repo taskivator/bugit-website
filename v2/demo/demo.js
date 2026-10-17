@@ -118,7 +118,17 @@
     if (lab) { if (!lab.id) lab.id = sel.id + '-lab'; btn.setAttribute('aria-labelledby', lab.id + ' ' + btn.id); lab.addEventListener('click', function (e) { e.preventDefault(); btn.focus(); }); }
     list.id = lid; list.setAttribute('role', 'listbox'); list.hidden = true; list.tabIndex = -1;
     if (lab) list.setAttribute('aria-labelledby', lab.id);
-    function badge(v) { var p = PICK[v] || ['?', '#999', ''], b = el('span', 'd-pick-b', p[0]); b.style.setProperty('--b', p[1]); b.setAttribute('aria-hidden', 'true'); return b; }
+    function badge(v) {
+      var p = PICK[v] || ['?', '#999', ''], b = el('span', 'd-pick-b'), L = window.BUGIT_LOGOS || {}, svgText = L[v === 'ado' ? 'azuredevops' : v];
+      b.setAttribute('aria-hidden', 'true');
+      if (svgText) {
+        // The site's own logo set (v2/logos.js, a fixed file we ship), parsed by the HTML parser so the svg gets its namespace.
+        var tpl = document.createElement('template'); tpl.innerHTML = svgText;
+        var node = tpl.content.firstElementChild;
+        if (node && node.nodeName.toLowerCase() === 'svg') { b.appendChild(node); return b; }
+      }
+      b.textContent = p[0]; b.style.setProperty('--b', p[1]); b.classList.add('is-letters'); return b;
+    }
     var opts = Array.prototype.map.call(sel.options, function (o) {
       var li = el('li', 'd-pick-o'); li.setAttribute('role', 'option'); li.id = sel.id + '-o-' + o.value; li.setAttribute('data-v', o.value);
       li.appendChild(badge(o.value)); li.appendChild(el('span', 'd-pick-n', o.text)); li.appendChild(el('span', 'd-pick-f', (PICK[o.value] || [])[2] || ''));

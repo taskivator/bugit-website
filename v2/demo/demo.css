@@ -274,3 +274,8 @@
 @media (max-width:640px){.d-pick{max-width:none}.d-pick-btn .d-pick-f{display:none}}
 @media (forced-colors:active){.d-pick-btn,.d-pick-list,.d-pick-f{border:1px solid CanvasText}.d-pick-o.is-active{outline:2px solid Highlight}.d-pick-b{border:1px solid CanvasText;background:Canvas;color:CanvasText}}
 @media (prefers-reduced-motion:reduce){.d-pick-ch,.d-pick-btn{transition:none}}
+
+.d-pick-b svg{width:22px;height:22px;display:block}
+.d-pick-b:not(.is-letters){background:rgba(255,255,255,.07);border:1px solid var(--line);box-shadow:none;color:inherit}
+.d-pick-o .d-pick-b svg{width:20px;height:20px}
+@media (forced-colors:active){.d-pick-b svg{forced-color-adjust:none}}
