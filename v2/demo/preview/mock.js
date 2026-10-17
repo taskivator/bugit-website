@@ -10,28 +10,29 @@
       var note = String(body.note || '').replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '[email]');
       var n = (String(body.note || '').match(/[\w.+-]+@[\w-]+\.[\w.]+/g) || []).length;
       return json(200, { runToken: 'mock', redactedNote: note, redactions: { email: n, token: 0, phone: 0, ip: 0, card: 0, other: 0 },
-        questions: [{ id: 'q1', text: 'Which build or version of the app were you using?' }, { id: 'q2', text: 'What did you expect to happen?' }, { id: 'q3', text: 'Does it happen every time?' }], canSkip: true }, 1800);
+        questions: [
+          { id: 'q1', field: 'steps', text: 'What exact steps lead to it?' },
+          { id: 'q2', field: 'expected', text: 'What did you expect to happen?' },
+          { id: 'q3', field: 'build', text: 'Which build or version of the app were you using?' },
+          { id: 'q4', field: 'os', text: 'Which operating system are you on?' },
+          { id: 'q5', field: 'device', text: 'Which device or browser?' },
+          { id: 'q6', field: 'often', text: 'How often does it happen?' },
+          { id: 'q7', field: 'since', text: 'Since when does it happen, or what was the last version that worked?' },
+          { id: 'q8', field: 'impact', text: 'How badly does it affect you, and is there a workaround?' }], canSkip: true }, 1800);
     }
     if (path === '/draft') {
       var txt = String(body.redactedNote || '').trim(), first = (txt.split(/(?<=[.!?])\s+/)[0] || txt).slice(0, 120);
-      var ans = (body.answers || []).filter(function (x) { return x.text; });
-      var low = txt.toLowerCase(), known = function (w) { return low.indexOf(w) >= 0; };
+      var A = {}; (body.answers || []).forEach(function (x) { if (x.text) A[x.id] = x.text; });
+      var env = function (field, id) { return { field: field, value: A[id] || 'UNKNOWN', basis: A[id] ? 'stated' : 'unknown' }; };
       return json(200, { feedbackToken: 'mock', redactions: null, draft: {
         verdict: 'draft',
         title: { text: '[Area unknown] ' + first.replace(/[.!?]+$/, ''), basis: 'inferred' },
-        steps: [{ text: 'UNKNOWN: the note does not say how to reach this.', basis: 'unknown' }],
-        expected: { text: 'UNKNOWN', basis: 'unknown' },
+        steps: [A.q1 ? { text: A.q1, basis: 'stated' } : { text: 'UNKNOWN: not given', basis: 'unknown' }],
+        expected: A.q2 ? { text: A.q2, basis: 'stated' } : { text: 'UNKNOWN', basis: 'unknown' },
         actual: { text: txt.slice(0, 300), basis: 'stated' },
-        severity: { level: 'UNKNOWN', reasons: [{ text: 'Impact, workaround and number of users are not stated.', basis: 'unknown' }], would_change_if: 'Knowing how many people are affected and whether a workaround exists.' },
-        environment: [
-          { field: 'Build or version', value: ans[0] ? ans[0].text : 'UNKNOWN', basis: ans[0] ? 'stated' : 'unknown' },
-          { field: 'Operating system', value: known('ios') ? 'iOS' : known('android') ? 'Android' : 'UNKNOWN', basis: known('ios') || known('android') ? 'inferred' : 'unknown' },
-          { field: 'Device or browser', value: known('phone') ? 'A phone' : 'UNKNOWN', basis: known('phone') ? 'stated' : 'unknown' },
-          { field: 'How often', value: known('twice') ? 'Twice today' : 'UNKNOWN', basis: known('twice') ? 'stated' : 'unknown' }],
-        evidence_missing: [
-          { item: 'The exact steps', why: 'A developer needs them to reproduce it.' },
-          { item: 'The crash log or error message', why: 'It points to the line that failed.' },
-          { item: 'The exact build', why: 'It tells the team whether a recent release caused it.' }],
+        severity: { level: A.q8 && /blocked/i.test(A.q8) ? 'High' : A.q8 ? 'Medium' : 'UNKNOWN', reasons: [A.q8 ? { text: A.q8, basis: 'stated' } : { text: 'UNKNOWN: impact not given', basis: 'unknown' }], would_change_if: 'Knowing how many people are affected.' },
+        environment: [env('Build or version', 'q3'), env('Operating system', 'q4'), env('Device or browser', 'q5'), env('How often', 'q6'), env('Since when or last good version', 'q7')],
+        evidence_missing: [{ item: 'The crash log or error message', why: 'It points to the line that failed.' }],
         suspected_cause: null }, notices: [] }, 2000);
     }
     return json(204, {}, 50);

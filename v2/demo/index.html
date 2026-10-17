@@ -22,9 +22,9 @@
 <meta name="description" content="Paste a short note about a bug. You get a draft report you can read and copy. Nothing is filed anywhere.">
 <link rel="stylesheet" href="/v2/v2.css">
 <link rel="stylesheet" href="/v2/consent.css">
-<link rel="stylesheet" href="/v2/demo/demo.css?v=14">
+<link rel="stylesheet" href="/v2/demo/demo.css?v=15">
 <script src="/v2/logos.js" defer></script>
-<script src="/v2/demo/demo.js?v=15" defer></script>
+<script src="/v2/demo/demo.js?v=16" defer></script>
 </head>
 <body class="demo-page">
 <a class="skip" href="#main">Skip to content</a>
@@ -60,7 +60,7 @@
 
     <ol class="d-steps" id="d-steps" aria-label="Progress">
       <li data-step="note" class="is-now"><span class="d-step-n" aria-hidden="true">1</span><span class="d-step-t">Your note</span></li>
-      <li data-step="questions"><span class="d-step-n" aria-hidden="true">2</span><span class="d-step-t">A few questions</span></li>
+      <li data-step="questions"><span class="d-step-n" aria-hidden="true">2</span><span class="d-step-t">A few details</span></li>
       <li data-step="draft"><span class="d-step-n" aria-hidden="true">3</span><span class="d-step-t">Your draft</span></li>
     </ol>
 
@@ -124,8 +124,8 @@
         </div>
 
         <div id="pane-questions" class="d-pane" hidden>
-          <h2 class="d-h" id="h-questions" tabindex="-1">A few questions</h2>
-          <p class="d-hint">Answer what you know. A short answer is enough.</p>
+          <h2 class="d-h" id="h-questions" tabindex="-1">A few details</h2>
+          <p class="d-hint">Answer what you know. Tap an option or type a short answer. Skip anything you do not know.</p>
           <form id="q-form" novalidate>
             <div id="q-list"></div>
             <p class="d-error" id="q-error" role="alert" hidden></p>
@@ -159,7 +159,7 @@
           <p class="d-empty-p">Three short steps, and it is ready to paste.</p>
           <ol class="d-empty-steps">
             <li><span class="d-empty-n" aria-hidden="true">1</span><span><b>Write a rough note</b>, or pick an example on the left.</span></li>
-            <li><span class="d-empty-n" aria-hidden="true">2</span><span><b>Answer a few questions</b>, or skip them.</span></li>
+            <li><span class="d-empty-n" aria-hidden="true">2</span><span><b>Fill in a few details</b>, or skip them.</span></li>
             <li><span class="d-empty-n" aria-hidden="true">3</span><span><b>Copy the draft</b> into your tracker.</span></li>
           </ol>
           <div class="d-empty-key">

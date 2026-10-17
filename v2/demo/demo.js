@@ -228,16 +228,34 @@
     });
   }
 
+  var QUICK = {
+    os: ['Windows', 'macOS', 'Linux', 'iOS', 'Android'],
+    device: ['Phone', 'Tablet', 'Laptop', 'Desktop PC'],
+    often: ['Every time', 'Most times', 'Sometimes', 'Once'],
+    since: ['After the latest update', 'It always did this'],
+    impact: ['I am blocked', 'There is a workaround', 'A minor annoyance']
+  };
   function renderQuestions() {
     var list = $('q-list'); list.textContent = '';
-    S.questions.slice(0, 3).forEach(function (q) {
+    S.questions.slice(0, 8).forEach(function (q) {
       var wrap = el('div', 'd-q'), id = 'q-' + q.id;
       var lab = el('label', null, q.text); lab.setAttribute('for', id);
       var row = el('div', 'd-q-row'), inp = document.createElement('input');
       inp.type = 'text'; inp.id = id; inp.maxLength = 600; inp.autocomplete = 'off'; inp.setAttribute('data-q', q.id);
       var idk = el('button', 'd-idk', "I don't know"); idk.type = 'button'; idk.setAttribute('aria-pressed', 'false');
       idk.addEventListener('click', function () { var on = idk.getAttribute('aria-pressed') !== 'true'; idk.setAttribute('aria-pressed', String(on)); inp.disabled = on; if (on) inp.value = ''; });
-      row.appendChild(inp); row.appendChild(idk); wrap.appendChild(lab); wrap.appendChild(row); list.appendChild(wrap);
+      row.appendChild(inp); row.appendChild(idk); wrap.appendChild(lab); wrap.appendChild(row);
+      var quick = QUICK[q.field];
+      if (quick) {
+        var chips = el('div', 'd-q-chips'); chips.setAttribute('role', 'group'); chips.setAttribute('aria-label', 'Quick answers');
+        quick.forEach(function (t) {
+          var c = el('button', 'd-q-chip', t); c.type = 'button';
+          c.addEventListener('click', function () { inp.disabled = false; idk.setAttribute('aria-pressed', 'false'); inp.value = t; inp.focus(); });
+          chips.appendChild(c);
+        });
+        wrap.appendChild(chips);
+      }
+      list.appendChild(wrap);
     });
     clearError('q-error'); panes('pane-questions'); setStep('questions'); outState('Waiting for your answers'); say('A few questions'); focusHead('h-questions');
   }
