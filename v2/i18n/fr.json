@@ -90,7 +90,7 @@
  "t089": "12:04:13 ERROR 401 token refresh",
  "t090": "12:04:13 at AuthClient.refresh",
  "t091": "Données personnelles",
- "t092": "E-mails et jetons sont masqués avant le brouillon. Au mieux, alors relisez.",
+ "t092": "BugIt peut masquer les données personnelles courantes avant le brouillon ; relisez toujours le brouillon avant de le déposer.",
  "t093": "jane@acme.com",
  "t094": "j••••@••••.com",
  "t095": "Rapports trop minces",

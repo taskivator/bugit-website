@@ -90,7 +90,7 @@
  "t089": "12:04:13 ERROR 401 token refresh",
  "t090": "12:04:13 at AuthClient.refresh",
  "t091": "Personal data",
- "t092": "Emails and tokens are redacted before the draft. Best effort, so read it.",
+ "t092": "BugIt can redact common personal data before the draft; always read the draft before you file.",
  "t093": "jane@acme.com",
  "t094": "j••••@••••.com",
  "t095": "Thin reports",

@@ -90,7 +90,7 @@
  "t089": "12:04:13 ERROR 401 token refresh",
  "t090": "12:04:13 at AuthClient.refresh",
  "t091": "Personenbezogene Daten",
- "t092": "E-Mails und Tokens werden vor dem Entwurf geschwärzt. Nach bestem Bemühen, lesen Sie ihn also.",
+ "t092": "BugIt kann gängige personenbezogene Daten vor dem Entwurf schwärzen; lesen Sie den Entwurf immer, bevor Sie ihn anlegen.",
  "t093": "jane@acme.com",
  "t094": "j••••@••••.com",
  "t095": "Dünne Berichte",

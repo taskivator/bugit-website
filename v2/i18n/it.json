@@ -90,7 +90,7 @@
  "t089": "12:04:13 ERROR 401 token refresh",
  "t090": "12:04:13 at AuthClient.refresh",
  "t091": "Dati personali",
- "t092": "Email e token vengono oscurati prima della bozza. Al meglio delle possibilità, quindi rileggi.",
+ "t092": "BugIt può oscurare i dati personali più comuni prima della bozza; rileggi sempre la bozza prima di inserirla.",
  "t093": "jane@acme.com",
  "t094": "j••••@••••.com",
  "t095": "Segnalazioni scarne",

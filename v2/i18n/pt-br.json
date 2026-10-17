@@ -90,7 +90,7 @@
  "t089": "12:04:13 ERROR 401 renovação do token",
  "t090": "12:04:13 at AuthClient.refresh",
  "t091": "Dados pessoais",
- "t092": "E-mails e tokens são ocultados antes do rascunho. É um esforço razoável, então leia.",
+ "t092": "O BugIt pode ocultar dados pessoais comuns antes do rascunho; leia sempre o rascunho antes de registrar.",
  "t093": "jane@acme.com",
  "t094": "j••••@••••.com",
  "t095": "Relatórios rasos",
