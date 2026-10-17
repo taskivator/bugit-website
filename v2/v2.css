@@ -858,3 +858,24 @@ h1,h2,h3{text-wrap:balance}
 @media (max-width:700px){
   .nav{position:relative;top:auto}
 }
+
+/* Phones inflate text by themselves when held sideways ("font boosting"), which made every card and the
+   demo window read far larger than designed (owner, 2026-10-17). The redesign had dropped the line the
+   old page carried; the sizes below are the designed ones. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (orientation:landscape) and (max-height:520px){
+  .steps h3,.you h3{font-size:19px}
+  .cell h3{font-size:18px}
+  .steps p,.you p,.cell p,.needs-b p,.faq p{font-size:13.5px;line-height:1.5}
+  .gate-band p{font-size:15px}
+  .price b{font-size:38px}
+  .family-head h2,.family-head{font-size:clamp(24px,7.4vh,30px)}
+  .poster-cap b{font-size:18px}
+  .keys kbd,.keys .kbd{font-size:26px}
+}
+@media (orientation:landscape) and (max-height:520px){
+  .steps h3{margin:12px 0 6px}
+  #demo .bubble,#demo .attach,#demo .attach em,#demo .redact,#demo .work span,#demo .ticket li,#demo .ticket dd{font-size:12px;line-height:1.45}
+  #demo .pane{padding:12px}
+  #demo .pane-label,#demo .demo-note,#demo .work em{font-size:10.5px}
+}
