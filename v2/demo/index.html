@@ -22,9 +22,9 @@
 <meta name="description" content="Paste a short note about a bug. You get a draft report you can read and copy. Nothing is filed anywhere.">
 <link rel="stylesheet" href="/v2/v2.css">
 <link rel="stylesheet" href="/v2/consent.css">
-<link rel="stylesheet" href="/v2/demo/demo.css?v=6">
+<link rel="stylesheet" href="/v2/demo/demo.css?v=9">
 <script src="/v2/logos.js" defer></script>
-<script src="/v2/demo/demo.js?v=7" defer></script>
+<script src="/v2/demo/demo.js?v=9" defer></script>
 </head>
 <body class="demo-page">
 <a class="skip" href="#main">Skip to content</a>
@@ -100,11 +100,9 @@
               <input type="text" name="hp" id="hp" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="d-hp">
             </div>
 
-            <div class="d-examples" role="group" aria-label="Use an example">
-              <span class="d-ex-l">Use an example</span>
-              <button type="button" class="d-chip" data-ex="0">Checkout crash</button>
-              <button type="button" class="d-chip" data-ex="1">Stuck upload</button>
-              <button type="button" class="d-chip" data-ex="2">Wrong total</button>
+            <div class="d-exs" role="group" aria-labelledby="ex-l">
+              <p class="d-ex-l" id="ex-l">Use an example</p>
+              <div class="d-ex-grid" id="ex-grid"></div>
             </div>
 
             <p class="d-warn" id="note-warn">Please do not paste passwords, tokens, customer data, logs or HAR files.</p>
@@ -151,16 +149,25 @@
       <div class="d-out glass" id="d-out">
         <div class="d-out-top">
           <span class="d-tag">Preview</span>
-          <span class="d-out-state" id="out-state">Waiting for your note</span>
+          <span class="d-out-state" id="out-state">Your draft appears here</span>
           <span class="d-out-dots" aria-hidden="true"><i></i><i></i><i></i></span>
         </div>
 
-        <div id="out-ghost" class="d-ghost" aria-hidden="true">
-          <div class="g-title"></div>
-          <div class="g-sec"><b>Steps</b><i></i><i></i><i class="short"></i></div>
-          <div class="g-two"><div class="g-sec"><b>Expected</b><i></i><i class="short"></i></div><div class="g-sec"><b>Actual</b><i></i><i class="short"></i></div></div>
-          <div class="g-sec"><b>Severity</b><div class="g-meter"><span></span><span></span><span></span><span></span></div></div>
-          <div class="g-sec"><b>Evidence still missing</b><i></i><i class="short"></i></div>
+        <div id="out-ghost" class="d-example">
+          <p class="d-ex-cap"><span class="d-ex-tag">Example</span>This is what a draft looks like. Write your note and yours appears here.</p>
+          <div class="d-ex-card" aria-hidden="true">
+            <p class="d-ex-note">From the note: "Checkout crashed when I tapped Pay. Twice today on my phone. Worked last week."</p>
+            <h3 class="d-title">[Checkout] App crashes when tapping Pay on the order screen</h3>
+            <section class="d-sec d-static"><h4>Steps</h4><ol class="d-steps-l">
+              <li><div class="d-item"><span>Open the order screen on a phone.</span><span class="d-basis inferred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v5M12 16v.5"/></svg>Inferred, please check</span></div></li><li><div class="d-item"><span>Tap Pay.</span><span class="d-basis stated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>From your note</span></div></li><li><div class="d-item"><span>The app closes. It happened twice today.</span><span class="d-basis stated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>From your note</span></div></li></ol></section>
+            <section class="d-sec d-static"><h4>Severity</h4>
+              <div class="d-sev"><span class="d-sev-l" style="--c:#ff8a4d">High</span><div class="d-sev-m"><span class="on" style="--c:#32f28c"></span><span class="on" style="--c:#ffc24d"></span><span class="on" style="--c:#ff8a4d"></span><span></span></div></div>
+              <ul class="d-reasons"><li><div class="d-item"><span>Payment cannot be completed on this device.</span><span class="d-basis inferred"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v5M12 16v.5"/></svg>Inferred, please check</span></div></li></ul></section>
+            <section class="d-sec d-static"><h4>Environment</h4>
+              <dl class="d-env"><dt>Device or browser</dt><dd><span>A phone</span><span class="d-basis stated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>From your note</span></dd><dt>Build or version</dt><dd><span>UNKNOWN</span><span class="d-basis unknown"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/></svg>UNKNOWN</span></dd></dl></section>
+            <section class="d-sec d-static"><h4>Evidence still missing</h4><ul class="d-miss">
+              <li><div><b>The crash log from the phone</b><span>It shows the line that failed, so a developer can start there.</span></div></li></ul></section>
+          </div>
         </div>
 
         <article id="out-draft" class="d-draft" hidden aria-labelledby="draft-title">

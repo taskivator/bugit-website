@@ -22,9 +22,14 @@
   };
 
   var EXAMPLES = [
-    'Checkout crashed when I tapped Pay on the order screen. It happened twice today on my phone. Last week it worked fine.',
-    'Uploads sometimes get stuck at 100 percent and never finish. Not every time, maybe one in five. I have no idea what triggers it.',
-    'After the update, the invoice total shows 0.00 for orders with a discount code. I think the new discount code change broke it.'
+    { t: 'Checkout crash', tag: 'Mobile', note: 'Checkout crashed when I tapped Pay on the order screen. It happened twice today on my phone. Last week it worked fine.' },
+    { t: 'Stuck upload', tag: 'Web', note: 'Uploads sometimes get stuck at 100 percent and never finish. Not every time, maybe one in five. I have no idea what triggers it.' },
+    { t: 'Wrong total', tag: 'Billing', note: 'After the update, the invoice total shows 0.00 for orders with a discount code. I think the new discount code change broke it.' },
+    { t: 'Sign in loop', tag: 'Login', note: 'Signing in with company SSO sends me back to the login page. Password login works. Only some people in our team have this.' },
+    { t: 'Slow feed', tag: 'Mobile', note: 'The feed takes about 12 seconds to load since the last update. It was instant before. Wifi and mobile data are both slow.' },
+    { t: 'API error', tag: 'API', note: 'POST to the invoices endpoint returns a 500 when currency is empty. It should be a 400 with a clear message. Only seen on staging.' },
+    { t: 'Editor freeze', tag: 'Desktop', note: 'The editor freezes for about a minute when I save to the network drive. Saving to the local disk is fine. Started this week.' },
+    { t: 'Duplicate file', tag: 'Desktop', note: 'Sometimes saving a document right after autosave creates a second copy named Report (1). Maybe one time in ten.' }
   ];
 
   var BASIS = {
@@ -170,8 +175,13 @@
   function init() {
     var note = $('note');
     note.addEventListener('input', onCount); onCount();
-    Array.prototype.forEach.call(document.querySelectorAll('[data-ex]'), function (b) {
-      b.addEventListener('click', function () { note.value = EXAMPLES[+b.getAttribute('data-ex')]; onCount(); clearError('note-error'); note.focus(); });
+    var grid = $('ex-grid');
+    EXAMPLES.forEach(function (x) {
+      var b = el('button', 'd-ex'); b.type = 'button';
+      var top = el('span', 'd-ex-top'); top.appendChild(el('span', 'd-ex-t', x.t)); top.appendChild(el('span', 'd-ex-g', x.tag));
+      b.appendChild(top); b.appendChild(el('span', 'd-ex-s', x.note));
+      b.addEventListener('click', function () { note.value = x.note; onCount(); clearError('note-error'); note.focus(); });
+      grid.appendChild(b);
     });
     $('note-form').addEventListener('submit', onSubmitNote);
     $('q-form').addEventListener('submit', function (e) { e.preventDefault(); sendDraft(collectAnswers()); });
@@ -210,7 +220,7 @@
     post('/start', { note: text, botToken: S.botToken, hp: '', v: 1 }).then(function (res) {
       S.state = 'idle'; $('go').disabled = false;
       if (S.siteKey && window.turnstile) { try { window.turnstile.reset(); S.botToken = ''; } catch (x) { /* ignore */ } }
-      if (!res.ok) { panes('pane-note'); showError('note-error', codeOf(res)); outState('Waiting for your note'); focusHead('h-note'); return; }
+      if (!res.ok) { panes('pane-note'); showError('note-error', codeOf(res)); outState('Your draft appears here'); focusHead('h-note'); return; }
       var d = res.data; S.runToken = d.runToken; S.redactedNote = d.redactedNote; S.redactions = d.redactions || {}; S.questions = d.questions || [];
       showReadback();
       if (S.questions.length) { renderQuestions(); } else { sendDraft([]); }
@@ -245,7 +255,7 @@
         var key = codeOf(res);
         if (S.questions.length) { panes('pane-questions'); showError('q-error', key); setStep('questions'); focusHead('h-questions'); }
         else { panes('pane-note'); show('read-box', false); show('redact-sum', false); showError('note-error', key); setStep('note'); focusHead('h-note'); }
-        outState('Waiting for your note'); return;
+        outState('Your draft appears here'); return;
       }
       var d = res.data; S.draft = d.draft; S.feedbackToken = d.feedbackToken;
       if (d.redactions) { S.redactions = d.redactions; $('redact-sum').textContent = redactionSentence(S.redactions); }
@@ -312,7 +322,7 @@
   function onAgain() {
     S.draft = null; S.runToken = ''; S.state = 'idle';
     show('out-draft', false); show('out-ghost', true); show('read-box', false); show('redact-sum', false); show('again', false);
-    clearError('note-error'); panes('pane-note'); setStep('note'); outState('Waiting for your note'); $('note').value = ''; onCount(); focusHead('h-note');
+    clearError('note-error'); panes('pane-note'); setStep('note'); outState('Your draft appears here'); $('note').value = ''; onCount(); focusHead('h-note');
   }
 
   /* copy for the chosen tracker: the same draft laid out the way that tracker's own users write it */
