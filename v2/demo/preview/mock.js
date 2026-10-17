@@ -27,7 +27,7 @@
       return json(200, { feedbackToken: 'mock', redactions: null, draft: {
         verdict: 'draft',
         title: { text: '[Area unknown] ' + first.replace(/[.!?]+$/, ''), basis: 'inferred' },
-        steps: [A.q1 ? { text: A.q1, basis: 'stated' } : { text: 'UNKNOWN: not given', basis: 'unknown' }],
+        steps: A.q1 ? A.q1.split(/,\s*|\s+and\s+|\.\s+|\s+then\s+/).filter(function (t) { return t.trim(); }).map(function (t) { t = t.trim(); return { text: t.charAt(0).toUpperCase() + t.slice(1), basis: 'stated' }; }) : [{ text: 'UNKNOWN: not given', basis: 'unknown' }],
         expected: A.q2 ? { text: A.q2, basis: 'stated' } : { text: 'UNKNOWN', basis: 'unknown' },
         actual: { text: txt.slice(0, 300), basis: 'stated' },
         severity: { level: A.q8 && /blocked/i.test(A.q8) ? 'High' : A.q8 ? 'Medium' : 'UNKNOWN', reasons: [A.q8 ? { text: A.q8, basis: 'stated' } : { text: 'UNKNOWN: impact not given', basis: 'unknown' }], would_change_if: 'Knowing how many people are affected.' },
