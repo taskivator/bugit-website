@@ -10,7 +10,7 @@
   var MSG = {
     paused: 'The preview is paused right now. Please try again later.',
     busy: 'The preview is busy right now. Please try again tomorrow.',
-    rate_limited: 'You have reached the preview limit: 6 drafts a day, and 3 in any 10 minutes. Please try again later, or try the full BugIt free for 14 days.',
+    rate_limited: 'You have used your 3 free drafts for today. The limit resets every day, or try the full BugIt free for 14 days, which has no such limit.',
     refused_secrets: 'That text looks like it contains a password or a token, so we did not use it. Remove it and try again.',
     refused_logs: 'That looks like a log or a file dump. Please write a short note in your own words instead.',
     not_english: 'The preview works in English only.',
@@ -226,7 +226,7 @@
     post('/start', { note: text, botToken: S.botToken, hp: '', v: 1 }).then(function (res) {
       S.state = 'idle'; $('go').disabled = false;
       if (S.siteKey && window.turnstile) { try { window.turnstile.reset(); S.botToken = ''; } catch (x) { /* ignore */ } }
-      if (!res.ok) { panes('pane-note'); showError('note-error', codeOf(res)); outState('Your draft appears here'); focusHead('h-note'); return; }
+      if (!res.ok) { panes('pane-note'); var why = codeOf(res); showError('note-error', why); if (why === 'rate_limited') { S.open = false; $('go').disabled = true; outState('Daily limit reached'); } outState('Your draft appears here'); focusHead('h-note'); return; }
       var d = res.data; S.runToken = d.runToken; S.redactedNote = d.redactedNote; S.redactions = d.redactions || {}; S.questions = d.questions || [];
       showReadback();
       if (S.questions.length) { renderQuestions(); } else { sendDraft([]); }
