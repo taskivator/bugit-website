@@ -25,9 +25,9 @@
         severity: { level: 'UNKNOWN', reasons: [{ text: 'Impact, workaround and number of users are not stated.', basis: 'unknown' }], would_change_if: 'Knowing how many people are affected and whether a workaround exists.' },
         environment: [
           { field: 'Build or version', value: ans[0] ? ans[0].text : 'UNKNOWN', basis: ans[0] ? 'stated' : 'unknown' },
-          { field: 'Operating system', value: 'UNKNOWN', basis: 'unknown' },
+          { field: 'Operating system', value: known('ios') ? 'iOS' : known('android') ? 'Android' : 'UNKNOWN', basis: known('ios') || known('android') ? 'inferred' : 'unknown' },
           { field: 'Device or browser', value: known('phone') ? 'A phone' : 'UNKNOWN', basis: known('phone') ? 'stated' : 'unknown' },
-          { field: 'How often', value: 'UNKNOWN', basis: 'unknown' }],
+          { field: 'How often', value: known('twice') ? 'Twice today' : 'UNKNOWN', basis: known('twice') ? 'stated' : 'unknown' }],
         evidence_missing: [
           { item: 'The exact steps', why: 'A developer needs them to reproduce it.' },
           { item: 'The crash log or error message', why: 'It points to the line that failed.' },

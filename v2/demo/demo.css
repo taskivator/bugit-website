@@ -336,3 +336,22 @@
 .d-pick-btn{padding-right:16px}
 .d-pick-f{min-width:92px;text-align:center}
 .d-pick-ch{margin-left:2px}
+
+/* separate field cards */
+.d-fmt-toggle{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-size:14px;color:var(--ink-2);cursor:pointer}
+.d-fmt-toggle[hidden],.d-fmt-none[hidden]{display:none}
+.d-fmt-toggle input{width:20px;height:20px;margin-top:1px;accent-color:#ff4fc9;flex:none}
+.d-fmt-none{margin:14px 0 0;padding:10px 12px;border-left:2px solid var(--cyan);font-size:14px;color:var(--ink-2)}
+.d-seps{display:grid;gap:10px;margin-top:14px}
+.d-seps:empty{display:none}
+.d-sep{padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:rgba(7,5,13,.55)}
+.d-sep-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.d-sep-top b{font-size:15px}
+.d-sep-top .btn-sm{min-height:44px;height:44px}
+.d-sep-v{margin:8px 0 0;font:13.5px/1.55 var(--mono);color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.d-sep-n{margin:8px 0 0;font-size:13px;color:var(--ink-3)}
+.d-fmt .d-copy{margin-top:14px}
+
+.d-cta-t{flex:1 1 260px;min-width:0}
+.d-cta-t .d-cta-l{flex:none}
+.d-cta-pre{margin:0 0 8px;font-size:14px;line-height:1.5;color:var(--ink-3)}

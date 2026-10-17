@@ -186,6 +186,7 @@
     $('note-form').addEventListener('submit', onSubmitNote);
     $('q-form').addEventListener('submit', function (e) { e.preventDefault(); sendDraft(collectAnswers()); });
     $('q-skip').addEventListener('click', function () { sendDraft([]); });
+    $('use-sep').addEventListener('change', renderCopyPane);
     $('copy-title').addEventListener('click', onCopyTitle);
     $('copy-body').addEventListener('click', onCopyBody);
     enhancePick($('tracker')); enhancePick($('tracker2'));
@@ -325,39 +326,53 @@
     clearError('note-error'); panes('pane-note'); setStep('note'); outState('Your draft appears here'); $('note').value = ''; onCount(); focusHead('h-note');
   }
 
-  /* copy for the chosen tracker: the same draft laid out the way that tracker's own users write it */
+  /* copy for the chosen tracker: the same draft laid out the way that tracker's own users write it.
+     sep lists the details that tracker keeps in their own fields (from the tracker research): those get their own copy card. */
+  var F = { prod: 'Product or area', build: 'Build or version', os: 'Operating system', dev: 'Device or browser', net: 'Network or setup', often: 'How often', since: 'Since when or last good version' };
   var TRK = {
-    jira:     { fmt: 'html', h: 'h3', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' }, set: 'Priority' },
-    ado:      { fmt: 'html', h: 'b',  L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'System info', more: 'Additional information' }, set: 'Severity' },
-    asana:    { fmt: 'html', h: 'b',  L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'What happened', env: 'Environment', more: 'Additional information' }, set: 'a priority tag' },
-    github:   { fmt: 'md', h: '###', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' }, set: 'a label' },
-    gitlab:   { fmt: 'md', h: '###', L: { steps: 'Steps to reproduce', exp: 'What is the expected *correct* behavior?', act: 'What is the current *bug* behavior?', env: 'Environment', more: 'Additional information' }, set: 'a severity label' },
-    linear:   { fmt: 'md', h: '##',  L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' }, set: 'Priority' },
-    youtrack: { fmt: 'md', h: '##',  L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'What happens instead', env: 'Environment', more: 'Additional information' }, set: 'Priority' },
-    shortcut: { fmt: 'md', h: '**',  L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' }, set: 'a priority' },
-    clickup:  { fmt: 'md', h: '##',  L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Notes and attachments' }, set: 'Priority' },
-    trello:   { fmt: 'md', h: '##',  L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Attachments and logs' }, set: 'a label' },
-    bugzilla: { fmt: 'plain', h: ':', L: { steps: 'Steps to Reproduce', exp: 'Expected Results', act: 'Actual Results', env: 'Build Date & Platform Bug Found', more: 'Additional Information' }, set: 'Severity' }
+    jira: { fmt: 'html', h: 'h3', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' }, set: 'Priority',
+      sep: [
+        { label: 'Environment', rows: [F.os, F.dev, F.net, F.often, F.since], lines: true, note: 'Jira keeps this in its Environment field. If your create screen has no Environment field, switch the box below off and it stays in the description.' },
+        { label: 'Affects version', rows: [F.build], note: 'Choose a version that already exists in your project.' }] },
+    ado: { fmt: 'html', h: 'b', body: 'Copy Repro Steps', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Reproducibility', more: 'Additional information' }, set: 'Severity',
+      sep: [
+        { label: 'System Info', rows: [F.os, F.dev, F.net], lines: true, html: true, note: 'Azure DevOps has a System Info field beside Repro Steps.' },
+        { label: 'Found In Build', rows: [F.build], note: 'Azure DevOps has a Found In Build field.' }] },
+    bugzilla: { fmt: 'plain', h: ':', body: 'Copy description', L: { steps: 'Steps to Reproduce', exp: 'Expected Results', act: 'Actual Results', env: 'Reproducibility', more: 'Additional Information' }, set: 'Severity (leave it to triage if you can)',
+      sep: [
+        { label: 'Version', rows: [F.build], note: 'Bugzilla has a Version list. Pick the closest entry.' },
+        { label: 'Platform and OS', rows: [F.os, F.dev], note: 'Bugzilla has Platform and OS lists. Pick the closest entries.' }] },
+    youtrack: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'What happens instead', env: 'Environment', more: 'Additional information' }, set: 'Priority',
+      sep: [{ label: 'Affected versions', rows: [F.build], note: 'YouTrack has an Affected versions field when your project defines versions.' }] },
+    asana: { fmt: 'html', h: 'b', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'What happened', env: 'Environment', more: 'Additional information' }, set: 'a priority tag', none: true },
+    github: { fmt: 'md', h: '###', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' }, set: 'a label', none: true },
+    gitlab: { fmt: 'md', h: '###', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'What is the expected *correct* behavior?', act: 'What is the current *bug* behavior?', env: 'Environment', more: 'Additional information' }, set: 'a severity label', none: true },
+    linear: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' }, set: 'Priority', none: true },
+    shortcut: { fmt: 'md', h: '**', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' }, set: 'a priority', none: true },
+    clickup: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Notes and attachments' }, set: 'Priority', none: true },
+    trello: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Attachments and logs' }, set: 'a label', none: true }
   };
   var isUnk = function (it) { return !it || it.basis === 'unknown' || /^UNKNOWN\b/.test(it.text); };
   var chk = function (it) { return it.basis === 'inferred' ? ' (inferred, please check)' : ''; };
   function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function splitTitle(t) { var m = /^\s*\[([^\]]{1,40})\]\s+(.*)$/.exec(t); return m ? { tag: m[1], text: m[2] } : { tag: '', text: t }; }
+  function useSep(key) { return !!(TRK[key].sep && $('use-sep').checked); }
 
-  function sectionsOf(d) {
-    var more = [];
+  function sectionsOf(d, key) {
+    var more = [], sepRows = {};
+    if (useSep(key)) TRK[key].sep.forEach(function (g) { g.rows.forEach(function (r) { sepRows[r] = true; }); });
     (d.evidence_missing || []).forEach(function (m) { more.push(m.item + ': ' + m.why); });
     return {
       steps: (d.steps || []).filter(function (x) { return !isUnk(x); }).map(function (x) { return x.text + chk(x); }),
       exp: d.expected && !isUnk(d.expected) ? d.expected.text + chk(d.expected) : '',
       act: d.actual && !isUnk(d.actual) ? d.actual.text + chk(d.actual) : '',
-      env: (d.environment || []).filter(function (x) { return !isUnk(x); }).map(function (x) { return [x.field, x.value + chk(x)]; }),
+      env: (d.environment || []).filter(function (x) { return !isUnk(x) && !sepRows[x.field]; }).map(function (x) { return [x.field, x.value + chk(x)]; }),
       susp: d.suspected_cause && d.suspected_cause.text ? 'Reporter suspicion, not confirmed: ' + d.suspected_cause.text : '',
       more: more
     };
   }
   function layout(d, key) {
-    var T = TRK[key], S = sectionsOf(d), md = T.fmt === 'md', html = T.fmt === 'html', out = [];
+    var T = TRK[key], S = sectionsOf(d, key), md = T.fmt === 'md', html = T.fmt === 'html', out = [];
     function head(label) {
       if (html) return T.h === 'b' ? '<p><strong>' + esc(label) + '</strong></p>' : '<' + T.h + '>' + esc(label) + '</' + T.h + '>';
       if (T.fmt === 'plain') return label + ':';
@@ -370,9 +385,7 @@
     if (S.steps.length) block(T.L.steps, ol(S.steps));
     if (S.exp) block(T.L.exp, para(S.exp));
     if (S.act) block(T.L.act, para(S.act));
-    if (S.env.length) {
-      block(T.L.env, ul(S.env.map(function (r) { return (md ? '**' + r[0] + ':** ' : r[0] + ': ') + r[1]; })));
-    }
+    if (S.env.length) block(T.L.env, ul(S.env.map(function (r) { return (md ? '**' + r[0] + ':** ' : r[0] + ': ') + r[1]; })));
     var extra = [];
     if (S.susp) extra.push(S.susp);
     if (S.more.length) extra.push('Still needed from the reporter:');
@@ -384,13 +397,43 @@
     var text = out.join(html ? '' : '\n\n');
     return html ? text : text + '\n';
   }
-  function plainOf(h) { return h.replace(/<\/(p|h3|li|ol|ul)>/g, '\n').replace(/<li>/g, '- ').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\n{3,}/g, '\n\n').trim() + '\n'; }
+  function plainOf(h) { return h.replace(/<\/(p|h3|li|ol|ul)>/g, '\n').replace(/<br\s*\/?>/g, '\n').replace(/<li>/g, '- ').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\n{3,}/g, '\n\n').trim() + '\n'; }
+
+  /* the separate cards: one per field the tracker keeps on its own */
+  function sepCards(d, key) {
+    var T = TRK[key];
+    if (!T.sep || !useSep(key)) return [];
+    var rows = {}; (d.environment || []).forEach(function (x) { rows[x.field] = x; });
+    return T.sep.map(function (g) {
+      var have = g.rows.map(function (r) { return rows[r]; }).filter(function (x) { return x && !isUnk(x); });
+      var checkIt = have.some(function (x) { return x.basis === 'inferred'; });
+      var text = g.lines ? have.map(function (x) { return x.field + ': ' + x.value; }).join('\n') : have.map(function (x) { return x.value; }).join(', ');
+      var htmlText = g.html ? '<p>' + have.map(function (x) { return esc(x.field + ': ' + x.value); }).join('<br>') + '</p>' : '';
+      return { label: g.label, note: g.note, text: text, html: htmlText, checkIt: checkIt };
+    });
+  }
 
   function currentTracker() { return $('tracker').value; }
   function renderCopyPane() {
     if (!S.draft) return;
     var key = currentTracker(), T = TRK[key], t = splitTitle(S.draft.title.text), body = layout(S.draft, key);
     $('fmt-prev').textContent = T.fmt === 'html' ? plainOf(body) : body;
+    $('copy-body').textContent = T.body;
+    $('sep-toggle').hidden = !T.sep;
+    $('sep-none').hidden = !T.none;
+    var cards = $('sep-cards'); cards.textContent = '';
+    sepCards(S.draft, key).forEach(function (c) {
+      var card = el('div', 'd-sep'), top = el('div', 'd-sep-top');
+      top.appendChild(el('b', null, c.label));
+      var btn = el('button', 'btn btn-ghost btn-sm', 'Copy'); btn.type = 'button'; btn.setAttribute('aria-label', 'Copy ' + c.label);
+      if (!c.text) { btn.disabled = true; btn.textContent = 'Not given'; }
+      btn.addEventListener('click', function () { if (c.html) copyText(c.html, btn, 'Copy', true); else copyText(c.text, btn, 'Copy', false); });
+      top.appendChild(btn); card.appendChild(top);
+      card.appendChild(el('pre', 'd-sep-v', c.text || 'Nothing in your note for this field.'));
+      var n = c.note + (c.checkIt ? ' Part of this was inferred, so check it first.' : '');
+      card.appendChild(el('p', 'd-sep-n', n));
+      cards.appendChild(card);
+    });
     var sev = S.draft.severity && S.draft.severity.level && S.draft.severity.level !== 'UNKNOWN' ? S.draft.severity.level : '';
     var bits = [];
     if (sev) bits.push('Severity ' + sev + ' (set it in ' + T.set + ', not in the text)');
@@ -409,7 +452,7 @@
     } else if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(html ? plainOf(text) : text).then(done, fallback); } else { fallback(); }
   }
   function onCopyTitle() { copyText(splitTitle(S.draft.title.text).text, $('copy-title'), 'Copy title', false); }
-  function onCopyBody() { var k = currentTracker(); copyText(layout(S.draft, k), $('copy-body'), 'Copy description', TRK[k].fmt === 'html'); }
+  function onCopyBody() { var k = currentTracker(); copyText(layout(S.draft, k), $('copy-body'), TRK[k].body, TRK[k].fmt === 'html'); }
 
   /* feedback */
   function onFeedback(yes) {
