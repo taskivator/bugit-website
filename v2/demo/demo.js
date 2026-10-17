@@ -539,6 +539,11 @@
   /* local preview only: a canned server so the page can be reviewed without the portal */
   function boot() {
     var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && /[?&]mock=1\b/.test(location.search);
+    if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && /[?&]live=1\b/.test(location.search)) {
+      /* local only: the real engine through live-bridge.mjs, not the canned mock */
+      window.BUGIT_DEMO_API = 'http://127.0.0.1:4180'; API = 'http://127.0.0.1:4180'; TRIAL_BEACON = API + '/event';
+      window.__demoTest = { layout: layout, sepCards: sepCards, picksOf: picksOf, TRK: TRK, S: S }; init(); return;
+    }
     if (local) window.__demoTest = { layout: layout, sepCards: sepCards, picksOf: picksOf, TRK: TRK, S: S };
     if (!local) { init(); return; }
     var s = document.createElement('script'); s.src = '/v2/demo/preview/mock.js'; s.onload = function () { window.BUGIT_DEMO_API = '/__mock'; API = '/__mock'; TRIAL_BEACON = '/__mock/event'; init(); }; s.onerror = init; document.head.appendChild(s);
