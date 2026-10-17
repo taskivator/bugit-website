@@ -2,7 +2,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Last updated: 12 October 2026**
+**Last updated: 17 October 2026**
 
 This policy explains what personal data we handle when you use the BugIt website
 (bugit.dev), the BugIt Portal (your account, purchase, and license management), and
@@ -18,7 +18,8 @@ operator information will be provided without delay.
 ## In short
 
 - The BugIt software runs on your own machine. Your bug reports, specs, glossary,
-  screenshots, code, settings, and tickets are not transmitted to Taskivator.
+  screenshots, code, settings, and tickets are not transmitted to Taskivator by the
+  software. The free web preview on bugit.dev is separate and works as described below.
 - To run your account, purchase, license, and support, the website and Portal
   handle a limited amount of personal data.
 - We do not sell personal data. Advertising measurement is off by default and runs
@@ -148,18 +149,35 @@ not store it on our servers unless you send a support ticket from the assistant 
 choose to include the conversation. So that a monthly usage limit can apply, we
 record what the assistant's AI answers cost for your account each month.
 
+## The free web preview on bugit.dev
+
+bugit.dev offers a free preview that turns a rough note into a sample draft. The
+preview is separate from the BugIt software. When you use it, the text you type (your
+note, and your answers to follow up questions) is sent to our servers. Before anything
+else happens, the service replaces common personal data and recognisable passwords and
+access tokens with placeholders, as a best effort. The remaining text is sent to
+Anthropic, which processes it on our behalf to write the draft. We do not store your
+note, your answers, or the draft. We keep only counts, such as how many drafts were
+shown on a day, and what the preview costs each month. If you choose to send feedback,
+we keep the text you send for 30 days, after replacing common personal data as a best
+effort, and we do not link it to you or to your note. To apply usage limits we use your
+IP address in a hashed form that changes every day. We use Cloudflare Turnstile to tell
+people from automated programs. Please do not type passwords, tokens, customer data, or
+other sensitive information into the preview.
+
 ## Service providers
 
 We use service providers for authentication and hosting, payment processing,
 transactional email, website delivery and security, AI answers in the Portal
-assistant, and consent based advertising measurement. These providers process only
+assistant and the free web preview, and consent based advertising measurement. These providers process only
 the information needed to deliver their services to us, and they are not permitted to
 use it for their own purposes.
 
 The main providers are Supabase (accounts and database), Stripe (payments, refunds,
 and disputes), Vercel (Portal hosting), Cloudflare (website delivery, security, and
-cookieless analytics), Resend (transactional email), Anthropic (AI answers in the
-Portal assistant), and Google (advertising measurement, only with your consent).
+cookieless analytics and the bot check in the free web preview), Resend
+(transactional email), Anthropic (AI answers in the Portal assistant and the free web
+preview), and Google (advertising measurement, only with your consent).
 
 Some of these providers operate outside your country, including in the United
 States. Where personal data is transferred internationally, we rely on the data
@@ -178,6 +196,8 @@ for, and then delete or anonymise it. In practice that means:
 - Payment, tax, and accounting records are kept for the period required by law.
 - Support messages, security records, and consent records are kept for a limited
   period, and consent records are kept as evidence that your choice was respected.
+- Feedback text sent from the free web preview is kept for 30 days and then deleted.
+  The notes, answers, and drafts of the preview are not kept.
 
 If you delete your account, we delete or anonymise your data apart from records we
 are required to keep.

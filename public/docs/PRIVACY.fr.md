@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Dernière mise à jour : 12 octobre 2026**
+**Dernière mise à jour : 17 octobre 2026**
 
 La présente politique explique quelles données personnelles nous traitons lorsque
 vous utilisez le site web BugIt (bugit.dev), le BugIt Portal (gestion du compte, des
@@ -24,7 +24,8 @@ l'exploitant sont communiquées sans délai.
 
 - Le logiciel BugIt s'exécute sur votre propre machine. Vos rapports d'anomalie,
   spécifications, glossaires, captures d'écran, votre code, vos réglages et vos
-  tickets ne sont pas transmis à Taskivator.
+  tickets ne sont pas transmis à Taskivator par le logiciel.
+  L'aperçu web gratuit sur bugit.dev est distinct et fonctionne comme décrit ci-dessous.
 - Pour gérer votre compte, votre achat, votre licence et le support, le site web et
   le Portal traitent une quantité limitée de données personnelles.
 - Nous ne vendons pas de données personnelles. La mesure publicitaire est désactivée
@@ -169,18 +170,37 @@ support depuis l'assistant en choisissant d'y joindre la conversation. Afin d'ap
 limite d'utilisation mensuelle, nous enregistrons ce que coûtent chaque mois les réponses par
 IA de l'assistant pour votre compte.
 
+## L'aperçu web gratuit sur bugit.dev
+
+bugit.dev propose un aperçu gratuit qui transforme une note brute en un brouillon
+d'exemple. Cet aperçu est distinct du logiciel BugIt. Lorsque vous l'utilisez, le texte
+que vous saisissez (votre note et vos réponses aux questions de suivi) est envoyé à nos
+serveurs. Avant toute autre opération, le service remplace par des espaces réservés les
+données personnelles courantes ainsi que les mots de passe et les jetons d'accès
+reconnaissables, au mieux de ses moyens. Le texte restant est envoyé à Anthropic, qui le
+traite pour notre compte afin de rédiger le brouillon. Nous ne stockons ni votre note,
+ni vos réponses, ni le brouillon. Nous ne conservons que des compteurs, par exemple le
+nombre de brouillons affichés sur une journée, ainsi que le coût mensuel de l'aperçu. Si
+vous choisissez d'envoyer un retour, nous conservons le texte que vous envoyez pendant
+30 jours, après avoir remplacé les données personnelles courantes au mieux de nos moyens,
+et nous ne le relions ni à vous ni à votre note. Pour appliquer des limites d'utilisation,
+nous utilisons votre adresse IP sous une forme hachée qui change chaque jour. Nous
+utilisons Cloudflare Turnstile pour distinguer les personnes des programmes automatisés.
+Merci de ne saisir dans l'aperçu ni mots de passe, ni jetons, ni données de clients, ni
+autres informations sensibles.
+
 ## Prestataires de services
 
 Nous faisons appel à des prestataires pour l'authentification et l'hébergement, le traitement
 des paiements, les e-mails transactionnels, la diffusion et la sécurité du site web, les
-réponses par IA de l'assistant du Portal ainsi que la mesure publicitaire fondée sur le
+réponses par IA de l'assistant du Portal et de l'aperçu web gratuit ainsi que la mesure publicitaire fondée sur le
 consentement. Ces prestataires ne traitent que les informations nécessaires à la fourniture de
 leurs services et ne sont pas autorisés à les utiliser à leurs propres fins.
 
 Les principaux prestataires sont Supabase (comptes et base de données), Stripe (paiements,
 remboursements et litiges), Vercel (hébergement du Portal), Cloudflare (diffusion et sécurité
-du site web, analytique sans cookie), Resend (e-mails transactionnels), Anthropic (réponses par
-IA de l'assistant du Portal) et Google (mesure publicitaire, uniquement avec votre
+du site web, analytique sans cookie et vérification anti-robot de l'aperçu web gratuit), Resend (e-mails transactionnels), Anthropic (réponses par
+IA de l'assistant du Portal et de l'aperçu web gratuit) et Google (mesure publicitaire, uniquement avec votre
 consentement).
 
 Certains de ces prestataires opèrent hors de votre pays, notamment aux États-Unis.
@@ -204,6 +224,8 @@ Concrètement :
 - Les messages de support, les journaux de sécurité et les preuves de consentement
   sont conservés pendant une durée limitée ; les preuves de consentement attestent
   que votre choix a été respecté.
+- Le texte de retour envoyé depuis l'aperçu web gratuit est conservé 30 jours puis
+  supprimé. Les notes, les réponses et les brouillons de l'aperçu ne sont pas conservés.
 
 Si vous supprimez votre compte, nous supprimons ou anonymisons vos données, à
 l'exception des pièces que nous devons conserver.

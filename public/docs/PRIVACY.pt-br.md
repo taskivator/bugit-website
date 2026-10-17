@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Última atualização: 12 de outubro de 2026**
+**Última atualização: 17 de outubro de 2026**
 
 Esta política explica quais dados pessoais tratamos quando você usa o site do BugIt
 (bugit.dev), o BugIt Portal (gerenciamento de conta, compra e licenças) e o software
@@ -22,7 +22,8 @@ operador são fornecidas sem demora.
 
 - O software BugIt é executado na sua própria máquina. Seus relatórios de bugs,
   especificações, glossários, capturas de tela, código, configurações e tickets não
-  são transmitidos à Taskivator.
+  são transmitidos à Taskivator pelo software. A prévia web gratuita em bugit.dev é
+  separada e funciona como descrito abaixo.
 - Para operar sua conta, sua compra, sua licença e o suporte, o site e o Portal
   tratam uma quantidade limitada de dados pessoais.
 - Não vendemos dados pessoais. A medição de publicidade fica desativada por padrão e
@@ -159,18 +160,35 @@ armazenamos em nossos servidores, a menos que você envie um ticket de suporte p
 e opte por incluir a conversa. Para que um limite mensal de uso possa ser aplicado,
 registramos quanto custam, a cada mês, as respostas com IA do assistente para a sua conta.
 
+## A prévia web gratuita em bugit.dev
+
+O bugit.dev oferece uma prévia gratuita que transforma uma anotação rápida em um rascunho de
+exemplo. A prévia é separada do software BugIt. Quando você a usa, o texto que você digita (sua
+anotação e suas respostas às perguntas de acompanhamento) é enviado aos nossos servidores. Antes
+de qualquer outra etapa, o serviço substitui por marcadores os dados pessoais comuns e as senhas e
+tokens de acesso reconhecíveis, da melhor forma possível. O texto restante é enviado à Anthropic,
+que o trata em nosso nome para redigir o rascunho. Não armazenamos sua anotação, suas respostas
+nem o rascunho. Guardamos apenas contagens, como quantos rascunhos foram exibidos em um dia, e
+quanto a prévia custa a cada mês. Se você optar por enviar um comentário, guardamos o texto que
+você enviar por 30 dias, depois de substituir os dados pessoais comuns da melhor forma possível, e
+não o vinculamos a você nem à sua anotação. Para aplicar limites de uso, usamos o seu endereço IP
+em forma de hash, que muda todos os dias. Usamos o Cloudflare Turnstile para distinguir pessoas de
+programas automatizados. Pedimos que você não digite senhas, tokens, dados de clientes ou outras
+informações sensíveis na prévia.
+
 ## Prestadores de serviços
 
 Utilizamos prestadores de serviços para autenticação e hospedagem, processamento de
 pagamentos, e-mail transacional, entrega e segurança do site, respostas com IA do assistente
-do Portal e medição de publicidade baseada em consentimento. Esses prestadores tratam apenas
+do Portal e da prévia web gratuita e medição de publicidade baseada em consentimento. Esses prestadores tratam apenas
 as informações necessárias para nos prestar seus serviços e não podem usá-las para fins
 próprios.
 
 Os principais prestadores são Supabase (contas e banco de dados), Stripe (pagamentos,
 reembolsos e contestações), Vercel (hospedagem do Portal), Cloudflare (entrega e segurança do
-site e análise sem cookies), Resend (e-mail transacional), Anthropic (respostas com IA do
-assistente do Portal) e Google (medição de publicidade, somente com o seu consentimento).
+site, análise sem cookies e a verificação antirrobô da prévia web gratuita), Resend (e-mail
+transacional), Anthropic (respostas com IA do assistente do Portal e da prévia web gratuita) e
+Google (medição de publicidade, somente com o seu consentimento).
 
 Alguns desses prestadores operam fora do seu país, inclusive nos Estados Unidos.
 Quando há transferência internacional de dados pessoais, apoiamo-nos nas cláusulas de
@@ -192,6 +210,8 @@ coletados e, depois, os excluímos ou anonimizamos. Na prática:
 - Mensagens de suporte, registros de segurança e registros de consentimento são
   mantidos por um período limitado; os de consentimento servem como prova de que sua
   escolha foi respeitada.
+- O texto de comentários enviado pela prévia web gratuita é guardado por 30 dias e depois
+  excluído. As anotações, as respostas e os rascunhos da prévia não são guardados.
 
 Se você excluir sua conta, excluímos ou anonimizamos seus dados, exceto os registros
 que somos obrigados a manter.

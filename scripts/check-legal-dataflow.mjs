@@ -206,7 +206,7 @@ for (const l of LOCALES) {
 // ---------------------------------------------------------------------------
 const sectionsOf = (md) => md.replace(/\r\n/g, "\n").split(/\n(?=## )/);
 const bulletsIn = (text) => text.split("\n").filter((l) => /^- /.test(l)).length;
-const ASK = 7, RIGHTS = 11, DATA = 6;   // positions; check-legal-copy holds every locale to English's section order
+const ASK = 7, RIGHTS = 12, DATA = 6;   // positions; check-legal-copy holds every locale to English's section order
 const enSecs = sectionsOf(enPrivacy);
 const enAsk = (enSecs[ASK] || "").replace(/\s+/g, " ");
 for (const [needle, why] of [

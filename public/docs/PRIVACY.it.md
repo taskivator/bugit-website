@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Ultimo aggiornamento: 12 ottobre 2026**
+**Ultimo aggiornamento: 17 ottobre 2026**
 
 La presente informativa spiega quali dati personali trattiamo quando utilizza il sito
 web di BugIt (bugit.dev), il BugIt Portal (gestione dell'account, degli acquisti e
@@ -23,7 +23,8 @@ vengono fornite senza ritardo.
 
 - Il software BugIt viene eseguito sulla Sua macchina. Le Sue segnalazioni di bug,
   specifiche, glossari, schermate, il Suo codice, le Sue impostazioni e i Suoi ticket
-  non vengono trasmessi a Taskivator.
+  non vengono trasmessi a Taskivator dal software. L'anteprima web gratuita su
+  bugit.dev è separata e funziona come descritto più avanti.
 - Per gestire account, acquisto, licenza e assistenza, il sito web e il Portal
   trattano una quantità limitata di dati personali.
 - Non vendiamo dati personali. La misurazione pubblicitaria è disattivata per
@@ -164,18 +165,36 @@ di assistenza dall'assistente scegliendo di includere la conversazione. Per pote
 applicare un limite di utilizzo mensile, registriamo quanto costano ogni mese le risposte
 con IA dell'assistente per il Suo account.
 
+## L'anteprima web gratuita su bugit.dev
+
+bugit.dev offre un'anteprima gratuita che trasforma un appunto grezzo in una bozza di
+esempio. L'anteprima è separata dal software BugIt. Quando la usa, il testo che digita
+(il Suo appunto e le Sue risposte alle domande di approfondimento) viene inviato ai
+nostri server. Prima di qualsiasi altro passaggio, il servizio sostituisce con segnaposto
+i dati personali comuni e le password e i token di accesso riconoscibili, al meglio delle
+possibilità. Il testo restante viene inviato ad Anthropic, che lo tratta per nostro conto
+per scrivere la bozza. Non memorizziamo il Suo appunto, le Sue risposte né la bozza.
+Conserviamo solo conteggi, come quante bozze sono state mostrate in un giorno, e quanto
+costa l'anteprima ogni mese. Se sceglie di inviare un feedback, conserviamo il testo che
+invia per 30 giorni, dopo aver sostituito i dati personali comuni al meglio delle
+possibilità, e non lo colleghiamo né a Lei né al Suo appunto. Per applicare i limiti di
+utilizzo usiamo il Suo indirizzo IP in forma di hash che cambia ogni giorno. Usiamo
+Cloudflare Turnstile per distinguere le persone dai programmi automatici. La preghiamo
+di non digitare nell'anteprima password, token, dati dei clienti o altre informazioni
+sensibili.
+
 ## Fornitori di servizi
 
 Ci avvaliamo di fornitori per autenticazione e hosting, elaborazione dei pagamenti,
 e-mail transazionali, distribuzione e sicurezza del sito web, risposte con IA
-dell'assistente del Portal e misurazione pubblicitaria basata sul consenso. Tali
+dell'assistente del Portal e dell'anteprima web gratuita e misurazione pubblicitaria basata sul consenso. Tali
 fornitori trattano solo le informazioni necessarie a erogare i loro servizi e non sono
 autorizzati a utilizzarle per finalità proprie.
 
 I principali fornitori sono Supabase (account e database), Stripe (pagamenti, rimborsi e
 contestazioni), Vercel (hosting del Portal), Cloudflare (distribuzione e sicurezza del
-sito web, analisi senza cookie), Resend (e-mail transazionali), Anthropic (risposte con
-IA dell'assistente del Portal) e Google (misurazione pubblicitaria, solo con il Suo
+sito web, analisi senza cookie e verifica anti bot dell'anteprima web gratuita), Resend (e-mail transazionali), Anthropic (risposte con
+IA dell'assistente del Portal e dell'anteprima web gratuita) e Google (misurazione pubblicitaria, solo con il Suo
 consenso).
 
 Alcuni di questi fornitori operano al di fuori del Suo Paese, anche negli Stati
@@ -198,6 +217,9 @@ stati raccolti, dopodiché li cancelliamo o li rendiamo anonimi. In pratica:
 - I messaggi di assistenza, i registri di sicurezza e le registrazioni del consenso
   sono conservati per un periodo limitato; le registrazioni del consenso attestano
   che la Sua scelta è stata rispettata.
+- Il testo del feedback inviato dall'anteprima web gratuita è conservato per 30 giorni e
+  poi cancellato. Gli appunti, le risposte e le bozze dell'anteprima non vengono
+  conservati.
 
 Se elimina il Suo account, cancelliamo o rendiamo anonimi i Suoi dati, salvo i
 documenti che siamo tenuti a conservare.

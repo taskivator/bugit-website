@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Última actualización: 12 de octubre de 2026**
+**Última actualización: 17 de octubre de 2026**
 
 Esta política explica qué datos personales tratamos cuando utiliza el sitio web de
 BugIt (bugit.dev), el BugIt Portal (gestión de cuenta, compra y licencias) y el
@@ -22,7 +22,8 @@ solicite se facilitará sin demora.
 
 - El software BugIt se ejecuta en su propio equipo. Sus informes de errores,
   especificaciones, glosarios, capturas de pantalla, código, ajustes y tickets no se
-  transmiten a Taskivator.
+  transmiten a Taskivator desde el software. La vista previa web gratuita de
+  bugit.dev es independiente y funciona como se describe más abajo.
 - Para gestionar su cuenta, su compra, su licencia y el soporte, el sitio web y el
   Portal tratan una cantidad limitada de datos personales.
 - No vendemos datos personales. La medición publicitaria está desactivada de forma
@@ -162,18 +163,36 @@ almacenamos en nuestros servidores, salvo que envíe un ticket de soporte desde 
 decida incluir la conversación. Para poder aplicar un límite de uso mensual, registramos
 cuánto cuestan cada mes las respuestas de IA del asistente para su cuenta.
 
+## La vista previa web gratuita de bugit.dev
+
+bugit.dev ofrece una vista previa gratuita que convierte una nota rápida en un borrador
+de ejemplo. La vista previa es independiente del software BugIt. Cuando la utiliza, el
+texto que escribe (su nota y sus respuestas a las preguntas de seguimiento) se envía a
+nuestros servidores. Antes de que ocurra nada más, el servicio sustituye por marcadores
+los datos personales habituales y las contraseñas y los tokens de acceso reconocibles,
+en la medida de lo posible. El texto restante se envía a Anthropic, que lo trata por
+cuenta nuestra para redactar el borrador. No almacenamos su nota, sus respuestas ni el
+borrador. Solo conservamos recuentos, como cuántos borradores se mostraron en un día, y
+lo que cuesta la vista previa cada mes. Si decide enviar comentarios, conservamos el
+texto que envía durante 30 días, tras sustituir los datos personales habituales en la
+medida de lo posible, y no lo vinculamos con usted ni con su nota. Para aplicar límites
+de uso utilizamos su dirección IP en forma de hash que cambia cada día. Usamos
+Cloudflare Turnstile para distinguir a las personas de los programas automatizados. Le
+rogamos que no escriba contraseñas, tokens, datos de clientes ni otra información
+sensible en la vista previa.
+
 ## Proveedores de servicios
 
 Recurrimos a proveedores de servicios para autenticación y alojamiento, procesamiento de
 pagos, correo transaccional, entrega y seguridad del sitio web, respuestas de IA del
-asistente del Portal y medición publicitaria basada en el consentimiento. Estos proveedores
+asistente del Portal y de la vista previa web gratuita y medición publicitaria basada en el consentimiento. Estos proveedores
 tratan únicamente la información necesaria para prestarnos sus servicios y no pueden
 utilizarla para sus propios fines.
 
 Los principales proveedores son Supabase (cuentas y base de datos), Stripe (pagos, reembolsos
 y reclamaciones), Vercel (alojamiento del Portal), Cloudflare (entrega y seguridad del sitio
-web y analítica sin cookies), Resend (correo transaccional), Anthropic (respuestas de IA del
-asistente del Portal) y Google (medición publicitaria, solo con su consentimiento).
+web, analítica sin cookies y la comprobación anti bots de la vista previa web gratuita), Resend (correo transaccional), Anthropic (respuestas de IA del
+asistente del Portal y de la vista previa web gratuita) y Google (medición publicitaria, solo con su consentimiento).
 
 Algunos de estos proveedores operan fuera de su país, incluidos los Estados Unidos.
 Cuando se transfieren datos personales internacionalmente, nos basamos en las
@@ -195,6 +214,9 @@ para la que se recogieron, y después los eliminamos o anonimizamos. En la prác
 - Los mensajes de soporte, los registros de seguridad y los registros de
   consentimiento se conservan durante un periodo limitado; los de consentimiento se
   guardan como prueba de que su decisión fue respetada.
+- El texto de los comentarios enviados desde la vista previa web gratuita se conserva
+  30 días y después se elimina. Las notas, las respuestas y los borradores de la vista
+  previa no se conservan.
 
 Si elimina su cuenta, eliminamos o anonimizamos sus datos, salvo los registros que
 estamos obligados a conservar.

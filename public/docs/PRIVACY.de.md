@@ -4,7 +4,7 @@
 
 Copyright (c) 2026 Taskivator. All Rights Reserved.
 
-**Zuletzt aktualisiert: 12. Oktober 2026**
+**Zuletzt aktualisiert: 17. Oktober 2026**
 
 Diese Erklärung beschreibt, welche personenbezogenen Daten wir verarbeiten, wenn Sie
 die BugIt Website (bugit.dev), das BugIt Portal (Konto, Kauf und Lizenzverwaltung)
@@ -23,7 +23,8 @@ unverzüglich mitgeteilt.
 
 - Die BugIt Software läuft auf Ihrem eigenen Rechner. Ihre Fehlerberichte,
   Spezifikationen, Glossare, Screenshots, Ihr Code, Ihre Einstellungen und Tickets
-  werden nicht an Taskivator übermittelt.
+  werden von der Software nicht an Taskivator übermittelt.
+  Die kostenlose Webvorschau auf bugit.dev ist davon getrennt und funktioniert wie unten beschrieben.
 - Für Konto, Kauf, Lizenz und Support verarbeiten die Website und das Portal eine
   begrenzte Menge personenbezogener Daten.
 - Wir verkaufen keine personenbezogenen Daten. Die Werbemessung ist standardmäßig
@@ -166,18 +167,37 @@ es nicht auf unseren Servern, es sei denn, Sie senden aus dem Assistenten ein Su
 und entscheiden sich, das Gespräch beizufügen. Damit ein monatliches Nutzungslimit gelten
 kann, erfassen wir, was die KI-Antworten des Assistenten für Ihr Konto jeden Monat kosten.
 
+## Die kostenlose Webvorschau auf bugit.dev
+
+bugit.dev bietet eine kostenlose Vorschau an, die aus einer groben Notiz einen
+Beispielentwurf erstellt. Die Vorschau ist von der BugIt Software getrennt. Wenn Sie sie
+nutzen, wird der Text, den Sie eingeben (Ihre Notiz und Ihre Antworten auf Rückfragen),
+an unsere Server gesendet. Bevor irgendetwas anderes geschieht, ersetzt der Dienst
+gängige personenbezogene Daten sowie erkennbare Passwörter und Zugangstoken nach bestem
+Bemühen durch Platzhalter. Der verbleibende Text wird an Anthropic gesendet, das ihn in
+unserem Auftrag verarbeitet, um den Entwurf zu schreiben. Wir speichern weder Ihre
+Notiz noch Ihre Antworten noch den Entwurf. Wir behalten nur Zählwerte, etwa wie viele
+Entwürfe an einem Tag angezeigt wurden, sowie die monatlichen Kosten der Vorschau. Wenn
+Sie sich entscheiden, Feedback zu senden, speichern wir den gesendeten Text 30 Tage lang,
+nachdem wir gängige personenbezogene Daten nach bestem Bemühen ersetzt haben, und wir
+verknüpfen ihn weder mit Ihnen noch mit Ihrer Notiz. Um Nutzungsgrenzen anzuwenden,
+verwenden wir Ihre IP-Adresse in gehashter Form, die sich jeden Tag ändert. Wir
+verwenden Cloudflare Turnstile, um Menschen von automatisierten Programmen zu
+unterscheiden. Bitte geben Sie in die Vorschau keine Passwörter, Token, Kundendaten oder
+andere sensible Informationen ein.
+
 ## Dienstleister
 
 Wir setzen Dienstleister für Authentifizierung und Hosting, Zahlungsabwicklung,
 Transaktions-E-Mails, Auslieferung und Sicherheit der Website, KI-Antworten des Assistenten im
-Portal sowie für einwilligungsbasierte Werbemessung ein. Diese Dienstleister verarbeiten nur
+Portal und der kostenlosen Webvorschau sowie für einwilligungsbasierte Werbemessung ein. Diese Dienstleister verarbeiten nur
 die Informationen, die zur Erbringung ihrer Leistung für uns erforderlich sind, und dürfen sie
 nicht für eigene Zwecke nutzen.
 
 Die wichtigsten Dienstleister sind Supabase (Konten und Datenbank), Stripe (Zahlungen,
 Erstattungen und Streitfälle), Vercel (Hosting des Portals), Cloudflare (Auslieferung und
-Sicherheit der Website sowie cookiefreie Analyse), Resend (Transaktions-E-Mails), Anthropic
-(KI-Antworten des Assistenten im Portal) und Google (Werbemessung, nur mit Ihrer
+Sicherheit der Website, cookiefreie Analyse sowie die Bot-Prüfung in der kostenlosen Webvorschau), Resend (Transaktions-E-Mails), Anthropic
+(KI-Antworten des Assistenten im Portal und der kostenlosen Webvorschau) und Google (Werbemessung, nur mit Ihrer
 Einwilligung).
 
 Einige dieser Dienstleister arbeiten außerhalb Ihres Landes, unter anderem in den
@@ -201,6 +221,9 @@ der Praxis bedeutet das:
 - Supportnachrichten, Sicherheitsprotokolle und Einwilligungsnachweise werden für
   einen begrenzten Zeitraum gespeichert; Einwilligungsnachweise dienen als Beleg
   dafür, dass Ihre Entscheidung beachtet wurde.
+- Feedback-Text aus der kostenlosen Webvorschau wird 30 Tage lang gespeichert und
+  danach gelöscht. Die Notizen, Antworten und Entwürfe der Vorschau werden nicht
+  gespeichert.
 
 Wenn Sie Ihr Konto löschen, löschen oder anonymisieren wir Ihre Daten mit Ausnahme
 der Unterlagen, die wir aufbewahren müssen.
