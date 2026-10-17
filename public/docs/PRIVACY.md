@@ -156,8 +156,7 @@ preview is separate from the BugIt software. When you use it, the text you type 
 note, and your answers to follow up questions) is sent to our servers. Before anything
 else happens, the service replaces common personal data and recognisable passwords and
 access tokens with placeholders, as a best effort. The remaining text is sent to
-Anthropic, which processes it on our behalf to write the draft. We do not store your
-note, your answers, or the draft. We keep only counts, such as how many drafts were
+Anthropic, which processes it on our behalf to write the draft. We do not store your note, your answers, or the draft on our systems. We keep only counts, such as how many drafts were
 shown on a day, and what the preview costs each month. To apply usage limits we use your
 IP address in a hashed form that changes every day. We use Cloudflare Turnstile to tell
 people from automated programs. Please do not type passwords, tokens, customer data, or

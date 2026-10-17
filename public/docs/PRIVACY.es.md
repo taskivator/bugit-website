@@ -171,8 +171,7 @@ texto que escribe (su nota y sus respuestas a las preguntas de seguimiento) se e
 nuestros servidores. Antes de que ocurra nada más, el servicio sustituye por marcadores
 los datos personales habituales y las contraseñas y los tokens de acceso reconocibles,
 en la medida de lo posible. El texto restante se envía a Anthropic, que lo trata por
-cuenta nuestra para redactar el borrador. No almacenamos su nota, sus respuestas ni el
-borrador. Solo conservamos recuentos, como cuántos borradores se mostraron en un día, y
+cuenta nuestra para redactar el borrador. No almacenamos su nota, sus respuestas ni el borrador en nuestros sistemas. Solo conservamos recuentos, como cuántos borradores se mostraron en un día, y
 lo que cuesta la vista previa cada mes. Para aplicar límites
 de uso utilizamos su dirección IP en forma de hash que cambia cada día. Usamos
 Cloudflare Turnstile para distinguir a las personas de los programas automatizados. Le

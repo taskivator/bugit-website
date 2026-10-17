@@ -173,7 +173,7 @@ esempio. L'anteprima è separata dal software BugIt. Quando la usa, il testo che
 nostri server. Prima di qualsiasi altro passaggio, il servizio sostituisce con segnaposto
 i dati personali comuni e le password e i token di accesso riconoscibili, al meglio delle
 possibilità. Il testo restante viene inviato ad Anthropic, che lo tratta per nostro conto
-per scrivere la bozza. Non memorizziamo il Suo appunto, le Sue risposte né la bozza.
+per scrivere la bozza. Non memorizziamo il Suo appunto, le Sue risposte né la bozza sui nostri sistemi.
 Conserviamo solo conteggi, come quante bozze sono state mostrate in un giorno, e quanto
 costa l'anteprima ogni mese. Per applicare i limiti di
 utilizzo usiamo il Suo indirizzo IP in forma di hash che cambia ogni giorno. Usiamo

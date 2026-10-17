@@ -254,7 +254,7 @@
  "foot.templates": "テンプレート",
  "pricing.templates": "まだ決めかねている場合は、<a href=\"/templates/\">無料のバグレポートテンプレート</a>から始めてみてください。BugIt が代わりに行う作業の手作業版です。",
  "pricing.needs.h": "必要なもの",
- "pricing.needs": "ご自身のAIアシスタント（GitHub Copilot、Claude拡張機能、またはご自身のOpenAIかAnthropicのキーを使った単独動作）、VS Code、Python 3.10から3.14、そしてトラッカー用のトークン。Windows 11は完全対応、macOSとLinuxはプレビュー版です。フォルダーをダウンロードして解凍し、VS Codeで開いて、BugItアカウントで有効化します。",
+ "pricing.needs": "ご自身のAIアシスタント（GitHub Copilot、Claude拡張機能、またはご自身のOpenAIかAnthropicのキーを使った単独動作）、VS Code、Python 3.10から3.14、そしてトラッカー用のトークン。Windows 11に対応、macOSとLinuxはプレビュー版です。フォルダーをダウンロードして解凍し、VS Codeで開いて、BugItアカウントで有効化します。",
  "faq.model.q": "BugItにAIモデルは含まれていますか？",
  "faq.model.a": "いいえ。すでにお使いのアシスタント内で動作するか、ご自身のOpenAIまたはAnthropicのキーを使って単独で動作します。",
  "faq.after.q": "お支払い後に何が受け取れますか？",

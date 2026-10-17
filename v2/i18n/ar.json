@@ -254,7 +254,7 @@
  "foot.templates": "القوالب",
  "pricing.templates": "لست مستعدًا بعد؟ ابدأ <a href=\"/templates/\">بقوالب تقارير الأخطاء المجانية</a>، فهي النسخة اليدوية لما يقوم به BugIt نيابةً عنك.",
  "pricing.needs.h": "ما تحتاج إليه",
- "pricing.needs": "مساعد ذكي خاص بك (<bdi dir=\"ltr\">GitHub Copilot</bdi>، أو امتداد <bdi dir=\"ltr\">Claude</bdi>، أو مستقلًا بمفتاح <bdi dir=\"ltr\">OpenAI</bdi> أو <bdi dir=\"ltr\">Anthropic</bdi> الخاص بك)، و<bdi dir=\"ltr\">VS Code</bdi>، و<bdi dir=\"ltr\">Python</bdi> من 3.10 إلى 3.14، ورمز وصول لنظام التتبع الخاص بك. يُدعم <bdi dir=\"ltr\">Windows 11</bdi> دعمًا كاملًا، و<bdi dir=\"ltr\">macOS</bdi> و<bdi dir=\"ltr\">Linux</bdi> بصيغة معاينة. تنزّل مجلدًا وتفك ضغطه وتفتحه في <bdi dir=\"ltr\">VS Code</bdi> ثم تفعّله بحساب <bdi dir=\"ltr\">BugIt</bdi> الخاص بك.",
+ "pricing.needs": "مساعد ذكي خاص بك (<bdi dir=\"ltr\">GitHub Copilot</bdi>، أو امتداد <bdi dir=\"ltr\">Claude</bdi>، أو مستقلًا بمفتاح <bdi dir=\"ltr\">OpenAI</bdi> أو <bdi dir=\"ltr\">Anthropic</bdi> الخاص بك)، و<bdi dir=\"ltr\">VS Code</bdi>، و<bdi dir=\"ltr\">Python</bdi> من 3.10 إلى 3.14، ورمز وصول لنظام التتبع الخاص بك. يُدعم <bdi dir=\"ltr\">Windows 11</bdi>، و<bdi dir=\"ltr\">macOS</bdi> و<bdi dir=\"ltr\">Linux</bdi> بصيغة معاينة. تنزّل مجلدًا وتفك ضغطه وتفتحه في <bdi dir=\"ltr\">VS Code</bdi> ثم تفعّله بحساب <bdi dir=\"ltr\">BugIt</bdi> الخاص بك.",
  "faq.model.q": "هل يتضمن <bdi dir=\"ltr\">BugIt</bdi> نموذج ذكاء اصطناعي؟",
  "faq.model.a": "لا. يعمل في المساعد الذي تستخدمه أصلًا، أو مستقلًا بمفتاح <bdi dir=\"ltr\">OpenAI</bdi> أو <bdi dir=\"ltr\">Anthropic</bdi> الخاص بك.",
  "faq.after.q": "ماذا أحصل عليه بعد الدفع؟",

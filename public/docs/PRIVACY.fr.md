@@ -178,8 +178,7 @@ que vous saisissez (votre note et vos réponses aux questions de suivi) est envo
 serveurs. Avant toute autre opération, le service remplace par des espaces réservés les
 données personnelles courantes ainsi que les mots de passe et les jetons d'accès
 reconnaissables, au mieux de ses moyens. Le texte restant est envoyé à Anthropic, qui le
-traite pour notre compte afin de rédiger le brouillon. Nous ne stockons ni votre note,
-ni vos réponses, ni le brouillon. Nous ne conservons que des compteurs, par exemple le
+traite pour notre compte afin de rédiger le brouillon. Nous ne stockons ni votre note, ni vos réponses, ni le brouillon sur nos systèmes. Nous ne conservons que des compteurs, par exemple le
 nombre de brouillons affichés sur une journée, ainsi que le coût mensuel de l'aperçu. Pour appliquer des limites d'utilisation,
 nous utilisons votre adresse IP sous une forme hachée qui change chaque jour. Nous
 utilisons Cloudflare Turnstile pour distinguer les personnes des programmes automatisés.

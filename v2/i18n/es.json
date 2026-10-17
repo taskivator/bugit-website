@@ -254,7 +254,7 @@
  "foot.templates": "Plantillas",
  "pricing.templates": "¿Aún no te decides? Empieza con las <a href=\"/templates/\">plantillas gratuitas de informe de bug</a>, la versión manual de lo que BugIt hace por ti.",
  "pricing.needs.h": "Lo que necesitas",
- "pricing.needs": "Un asistente de IA propio (GitHub Copilot, la extensión de Claude o, de forma independiente, tu propia clave de OpenAI o Anthropic), VS Code, Python 3.10 a 3.14 y un token de tu tracker. Windows 11 totalmente compatible; macOS y Linux en vista previa. Descargas una carpeta, la descomprimes, la abres en VS Code y la activas con tu cuenta de BugIt.",
+ "pricing.needs": "Un asistente de IA propio (GitHub Copilot, la extensión de Claude o, de forma independiente, tu propia clave de OpenAI o Anthropic), VS Code, Python 3.10 a 3.14 y un token de tu tracker. Windows 11 compatible; macOS y Linux en vista previa. Descargas una carpeta, la descomprimes, la abres en VS Code y la activas con tu cuenta de BugIt.",
  "faq.model.q": "¿BugIt incluye un modelo de IA?",
  "faq.model.a": "No. Funciona en el asistente que ya usas, o por su cuenta con tu propia clave de OpenAI o Anthropic.",
  "faq.after.q": "¿Qué recibo después de pagar?",

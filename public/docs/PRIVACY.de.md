@@ -175,8 +175,7 @@ nutzen, wird der Text, den Sie eingeben (Ihre Notiz und Ihre Antworten auf Rück
 an unsere Server gesendet. Bevor irgendetwas anderes geschieht, ersetzt der Dienst
 gängige personenbezogene Daten sowie erkennbare Passwörter und Zugangstoken nach bestem
 Bemühen durch Platzhalter. Der verbleibende Text wird an Anthropic gesendet, das ihn in
-unserem Auftrag verarbeitet, um den Entwurf zu schreiben. Wir speichern weder Ihre
-Notiz noch Ihre Antworten noch den Entwurf. Wir behalten nur Zählwerte, etwa wie viele
+unserem Auftrag verarbeitet, um den Entwurf zu schreiben. Wir speichern weder Ihre Notiz noch Ihre Antworten noch den Entwurf auf unseren Systemen. Wir behalten nur Zählwerte, etwa wie viele
 Entwürfe an einem Tag angezeigt wurden, sowie die monatlichen Kosten der Vorschau. Um Nutzungsgrenzen anzuwenden,
 verwenden wir Ihre IP-Adresse in gehashter Form, die sich jeden Tag ändert. Wir
 verwenden Cloudflare Turnstile, um Menschen von automatisierten Programmen zu

@@ -254,7 +254,7 @@
  "foot.templates": "Modelos",
  "pricing.templates": "Ainda não decidiu? Comece pelos <a href=\"/templates/\">modelos gratuitos de relatório de bug</a>, a versão manual do que o BugIt faz por você.",
  "pricing.needs.h": "O que você precisa",
- "pricing.needs": "Um assistente de IA próprio (GitHub Copilot, a extensão do Claude ou, sozinho, a sua própria chave da OpenAI ou da Anthropic), VS Code, Python 3.10 a 3.14 e um token do seu rastreador. Windows 11 totalmente compatível; macOS e Linux em prévia. Você baixa uma pasta, descompacta, abre no VS Code e ativa com a sua conta BugIt.",
+ "pricing.needs": "Um assistente de IA próprio (GitHub Copilot, a extensão do Claude ou, sozinho, a sua própria chave da OpenAI ou da Anthropic), VS Code, Python 3.10 a 3.14 e um token do seu rastreador. Windows 11 compatível; macOS e Linux em prévia. Você baixa uma pasta, descompacta, abre no VS Code e ativa com a sua conta BugIt.",
  "faq.model.q": "O BugIt inclui um modelo de IA?",
  "faq.model.a": "Não. Ele roda no assistente que você já usa, ou sozinho com a sua própria chave da OpenAI ou da Anthropic.",
  "faq.after.q": "O que eu recebo depois de pagar?",

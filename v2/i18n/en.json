@@ -254,7 +254,7 @@
  "foot.templates": "Templates",
  "pricing.templates": "Not ready yet? Start with the <a href=\"/templates/\">free bug report templates</a>, the manual version of what BugIt does for you.",
  "pricing.needs.h": "What you need",
- "pricing.needs": "An AI assistant of your own (GitHub Copilot, the Claude extension, or your own OpenAI or Anthropic key in standalone), VS Code, Python 3.10 to 3.14 and a token for your tracker. Windows 11 fully supported; macOS and Linux in preview. You download a folder, unzip it, open it in VS Code and activate with your BugIt account.",
+ "pricing.needs": "An AI assistant of your own (GitHub Copilot, the Claude extension, or your own OpenAI or Anthropic key in standalone), VS Code, Python 3.10 to 3.14 and a token for your tracker. Windows 11 supported; macOS and Linux in preview. You download a folder, unzip it, open it in VS Code and activate with your BugIt account.",
  "faq.model.q": "Does BugIt include an AI model?",
  "faq.model.a": "No. It runs in the assistant you already use, or standalone with your own OpenAI or Anthropic key.",
  "faq.after.q": "What do I get after I pay?",

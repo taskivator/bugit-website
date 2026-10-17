@@ -167,8 +167,7 @@ exemplo. A prévia é separada do software BugIt. Quando você a usa, o texto qu
 anotação e suas respostas às perguntas de acompanhamento) é enviado aos nossos servidores. Antes
 de qualquer outra etapa, o serviço substitui por marcadores os dados pessoais comuns e as senhas e
 tokens de acesso reconhecíveis, da melhor forma possível. O texto restante é enviado à Anthropic,
-que o trata em nosso nome para redigir o rascunho. Não armazenamos sua anotação, suas respostas
-nem o rascunho. Guardamos apenas contagens, como quantos rascunhos foram exibidos em um dia, e
+que o trata em nosso nome para redigir o rascunho. Não armazenamos sua anotação, suas respostas nem o rascunho em nossos sistemas. Guardamos apenas contagens, como quantos rascunhos foram exibidos em um dia, e
 quanto a prévia custa a cada mês. Para aplicar limites de uso, usamos o seu endereço IP
 em forma de hash, que muda todos os dias. Usamos o Cloudflare Turnstile para distinguir pessoas de
 programas automatizados. Pedimos que você não digite senhas, tokens, dados de clientes ou outras

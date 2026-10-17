@@ -254,7 +254,7 @@
  "foot.templates": "模板",
  "pricing.templates": "还没决定？先从<a href=\"/templates/\">免费的缺陷报告模板</a>开始，它们是 BugIt 替你完成的工作的手动版本。",
  "pricing.needs.h": "你需要什么",
- "pricing.needs": "一个你自己的 AI 助手（GitHub Copilot、Claude 扩展，或配上你自己的 OpenAI 或 Anthropic 密钥独立运行）、VS Code、Python 3.10 到 3.14，以及你的跟踪系统的令牌。Windows 11 完全支持；macOS 和 Linux 处于预览阶段。你下载一个文件夹，解压后在 VS Code 中打开，再用你的 BugIt 账户激活。",
+ "pricing.needs": "一个你自己的 AI 助手（GitHub Copilot、Claude 扩展，或配上你自己的 OpenAI 或 Anthropic 密钥独立运行）、VS Code、Python 3.10 到 3.14，以及你的跟踪系统的令牌。Windows 11 受支持；macOS 和 Linux 处于预览阶段。你下载一个文件夹，解压后在 VS Code 中打开，再用你的 BugIt 账户激活。",
  "faq.model.q": "BugIt 自带 AI 模型吗？",
  "faq.model.a": "不带。它在你已经在用的助手里运行，或者配上你自己的 OpenAI 或 Anthropic 密钥独立运行。",
  "faq.after.q": "付款后我能得到什么？",

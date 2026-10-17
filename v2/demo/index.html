@@ -115,7 +115,7 @@
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </button>
             <p class="d-limit" id="d-limit"><strong>Daily limit:</strong> 3 free drafts a day from your connection. The full BugIt has no such limit.</p>
-            <p class="d-priv">BugIt redacts common personal data as a best effort, so you read the draft before using it. Your text is processed by our service provider Anthropic to write the draft, and we do not keep it. <a href="/docs/privacy/">Privacy notice</a></p>
+            <p class="d-priv">BugIt can redact common personal data before the draft; always read the draft before you use it. Your text is processed by our service provider Anthropic to write the draft, and we do not store it on our systems. <a href="/docs/privacy/">Privacy notice</a></p>
           </form>
         </div>
 
@@ -174,7 +174,7 @@
         </div>
 
         <article id="out-draft" class="d-draft" hidden aria-labelledby="draft-title">
-          <p class="d-banner" id="draft-banner">This is a simplified sample draft. Nothing was filed. Read it before you use it. The full BugIt writes a fuller report than this.</p>
+          <p class="d-banner" id="draft-banner">This is a simplified sample draft. Nothing was filed. Read it before you use it. The full BugIt works with your project and tracker context, which this preview does not use.</p>
           <h2 class="d-h d-h-draft" id="h-draft" tabindex="-1">Your draft</h2>
           <h3 class="d-title" id="draft-title"></h3>
           <div id="draft-body"></div>
@@ -235,19 +235,19 @@
                   </ul>
                 </section>
                 <section class="d-cmp-c is-full" aria-label="The full BugIt">
-                  <h3>The full BugIt in Visual Studio Code</h3>
+                  <h3>The full BugIt</h3>
                   <ul>
-                    <li>Searches your tracker, read only, for duplicates and scores each one</li>
+                    <li>Can search your tracker, read only, for possible duplicates</li>
                     <li>Reads a pasted log and keeps the crash line and the stack</li>
                     <li>Warns when the steps are too thin and asks what is missing</li>
                     <li>Suggests a severity with reasons, and you decide</li>
-                    <li>Redacts common personal data before the draft</li>
+                    <li>Can redact common personal data before the draft</li>
                     <li>Writes in your team's house style for any of 11 trackers</li>
                     <li>Files it to your tracker with your own token, only after you type FILE IT</li>
                   </ul>
                 </section>
               </div>
-              <div class="d-cta-t"><p class="d-cta-pre">This page is a short preview, a simplified version of the real thing. The full BugIt works inside Visual Studio Code, with your own project, and writes a fuller report than this draft.</p><p class="d-cta-l">The full product runs on your own machine and files to your tracker.</p></div>
+              <div class="d-cta-t"><p class="d-cta-pre">This page is a short preview, a simplified version of the real thing. The full BugIt works in the AI assistant you already use in Visual Studio Code, or a terminal, with your own project and tracker context, which this preview does not use.</p><p class="d-cta-l">The full product runs on your own machine and files to your tracker.</p></div>
               <a class="btn btn-primary d-cta-b" id="trial-btn" href="https://portal.bugit.dev/dashboard/free-trial?utm_source=bugit_demo&amp;utm_medium=web&amp;utm_campaign=demo_v1">Try BugIt free for 14 days</a>
             </div>
           </aside>
@@ -262,7 +262,7 @@
     <div class="d-trust-i">
       <span class="d-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-2.9 8.3-7 10-4.1-1.7-7-5.6-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
       <h3>Redacted first</h3>
-      <p>Common personal data is replaced with placeholders before your note is read, and you see exactly what was replaced.</p>
+      <p>Common personal data is replaced with placeholders, as a best effort, before your note is read, and you see what was replaced.</p>
     </div>
     <div class="d-trust-i">
       <span class="d-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg></span>
@@ -272,7 +272,7 @@
     <div class="d-trust-i">
       <span class="d-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
       <h3>Yours to copy</h3>
-      <p>Copy the draft as plain text. We do not store your note, your answers or the draft.</p>
+      <p>Copy the draft as plain text. We do not store your note, your answers or the draft on our systems.</p>
     </div>
   </section>
 

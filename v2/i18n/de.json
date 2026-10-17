@@ -254,7 +254,7 @@
  "foot.templates": "Vorlagen",
  "pricing.templates": "Noch nicht so weit? Beginnen Sie mit den <a href=\"/templates/\">kostenlosen Bugreport-Vorlagen</a>, der manuellen Version dessen, was BugIt für Sie erledigt.",
  "pricing.needs.h": "Was Sie brauchen",
- "pricing.needs": "Einen eigenen KI-Assistenten (GitHub Copilot, die Claude-Erweiterung oder eigenständig Ihren eigenen OpenAI- oder Anthropic-Schlüssel), VS Code, Python 3.10 bis 3.14 und ein Token für Ihren Tracker. Windows 11 wird vollständig unterstützt, macOS und Linux als Vorschau. Sie laden einen Ordner herunter, entpacken ihn, öffnen ihn in VS Code und aktivieren ihn mit Ihrem BugIt-Konto.",
+ "pricing.needs": "Einen eigenen KI-Assistenten (GitHub Copilot, die Claude-Erweiterung oder eigenständig Ihren eigenen OpenAI- oder Anthropic-Schlüssel), VS Code, Python 3.10 bis 3.14 und ein Token für Ihren Tracker. Windows 11 wird unterstützt, macOS und Linux als Vorschau. Sie laden einen Ordner herunter, entpacken ihn, öffnen ihn in VS Code und aktivieren ihn mit Ihrem BugIt-Konto.",
  "faq.model.q": "Enthält BugIt ein KI-Modell?",
  "faq.model.a": "Nein. Es läuft in dem Assistenten, den Sie bereits nutzen, oder eigenständig mit Ihrem eigenen OpenAI- oder Anthropic-Schlüssel.",
  "faq.after.q": "Was bekomme ich nach der Zahlung?",
