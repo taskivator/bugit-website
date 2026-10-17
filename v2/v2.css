@@ -74,10 +74,10 @@ main>section{width:min(var(--wrap),calc(100% - 32px));margin-inline:auto;text-al
 .demo{margin:72px auto 0;text-align:left;border:1px solid var(--line-2);border-radius:24px;overflow:hidden;
   background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),var(--bg-2);
   position:relative;
-  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 36px -8px rgba(255,79,201,.34),0 0 80px -24px rgba(139,69,255,.30)}
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 36px -10px rgba(255,79,201,.16),0 0 80px -28px rgba(139,69,255,.14)}
 /* The product colour as a hairline round the window, bright at two corners and clear between,
    the way taskivator.com frames its demos. Inside the box, so overflow:hidden does not clip it. */
-.demo::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(160deg,rgba(255,79,201,.7),transparent 40%,transparent 70%,rgba(139,69,255,.45));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.demo::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(160deg,rgba(255,79,201,.5),transparent 40%,transparent 70%,rgba(139,69,255,.32));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 .demo-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--ink-3)}
 .demo-bar i{width:10px;height:10px;border-radius:50%;background:#2a2238}
 .demo-bar span{margin-left:8px}
@@ -683,8 +683,8 @@ h1,h2,h3{text-wrap:balance}
 .hero .hero-trial{margin-top:10px}
 .try{width:min(760px,100%);margin:26px auto 0;padding:18px 20px 14px;text-align:left;border-radius:22px;border:1px solid var(--line-2);
   background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015)),var(--bg-2);position:relative;
-  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 36px -8px rgba(255,79,201,.34),0 0 80px -24px rgba(139,69,255,.30)}
-.try::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(160deg,rgba(255,79,201,.7),transparent 40%,transparent 70%,rgba(139,69,255,.45));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 36px -10px rgba(255,79,201,.16),0 0 80px -28px rgba(139,69,255,.14)}
+.try::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(160deg,rgba(255,79,201,.5),transparent 40%,transparent 70%,rgba(139,69,255,.32));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
 .try-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .try-badge{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:#ffb3e8;border:1px solid rgba(255,79,201,.4);background:rgba(255,79,201,.1)}
 .try-title{margin:0;font-size:18px;letter-spacing:-.02em;font-weight:700}
@@ -775,7 +775,7 @@ h1,h2,h3{text-wrap:balance}
   transition:border-color .25s ease,box-shadow .35s ease,background .25s ease}
 .faq details:hover{border-color:var(--line-2)}
 .faq details[open]{border-color:rgba(255,79,201,.45);
-  box-shadow:0 0 0 1px rgba(255,79,201,.12),0 18px 60px -24px rgba(255,79,201,.35),0 0 80px -34px rgba(139,69,255,.45);
+  box-shadow:0 0 0 1px rgba(255,79,201,.08),0 18px 60px -28px rgba(255,79,201,.16),0 0 80px -38px rgba(139,69,255,.2);
   background:linear-gradient(180deg,rgba(255,79,201,.07),rgba(139,69,255,.03)),var(--bg-2)}
 .faq summary{display:flex;align-items:center;gap:16px;padding:20px 22px;font-size:17.5px;font-weight:650;letter-spacing:-.015em;position:static;min-height:68px}
 .faq summary::before{content:counter(q,decimal-leading-zero);flex:none;font:500 12px var(--mono);letter-spacing:.1em;color:var(--ink-3);
@@ -824,3 +824,5 @@ h1,h2,h3{text-wrap:balance}
   .faq p{padding:0 14px 14px 14px;font-size:14.5px}
   [dir="rtl"] .faq p{padding:0 14px 14px 14px}
 }
+/* Softer glow (owner, 2026-10-17): the cards keep their edge, the halo is about half as strong. */
+.try{border-color:rgba(255,255,255,.12)}

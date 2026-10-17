@@ -28,9 +28,9 @@
 /* ── Panes ──────────────────────────────────────────────────────────────────── */
 .d-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:20px;align-items:start}
 .glass{position:relative;border:1px solid var(--line);border-radius:28px;background:linear-gradient(180deg,rgba(20,15,34,.92),rgba(12,9,22,.92));
-  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 36px -8px rgba(255,79,201,.34),0 0 80px -24px rgba(139,69,255,.30)}
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 36px -10px rgba(255,79,201,.16),0 0 80px -28px rgba(139,69,255,.14)}
 /* Same hairline as the hero window on the main page: product colour bright at two corners, clear between. */
-.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(160deg,rgba(255,79,201,.7),transparent 40%,transparent 70%,rgba(139,69,255,.45));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(160deg,rgba(255,79,201,.5),transparent 40%,transparent 70%,rgba(139,69,255,.32));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
 .d-in{padding:28px}
 .d-out{padding:0;overflow:hidden;min-height:560px}
 .d-out::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(255,79,201,.7),rgba(139,69,255,.7),transparent)}
