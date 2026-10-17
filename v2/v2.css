@@ -711,3 +711,27 @@ h1,h2,h3{text-wrap:balance}
   .hero>.hero-needs{margin-top:16px}
 }
 @media (forced-colors:active){.try{border:1px solid CanvasText}.try-row textarea{border:1px solid CanvasText}}
+
+/* Simpler first screen (owner, 2026-10-17): headline, one line, the preview card, the buttons. The rest follows the demo. */
+.hero{padding-top:56px}
+.hero .lede{font-size:clamp(15px,1.4vw,18px);max-width:52ch;color:var(--ink-2)}
+.hero>.hero-trial,.hero>.hero-trust{display:inline;margin:0;font-size:13px;font-weight:500;color:var(--ink-3)}
+.hero>.hero-trial::after{content:" "}
+.hero>.hero-trust{margin-left:2px}
+.hero>.cta+.hero-trial{display:block;margin-top:12px;text-wrap:balance}
+.hero>.kicker{margin:44px auto 0}
+.hero>.ask{margin-top:18px}
+.hero>.runs{margin-top:18px}
+@media (max-width:560px){
+  .hero>.hero-trial,.hero>.hero-trust{order:6}
+  .hero>.cta+.hero-trial{display:inline}
+  .hero>.hero-trust{margin-left:4px}
+  .hero>.kicker{order:7;margin:28px auto 0}
+  .hero>.ask{order:8}
+}
+@media (max-width:560px){
+  .hero>.cta{flex-direction:row;gap:8px;margin-top:14px}
+  .hero>.cta .btn{flex:1 1 0;min-width:0;padding:12px 10px;font-size:14.5px;white-space:normal;text-align:center;line-height:1.2}
+  .hero>.try{order:3;margin-top:14px}
+  .hero>.lede{order:4;margin-top:18px}
+}
