@@ -263,7 +263,7 @@
  "pricing.templates": "Not ready yet? Start with the <a href=\"/templates/\">free bug report templates</a>, the manual version of what BugIt does for you.",
  "hero.trust": "No subscription. <a href=\"/docs/refund/\">7 day refund window</a>, under the conditions in our refund policy.",
  "pricing.needs.h": "What you need",
- "pricing.needs": "Runs in VS Code with GitHub Copilot Chat, the Claude extension or another assistant, or in a terminal. Needs Python 3.10 to 3.14 and your own AI assistant, or your own OpenAI or Anthropic key. Windows 11 fully supported; macOS and Linux in preview. You download a folder, unzip it, open it in VS Code and activate with your BugIt account.",
+ "pricing.needs": "An AI assistant of your own (GitHub Copilot Free is enough to try, or use the Claude extension, or your own OpenAI or Anthropic key in standalone), VS Code, Python 3.10 to 3.14 and a token for your tracker. Allow about 15 minutes for full setup. Windows 11 fully supported; macOS and Linux in preview. You download a folder, unzip it, open it in VS Code and activate with your BugIt account.",
  "faq.try.q": "Can I try it first?",
  "faq.try.a": "Yes. Start a free 14 day trial from your BugIt account: one device, no card needed. It stops on its end date.",
  "faq.model.q": "Does BugIt include an AI model?",
@@ -275,5 +275,6 @@
  "foot.pricing": "Pricing",
  "foot.support": "Support",
  "hero.trialNote": "One device. No card needed.",
- "trial.ctaNote": "One device. No card needed."
+ "trial.ctaNote": "One device. No card needed.",
+ "needs.short": "What you need: an AI assistant of your own (GitHub Copilot Free is enough to try, or use the Claude extension, or your own OpenAI or Anthropic key in standalone), VS Code, Python 3.10 to 3.14 and a token for your tracker. Allow about 15 minutes for full setup."
 }

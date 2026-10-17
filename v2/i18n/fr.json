@@ -263,7 +263,7 @@
  "pricing.templates": "Pas encore prêt ? Commencez par les <a href=\"/templates/\">modèles de rapport de bug gratuits</a>, la version manuelle de ce que BugIt fait pour vous.",
  "hero.trust": "Sans abonnement. <a href=\"/docs/refund/\">Délai de remboursement de 7 jours</a>, aux conditions de notre politique de remboursement.",
  "pricing.needs.h": "Ce qu’il vous faut",
- "pricing.needs": "Fonctionne dans VS Code avec GitHub Copilot Chat, l’extension Claude ou un autre assistant, ou dans un terminal. Nécessite Python 3.10 à 3.14 et votre propre assistant IA, ou votre propre clé OpenAI ou Anthropic. Windows 11 entièrement pris en charge ; macOS et Linux en préversion. Vous téléchargez un dossier, le décompressez, l’ouvrez dans VS Code et l’activez avec votre compte BugIt.",
+ "pricing.needs": "Un assistant IA à vous (GitHub Copilot Free suffit pour essayer, ou l’extension Claude, ou, seul, votre propre clé OpenAI ou Anthropic), VS Code, Python 3.10 à 3.14 et un jeton pour votre outil de suivi. Prévoyez environ 15 minutes pour la configuration complète. Windows 11 entièrement pris en charge ; macOS et Linux en préversion. Vous téléchargez un dossier, le décompressez, l’ouvrez dans VS Code et l’activez avec votre compte BugIt.",
  "faq.try.q": "Puis-je l’essayer d’abord ?",
  "faq.try.a": "Oui. Lancez un essai gratuit de 14 jours depuis votre compte BugIt : un appareil, aucune carte requise. Il s’arrête à sa date de fin.",
  "faq.model.q": "BugIt inclut-il un modèle d’IA ?",
@@ -275,5 +275,6 @@
  "foot.pricing": "Tarifs",
  "foot.support": "Assistance",
  "hero.trialNote": "Un appareil. Aucune carte requise.",
- "trial.ctaNote": "Un appareil. Aucune carte requise."
+ "trial.ctaNote": "Un appareil. Aucune carte requise.",
+ "needs.short": "Ce qu’il vous faut : un assistant IA à vous (GitHub Copilot Free suffit pour essayer, ou l’extension Claude, ou, seul, votre propre clé OpenAI ou Anthropic), VS Code, Python 3.10 à 3.14 et un jeton pour votre outil de suivi. Prévoyez environ 15 minutes pour la configuration complète."
 }

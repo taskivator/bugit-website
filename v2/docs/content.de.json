@@ -54,7 +54,7 @@
   ],
   [
    "Brauche ich GitHub Copilot?",
-   "GitHub Copilot ist empfohlen und am einfachsten einzurichten. BugIt funktioniert auch mit der Claude-Erweiterung in VS Code, mit einem anderen Assistenten oder in einem einfachen Terminal. Das Einreichen ist ein Befehl und funktioniert überall gleich."
+   "Nein. BugIt läuft in jedem Assistenten, der einen Befehl ausführen kann: GitHub Copilot Chat (der Free-Tarif reicht zum Ausprobieren), der Claude-Erweiterung in VS Code oder einem einfachen Terminal. Das Einreichen ist ein Befehl und funktioniert überall gleich."
   ],
   [
    "Kann ich Claude, Gemini oder GPT nutzen?",

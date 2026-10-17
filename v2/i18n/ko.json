@@ -263,7 +263,7 @@
  "pricing.templates": "아직 결정하지 않으셨나요? <a href=\"/templates/\">무료 버그 보고서 템플릿</a>으로 시작해 보세요. BugIt이 대신 해 주는 일의 수동 버전입니다.",
  "hero.trust": "구독 없음. 환불 정책의 조건에 따라 <a href=\"/docs/refund/\">구매 후 7일 이내 환불 요청</a>이 가능합니다.",
  "pricing.needs.h": "필요한 것",
- "pricing.needs": "VS Code의 GitHub Copilot Chat, Claude 확장 또는 다른 어시스턴트, 혹은 터미널에서 실행됩니다. Python 3.10에서 3.14와 사용 중인 AI 어시스턴트, 또는 직접 발급한 OpenAI나 Anthropic 키가 필요합니다. Windows 11은 완전히 지원하고, macOS와 Linux는 미리보기 단계입니다. 폴더를 내려받아 압축을 풀고 VS Code에서 연 다음 BugIt 계정으로 활성화합니다.",
+ "pricing.needs": "직접 쓰는 AI 어시스턴트(체험에는 GitHub Copilot Free로 충분하고, Claude 확장이나 직접 발급한 OpenAI 또는 Anthropic 키로 단독 실행해도 됩니다), VS Code, Python 3.10에서 3.14, 그리고 트래커용 토큰. 전체 설정에는 약 15분이 걸립니다. Windows 11은 완전히 지원하고, macOS와 Linux는 미리보기 단계입니다. 폴더를 내려받아 압축을 풀고 VS Code에서 연 다음 BugIt 계정으로 활성화합니다.",
  "faq.try.q": "먼저 써 볼 수 있나요?",
  "faq.try.a": "네. BugIt 계정에서 14일 무료 체험을 시작할 수 있습니다. 기기 1대, 카드 필요 없음. 종료일에 만료됩니다.",
  "faq.model.q": "BugIt에 AI 모델이 포함되어 있나요?",
@@ -275,5 +275,6 @@
  "foot.pricing": "가격",
  "foot.support": "지원",
  "hero.trialNote": "기기 1대. 카드 필요 없음.",
- "trial.ctaNote": "기기 1대. 카드 필요 없음."
+ "trial.ctaNote": "기기 1대. 카드 필요 없음.",
+ "needs.short": "필요한 것: 직접 쓰는 AI 어시스턴트(체험에는 GitHub Copilot Free로 충분하고, Claude 확장이나 직접 발급한 OpenAI 또는 Anthropic 키로 단독 실행해도 됩니다), VS Code, Python 3.10에서 3.14, 그리고 트래커용 토큰. 전체 설정에는 약 15분이 걸립니다."
 }

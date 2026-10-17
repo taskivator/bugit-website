@@ -263,7 +263,7 @@
  "pricing.templates": "لست مستعدًا بعد؟ ابدأ <a href=\"/templates/\">بقوالب تقارير الأخطاء المجانية</a>، فهي النسخة اليدوية لما يقوم به BugIt نيابةً عنك.",
  "hero.trust": "بلا اشتراك. <a href=\"/docs/refund/\">مهلة استرداد خلال 7 أيام</a> وفق شروط سياسة الاسترداد لدينا.",
  "pricing.needs.h": "ما تحتاج إليه",
- "pricing.needs": "يعمل في <bdi dir=\"ltr\">VS Code</bdi> مع <bdi dir=\"ltr\">GitHub Copilot Chat</bdi> أو امتداد <bdi dir=\"ltr\">Claude</bdi> أو مساعد آخر، أو في طرفية. يتطلب <bdi dir=\"ltr\">Python</bdi> من 3.10 إلى 3.14 ومساعدك الذكي الخاص، أو مفتاح <bdi dir=\"ltr\">OpenAI</bdi> أو <bdi dir=\"ltr\">Anthropic</bdi> الخاص بك. يُدعم <bdi dir=\"ltr\">Windows 11</bdi> دعمًا كاملًا، و<bdi dir=\"ltr\">macOS</bdi> و<bdi dir=\"ltr\">Linux</bdi> بصيغة معاينة. تنزّل مجلدًا وتفك ضغطه وتفتحه في <bdi dir=\"ltr\">VS Code</bdi> ثم تفعّله بحساب <bdi dir=\"ltr\">BugIt</bdi> الخاص بك.",
+ "pricing.needs": "مساعد ذكي خاص بك (تكفي <bdi dir=\"ltr\">GitHub Copilot Free</bdi> للتجربة، أو امتداد <bdi dir=\"ltr\">Claude</bdi>، أو مستقلًا بمفتاح <bdi dir=\"ltr\">OpenAI</bdi> أو <bdi dir=\"ltr\">Anthropic</bdi> الخاص بك)، و<bdi dir=\"ltr\">VS Code</bdi>، و<bdi dir=\"ltr\">Python</bdi> من 3.10 إلى 3.14، ورمز وصول لنظام التتبع الخاص بك. خصّص نحو 15 دقيقة للإعداد الكامل. يُدعم <bdi dir=\"ltr\">Windows 11</bdi> دعمًا كاملًا، و<bdi dir=\"ltr\">macOS</bdi> و<bdi dir=\"ltr\">Linux</bdi> بصيغة معاينة. تنزّل مجلدًا وتفك ضغطه وتفتحه في <bdi dir=\"ltr\">VS Code</bdi> ثم تفعّله بحساب <bdi dir=\"ltr\">BugIt</bdi> الخاص بك.",
  "faq.try.q": "هل يمكنني تجربته أولًا؟",
  "faq.try.a": "نعم. ابدأ تجربة مجانية لمدة 14 يومًا من حسابك في <bdi dir=\"ltr\">BugIt</bdi>: جهاز واحد، ولا حاجة إلى بطاقة. وتتوقف في تاريخ انتهائها.",
  "faq.model.q": "هل يتضمن <bdi dir=\"ltr\">BugIt</bdi> نموذج ذكاء اصطناعي؟",
@@ -275,5 +275,6 @@
  "foot.pricing": "الأسعار",
  "foot.support": "الدعم",
  "hero.trialNote": "جهاز واحد. لا حاجة إلى بطاقة.",
- "trial.ctaNote": "جهاز واحد. لا حاجة إلى بطاقة."
+ "trial.ctaNote": "جهاز واحد. لا حاجة إلى بطاقة.",
+ "needs.short": "ما تحتاج إليه: مساعد ذكي خاص بك (تكفي <bdi dir=\"ltr\">GitHub Copilot Free</bdi> للتجربة، أو امتداد <bdi dir=\"ltr\">Claude</bdi>، أو مستقلًا بمفتاح <bdi dir=\"ltr\">OpenAI</bdi> أو <bdi dir=\"ltr\">Anthropic</bdi> الخاص بك)، و<bdi dir=\"ltr\">VS Code</bdi>، و<bdi dir=\"ltr\">Python</bdi> من 3.10 إلى 3.14، ورمز وصول لنظام التتبع الخاص بك. خصّص نحو 15 دقيقة للإعداد الكامل."
 }

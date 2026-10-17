@@ -263,7 +263,7 @@
  "pricing.templates": "¿Aún no te decides? Empieza con las <a href=\"/templates/\">plantillas gratuitas de informe de bug</a>, la versión manual de lo que BugIt hace por ti.",
  "hero.trust": "Sin suscripción. <a href=\"/docs/refund/\">Plazo de reembolso de 7 días</a>, en las condiciones de nuestra política de reembolso.",
  "pricing.needs.h": "Lo que necesitas",
- "pricing.needs": "Funciona en VS Code con GitHub Copilot Chat, la extensión de Claude u otro asistente, o en una terminal. Necesita Python 3.10 a 3.14 y tu propio asistente de IA, o tu propia clave de OpenAI o Anthropic. Windows 11 totalmente compatible; macOS y Linux en vista previa. Descargas una carpeta, la descomprimes, la abres en VS Code y la activas con tu cuenta de BugIt.",
+ "pricing.needs": "Un asistente de IA propio (GitHub Copilot Free basta para probar, o usa la extensión de Claude, o tu propia clave de OpenAI o Anthropic para usarlo por su cuenta), VS Code, Python 3.10 a 3.14 y un token de tu tracker. Calcula unos 15 minutos para la configuración completa. Windows 11 totalmente compatible; macOS y Linux en vista previa. Descargas una carpeta, la descomprimes, la abres en VS Code y la activas con tu cuenta de BugIt.",
  "faq.try.q": "¿Puedo probarlo antes?",
  "faq.try.a": "Sí. Empieza una prueba gratuita de 14 días desde tu cuenta de BugIt: un dispositivo, sin tarjeta. Termina en su fecha de fin.",
  "faq.model.q": "¿BugIt incluye un modelo de IA?",
@@ -275,5 +275,6 @@
  "foot.pricing": "Precios",
  "foot.support": "Soporte",
  "hero.trialNote": "Un dispositivo. Sin tarjeta.",
- "trial.ctaNote": "Un dispositivo. Sin tarjeta."
+ "trial.ctaNote": "Un dispositivo. Sin tarjeta.",
+ "needs.short": "Lo que necesitas: un asistente de IA propio (GitHub Copilot Free basta para probar, o usa la extensión de Claude, o tu propia clave de OpenAI o Anthropic para usarlo por su cuenta), VS Code, Python 3.10 a 3.14 y un token de tu tracker. Calcula unos 15 minutos para la configuración completa."
 }

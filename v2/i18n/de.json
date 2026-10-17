@@ -263,7 +263,7 @@
  "pricing.templates": "Noch nicht so weit? Beginnen Sie mit den <a href=\"/templates/\">kostenlosen Bugreport-Vorlagen</a>, der manuellen Version dessen, was BugIt für Sie erledigt.",
  "hero.trust": "Kein Abo. <a href=\"/docs/refund/\">7 Tage Rückerstattungsfrist</a>, zu den Bedingungen unserer Rückerstattungsrichtlinie.",
  "pricing.needs.h": "Was Sie brauchen",
- "pricing.needs": "Läuft in VS Code mit GitHub Copilot Chat, der Claude-Erweiterung oder einem anderen Assistenten, oder in einem Terminal. Benötigt Python 3.10 bis 3.14 und Ihren eigenen KI-Assistenten oder Ihren eigenen OpenAI- oder Anthropic-Schlüssel. Windows 11 wird vollständig unterstützt, macOS und Linux als Vorschau. Sie laden einen Ordner herunter, entpacken ihn, öffnen ihn in VS Code und aktivieren ihn mit Ihrem BugIt-Konto.",
+ "pricing.needs": "Einen eigenen KI-Assistenten (GitHub Copilot Free reicht zum Ausprobieren, alternativ die Claude-Erweiterung oder, eigenständig, Ihren eigenen OpenAI- oder Anthropic-Schlüssel), VS Code, Python 3.10 bis 3.14 und ein Token für Ihren Tracker. Planen Sie für die komplette Einrichtung etwa 15 Minuten ein. Windows 11 wird vollständig unterstützt, macOS und Linux als Vorschau. Sie laden einen Ordner herunter, entpacken ihn, öffnen ihn in VS Code und aktivieren ihn mit Ihrem BugIt-Konto.",
  "faq.try.q": "Kann ich es zuerst testen?",
  "faq.try.a": "Ja. Starten Sie in Ihrem BugIt-Konto eine kostenlose Testversion für 14 Tage: ein Gerät, keine Karte nötig. Sie endet zum Enddatum.",
  "faq.model.q": "Enthält BugIt ein KI-Modell?",
@@ -275,5 +275,6 @@
  "foot.pricing": "Preise",
  "foot.support": "Support",
  "hero.trialNote": "Ein Gerät. Keine Karte nötig.",
- "trial.ctaNote": "Ein Gerät. Keine Karte nötig."
+ "trial.ctaNote": "Ein Gerät. Keine Karte nötig.",
+ "needs.short": "Was Sie brauchen: einen eigenen KI-Assistenten (GitHub Copilot Free reicht zum Ausprobieren, alternativ die Claude-Erweiterung oder, eigenständig, Ihren eigenen OpenAI- oder Anthropic-Schlüssel), VS Code, Python 3.10 bis 3.14 und ein Token für Ihren Tracker. Planen Sie für die komplette Einrichtung etwa 15 Minuten ein."
 }

@@ -263,7 +263,7 @@
  "pricing.templates": "还没决定？先从<a href=\"/templates/\">免费的缺陷报告模板</a>开始，它们是 BugIt 替你完成的工作的手动版本。",
  "hero.trust": "非订阅。<a href=\"/docs/refund/\">购买后 7 天内可申请退款</a>，具体条件见退款政策。",
  "pricing.needs.h": "你需要什么",
- "pricing.needs": "可在 VS Code 中配合 GitHub Copilot Chat、Claude 扩展或其他助手运行，也可在终端中运行。需要 Python 3.10 到 3.14，以及你自己的 AI 助手，或你自己的 OpenAI 或 Anthropic 密钥。Windows 11 完全支持；macOS 和 Linux 处于预览阶段。你下载一个文件夹，解压后在 VS Code 中打开，再用你的 BugIt 账户激活。",
+ "pricing.needs": "一个你自己的 AI 助手（试用的话 GitHub Copilot Free 就够了，也可以用 Claude 扩展，或配上你自己的 OpenAI 或 Anthropic 密钥独立运行）、VS Code、Python 3.10 到 3.14，以及你的跟踪系统的令牌。完整设置大约需要 15 分钟。Windows 11 完全支持；macOS 和 Linux 处于预览阶段。你下载一个文件夹，解压后在 VS Code 中打开，再用你的 BugIt 账户激活。",
  "faq.try.q": "可以先试用吗？",
  "faq.try.a": "可以。在你的 BugIt 账户中开始 14 天免费试用：一台设备，无需银行卡。到期日即停止。",
  "faq.model.q": "BugIt 自带 AI 模型吗？",
@@ -275,5 +275,6 @@
  "foot.pricing": "价格",
  "foot.support": "支持",
  "hero.trialNote": "一台设备。无需银行卡。",
- "trial.ctaNote": "一台设备。无需银行卡。"
+ "trial.ctaNote": "一台设备。无需银行卡。",
+ "needs.short": "你需要：一个你自己的 AI 助手（试用的话 GitHub Copilot Free 就够了，也可以用 Claude 扩展，或配上你自己的 OpenAI 或 Anthropic 密钥独立运行）、VS Code、Python 3.10 到 3.14，以及你的跟踪系统的令牌。完整设置大约需要 15 分钟。"
 }
