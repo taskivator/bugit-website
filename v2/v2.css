@@ -759,3 +759,6 @@ h1,h2,h3{text-wrap:balance}
 .hero>.kicker{margin-top:68px}
 .hero>.ask{margin-top:44px}
 @media (max-width:560px){.hero>.kicker{margin-top:48px}.hero>.ask{margin-top:34px}}
+
+/* Ask BugIt now sits in the pricing section, above the questions (owner, 2026-10-17). */
+#pricing>.ask{margin:40px auto 28px;width:min(560px,100%)}
