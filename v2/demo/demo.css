@@ -327,3 +327,12 @@
 .d-empty-key li{display:grid;grid-template-columns:minmax(168px,auto) 1fr;gap:6px 12px;align-items:center;font-size:14px;color:var(--ink-2)}
 .d-empty-key li .d-basis{justify-self:start}
 @media (max-width:640px){.d-empty{padding:32px 18px 28px}.d-empty-key li{grid-template-columns:1fr}}
+
+/* picker alignment: same width and left edge as the note box; label above in the draft pane too */
+.d-pick{max-width:none}
+.d-trk .d-hint{margin-bottom:10px}
+.d-fmt-row{display:block}
+.d-fmt-row .d-label{display:block;margin:0 0 8px}
+.d-pick-btn{padding-right:16px}
+.d-pick-f{min-width:92px;text-align:center}
+.d-pick-ch{margin-left:2px}
