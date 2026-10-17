@@ -369,3 +369,17 @@
 .d-q-chip{appearance:none;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--ink-2);font:600 13.5px var(--sans);cursor:pointer;transition:border-color .2s,background .2s,color .2s}
 .d-q-chip:hover{border-color:rgba(255,79,201,.6);background:rgba(255,79,201,.08);color:#fff}
 .d-q-chip:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
+
+/* What the full product adds, beside what the preview does. */
+.d-cmp{flex:1 1 100%;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:14px}
+.d-cmp-c{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:rgba(255,255,255,.025);min-width:0}
+.d-cmp-c.is-full{border-color:rgba(255,79,201,.35);background:linear-gradient(180deg,rgba(255,79,201,.07),rgba(139,69,255,.05))}
+.d-cmp-c h3{margin:0 0 10px;font-size:14px;letter-spacing:.02em;color:var(--ink-2);font-weight:650}
+.d-cmp-c.is-full h3{color:#fff}
+.d-cmp-c ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.d-cmp-c li{position:relative;padding-left:22px;font-size:14.5px;line-height:1.4;color:var(--ink-2)}
+.d-cmp-c li::before{content:"";position:absolute;left:2px;top:.5em;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.22)}
+.d-cmp-c.is-full li{color:var(--ink)}
+.d-cmp-c.is-full li::before{background:var(--green);box-shadow:0 0 8px rgba(50,242,140,.5)}
+@media (max-width:760px){.d-cmp{grid-template-columns:1fr}}
+@media (forced-colors:active){.d-cmp-c{border:1px solid CanvasText}.d-cmp-c li::before{background:CanvasText}}
