@@ -9,6 +9,6 @@ const i = src.indexOf("post('/draft',"), j = i < 0 ? -1 : src.indexOf(").then(",
 const call = i < 0 || j < 0 ? null : [null, src.slice(i, j)];
 const fails = [];
 if (!call) fails.push("no post('/draft', {...}) found");
-else for (const f of ['runToken', 'redactedNote', 'questions', 'answers']) if (!new RegExp('\b' + f + '\s*:').test(call[1])) fails.push('the /draft request does not send ' + f);
+else for (const f of ['runToken', 'redactedNote', 'questions', 'answers']) if (!call[1].includes(f + ':')) fails.push('the /draft request does not send ' + f);
 if (fails.length) { console.error('check-preview-contract FAILED: ' + fails.join('; ')); process.exit(1); }
 console.log('check-preview-contract OK: the /draft request carries runToken, redactedNote, questions and answers, as the engine verifies them.');

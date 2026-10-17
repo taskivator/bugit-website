@@ -205,6 +205,7 @@ const SUITES = [
   // tablet. Thorough in one configuration reads as coverage for all of them.
   "check-guide-devices.mjs",
   // The redesign's own guard (2026-10-04): the built pages, as published. See its header.
+  "check-preview-contract.mjs",
   "check-redesign.mjs",
   // What a visitor can DO on the published pages: routes, keyboard, targets, type, motion.
   "check-published-pages.mjs",
