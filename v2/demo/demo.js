@@ -104,6 +104,58 @@
     document.head.appendChild(s);
   }
 
+  /* a styled, keyboard operable picker that wraps a native select (the select stays the source of truth) */
+  var PICK = {
+    jira: ['Ji', '#2684ff', 'Rich text'], github: ['Gh', '#8b949e', 'Markdown'], gitlab: ['Gl', '#fc6d26', 'Markdown'],
+    ado: ['Az', '#0078d4', 'Rich text'], linear: ['Li', '#5e6ad2', 'Markdown'], youtrack: ['Yt', '#ff318c', 'Markdown'],
+    shortcut: ['Sh', '#8d4bff', 'Markdown'], clickup: ['Cu', '#7b68ee', 'Markdown'], asana: ['As', '#f06a6a', 'Rich text'],
+    trello: ['Tr', '#0079bf', 'Markdown'], bugzilla: ['Bz', '#d4a72c', 'Plain text']
+  };
+  function enhancePick(sel) {
+    var wrap = el('div', 'd-pick'), btn = el('button', 'd-pick-btn'), list = el('ul', 'd-pick-list'), lid = sel.id + '-list';
+    btn.type = 'button'; btn.id = sel.id + '-btn'; btn.setAttribute('aria-haspopup', 'listbox'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', lid);
+    var lab = document.querySelector('label[for="' + sel.id + '"]');
+    if (lab) { if (!lab.id) lab.id = sel.id + '-lab'; btn.setAttribute('aria-labelledby', lab.id + ' ' + btn.id); lab.addEventListener('click', function (e) { e.preventDefault(); btn.focus(); }); }
+    list.id = lid; list.setAttribute('role', 'listbox'); list.hidden = true; list.tabIndex = -1;
+    if (lab) list.setAttribute('aria-labelledby', lab.id);
+    function badge(v) { var p = PICK[v] || ['?', '#999', ''], b = el('span', 'd-pick-b', p[0]); b.style.setProperty('--b', p[1]); b.setAttribute('aria-hidden', 'true'); return b; }
+    var opts = Array.prototype.map.call(sel.options, function (o) {
+      var li = el('li', 'd-pick-o'); li.setAttribute('role', 'option'); li.id = sel.id + '-o-' + o.value; li.setAttribute('data-v', o.value);
+      li.appendChild(badge(o.value)); li.appendChild(el('span', 'd-pick-n', o.text)); li.appendChild(el('span', 'd-pick-f', (PICK[o.value] || [])[2] || ''));
+      li.appendChild(svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>')); li.lastChild.setAttribute('class', 'd-pick-ck');
+      list.appendChild(li); return li;
+    });
+    var active = 0;
+    function paint() {
+      var cur = sel.value; btn.textContent = '';
+      btn.appendChild(badge(cur)); btn.appendChild(el('span', 'd-pick-n', sel.options[sel.selectedIndex].text));
+      var f = el('span', 'd-pick-f', (PICK[cur] || [])[2] || ''); btn.appendChild(f);
+      var ch = svg('<path d="M6 9l6 6 6-6"/>'); ch.setAttribute('class', 'd-pick-ch'); btn.appendChild(ch);
+      opts.forEach(function (li, i) { var on = li.getAttribute('data-v') === cur; li.setAttribute('aria-selected', String(on)); if (on) active = i; });
+    }
+    function setActive(i) { active = (i + opts.length) % opts.length; opts.forEach(function (li, j) { li.classList.toggle('is-active', j === active); }); list.setAttribute('aria-activedescendant', opts[active].id); opts[active].scrollIntoView({ block: 'nearest' }); }
+    function openL() { list.hidden = false; btn.setAttribute('aria-expanded', 'true'); wrap.classList.add('is-open'); setActive(active); list.focus(); }
+    function closeL(back) { list.hidden = true; btn.setAttribute('aria-expanded', 'false'); wrap.classList.remove('is-open'); if (back) btn.focus(); }
+    function choose(i) { sel.value = opts[i].getAttribute('data-v'); paint(); closeL(true); sel.dispatchEvent(new Event('change', { bubbles: true })); }
+    btn.addEventListener('click', function () { if (list.hidden) openL(); else closeL(true); });
+    btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); openL(); } });
+    list.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+      else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
+      else if (e.key === 'End') { e.preventDefault(); setActive(opts.length - 1); }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(active); }
+      else if (e.key === 'Escape') { e.preventDefault(); closeL(true); }
+      else if (e.key === 'Tab') { closeL(false); }
+      else if (e.key.length === 1) { var k = e.key.toLowerCase(), n = opts.length; for (var s = 1; s <= n; s++) { var j = (active + s) % n; if (opts[j].textContent.toLowerCase().charAt(0) === k) { setActive(j); break; } } }
+    });
+    list.addEventListener('click', function (e) { var li = e.target.closest('.d-pick-o'); if (li) choose(opts.indexOf(li)); });
+    document.addEventListener('click', function (e) { if (!list.hidden && !wrap.contains(e.target)) closeL(false); });
+    sel.classList.add('d-native'); sel.setAttribute('tabindex', '-1'); sel.setAttribute('aria-hidden', 'true');
+    sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(btn); wrap.appendChild(list); wrap.appendChild(sel);
+    sel._refresh = paint; paint();
+  }
+
   /* start */
   function init() {
     var note = $('note');
@@ -116,8 +168,9 @@
     $('q-skip').addEventListener('click', function () { sendDraft([]); });
     $('copy-title').addEventListener('click', onCopyTitle);
     $('copy-body').addEventListener('click', onCopyBody);
-    $('tracker').addEventListener('change', function () { $('tracker2').value = $('tracker').value; renderCopyPane(); });
-    $('tracker2').addEventListener('change', function () { $('tracker').value = $('tracker2').value; renderCopyPane(); });
+    enhancePick($('tracker')); enhancePick($('tracker2'));
+    $('tracker').addEventListener('change', function () { $('tracker2').value = $('tracker').value; $('tracker2')._refresh(); renderCopyPane(); });
+    $('tracker2').addEventListener('change', function () { $('tracker').value = $('tracker2').value; $('tracker')._refresh(); renderCopyPane(); });
     $('again').addEventListener('click', onAgain);
     $('fb-yes').addEventListener('click', function () { onFeedback(true); });
     $('fb-no').addEventListener('click', function () { onFeedback(false); });
