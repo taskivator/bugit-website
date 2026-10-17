@@ -114,7 +114,9 @@
     $('note-form').addEventListener('submit', onSubmitNote);
     $('q-form').addEventListener('submit', function (e) { e.preventDefault(); sendDraft(collectAnswers()); });
     $('q-skip').addEventListener('click', function () { sendDraft([]); });
-    $('copy-btn').addEventListener('click', onCopy);
+    $('copy-title').addEventListener('click', onCopyTitle);
+    $('copy-body').addEventListener('click', onCopyBody);
+    $('tracker').addEventListener('change', renderCopyPane);
     $('again').addEventListener('click', onAgain);
     $('fb-yes').addEventListener('click', function () { onFeedback(true); });
     $('fb-no').addEventListener('click', function () { onFeedback(false); });
@@ -238,7 +240,7 @@
     if (d.suspected_cause && d.suspected_cause.text) {
       var sc = sec('Your suspicion, not confirmed', n++); sc.classList.add('d-susp'); sc.appendChild(el('p', null, d.suspected_cause.text)); body.appendChild(sc);
     }
-    show('out-ghost', false); show('out-draft', true);
+    renderCopyPane(); show('out-ghost', false); show('out-draft', true);
     $('fb-yes').setAttribute('aria-pressed', 'false'); $('fb-no').setAttribute('aria-pressed', 'false');
     show('fb-form', false); show('fb-thanks', false);
   }
@@ -249,28 +251,91 @@
     clearError('note-error'); panes('pane-note'); setStep('note'); outState('Waiting for your note'); $('note').value = ''; onCount(); focusHead('h-note');
   }
 
-  /* copy as plain text */
-  function draftText(d) {
-    var L = [];
-    L.push(d.title.text, '');
-    if (d.steps && d.steps.length) { L.push('Steps'); d.steps.forEach(function (s, i) { L.push((i + 1) + '. ' + s.text); }); L.push(''); }
-    if (d.expected) L.push('Expected result: ' + d.expected.text);
-    if (d.actual) L.push('Actual result: ' + d.actual.text);
-    if (d.expected || d.actual) L.push('');
-    if (d.severity) { L.push('Severity: ' + d.severity.level); (d.severity.reasons || []).forEach(function (r) { L.push('  ' + r.text); }); if (d.severity.would_change_if) L.push('  What would change this: ' + d.severity.would_change_if); L.push(''); }
-    if (d.environment && d.environment.length) { L.push('Environment'); d.environment.forEach(function (r) { L.push('  ' + r.field + ': ' + r.value); }); L.push(''); }
-    if (d.evidence_missing && d.evidence_missing.length) { L.push('Evidence still missing'); d.evidence_missing.forEach(function (m) { L.push('  ' + m.item + ' (' + m.why + ')'); }); L.push(''); }
-    if (d.suspected_cause && d.suspected_cause.text) L.push('Your suspicion, not confirmed: ' + d.suspected_cause.text);
-    return L.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  /* copy for the chosen tracker: the same draft laid out the way that tracker's own users write it */
+  var TRK = {
+    jira:     { fmt: 'html', h: 'h3', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' }, set: 'Priority' },
+    ado:      { fmt: 'html', h: 'b',  L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'System info', more: 'Additional information' }, set: 'Severity' },
+    asana:    { fmt: 'html', h: 'b',  L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'What happened', env: 'Environment', more: 'Additional information' }, set: 'a priority tag' },
+    github:   { fmt: 'md', h: '###', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' }, set: 'a label' },
+    gitlab:   { fmt: 'md', h: '###', L: { steps: 'Steps to reproduce', exp: 'What is the expected *correct* behavior?', act: 'What is the current *bug* behavior?', env: 'Environment', more: 'Additional information' }, set: 'a severity label' },
+    linear:   { fmt: 'md', h: '##',  L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' }, set: 'Priority' },
+    youtrack: { fmt: 'md', h: '##',  L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'What happens instead', env: 'Environment', more: 'Additional information' }, set: 'Priority' },
+    shortcut: { fmt: 'md', h: '**',  L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' }, set: 'a priority' },
+    clickup:  { fmt: 'md', h: '##',  L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Notes and attachments' }, set: 'Priority' },
+    trello:   { fmt: 'md', h: '##',  L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Attachments and logs' }, set: 'a label' },
+    bugzilla: { fmt: 'plain', h: ':', L: { steps: 'Steps to Reproduce', exp: 'Expected Results', act: 'Actual Results', env: 'Build Date & Platform Bug Found', more: 'Additional Information' }, set: 'Severity' }
+  };
+  var isUnk = function (it) { return !it || it.basis === 'unknown' || /^UNKNOWN\b/.test(it.text); };
+  var chk = function (it) { return it.basis === 'inferred' ? ' (inferred, please check)' : ''; };
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function splitTitle(t) { var m = /^\s*\[([^\]]{1,40})\]\s+(.*)$/.exec(t); return m ? { tag: m[1], text: m[2] } : { tag: '', text: t }; }
+
+  function sectionsOf(d) {
+    var more = [];
+    (d.evidence_missing || []).forEach(function (m) { more.push(m.item + ': ' + m.why); });
+    return {
+      steps: (d.steps || []).filter(function (x) { return !isUnk(x); }).map(function (x) { return x.text + chk(x); }),
+      exp: d.expected && !isUnk(d.expected) ? d.expected.text + chk(d.expected) : '',
+      act: d.actual && !isUnk(d.actual) ? d.actual.text + chk(d.actual) : '',
+      env: (d.environment || []).filter(function (x) { return !isUnk(x); }).map(function (x) { return [x.field, x.value + chk(x)]; }),
+      susp: d.suspected_cause && d.suspected_cause.text ? 'Reporter suspicion, not confirmed: ' + d.suspected_cause.text : '',
+      more: more
+    };
   }
-  function onCopy() {
-    var text = draftText(S.draft), done = function () { say('Copied'); var b = $('copy-btn'); b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy as text'; }, 1800); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, fallback); } else { fallback(); }
+  function layout(d, key) {
+    var T = TRK[key], S = sectionsOf(d), md = T.fmt === 'md', html = T.fmt === 'html', out = [];
+    function head(label) {
+      if (html) return T.h === 'b' ? '<p><strong>' + esc(label) + '</strong></p>' : '<' + T.h + '>' + esc(label) + '</' + T.h + '>';
+      if (T.fmt === 'plain') return label + ':';
+      return T.h === '**' ? '**' + label + '**' : T.h + ' ' + label;
+    }
+    function para(t) { return html ? '<p>' + esc(t) + '</p>' : t; }
+    function ol(a) { return html ? '<ol>' + a.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol>' : a.map(function (x, i) { return (i + 1) + '. ' + x; }).join('\n'); }
+    function ul(a) { return html ? '<ul>' + a.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : a.map(function (x) { return '- ' + x; }).join('\n'); }
+    function block(label, body) { out.push(head(label) + (html ? '' : '\n') + body); }
+    if (S.steps.length) block(T.L.steps, ol(S.steps));
+    if (S.exp) block(T.L.exp, para(S.exp));
+    if (S.act) block(T.L.act, para(S.act));
+    if (S.env.length) {
+      block(T.L.env, ul(S.env.map(function (r) { return (md ? '**' + r[0] + ':** ' : r[0] + ': ') + r[1]; })));
+    }
+    var extra = [];
+    if (S.susp) extra.push(S.susp);
+    if (S.more.length) extra.push('Still needed from the reporter:');
+    if (extra.length) {
+      var body = extra.map(para).join(html ? '' : '\n\n');
+      if (S.more.length) body += (html ? '' : '\n') + ul(S.more);
+      block(T.L.more, body);
+    }
+    var text = out.join(html ? '' : '\n\n');
+    return html ? text : text + '\n';
+  }
+  function plainOf(h) { return h.replace(/<\/(p|h3|li|ol|ul)>/g, '\n').replace(/<li>/g, '- ').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\n{3,}/g, '\n\n').trim() + '\n'; }
+
+  function currentTracker() { return $('tracker').value; }
+  function renderCopyPane() {
+    if (!S.draft) return;
+    var key = currentTracker(), T = TRK[key], t = splitTitle(S.draft.title.text), body = layout(S.draft, key);
+    $('fmt-prev').textContent = T.fmt === 'html' ? plainOf(body) : body;
+    var sev = S.draft.severity && S.draft.severity.level && S.draft.severity.level !== 'UNKNOWN' ? S.draft.severity.level : '';
+    var bits = [];
+    if (sev) bits.push('Severity ' + sev + ' (set it in ' + T.set + ', not in the text)');
+    if (t.tag) bits.push('area "' + t.tag + '" (use your component, label or area field)');
+    $('fmt-set').textContent = bits.length ? 'Set in your tracker: ' + bits.join(', ') + '.' : '';
+  }
+  function copyText(text, btn, label, html) {
+    var done = function () { say('Copied'); btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = label; }, 1800); };
     function fallback() {
-      var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      var ta = document.createElement('textarea'); ta.value = html ? plainOf(text) : text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { say('Select the text and copy it'); } ta.remove();
     }
+    if (html && window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+      var item = new window.ClipboardItem({ 'text/html': new Blob([text], { type: 'text/html' }), 'text/plain': new Blob([plainOf(text)], { type: 'text/plain' }) });
+      navigator.clipboard.write([item]).then(done, fallback);
+    } else if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(html ? plainOf(text) : text).then(done, fallback); } else { fallback(); }
   }
+  function onCopyTitle() { copyText(splitTitle(S.draft.title.text).text, $('copy-title'), 'Copy title', false); }
+  function onCopyBody() { var k = currentTracker(); copyText(layout(S.draft, k), $('copy-body'), 'Copy description', TRK[k].fmt === 'html'); }
 
   /* feedback */
   function onFeedback(yes) {

@@ -97,7 +97,7 @@
               <span>Write my draft</span>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </button>
-            <p class="d-priv">BugIt redacts common personal data as a best effort, so you read the draft before using it. Your text is processed by our service provider Anthropic to write the draft, and we do not keep it. <a href="/docs/privacy/">Privacy notice</a></p>
+            <p class="d-priv">BugIt redacts common personal data as a best effort, so you read the draft before using it. Your text is processed by our service provider Anthropic to write the draft, and we do not keep it. Each visitor can write a few drafts a day. <a href="/docs/privacy/">Privacy notice</a></p>
           </form>
         </div>
 
@@ -150,8 +150,32 @@
           <h3 class="d-title" id="draft-title"></h3>
           <div id="draft-body"></div>
 
+          <section class="d-fmt" aria-labelledby="fmt-h">
+            <h3 class="d-fmt-h" id="fmt-h">Copy it into your tracker</h3>
+            <div class="d-fmt-row">
+              <label for="tracker" class="d-label">Your tracker</label>
+              <select id="tracker">
+                <option value="jira">Jira</option>
+                <option value="github">GitHub Issues</option>
+                <option value="gitlab">GitLab Issues</option>
+                <option value="ado">Azure DevOps Boards</option>
+                <option value="linear">Linear</option>
+                <option value="youtrack">YouTrack</option>
+                <option value="shortcut">Shortcut</option>
+                <option value="clickup">ClickUp</option>
+                <option value="asana">Asana</option>
+                <option value="trello">Trello</option>
+                <option value="bugzilla">Bugzilla</option>
+              </select>
+            </div>
+            <p class="d-fmt-set" id="fmt-set"></p>
+            <details class="d-fmt-prev"><summary>See what will be copied</summary><pre id="fmt-prev"></pre></details>
+            <div class="d-copy">
+              <button type="button" class="btn btn-ghost btn-sm" id="copy-title">Copy title</button>
+              <button type="button" class="btn btn-primary btn-sm" id="copy-body">Copy description</button>
+            </div>
+          </section>
           <div class="d-actions">
-            <button type="button" class="btn btn-ghost btn-sm" id="copy-btn">Copy as text</button>
             <span class="d-fb" role="group" aria-label="Was this useful?">
               <span class="d-fb-q">Was this useful?</span>
               <button type="button" class="btn btn-ghost btn-sm d-fb-b" id="fb-yes" aria-pressed="false">Yes</button>

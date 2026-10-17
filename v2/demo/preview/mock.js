@@ -13,32 +13,26 @@
         questions: [{ id: 'q1', text: 'Which build or version of the app were you using?' }, { id: 'q2', text: 'What did you expect to happen?' }, { id: 'q3', text: 'Does it happen every time?' }], canSkip: true }, 1800);
     }
     if (path === '/draft') {
+      var txt = String(body.redactedNote || '').trim(), first = (txt.split(/(?<=[.!?])\s+/)[0] || txt).slice(0, 120);
+      var ans = (body.answers || []).filter(function (x) { return x.text; });
+      var low = txt.toLowerCase(), known = function (w) { return low.indexOf(w) >= 0; };
       return json(200, { feedbackToken: 'mock', redactions: null, draft: {
         verdict: 'draft',
-        title: { text: '[Checkout] App crashes when tapping Pay on the order screen', basis: 'stated' },
-        steps: [
-          { text: 'Open the order screen on a phone.', basis: 'inferred' },
-          { text: 'Tap Pay.', basis: 'stated' },
-          { text: 'The app closes. It happened twice today.', basis: 'stated' }
-        ],
-        expected: { text: 'The payment goes through and a confirmation is shown.', basis: 'inferred' },
-        actual: { text: 'The app crashes. It worked last week.', basis: 'stated' },
-        severity: { level: 'High', reasons: [
-          { text: 'Payment cannot be completed on this device.', basis: 'inferred' },
-          { text: 'No workaround was mentioned.', basis: 'unknown' },
-          { text: 'It happened twice in one day.', basis: 'stated' }], would_change_if: 'A working payment path on another device would make this Medium.' },
+        title: { text: '[Area unknown] ' + first.replace(/[.!?]+$/, ''), basis: 'inferred' },
+        steps: [{ text: 'UNKNOWN: the note does not say how to reach this.', basis: 'unknown' }],
+        expected: { text: 'UNKNOWN', basis: 'unknown' },
+        actual: { text: txt.slice(0, 300), basis: 'stated' },
+        severity: { level: 'UNKNOWN', reasons: [{ text: 'Impact, workaround and number of users are not stated.', basis: 'unknown' }], would_change_if: 'Knowing how many people are affected and whether a workaround exists.' },
         environment: [
-          { field: 'Product or area', value: 'Checkout, order screen', basis: 'stated' },
-          { field: 'Build or version', value: 'UNKNOWN', basis: 'unknown' },
+          { field: 'Build or version', value: ans[0] ? ans[0].text : 'UNKNOWN', basis: ans[0] ? 'stated' : 'unknown' },
           { field: 'Operating system', value: 'UNKNOWN', basis: 'unknown' },
-          { field: 'Device or browser', value: 'A phone', basis: 'stated' },
-          { field: 'How often', value: 'Twice today', basis: 'stated' },
-          { field: 'Since when or last good version', value: 'Worked last week', basis: 'stated' }],
+          { field: 'Device or browser', value: known('phone') ? 'A phone' : 'UNKNOWN', basis: known('phone') ? 'stated' : 'unknown' },
+          { field: 'How often', value: 'UNKNOWN', basis: 'unknown' }],
         evidence_missing: [
-          { item: 'The crash log from the phone', why: 'It shows the line that failed, so a developer can start there.' },
-          { item: 'The exact app build', why: 'It tells the team whether a recent release caused it.' },
-          { item: 'A screen recording of the steps', why: 'It removes any doubt about what was tapped before the crash.' }],
-        suspected_cause: null }, notices: [] }, 2200);
+          { item: 'The exact steps', why: 'A developer needs them to reproduce it.' },
+          { item: 'The crash log or error message', why: 'It points to the line that failed.' },
+          { item: 'The exact build', why: 'It tells the team whether a recent release caused it.' }],
+        suspected_cause: null }, notices: [] }, 2000);
     }
     return json(204, {}, 50);
   };
