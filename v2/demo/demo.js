@@ -10,7 +10,7 @@
   var MSG = {
     paused: 'The preview is paused right now. Please try again later.',
     busy: 'The preview is busy right now. Please try again tomorrow.',
-    rate_limited: 'You have used the preview a few times today. Please try again later.',
+    rate_limited: 'You have reached the preview limit: 6 drafts a day, and 3 in any 10 minutes. Please try again later, or try the full BugIt free for 14 days.',
     refused_secrets: 'That text looks like it contains a password or a token, so we did not use it. Remove it and try again.',
     refused_logs: 'That looks like a log or a file dump. Please write a short note in your own words instead.',
     not_english: 'The preview works in English only.',

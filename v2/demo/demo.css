@@ -383,3 +383,8 @@
 .d-cmp-c.is-full li::before{background:var(--green);box-shadow:0 0 8px rgba(50,242,140,.5)}
 @media (max-width:760px){.d-cmp{grid-template-columns:1fr}}
 @media (forced-colors:active){.d-cmp-c{border:1px solid CanvasText}.d-cmp-c li::before{background:CanvasText}}
+
+.d-limit{margin:12px 0 0;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);font-size:14px;line-height:1.45;color:var(--ink-2)}
+.d-limit strong{color:#fff;font-weight:650}
+.d-limit-out{flex:1 1 100%;margin:0}
+@media (forced-colors:active){.d-limit{border:1px solid CanvasText}}
