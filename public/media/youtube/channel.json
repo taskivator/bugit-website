@@ -72,7 +72,7 @@
       "tall": "XOJMCoExDlY",
       "seconds": 30,
       "duration": "0:30",
-      "title": "Personal data is stripped before you read the draft",
+      "title": "BugIt can redact common personal data before you read the draft",
       "label": "Privacy redaction"
     },
     {
