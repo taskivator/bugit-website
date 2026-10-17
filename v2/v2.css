@@ -735,3 +735,20 @@ h1,h2,h3{text-wrap:balance}
   .hero>.try{order:3;margin-top:14px}
   .hero>.lede{order:4;margin-top:18px}
 }
+/* Even rhythm for the block that follows the demo (owner, 2026-10-17): 20px between each element. */
+.hero>.kicker{margin:36px auto 0}
+.hero>.ask{margin:20px auto 0}
+.hero>.runs{margin:20px 0 0}
+.hero>.hero-needs{margin:20px auto 0}
+.hero+.band{padding-top:96px}
+@media (max-width:560px){
+  .hero>.kicker{margin:28px auto 0}
+  .hero+.band{padding-top:64px}
+}
+@media (max-width:560px){
+  .hero>.kicker,.hero>.ask,.hero>.runs,.hero>.hero-needs{order:7}
+  .hero>.ask{margin-top:20px}
+  .hero>.runs{margin-top:20px}
+  .hero>.hero-needs{margin-top:20px}
+}
+@media (max-width:560px){.hero>.runs{gap:6px}.hero>.runs li{padding:5px 9px;font-size:11.5px}}
