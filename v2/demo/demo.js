@@ -9,7 +9,7 @@
 
   var MSG = {
     paused: 'The preview is paused right now. Please try again later.',
-    busy: 'The preview is busy right now. Please try again tomorrow.',
+    busy: 'The free preview has reached its limit for now. Please try again later, or try the full BugIt free for 14 days.',
     rate_limited: 'You have used your 3 free drafts for today. The limit resets every day, or try the full BugIt free for 14 days, which has no such limit.',
     refused_secrets: 'That text looks like it contains a password or a token, so we did not use it. Remove it and try again.',
     refused_logs: 'That looks like a log or a file dump. Please write a short note in your own words instead.',
@@ -204,7 +204,7 @@
     $('trial-btn').addEventListener('click', function () { try { navigator.sendBeacon(TRIAL_BEACON, JSON.stringify({ name: 'trial_clicked' })); } catch (e) { /* the link still works */ } });
 
     fetch(API + '/status', { credentials: 'omit' }).then(function (r) { return r.json(); }).then(function (d) {
-      if (d.state === 'paused' || d.state === 'busy') { S.open = false; $('go').disabled = true; showError('note-error', d.state); outState(d.state === 'busy' ? 'Busy right now' : 'Paused right now'); return; }
+      if (d.state === 'paused' || d.state === 'busy') { S.open = false; $('go').disabled = true; showError('note-error', d.state); outState(d.state === 'busy' ? 'Preview limit reached' : 'Paused right now'); return; }
       mountBot(d.botCheck);
     }).catch(function () { S.open = false; $('go').disabled = true; showError('note-error', 'paused'); });
   }
