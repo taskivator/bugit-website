@@ -762,3 +762,8 @@ h1,h2,h3{text-wrap:balance}
 
 /* Ask BugIt now sits in the pricing section, above the questions (owner, 2026-10-17). */
 #pricing>.ask{margin:40px auto 28px;width:min(560px,100%)}
+
+/* The audience line is a quiet label above the headline; the chips caption the demo (owner, 2026-10-17). */
+.hero>.kicker{margin:0 auto 14px;padding:0;border:0;background:none;font-size:12px;letter-spacing:.12em;color:var(--ink-3)}
+.hero>.runs{margin:22px 0 0}
+@media (max-width:560px){.hero>.kicker{display:block;margin:0 auto 12px;font-size:10.5px;letter-spacing:.06em}.hero>.runs{margin-top:20px}}
