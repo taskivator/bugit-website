@@ -422,3 +422,5 @@
 .d-ex-grid{max-width:100%}
 @media (max-width:980px){.d-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){.d-in .d-hint{display:none}.d-field+.d-field{margin-top:14px}.d-ta-wrap textarea{min-height:120px}}
+
+.d-cmp-lead{grid-column:1/-1;margin:0 0 2px;font-size:15px;line-height:1.5;color:var(--ink);font-weight:600}
