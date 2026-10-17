@@ -243,3 +243,8 @@
   .btn{border:1px solid ButtonText}
   .toc-top,.foot .foot-link{color:LinkText;text-decoration:underline}
 }
+
+/* Phones: the bar scrolls away with the page (upright, and held sideways), as on the home page. */
+@media (max-width:700px), (orientation:landscape) and (max-height:520px){
+  .docs-page .nav{position:relative;top:auto}
+}

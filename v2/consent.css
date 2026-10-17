@@ -193,3 +193,12 @@ button[data-consent-open]:hover{color:#fff}
   html:not(.consent-managing) .consent-btn{flex:1 1 0;min-width:0;padding:4px 6px;font-size:12.5px;line-height:1.15}
   html:not(.consent-managing) #consentManage{flex-basis:0}
 }
+
+/* Held sideways on a phone the notice may take about a third of the screen, not nearly half. */
+@media (orientation:landscape) and (max-height:520px){
+  #consentBanner{max-height:36dvh;padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+  #consentBanner .consent-title{font-size:13.5px}
+  .consent-copy p{font-size:12px;line-height:1.4}
+  .consent-btn{min-height:34px;font-size:12.5px;padding:0 12px}
+  .consent-inner{gap:14px}
+}

@@ -835,3 +835,26 @@ h1,h2,h3{text-wrap:balance}
 @media (max-width:560px){:root{--sec:80px}.family{padding-top:56px;padding-bottom:72px}.close{padding-bottom:56px}}
 .hero+.band{padding-top:calc(var(--sec) - 20px)}
 .pricing-end+.close,#pricing+.close{padding-top:calc(var(--sec) + 20px)}
+
+/* A phone held sideways: wide but only about 360 to 420px tall. The page was reading it as a small
+   desktop, so the 128px section gaps, the 45px headline, the sticky bar and the cookie notice together
+   used most of the screen (owner, 2026-10-17: "too big and hard to read"). Here the bar scrolls away
+   with the page, the type and the gaps follow the HEIGHT, and nothing stays pinned but the Ask mark. */
+@media (orientation:landscape) and (max-height:520px){
+  :root{--sec:56px}
+  .nav{position:relative;margin-top:8px}
+  .hero h1,h1{font-size:clamp(26px,9vh,38px);line-height:1.08}
+  .band h2,.gate-band h2,.close h2,.section-head h2,h2{font-size:clamp(22px,7.4vh,30px);line-height:1.12}
+  .lede,.band .lede,.section-head p{font-size:15px;line-height:1.5}
+  .hero{padding-top:20px;padding-bottom:12px}
+  .hero+.band{padding-top:calc(var(--sec) - 12px)}
+  .pricing-end+.close,#pricing+.close{padding-top:var(--sec)}
+  .family{padding-top:40px;padding-bottom:48px}
+  .steps li,.cards>*{padding:18px 20px}
+}
+
+/* A phone held upright: the bar scrolls away with the page to give the content the whole screen. The
+   Ask mark stays. `relative`, not `static`, because the open menu is placed against the bar. */
+@media (max-width:700px){
+  .nav{position:relative;top:auto}
+}
