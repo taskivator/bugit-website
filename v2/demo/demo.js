@@ -277,7 +277,7 @@
     S.state = 'drafting'; clearError('q-error');
     $('scan-text').textContent = S.redactedNote; panes('pane-busy'); $('h-busy').textContent = 'Writing your draft';
     outState('Writing your draft'); say('Writing your draft'); focusHead('h-busy');
-    post('/draft', { runToken: S.runToken, redactedNote: S.redactedNote, answers: answers }).then(function (res) {
+    post('/draft', { runToken: S.runToken, redactedNote: S.redactedNote, questions: S.questions.map(function (q) { return { id: q.id, text: q.text }; }), answers: answers }).then(function (res) {
       S.state = 'idle'; $('h-busy').textContent = 'Reading your note';
       if (!res.ok) {
         var key = codeOf(res);
