@@ -22,9 +22,9 @@
 <meta name="description" content="Paste a short note about a bug. You get a draft report you can read and copy. Nothing is filed anywhere.">
 <link rel="stylesheet" href="/v2/v2.css">
 <link rel="stylesheet" href="/v2/consent.css">
-<link rel="stylesheet" href="/v2/demo/demo.css?v=13">
+<link rel="stylesheet" href="/v2/demo/demo.css?v=14">
 <script src="/v2/logos.js" defer></script>
-<script src="/v2/demo/demo.js?v=12" defer></script>
+<script src="/v2/demo/demo.js?v=14" defer></script>
 </head>
 <body class="demo-page">
 <a class="skip" href="#main">Skip to content</a>
@@ -197,7 +197,7 @@
               </select>
             </div>
             <p class="d-fmt-set" id="fmt-set"></p>
-            <label class="d-fmt-toggle" id="sep-toggle" hidden><input type="checkbox" id="use-sep" checked><span>My tracker has these separate fields. Give me a copy card for each.</span></label>
+            <label class="d-fmt-toggle" id="sep-toggle" hidden><input type="checkbox" id="use-sep" checked><span id="sep-toggle-t"></span></label>
             <p class="d-fmt-none" id="sep-none" hidden>This tracker has no separate field for build or environment by default, so they stay in the description. If your board has custom fields for them, copy the lines you need from the description.</p>
 
             <details class="d-fmt-prev"><summary>See what will be copied</summary><pre id="fmt-prev"></pre></details>
@@ -206,6 +206,9 @@
               <button type="button" class="btn btn-primary btn-sm" id="copy-body">Copy description</button>
             </div>
             <div class="d-seps" id="sep-cards"></div>
+            <h4 class="d-pick-h" id="pick-h" hidden>Choose these in your tracker</h4>
+            <div class="d-seps" id="pick-cards"></div>
+            <p class="d-fmt-src" id="fmt-src"></p>
           </section>
           <div class="d-actions">
             <span class="d-fb" role="group" aria-label="Was this useful?">

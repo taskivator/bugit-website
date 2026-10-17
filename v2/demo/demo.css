@@ -355,3 +355,11 @@
 .d-cta-t{flex:1 1 260px;min-width:0}
 .d-cta-t .d-cta-l{flex:none}
 .d-cta-pre{margin:0 0 8px;font-size:14px;line-height:1.5;color:var(--ink-3)}
+
+.d-pick-h{margin:20px 0 0;font:500 11.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.d-pick-h[hidden]{display:none}
+.d-pk{border-style:dashed}
+.d-pk-tag{font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#ffd88a;padding:4px 9px;border:1px dashed rgba(255,194,77,.55);border-radius:999px;white-space:nowrap}
+.d-pk .d-sep-v{font:650 15px/1.4 var(--sans)}
+.d-fmt-src{margin:14px 0 0;font-size:12.5px;color:var(--ink-3)}
+.d-fmt-src:empty{display:none}

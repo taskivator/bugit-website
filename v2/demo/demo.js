@@ -190,8 +190,8 @@
     $('copy-title').addEventListener('click', onCopyTitle);
     $('copy-body').addEventListener('click', onCopyBody);
     enhancePick($('tracker')); enhancePick($('tracker2'));
-    $('tracker').addEventListener('change', function () { $('tracker2').value = $('tracker').value; $('tracker2')._refresh(); renderCopyPane(); });
-    $('tracker2').addEventListener('change', function () { $('tracker').value = $('tracker2').value; $('tracker')._refresh(); renderCopyPane(); });
+    $('tracker').addEventListener('change', function () { $('tracker2').value = $('tracker').value; $('tracker2')._refresh(); resetSep(); renderCopyPane(); });
+    $('tracker2').addEventListener('change', function () { $('tracker').value = $('tracker2').value; $('tracker')._refresh(); resetSep(); renderCopyPane(); });
     $('again').addEventListener('click', onAgain);
     $('fb-yes').addEventListener('click', function () { onFeedback(true); });
     $('fb-no').addEventListener('click', function () { onFeedback(false); });
@@ -315,7 +315,7 @@
     if (d.suspected_cause && d.suspected_cause.text) {
       var sc = sec('Your suspicion, not confirmed', n++); sc.classList.add('d-susp'); sc.appendChild(el('p', null, d.suspected_cause.text)); body.appendChild(sc);
     }
-    renderCopyPane(); show('out-ghost', false); show('out-draft', true);
+    resetSep(); renderCopyPane(); show('out-ghost', false); show('out-draft', true);
     $('fb-yes').setAttribute('aria-pressed', 'false'); $('fb-no').setAttribute('aria-pressed', 'false');
     show('fb-form', false); show('fb-thanks', false);
   }
@@ -330,33 +330,49 @@
      sep lists the details that tracker keeps in their own fields (from the tracker research): those get their own copy card. */
   var F = { prod: 'Product or area', build: 'Build or version', os: 'Operating system', dev: 'Device or browser', net: 'Network or setup', often: 'How often', since: 'Since when or last good version' };
   var TRK = {
-    jira: { fmt: 'html', h: 'h3', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' }, set: 'Priority',
+    jira: { fmt: 'html', h: 'h3', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' },
+      sev: ['Priority', { Critical: 'Highest', High: 'High', Medium: 'Medium', Low: 'Low' }], area: 'Labels', src: 'Checked on a Jira Cloud test project with the default setup.',
+      sepLabel: 'My Jira form has an Environment field (company managed projects can add it). Give me a copy card for it.', sepDefault: false,
+      sep: [{ label: 'Environment', rows: [F.os, F.dev, F.net, F.often, F.since], lines: true, note: 'Paste into the Environment field.' }],
+      sepPicks: [{ label: 'Affects versions', rows: [F.build], note: 'A list of your project versions. Choose the closest one.' }],
+      none: 'A default Jira project has no Environment, Affects version or Component field on its create form, so the details stay in the description.' },
+    ado: { fmt: 'html', h: 'b', body: 'Copy Repro Steps', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Reproducibility', more: 'Additional information' },
+      sev: ['Severity', { Critical: '1 - Critical', High: '2 - High', Medium: '3 - Medium', Low: '4 - Low' }], area: 'Tags', src: 'Checked on an Azure DevOps test project (Agile process).',
+      sepLabel: 'Give me copy cards for the System Info and Found In Build fields.', sepDefault: true,
       sep: [
-        { label: 'Environment', rows: [F.os, F.dev, F.net, F.often, F.since], lines: true, note: 'Jira keeps this in its Environment field. If your create screen has no Environment field, switch the box below off and it stays in the description.' },
-        { label: 'Affects version', rows: [F.build], note: 'Choose a version that already exists in your project.' }] },
-    ado: { fmt: 'html', h: 'b', body: 'Copy Repro Steps', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Reproducibility', more: 'Additional information' }, set: 'Severity',
-      sep: [
-        { label: 'System Info', rows: [F.os, F.dev, F.net], lines: true, html: true, note: 'Azure DevOps has a System Info field beside Repro Steps.' },
-        { label: 'Found In Build', rows: [F.build], note: 'Azure DevOps has a Found In Build field.' }] },
-    bugzilla: { fmt: 'plain', h: ':', body: 'Copy description', L: { steps: 'Steps to Reproduce', exp: 'Expected Results', act: 'Actual Results', env: 'Reproducibility', more: 'Additional Information' }, set: 'Severity (leave it to triage if you can)',
-      sep: [
-        { label: 'Version', rows: [F.build], note: 'Bugzilla has a Version list. Pick the closest entry.' },
-        { label: 'Platform and OS', rows: [F.os, F.dev], note: 'Bugzilla has Platform and OS lists. Pick the closest entries.' }] },
-    youtrack: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'What happens instead', env: 'Environment', more: 'Additional information' }, set: 'Priority',
-      sep: [{ label: 'Affected versions', rows: [F.build], note: 'YouTrack has an Affected versions field when your project defines versions.' }] },
-    asana: { fmt: 'html', h: 'b', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'What happened', env: 'Environment', more: 'Additional information' }, set: 'a priority tag', none: true },
-    github: { fmt: 'md', h: '###', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' }, set: 'a label', none: true },
-    gitlab: { fmt: 'md', h: '###', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'What is the expected *correct* behavior?', act: 'What is the current *bug* behavior?', env: 'Environment', more: 'Additional information' }, set: 'a severity label', none: true },
-    linear: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' }, set: 'Priority', none: true },
-    shortcut: { fmt: 'md', h: '**', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' }, set: 'a priority', none: true },
-    clickup: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Notes and attachments' }, set: 'Priority', none: true },
-    trello: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Attachments and logs' }, set: 'a label', none: true }
+        { label: 'System Info', rows: [F.os, F.dev, F.net], lines: true, html: true, note: 'Paste into the System Info field, beside Repro Steps.' },
+        { label: 'Found In Build', rows: [F.build], note: 'Paste into the Found In Build field.' }],
+      extraPick: [{ field: 'Priority', value: 'Choose 1 to 4 in triage', note: 'Priority is a different scale from Severity.' }] },
+    bugzilla: { fmt: 'plain', h: ':', body: 'Copy description', L: { steps: 'Steps to Reproduce', exp: 'Expected Results', act: 'Actual Results', env: 'Reproducibility', more: 'Additional Information' },
+      sev: ['Severity', { Critical: 'critical', High: 'major', Medium: 'normal', Low: 'minor' }], sevNote: 'Mozilla asks reporters to leave Severity to triage, so skip it if your team does the same.', area: 'Component',
+      src: 'Not yet checked on a live instance. Based on the Bugzilla documentation.',
+      picks: [{ field: 'Product', fixed: 'Choose the product yourself' }, { field: 'Version', rows: [F.build], note: 'A list of versions. Choose the closest one.' }, { field: 'Platform and OS', rows: [F.os, F.dev], note: 'Two lists. Choose the closest entries.' }],
+      none: 'Bugzilla keeps version, platform and OS in drop down lists, so there is nothing to paste into them. The build and environment also stay in the description.' },
+    youtrack: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'What happens instead', env: 'Environment', more: 'Additional information' },
+      sev: ['Priority', { Critical: 'Critical', High: 'Major', Medium: 'Normal', Low: 'Minor' }], area: 'Subsystem', src: 'Not yet checked on a live instance. Based on the YouTrack documentation.',
+      picks: [{ field: 'Affected versions', rows: [F.build], note: 'A list your project defines. Choose the closest one.' }],
+      none: 'YouTrack has no Environment field by default, and Affected versions is a list, so the details stay in the description.' },
+    asana: { fmt: 'html', h: 'b', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'What happened', env: 'Environment', more: 'Additional information' },
+      sev: ['Priority (custom field)', { Critical: 'High', High: 'High', Medium: 'Medium', Low: 'Low' }], area: 'Tags', src: 'Checked on an Asana test project from the default template.', none: 'Asana has no field for build or environment, so they stay in the description.' },
+    github: { fmt: 'md', h: '###', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' },
+      area: 'Labels', src: 'Checked on a GitHub test repository.', none: 'GitHub issues have no field for build or environment, and no severity field, so they stay in the description.' },
+    gitlab: { fmt: 'md', h: '###', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'What is the expected *correct* behavior?', act: 'What is the current *bug* behavior?', env: 'Environment', more: 'Additional information' },
+      area: 'Labels', src: 'Not yet checked on a live instance. Based on the GitLab documentation.', none: 'GitLab issues have no field for build or environment, so they stay in the description. Severity is a label if your project uses them.' },
+    linear: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected behavior', act: 'Actual behavior', env: 'Environment', more: 'Additional context' },
+      sev: ['Priority', { Critical: 'Urgent', High: 'High', Medium: 'Medium', Low: 'Low' }], area: 'Labels', src: 'Checked on a Linear test team.', none: 'Linear has no field for build or environment, so they stay in the description.' },
+    shortcut: { fmt: 'md', h: '**', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Additional information' },
+      sev: ['Priority (custom field)', { Critical: 'Highest', High: 'High', Medium: 'Medium', Low: 'Low' }], area: 'Labels', src: 'Checked on a Shortcut test workspace.', none: 'Shortcut has no field for build or environment, so they stay in the description.' },
+    clickup: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Notes and attachments' },
+      sev: ['Priority', { Critical: 'Urgent', High: 'High', Medium: 'Normal', Low: 'Low' }], area: 'Tags', src: 'Checked on a ClickUp test list.', none: 'ClickUp has no field for build or environment by default, so they stay in the description.' },
+    trello: { fmt: 'md', h: '##', body: 'Copy description', L: { steps: 'Steps to reproduce', exp: 'Expected result', act: 'Actual result', env: 'Environment', more: 'Attachments and logs' },
+      area: 'Labels', src: 'Checked on a Trello test board.', none: 'Trello cards have no priority, build or environment field, so they stay in the description.' }
   };
   var isUnk = function (it) { return !it || it.basis === 'unknown' || /^UNKNOWN\b/.test(it.text); };
   var chk = function (it) { return it.basis === 'inferred' ? ' (inferred, please check)' : ''; };
   function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function splitTitle(t) { var m = /^\s*\[([^\]]{1,40})\]\s+(.*)$/.exec(t); return m ? { tag: m[1], text: m[2] } : { tag: '', text: t }; }
   function useSep(key) { return !!(TRK[key].sep && $('use-sep').checked); }
+  function rowsOf(d) { var r = {}; (d.environment || []).forEach(function (x) { r[x.field] = x; }); return r; }
 
   function sectionsOf(d, key) {
     var more = [], sepRows = {};
@@ -413,14 +429,39 @@
     });
   }
 
+  function resetSep() { var T = TRK[$('tracker').value]; $('use-sep').checked = T.sep ? T.sepDefault !== false : true; }
   function currentTracker() { return $('tracker').value; }
+  function valuesOf(d, rows) {
+    var r = rowsOf(d), have = rows.map(function (n) { return r[n]; }).filter(function (x) { return x && !isUnk(x); });
+    return { text: have.map(function (x) { return x.value; }).join(', '), inferred: have.some(function (x) { return x.basis === 'inferred'; }) };
+  }
+  function picksOf(d, key) {
+    var T = TRK[key], out = [], t = splitTitle(d.title.text), lvl = d.severity && d.severity.level;
+    if (T.sev) {
+      var v = T.sev[1][lvl];
+      out.push({ field: T.sev[0], value: v || 'Not enough in your note to suggest one', note: T.sevNote || '' });
+    }
+    if (t.tag) out.push({ field: T.area, value: t.tag, note: 'Your own ' + T.area.toLowerCase() + ' may use different names. Choose the closest.' });
+    (T.picks || []).forEach(function (p) {
+      if (p.fixed) { out.push({ field: p.field, value: p.fixed, note: '' }); return; }
+      var v = valuesOf(d, p.rows);
+      out.push({ field: p.field, value: v.text || 'Not given in your note', note: p.note + (v.inferred ? ' Part of this was inferred, so check it.' : '') });
+    });
+    if (T.sep && useSep(key) && T.sepPicks) T.sepPicks.forEach(function (p) {
+      var v = valuesOf(d, p.rows);
+      out.push({ field: p.label, value: v.text || 'Not given in your note', note: p.note + (v.inferred ? ' Part of this was inferred, so check it.' : '') });
+    });
+    (T.extraPick || []).forEach(function (p) { out.push(p); });
+    return out;
+  }
   function renderCopyPane() {
     if (!S.draft) return;
-    var key = currentTracker(), T = TRK[key], t = splitTitle(S.draft.title.text), body = layout(S.draft, key);
+    var key = currentTracker(), T = TRK[key], body = layout(S.draft, key);
     $('fmt-prev').textContent = T.fmt === 'html' ? plainOf(body) : body;
     $('copy-body').textContent = T.body;
     $('sep-toggle').hidden = !T.sep;
-    $('sep-none').hidden = !T.none;
+    if (T.sep) $('sep-toggle-t').textContent = T.sepLabel;
+    var none = $('sep-none'); none.hidden = !T.none || (T.sep && useSep(key)); none.textContent = T.none || '';
     var cards = $('sep-cards'); cards.textContent = '';
     sepCards(S.draft, key).forEach(function (c) {
       var card = el('div', 'd-sep'), top = el('div', 'd-sep-top');
@@ -430,15 +471,20 @@
       btn.addEventListener('click', function () { if (c.html) copyText(c.html, btn, 'Copy', true); else copyText(c.text, btn, 'Copy', false); });
       top.appendChild(btn); card.appendChild(top);
       card.appendChild(el('pre', 'd-sep-v', c.text || 'Nothing in your note for this field.'));
-      var n = c.note + (c.checkIt ? ' Part of this was inferred, so check it first.' : '');
-      card.appendChild(el('p', 'd-sep-n', n));
+      card.appendChild(el('p', 'd-sep-n', c.note + (c.checkIt ? ' Part of this was inferred, so check it first.' : '')));
       cards.appendChild(card);
     });
-    var sev = S.draft.severity && S.draft.severity.level && S.draft.severity.level !== 'UNKNOWN' ? S.draft.severity.level : '';
-    var bits = [];
-    if (sev) bits.push('Severity ' + sev + ' (set it in ' + T.set + ', not in the text)');
-    if (t.tag) bits.push('area "' + t.tag + '" (use your component, label or area field)');
-    $('fmt-set').textContent = bits.length ? 'Set in your tracker: ' + bits.join(', ') + '.' : '';
+    var picks = picksOf(S.draft, key), pc = $('pick-cards'); pc.textContent = '';
+    $('pick-h').hidden = !picks.length;
+    picks.forEach(function (p) {
+      var card = el('div', 'd-sep d-pk'), top = el('div', 'd-sep-top');
+      top.appendChild(el('b', null, p.field)); top.appendChild(el('span', 'd-pk-tag', 'Pick it yourself'));
+      card.appendChild(top); card.appendChild(el('pre', 'd-sep-v', p.value));
+      if (p.note) card.appendChild(el('p', 'd-sep-n', p.note));
+      pc.appendChild(card);
+    });
+    $('fmt-src').textContent = T.src || '';
+    $('fmt-set').textContent = '';
   }
   function copyText(text, btn, label, html) {
     var done = function () { say('Copied'); btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = label; }, 1800); };
