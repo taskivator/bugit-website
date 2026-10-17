@@ -826,3 +826,8 @@ h1,h2,h3{text-wrap:balance}
 }
 /* Softer glow (owner, 2026-10-17): the cards keep their edge, the halo is about half as strong. */
 .try{border-color:rgba(255,255,255,.12)}
+
+/* The blip that trails the mouse (blip-follow.js). Never takes a click, never read aloud. */
+.blip-follow{position:fixed;left:0;top:0;width:34px;height:34px;z-index:15;pointer-events:none;opacity:0;transition:opacity .3s ease;will-change:transform;
+  filter:drop-shadow(0 6px 12px rgba(255,79,201,.22));user-select:none;-webkit-user-drag:none}
+@media (prefers-reduced-motion:reduce),(pointer:coarse),(hover:none),(forced-colors:active){.blip-follow{display:none}}
