@@ -740,10 +740,8 @@ h1,h2,h3{text-wrap:balance}
 .hero>.ask{margin:20px auto 0}
 .hero>.runs{margin:20px 0 0}
 .hero>.hero-needs{margin:20px auto 0}
-.hero+.band{padding-top:96px}
 @media (max-width:560px){
   .hero>.kicker{margin:28px auto 0}
-  .hero+.band{padding-top:64px}
 }
 @media (max-width:560px){
   .hero>.kicker,.hero>.ask,.hero>.runs,.hero>.hero-needs{order:7}
@@ -826,3 +824,14 @@ h1,h2,h3{text-wrap:balance}
 }
 /* Softer glow (owner, 2026-10-17): the cards keep their edge, the halo is about half as strong. */
 .try{border-color:rgba(255,255,255,.12)}
+
+/* One rhythm between the sections (owner, 2026-10-17): the same gap everywhere, smaller on tablets and phones. */
+:root{--sec:128px}
+.band,.gate-band,.close{padding-top:var(--sec)}
+.close{padding-bottom:72px}
+.family{padding-top:72px;padding-bottom:96px}
+.family-head{margin-top:0}
+@media (max-width:980px){:root{--sec:96px}.band{padding-top:var(--sec)}}
+@media (max-width:560px){:root{--sec:80px}.family{padding-top:56px;padding-bottom:72px}.close{padding-bottom:56px}}
+.hero+.band{padding-top:calc(var(--sec) - 20px)}
+.pricing-end+.close,#pricing+.close{padding-top:calc(var(--sec) + 20px)}
