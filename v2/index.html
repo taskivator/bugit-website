@@ -107,26 +107,21 @@
     <p class="kicker" data-k="t009"><span class="dot"></span>For testers and QA teams. Files to Jira, Azure DevOps, GitHub and more.</p>
     <h1 id="heroTitle" data-k="t010">Say what broke.<br><span class="grad">BugIt writes the ticket.</span></h1>
     <p class="lede" data-k="t011">One rough sentence becomes a complete bug report. You review every draft, and nothing is written to your tracker until you type <kbd>FILE IT</kbd>.</p>
+    <form class="try" id="tryForm" action="/demo/" aria-labelledby="tryT">
+      <div class="try-head"><span class="try-badge" data-k="try.badge">Free preview</span><h2 class="try-title" id="tryT" data-k="try.title">Try it on your own bug</h2></div>
+      <label class="try-sr" for="tryNote" data-k="try.label">Describe the bug in a sentence or two</label>
+      <div class="try-row">
+        <textarea id="tryNote" rows="2" maxlength="1500" autocomplete="off" spellcheck="true" placeholder="After the update, the invoice total shows 0.00 for orders with a discount code..." data-ka="placeholder:try.ph"></textarea>
+        <button class="btn btn-primary try-go" type="submit" data-k="try.go">Write my draft</button>
+      </div>
+      <p class="try-note" data-k="try.note">English only. 3 free drafts a day. Nothing is filed anywhere.</p>
+    </form>
     <div class="cta">
       <a class="btn btn-primary" href="https://portal.bugit.dev/pricing" data-k="t012">Get BugIt</a>
       <a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t013">Try BugIt free for 14 days</a>
     </div>
     <p class="hero-trial" data-k="hero.trialNote">One device. No card needed.</p>
     <p class="hero-trust" data-k="hero.trust">No subscription. <a href="/docs/refund/">7 day refund window</a>, under the conditions in our refund policy.</p>
-    <p class="hero-needs" data-k="needs.short">What you need: an AI assistant of your own (GitHub Copilot, the Claude extension, or your own OpenAI or Anthropic key in standalone), VS Code, Python 3.10 to 3.14 and a token for your tracker.</p>
-    <!-- ASK BUGIT: opens the same on-page Guide as bugit.dev (public/guide/guide.js): prepared
-         answers matched in the browser, no model, no server. The rotating question is decoration;
-         the button's accessible name is fixed. -->
-    <button type="button" class="ask" id="askBar" aria-haspopup="dialog" aria-controls="bgd-panel" aria-label="Ask BugIt a question" data-ka="aria-label:t176">
-      <img class="ask-orb" src="/public/brand/blip-guide.svg" alt="" width="40" height="40">
-      <span class="ask-body" aria-hidden="true"><b data-k="t014">Ask BugIt</b><span class="ask-q"><span id="askQ" data-k="t015">Can a web page trick BugIt?</span><i></i></span></span>
-      <kbd aria-hidden="true">/</kbd>
-      <span class="ask-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="m12 5 7 7-7 7"></path></svg></span>
-    </button>
-    <ul class="runs" aria-label="Where it runs" data-ka="aria-label:t177">
-      <li data-k="t016">GitHub Copilot Chat</li><li data-k="t017">Claude in VS Code</li><li data-k="t018">Any terminal</li>
-    </ul>
-
     <!-- THE DEMO. A real-sized bug, and BugIt visibly working: it asks what is missing, reads the
          project's glossary and house style, parses the attached log, searches for duplicates,
          classifies, rates, redacts and checks the report, and the ticket fills in section by
@@ -190,6 +185,20 @@
       </div>
       <p class="demo-note" data-k="t065">Illustrative. Not a recording of a real editor.</p>
     </div>
+
+    <!-- ASK BUGIT: opens the same on-page Guide as bugit.dev (public/guide/guide.js): prepared
+         answers matched in the browser, no model, no server. The rotating question is decoration;
+         the button's accessible name is fixed. -->
+    <button type="button" class="ask" id="askBar" aria-haspopup="dialog" aria-controls="bgd-panel" aria-label="Ask BugIt a question" data-ka="aria-label:t176">
+      <img class="ask-orb" src="/public/brand/blip-guide.svg" alt="" width="40" height="40">
+      <span class="ask-body" aria-hidden="true"><b data-k="t014">Ask BugIt</b><span class="ask-q"><span id="askQ" data-k="t015">Can a web page trick BugIt?</span><i></i></span></span>
+      <kbd aria-hidden="true">/</kbd>
+      <span class="ask-go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="m12 5 7 7-7 7"></path></svg></span>
+    </button>
+    <ul class="runs" aria-label="Where it runs" data-ka="aria-label:t177">
+      <li data-k="t016">GitHub Copilot Chat</li><li data-k="t017">Claude in VS Code</li><li data-k="t018">Any terminal</li>
+    </ul>
+    <p class="hero-needs" data-k="needs.short">What you need: an AI assistant of your own (GitHub Copilot, the Claude extension, or your own OpenAI or Anthropic key in standalone), VS Code, Python 3.10 to 3.14 and a token for your tracker.</p>
   </section>
 
   <!-- ── 2. HOW IT WORKS ─────────────────────────────────────────────────────────────── -->

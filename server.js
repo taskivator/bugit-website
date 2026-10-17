@@ -22,7 +22,7 @@ const mime = {'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8
 // sources so a local run shows what production shows. Served from dist (SITE_ROOT), the built
 // files are already in place and nothing is mapped.
 const SOURCE_PAGES = fs.existsSync(path.join(root, 'v2', 'index.html'))
-  ? { '/': 'v2/index.html', '/index.html': 'v2/index.html', '/docs': 'v2/docs/index.html', '/docs/': 'v2/docs/index.html', '/docs/index.html': 'v2/docs/index.html' }
+  ? { '/': 'v2/index.html', '/index.html': 'v2/index.html', '/docs': 'v2/docs/index.html', '/docs/': 'v2/docs/index.html', '/docs/index.html': 'v2/docs/index.html', '/demo': 'v2/demo/index.html', '/demo/': 'v2/demo/index.html', '/demo/index.html': 'v2/demo/index.html' }
   : {};
 const HOME = SOURCE_PAGES['/'] || 'index.html';
 // Inside `root`, decided on the boundary and on what the filesystem says the path IS. Exported

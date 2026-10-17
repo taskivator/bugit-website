@@ -274,6 +274,12 @@
  "faq.refund.a": "如果 BugIt 无法按描述工作、可复现的技术问题妨碍正常使用，或支持团队无法在合理时间内解决问题，你可以在购买后 7 天内申请退款。详情见<a href=\"/docs/refund/\">退款政策</a>。",
  "foot.pricing": "价格",
  "foot.support": "支持",
+ "try.badge": "免费预览",
+ "try.title": "用你自己的 bug 试试",
+ "try.label": "用一两句话描述这个 bug",
+ "try.ph": "更新后，使用折扣码的订单发票合计显示为 0.00...",
+ "try.go": "生成草稿",
+ "try.note": "仅支持英文。每天 3 份免费草稿。不会提交到任何地方。",
  "hero.trialNote": "一台设备。无需银行卡。",
  "trial.ctaNote": "一台设备。无需银行卡。",
  "needs.short": "你需要：一个你自己的 AI 助手（GitHub Copilot、Claude 扩展，或配上你自己的 OpenAI 或 Anthropic 密钥独立运行）、VS Code、Python 3.10 到 3.14，以及你的跟踪系统的令牌。"

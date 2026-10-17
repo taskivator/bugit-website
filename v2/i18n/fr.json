@@ -274,6 +274,12 @@
  "faq.refund.a": "Vous pouvez demander un remboursement dans les 7 jours suivant l’achat si BugIt ne fonctionne pas comme annoncé, si un problème technique reproductible empêche une utilisation normale ou si l’assistance ne parvient pas à résoudre le problème dans un délai raisonnable. Les détails figurent dans la <a href=\"/docs/refund/\">politique de remboursement</a>.",
  "foot.pricing": "Tarifs",
  "foot.support": "Assistance",
+ "try.badge": "Aperçu gratuit",
+ "try.title": "Essayez-le sur votre propre bug",
+ "try.label": "Décrivez le bug en une ou deux phrases",
+ "try.ph": "Après la mise à jour, le total de la facture affiche 0.00 pour les commandes avec un code promo...",
+ "try.go": "Rédiger mon brouillon",
+ "try.note": "En anglais uniquement. 3 brouillons gratuits par jour. Rien n'est déposé nulle part.",
  "hero.trialNote": "Un appareil. Aucune carte requise.",
  "trial.ctaNote": "Un appareil. Aucune carte requise.",
  "needs.short": "Ce qu’il vous faut : un assistant IA à vous (GitHub Copilot, l’extension Claude ou, seul, votre propre clé OpenAI ou Anthropic), VS Code, Python 3.10 à 3.14 et un jeton pour votre outil de suivi."

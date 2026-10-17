@@ -274,6 +274,12 @@
  "faq.refund.a": "BugIt이 안내대로 작동하지 않거나, 재현 가능한 기술 문제로 정상적으로 사용할 수 없거나, 지원팀이 합리적인 기간 내에 문제를 해결하지 못하면 구매 후 7일 이내에 환불을 요청할 수 있습니다. 자세한 내용은 <a href=\"/docs/refund/\">환불 정책</a>을 확인하세요.",
  "foot.pricing": "가격",
  "foot.support": "지원",
+ "try.badge": "무료 미리보기",
+ "try.title": "내 버그로 직접 써 보세요",
+ "try.label": "버그를 한두 문장으로 설명해 주세요",
+ "try.ph": "업데이트 후 할인 코드를 쓴 주문에서 송장 합계가 0.00으로 표시됩니다...",
+ "try.go": "초안 작성",
+ "try.note": "영어만 지원합니다. 하루 무료 초안 3건. 어디에도 등록되지 않습니다.",
  "hero.trialNote": "기기 1대. 카드 필요 없음.",
  "trial.ctaNote": "기기 1대. 카드 필요 없음.",
  "needs.short": "필요한 것: 직접 쓰는 AI 어시스턴트(GitHub Copilot, Claude 확장, 또는 직접 발급한 OpenAI나 Anthropic 키로 단독 실행), VS Code, Python 3.10에서 3.14, 그리고 트래커용 토큰."

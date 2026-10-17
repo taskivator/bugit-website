@@ -673,3 +673,39 @@ h1,h2,h3{text-wrap:balance}
   .hero>.hero-needs{order:3;margin-top:8px}
   .hero>.lede{order:4;margin-top:18px;font-size:17px}
 }
+
+
+/* ── Home hero, compact (owner, 2026-10-17): the live preview is the first thing on screen ──────── */
+.hero{padding-top:64px}
+.hero h1{font-size:clamp(38px,5.4vw,76px);line-height:1.02}
+.hero .lede{margin-top:16px;font-size:clamp(16px,1.5vw,19px);max-width:56ch;margin-inline:auto}
+.hero .cta{margin-top:20px}
+.hero .hero-trial{margin-top:10px}
+.try{width:min(760px,100%);margin:26px auto 0;padding:18px 20px 14px;text-align:left;border-radius:22px;border:1px solid var(--line-2);
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015)),var(--bg-2);position:relative;
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 36px -8px rgba(255,79,201,.34),0 0 80px -24px rgba(139,69,255,.30)}
+.try::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(160deg,rgba(255,79,201,.7),transparent 40%,transparent 70%,rgba(139,69,255,.45));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.try-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.try-badge{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:#ffb3e8;border:1px solid rgba(255,79,201,.4);background:rgba(255,79,201,.1)}
+.try-title{margin:0;font-size:18px;letter-spacing:-.02em;font-weight:700}
+.try-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.try-row{display:flex;gap:10px;align-items:stretch}
+.try-row textarea{flex:1 1 auto;min-width:0;resize:none;min-height:56px;padding:14px 16px;border-radius:14px;border:1px solid var(--line-2);background:rgba(7,5,13,.6);color:var(--ink);font:inherit;font-size:16px;line-height:1.4}
+.try-row textarea:focus{outline:none;border-color:var(--pink);box-shadow:0 0 0 4px rgba(255,79,201,.16)}
+.try-row textarea::placeholder{color:var(--ink-3)}
+.try-go{flex:0 0 auto;align-self:stretch;white-space:nowrap}
+.try-note{margin:10px 2px 0;font-size:13px;color:var(--ink-3)}
+.hero>.ask{margin-top:36px}
+@media (max-width:560px){
+  .hero{padding-top:20px}
+  .hero>h1{font-size:32px}
+  .hero>.try{order:4;margin-top:18px;padding:14px 14px 12px;border-radius:18px}
+  .hero>.lede{order:4;margin-top:16px}
+  .try-row{flex-direction:column}
+  .try-go{width:100%}
+  .try-title{font-size:16px}
+  .hero>.demo{order:6}
+  .hero>.ask,.hero>.runs,.hero>.hero-needs{order:7}
+  .hero>.hero-needs{margin-top:16px}
+}
+@media (forced-colors:active){.try{border:1px solid CanvasText}.try-row textarea{border:1px solid CanvasText}}

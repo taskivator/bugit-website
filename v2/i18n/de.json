@@ -274,6 +274,12 @@
  "faq.refund.a": "Sie können innerhalb von 7 Tagen nach dem Kauf eine beantragen, wenn BugIt nicht wie beschrieben funktioniert, ein reproduzierbares technisches Problem die normale Nutzung verhindert oder der Support das Problem nicht innerhalb einer angemessenen Frist lösen kann. Die Einzelheiten stehen in der <a href=\"/docs/refund/\">Rückerstattungsrichtlinie</a>.",
  "foot.pricing": "Preise",
  "foot.support": "Support",
+ "try.badge": "Kostenlose Vorschau",
+ "try.title": "Probiere es an deinem eigenen Bug aus",
+ "try.label": "Beschreibe den Bug in ein bis zwei Sätzen",
+ "try.ph": "Nach dem Update zeigt die Rechnungssumme 0.00 bei Bestellungen mit Rabattcode...",
+ "try.go": "Entwurf erstellen",
+ "try.note": "Nur auf Englisch. 3 kostenlose Entwürfe pro Tag. Nichts wird irgendwo abgelegt.",
  "hero.trialNote": "Ein Gerät. Keine Karte nötig.",
  "trial.ctaNote": "Ein Gerät. Keine Karte nötig.",
  "needs.short": "Was Sie brauchen: einen eigenen KI-Assistenten (GitHub Copilot, die Claude-Erweiterung oder eigenständig Ihren eigenen OpenAI- oder Anthropic-Schlüssel), VS Code, Python 3.10 bis 3.14 und ein Token für Ihren Tracker."

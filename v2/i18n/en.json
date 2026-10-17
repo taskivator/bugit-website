@@ -274,6 +274,12 @@
  "faq.refund.a": "You may request one within 7 days of purchase if BugIt does not work as advertised, a reproducible technical issue prevents normal use, or Support cannot resolve the issue within a reasonable timeframe. The <a href=\"/docs/refund/\">refund policy</a> has the details.",
  "foot.pricing": "Pricing",
  "foot.support": "Support",
+ "try.badge": "Free preview",
+ "try.title": "Try it on your own bug",
+ "try.label": "Describe the bug in a sentence or two",
+ "try.ph": "After the update, the invoice total shows 0.00 for orders with a discount code...",
+ "try.go": "Write my draft",
+ "try.note": "English only. 3 free drafts a day. Nothing is filed anywhere.",
  "hero.trialNote": "One device. No card needed.",
  "trial.ctaNote": "One device. No card needed.",
  "needs.short": "What you need: an AI assistant of your own (GitHub Copilot, the Claude extension, or your own OpenAI or Anthropic key in standalone), VS Code, Python 3.10 to 3.14 and a token for your tracker."

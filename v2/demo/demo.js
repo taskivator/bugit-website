@@ -202,6 +202,10 @@
     $('fb-no').addEventListener('click', function () { onFeedback(false); });
     $('trial-btn').addEventListener('click', function () { try { navigator.sendBeacon(TRIAL_BEACON, JSON.stringify({ name: 'trial_clicked' })); } catch (e) { /* the link still works */ } });
 
+    try {
+      var hm = /^#note=(.*)$/.exec(location.hash || '');
+      if (hm) { var nt = decodeURIComponent(hm[1]).slice(0, 1500); $('note').value = nt; onCount(); history.replaceState(null, '', location.pathname + location.search); }
+    } catch (x) { /* a bad hash is ignored */ }
     fetch(API + '/status', { credentials: 'omit' }).then(function (r) { return r.json(); }).then(function (d) {
       if (d.state === 'paused' || d.state === 'busy') { S.open = false; $('go').disabled = true; showError('note-error', d.state); outState(d.state === 'busy' ? 'Preview limit reached' : 'Paused right now'); return; }
       mountBot(d.botCheck);

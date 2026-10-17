@@ -274,6 +274,12 @@
  "faq.refund.a": "Puedes pedirlo en los 7 días siguientes a la compra si BugIt no funciona como se anuncia, un problema técnico reproducible impide el uso normal o Soporte no puede resolver el problema en un plazo razonable. Los detalles están en la <a href=\"/docs/refund/\">política de reembolso</a>.",
  "foot.pricing": "Precios",
  "foot.support": "Soporte",
+ "try.badge": "Vista previa gratis",
+ "try.title": "Pruébalo con tu propio bug",
+ "try.label": "Describe el bug en una o dos frases",
+ "try.ph": "Tras la actualización, el total de la factura muestra 0.00 en los pedidos con código de descuento...",
+ "try.go": "Escribir mi borrador",
+ "try.note": "Solo en inglés. 3 borradores gratis al día. No se registra nada en ningún sitio.",
  "hero.trialNote": "Un dispositivo. Sin tarjeta.",
  "trial.ctaNote": "Un dispositivo. Sin tarjeta.",
  "needs.short": "Lo que necesitas: un asistente de IA propio (GitHub Copilot, la extensión de Claude o, de forma independiente, tu propia clave de OpenAI o Anthropic), VS Code, Python 3.10 a 3.14 y un token de tu tracker."

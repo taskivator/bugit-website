@@ -301,3 +301,17 @@ document.addEventListener("v2:lang", function (e) { if (e.detail && e.detail.rep
   addEventListener("scroll", soon, { passive: true }); addEventListener("resize", soon);
   document.addEventListener("bugit-guide:ready", soon); setTimeout(check, 600); setTimeout(check, 2000);
 })();
+
+
+/* The hero's try card: carries the note to the preview page in the URL hash, which a browser never sends
+   to a server, so the note is not logged anywhere on the way. */
+(function () {
+  var f = document.getElementById('tryForm'), t = document.getElementById('tryNote');
+  if (!f || !t) return;
+  f.addEventListener('submit', function (e) {
+    var v = t.value.trim();
+    if (!v) { e.preventDefault(); t.focus(); return; }
+    e.preventDefault();
+    location.href = '/demo/#note=' + encodeURIComponent(v.slice(0, 1500));
+  });
+})();
