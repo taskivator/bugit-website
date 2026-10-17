@@ -242,3 +242,7 @@
 .d-fmt-prev pre{margin:0;padding:0 14px 14px;max-height:340px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.55 var(--mono);color:var(--ink-2)}
 .d-fmt .d-copy{margin-top:6px}
 .d-actions{border-top:0;padding-top:14px}
+
+.d-trk{margin-bottom:18px}
+.d-trk select{width:100%;min-height:48px;padding:0 14px;border-radius:14px;border:1px solid var(--line-2);background:rgba(7,5,13,.8);color:var(--ink);font:600 16px var(--sans)}
+.d-trk select:focus{outline:none;border-color:var(--pink);box-shadow:0 0 0 4px rgba(255,79,201,.16)}

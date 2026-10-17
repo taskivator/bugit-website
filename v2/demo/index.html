@@ -22,8 +22,8 @@
 <meta name="description" content="Paste a short note about a bug. You get a draft report you can read and copy. Nothing is filed anywhere.">
 <link rel="stylesheet" href="/v2/v2.css">
 <link rel="stylesheet" href="/v2/consent.css">
-<link rel="stylesheet" href="/v2/demo/demo.css?v=3">
-<script src="/v2/demo/demo.js?v=3" defer></script>
+<link rel="stylesheet" href="/v2/demo/demo.css?v=4">
+<script src="/v2/demo/demo.js?v=4" defer></script>
 </head>
 <body class="demo-page">
 <a class="skip" href="#main">Skip to content</a>
@@ -71,6 +71,24 @@
         <div id="pane-note" class="d-pane">
           <h2 class="d-h" id="h-note" tabindex="-1">Your note</h2>
           <form id="note-form" novalidate>
+            <div class="d-field d-trk">
+              <label for="tracker" class="d-label">Your tracker</label>
+              <p class="d-hint" id="trk-hint">Pick where this bug will go. The draft is laid out the way that tracker's own users write it.</p>
+              <select id="tracker" aria-describedby="trk-hint">
+                <option value="jira">Jira</option>
+                <option value="github">GitHub Issues</option>
+                <option value="gitlab">GitLab Issues</option>
+                <option value="ado">Azure DevOps Boards</option>
+                <option value="linear">Linear</option>
+                <option value="youtrack">YouTrack</option>
+                <option value="shortcut">Shortcut</option>
+                <option value="clickup">ClickUp</option>
+                <option value="asana">Asana</option>
+                <option value="trello">Trello</option>
+                <option value="bugzilla">Bugzilla</option>
+              </select>
+            </div>
+
             <div class="d-field">
               <label for="note" class="d-label">Your rough note</label>
               <p class="d-hint" id="note-hint">Write it the way you would tell a colleague. English only.</p>
@@ -153,8 +171,8 @@
           <section class="d-fmt" aria-labelledby="fmt-h">
             <h3 class="d-fmt-h" id="fmt-h">Copy it into your tracker</h3>
             <div class="d-fmt-row">
-              <label for="tracker" class="d-label">Your tracker</label>
-              <select id="tracker">
+              <label for="tracker2" class="d-label">Your tracker</label>
+              <select id="tracker2">
                 <option value="jira">Jira</option>
                 <option value="github">GitHub Issues</option>
                 <option value="gitlab">GitLab Issues</option>

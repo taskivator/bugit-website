@@ -116,7 +116,8 @@
     $('q-skip').addEventListener('click', function () { sendDraft([]); });
     $('copy-title').addEventListener('click', onCopyTitle);
     $('copy-body').addEventListener('click', onCopyBody);
-    $('tracker').addEventListener('change', renderCopyPane);
+    $('tracker').addEventListener('change', function () { $('tracker2').value = $('tracker').value; renderCopyPane(); });
+    $('tracker2').addEventListener('change', function () { $('tracker').value = $('tracker2').value; renderCopyPane(); });
     $('again').addEventListener('click', onAgain);
     $('fb-yes').addEventListener('click', function () { onFeedback(true); });
     $('fb-no').addEventListener('click', function () { onFeedback(false); });
