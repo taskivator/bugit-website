@@ -158,9 +158,7 @@ else happens, the service replaces common personal data and recognisable passwor
 access tokens with placeholders, as a best effort. The remaining text is sent to
 Anthropic, which processes it on our behalf to write the draft. We do not store your
 note, your answers, or the draft. We keep only counts, such as how many drafts were
-shown on a day, and what the preview costs each month. If you choose to send feedback,
-we keep the text you send for 30 days, after replacing common personal data as a best
-effort, and we do not link it to you or to your note. To apply usage limits we use your
+shown on a day, and what the preview costs each month. To apply usage limits we use your
 IP address in a hashed form that changes every day. We use Cloudflare Turnstile to tell
 people from automated programs. Please do not type passwords, tokens, customer data, or
 other sensitive information into the preview.
@@ -196,8 +194,6 @@ for, and then delete or anonymise it. In practice that means:
 - Payment, tax, and accounting records are kept for the period required by law.
 - Support messages, security records, and consent records are kept for a limited
   period, and consent records are kept as evidence that your choice was respected.
-- Feedback text sent from the free web preview is kept for 30 days and then deleted.
-  The notes, answers, and drafts of the preview are not kept.
 
 If you delete your account, we delete or anonymise your data apart from records we
 are required to keep.

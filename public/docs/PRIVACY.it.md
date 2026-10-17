@@ -175,9 +175,7 @@ i dati personali comuni e le password e i token di accesso riconoscibili, al meg
 possibilità. Il testo restante viene inviato ad Anthropic, che lo tratta per nostro conto
 per scrivere la bozza. Non memorizziamo il Suo appunto, le Sue risposte né la bozza.
 Conserviamo solo conteggi, come quante bozze sono state mostrate in un giorno, e quanto
-costa l'anteprima ogni mese. Se sceglie di inviare un feedback, conserviamo il testo che
-invia per 30 giorni, dopo aver sostituito i dati personali comuni al meglio delle
-possibilità, e non lo colleghiamo né a Lei né al Suo appunto. Per applicare i limiti di
+costa l'anteprima ogni mese. Per applicare i limiti di
 utilizzo usiamo il Suo indirizzo IP in forma di hash che cambia ogni giorno. Usiamo
 Cloudflare Turnstile per distinguere le persone dai programmi automatici. La preghiamo
 di non digitare nell'anteprima password, token, dati dei clienti o altre informazioni
@@ -217,9 +215,6 @@ stati raccolti, dopodiché li cancelliamo o li rendiamo anonimi. In pratica:
 - I messaggi di assistenza, i registri di sicurezza e le registrazioni del consenso
   sono conservati per un periodo limitato; le registrazioni del consenso attestano
   che la Sua scelta è stata rispettata.
-- Il testo del feedback inviato dall'anteprima web gratuita è conservato per 30 giorni e
-  poi cancellato. Gli appunti, le risposte e le bozze dell'anteprima non vengono
-  conservati.
 
 Se elimina il Suo account, cancelliamo o rendiamo anonimi i Suoi dati, salvo i
 documenti che siamo tenuti a conservare.

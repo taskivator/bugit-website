@@ -177,10 +177,7 @@ gängige personenbezogene Daten sowie erkennbare Passwörter und Zugangstoken na
 Bemühen durch Platzhalter. Der verbleibende Text wird an Anthropic gesendet, das ihn in
 unserem Auftrag verarbeitet, um den Entwurf zu schreiben. Wir speichern weder Ihre
 Notiz noch Ihre Antworten noch den Entwurf. Wir behalten nur Zählwerte, etwa wie viele
-Entwürfe an einem Tag angezeigt wurden, sowie die monatlichen Kosten der Vorschau. Wenn
-Sie sich entscheiden, Feedback zu senden, speichern wir den gesendeten Text 30 Tage lang,
-nachdem wir gängige personenbezogene Daten nach bestem Bemühen ersetzt haben, und wir
-verknüpfen ihn weder mit Ihnen noch mit Ihrer Notiz. Um Nutzungsgrenzen anzuwenden,
+Entwürfe an einem Tag angezeigt wurden, sowie die monatlichen Kosten der Vorschau. Um Nutzungsgrenzen anzuwenden,
 verwenden wir Ihre IP-Adresse in gehashter Form, die sich jeden Tag ändert. Wir
 verwenden Cloudflare Turnstile, um Menschen von automatisierten Programmen zu
 unterscheiden. Bitte geben Sie in die Vorschau keine Passwörter, Token, Kundendaten oder
@@ -221,9 +218,6 @@ der Praxis bedeutet das:
 - Supportnachrichten, Sicherheitsprotokolle und Einwilligungsnachweise werden für
   einen begrenzten Zeitraum gespeichert; Einwilligungsnachweise dienen als Beleg
   dafür, dass Ihre Entscheidung beachtet wurde.
-- Feedback-Text aus der kostenlosen Webvorschau wird 30 Tage lang gespeichert und
-  danach gelöscht. Die Notizen, Antworten und Entwürfe der Vorschau werden nicht
-  gespeichert.
 
 Wenn Sie Ihr Konto löschen, löschen oder anonymisieren wir Ihre Daten mit Ausnahme
 der Unterlagen, die wir aufbewahren müssen.

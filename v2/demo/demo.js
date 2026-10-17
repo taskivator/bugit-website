@@ -200,7 +200,6 @@
     $('again').addEventListener('click', onAgain);
     $('fb-yes').addEventListener('click', function () { onFeedback(true); });
     $('fb-no').addEventListener('click', function () { onFeedback(false); });
-    $('fb-form').addEventListener('submit', onFeedbackText);
     $('trial-btn').addEventListener('click', function () { try { navigator.sendBeacon(TRIAL_BEACON, JSON.stringify({ name: 'trial_clicked' })); } catch (e) { /* the link still works */ } });
 
     fetch(API + '/status', { credentials: 'omit' }).then(function (r) { return r.json(); }).then(function (d) {
@@ -341,7 +340,7 @@
     }
     resetSep(); renderCopyPane(); show('out-ghost', false); show('out-draft', true);
     $('fb-yes').setAttribute('aria-pressed', 'false'); $('fb-no').setAttribute('aria-pressed', 'false');
-    show('fb-form', false); show('fb-thanks', false);
+    show('fb-thanks', false);
   }
 
   function onAgain() {
@@ -528,14 +527,8 @@
   function onFeedback(yes) {
     $('fb-yes').setAttribute('aria-pressed', String(yes)); $('fb-no').setAttribute('aria-pressed', String(!yes));
     post('/feedback', { feedbackToken: S.feedbackToken, useful: yes, missingText: null });
-    if (yes) { show('fb-form', false); show('fb-thanks', true); } else { show('fb-thanks', false); show('fb-form', true); $('fb-text').focus(); }
+    show('fb-thanks', true);
   }
-  function onFeedbackText(e) {
-    e.preventDefault(); var t = $('fb-text').value.trim();
-    if (t) post('/feedback', { feedbackToken: S.feedbackToken, useful: false, missingText: t });
-    show('fb-form', false); show('fb-thanks', true);
-  }
-
   /* local preview only: a canned server so the page can be reviewed without the portal */
   function boot() {
     var local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && /[?&]mock=1\b/.test(location.search);

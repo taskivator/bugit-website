@@ -180,10 +180,7 @@ données personnelles courantes ainsi que les mots de passe et les jetons d'acc�
 reconnaissables, au mieux de ses moyens. Le texte restant est envoyé à Anthropic, qui le
 traite pour notre compte afin de rédiger le brouillon. Nous ne stockons ni votre note,
 ni vos réponses, ni le brouillon. Nous ne conservons que des compteurs, par exemple le
-nombre de brouillons affichés sur une journée, ainsi que le coût mensuel de l'aperçu. Si
-vous choisissez d'envoyer un retour, nous conservons le texte que vous envoyez pendant
-30 jours, après avoir remplacé les données personnelles courantes au mieux de nos moyens,
-et nous ne le relions ni à vous ni à votre note. Pour appliquer des limites d'utilisation,
+nombre de brouillons affichés sur une journée, ainsi que le coût mensuel de l'aperçu. Pour appliquer des limites d'utilisation,
 nous utilisons votre adresse IP sous une forme hachée qui change chaque jour. Nous
 utilisons Cloudflare Turnstile pour distinguer les personnes des programmes automatisés.
 Merci de ne saisir dans l'aperçu ni mots de passe, ni jetons, ni données de clients, ni
@@ -224,8 +221,6 @@ Concrètement :
 - Les messages de support, les journaux de sécurité et les preuves de consentement
   sont conservés pendant une durée limitée ; les preuves de consentement attestent
   que votre choix a été respecté.
-- Le texte de retour envoyé depuis l'aperçu web gratuit est conservé 30 jours puis
-  supprimé. Les notes, les réponses et les brouillons de l'aperçu ne sont pas conservés.
 
 Si vous supprimez votre compte, nous supprimons ou anonymisons vos données, à
 l'exception des pièces que nous devons conserver.

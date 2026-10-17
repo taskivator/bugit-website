@@ -169,9 +169,7 @@ de qualquer outra etapa, o serviço substitui por marcadores os dados pessoais c
 tokens de acesso reconhecíveis, da melhor forma possível. O texto restante é enviado à Anthropic,
 que o trata em nosso nome para redigir o rascunho. Não armazenamos sua anotação, suas respostas
 nem o rascunho. Guardamos apenas contagens, como quantos rascunhos foram exibidos em um dia, e
-quanto a prévia custa a cada mês. Se você optar por enviar um comentário, guardamos o texto que
-você enviar por 30 dias, depois de substituir os dados pessoais comuns da melhor forma possível, e
-não o vinculamos a você nem à sua anotação. Para aplicar limites de uso, usamos o seu endereço IP
+quanto a prévia custa a cada mês. Para aplicar limites de uso, usamos o seu endereço IP
 em forma de hash, que muda todos os dias. Usamos o Cloudflare Turnstile para distinguir pessoas de
 programas automatizados. Pedimos que você não digite senhas, tokens, dados de clientes ou outras
 informações sensíveis na prévia.
@@ -210,8 +208,6 @@ coletados e, depois, os excluímos ou anonimizamos. Na prática:
 - Mensagens de suporte, registros de segurança e registros de consentimento são
   mantidos por um período limitado; os de consentimento servem como prova de que sua
   escolha foi respeitada.
-- O texto de comentários enviado pela prévia web gratuita é guardado por 30 dias e depois
-  excluído. As anotações, as respostas e os rascunhos da prévia não são guardados.
 
 Se você excluir sua conta, excluímos ou anonimizamos seus dados, exceto os registros
 que somos obrigados a manter.

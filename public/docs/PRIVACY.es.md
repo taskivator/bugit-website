@@ -173,9 +173,7 @@ los datos personales habituales y las contraseñas y los tokens de acceso recono
 en la medida de lo posible. El texto restante se envía a Anthropic, que lo trata por
 cuenta nuestra para redactar el borrador. No almacenamos su nota, sus respuestas ni el
 borrador. Solo conservamos recuentos, como cuántos borradores se mostraron en un día, y
-lo que cuesta la vista previa cada mes. Si decide enviar comentarios, conservamos el
-texto que envía durante 30 días, tras sustituir los datos personales habituales en la
-medida de lo posible, y no lo vinculamos con usted ni con su nota. Para aplicar límites
+lo que cuesta la vista previa cada mes. Para aplicar límites
 de uso utilizamos su dirección IP en forma de hash que cambia cada día. Usamos
 Cloudflare Turnstile para distinguir a las personas de los programas automatizados. Le
 rogamos que no escriba contraseñas, tokens, datos de clientes ni otra información
@@ -214,9 +212,6 @@ para la que se recogieron, y después los eliminamos o anonimizamos. En la prác
 - Los mensajes de soporte, los registros de seguridad y los registros de
   consentimiento se conservan durante un periodo limitado; los de consentimiento se
   guardan como prueba de que su decisión fue respetada.
-- El texto de los comentarios enviados desde la vista previa web gratuita se conserva
-  30 días y después se elimina. Las notas, las respuestas y los borradores de la vista
-  previa no se conservan.
 
 Si elimina su cuenta, eliminamos o anonimizamos sus datos, salvo los registros que
 estamos obligados a conservar.
