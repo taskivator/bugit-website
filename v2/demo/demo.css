@@ -388,3 +388,37 @@
 .d-limit strong{color:#fff;font-weight:650}
 .d-limit-out{flex:1 1 100%;margin:0}
 @media (forced-colors:active){.d-limit{border:1px solid CanvasText}}
+
+/* ── Compact first view (owner, 2026-10-17): the workspace must be on screen when the page opens ── */
+.d-hero{padding:34px 0 14px}
+.d-hero .kicker{display:none}
+.d-hero h1{font-size:clamp(30px,4.2vw,50px);max-width:none;line-height:1.05}
+.d-hero .lede{margin:10px auto 0;font-size:clamp(15px,1.5vw,18px);max-width:46ch}
+.d-steps{margin:0 auto 14px;padding:4px}
+.d-steps li{padding:5px 14px 5px 5px;font-size:13.5px}
+.d-in{padding:22px}
+.d-h{font-size:19px;margin:0 0 12px}
+.d-hint{font-size:13.5px;margin:0 0 8px}
+.d-trk .d-hint{margin-bottom:8px}
+.d-exs{margin:12px 0 2px}
+.d-ex-l{margin:0 0 8px}
+.d-ex-grid{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 8px;margin:0 -2px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
+.d-ex{flex:0 0 auto;min-height:0;flex-direction:row;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;scroll-snap-align:start;white-space:nowrap}
+.d-ex-s{display:none}
+.d-ex-t{font-size:13.5px}
+.d-ex-g{display:none}
+.d-warn{font-size:13px;margin:10px 0 0}
+.d-limit{margin:10px 0 0;padding:0;border:0;background:none;font-size:13px;color:var(--ink-3)}
+.d-priv{font-size:12.5px;margin:8px 0 0;line-height:1.5}
+@media (min-width:981px){.d-empty{padding:34px 28px 28px}}
+@media (max-width:640px){
+  .d-hero{padding:18px 0 10px}
+  .d-hero h1{font-size:clamp(26px,8vw,34px)}
+  .d-hero .lede{font-size:15px;margin-top:8px}
+  .d-steps{margin-bottom:10px}
+  .d-in{padding:16px}
+}
+.d-grid>*{min-width:0}
+.d-ex-grid{max-width:100%}
+@media (max-width:980px){.d-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.d-in .d-hint{display:none}.d-field+.d-field{margin-top:14px}.d-ta-wrap textarea{min-height:120px}}
