@@ -36,6 +36,9 @@ export const REVIEWED_CSP_HOSTS = [
   // check-csp-telemetry.mjs, which asserts the tracking host is NOT granted and the embed is
   // click-gated rather than loaded with the page.
   "www.youtube-nocookie.com",
+  // The free web preview's bot check (Cloudflare Turnstile), loaded only by /demo/. Disclosed in the
+  // privacy policy section "The free web preview on bugit.dev".
+  "challenges.cloudflare.com",
 ];
 
 /** The one origin Access-Control-Allow-Origin may name. */

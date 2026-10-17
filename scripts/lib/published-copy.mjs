@@ -70,7 +70,7 @@ function strings(v, out = []) {
 export function publishedCopy() {
   const out = [];
   const tpl = templatePages();
-  for (const file of ["v2/index.html", "v2/docs/index.html", ...articlePages(), ...(tpl.page ? [tpl.page] : [])]) {
+  for (const file of ["v2/index.html", "v2/docs/index.html", ...articlePages(), ...(tpl.page ? [tpl.page] : []), ...(existsSync(join(ROOT, "v2/demo/index.html")) ? ["v2/demo/index.html"] : [])]) {
     out.push({ file, lang: "en", kind: "page", text: rd(file) });
   }
   for (const lang of publishedLangs()) {
@@ -85,6 +85,7 @@ export function publishedCopy() {
   }
   const scripts = readdirSync(join(ROOT, "v2")).filter((f) => f.endsWith(".js")).map((f) => "v2/" + f);
   scripts.push("v2/docs/docs.js");
+  if (existsSync(join(ROOT, "v2/demo/demo.js"))) scripts.push("v2/demo/demo.js");
   for (const file of scripts) out.push({ file, lang: null, kind: "script", text: rd(file) });
   for (const file of tpl.files) out.push({ file, lang: "en", kind: "file", text: rd(file) });
   return out;

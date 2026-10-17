@@ -276,6 +276,7 @@ console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of d
       if (p === '/') return ['v2/index.html', 'v2/i18n', 'v2/v2.css', 'v2/v2.js'];
       if (p === '/articles/') return ['v2/articles/index.html'];
       if (p === '/templates/') return ['v2/templates'];
+      if (p === '/demo/') return ['v2/demo'];
       const art = /^\/articles\/([a-z0-9-]+)\/$/.exec(p);
       if (art) return [`v2/articles/${art[1]}`, `v2/tools/articles-src/${art[1]}.md`];
       const doc = /^\/docs\/(?:([a-z0-9-]+)\/)?$/.exec(p);
@@ -489,8 +490,8 @@ if (fs.existsSync(guideDir)) {
 {
   const v2Src = path.join(root,'v2');
   const articleSlugs = fs.existsSync(path.join(v2Src,'articles')) ? fs.readdirSync(path.join(v2Src,'articles'),{withFileTypes:true}).filter((e) => e.isDirectory() && e.name !== 'images').map((e) => e.name) : [];
-  const PAGES = [['index.html','index.html'],['docs/index.html','docs/index.html'],['articles/index.html','articles/index.html'],['templates/index.html','templates/index.html'],...articleSlugs.map((s) => [`articles/${s}/index.html`,`articles/${s}/index.html`])];
-  const NEEDED = ['index.html','docs/index.html','articles/index.html','articles/articles.css','articles/articles.js','v2.css','v2.js','i18n.js','nav.js','logos.js','route.js','docs/docs.js','docs/docs.css','i18n/en.json','docs/content.en.json','templates/index.html'];
+  const PAGES = [['index.html','index.html'],['docs/index.html','docs/index.html'],['articles/index.html','articles/index.html'],['templates/index.html','templates/index.html'],['demo/index.html','demo/index.html'],...articleSlugs.map((s) => [`articles/${s}/index.html`,`articles/${s}/index.html`])];
+  const NEEDED = ['index.html','docs/index.html','articles/index.html','articles/articles.css','articles/articles.js','v2.css','v2.js','i18n.js','nav.js','logos.js','route.js','docs/docs.js','docs/docs.css','i18n/en.json','docs/content.en.json','demo/index.html','demo/demo.css','demo/demo.js','templates/index.html'];
   const missing = NEEDED.filter((f) => !fs.existsSync(path.join(v2Src,...f.split('/'))));
   if (missing.length) { console.error(`build: the site's pages need v2/${missing.join(', v2/')}, and they are missing.`); process.exit(1); }
   const v2Dist = path.join(dist,'v2');
@@ -503,6 +504,8 @@ if (fs.existsSync(guideDir)) {
     // The template pack: its page is written out below like the others, its files are published at
     // /templates/files/; nothing of it belongs under /v2/.
     if (rel === 'templates' || rel.startsWith('templates/')) return false;
+    // The preview page's local test server (mock and recorded runs) never ships.
+    if (rel === 'demo/preview' || rel.startsWith('demo/preview/')) return false;
     // The guides' pages are written out below, hashed; only their stylesheet and images are copied here.
     if (/^articles\/[^/]+/.test(rel) && !/^articles\/(?:images(?:\/|$)|articles\.(?:css|js)$)/.test(rel)) return false;
     return !pageSet.has(rel);
@@ -532,6 +535,7 @@ if (fs.existsSync(guideDir)) {
   }
   for (const [from,to] of PAGES) {
     let html = fs.readFileSync(path.join(v2Src,...from.split('/')),'utf8');
+    html = html.replace(/(\.(?:js|css))\?v=\d+"/g, '$1"');   // the preview page's dev cache busters
     for (const [plain,hashed] of Object.entries(v2Assets)) html = html.split(`"${plain}"`).join(`"${hashed}"`);
     const stale = (html.match(/(?:href|src)="\/v2\/[^"]+\.(?:js|css)"/g) || []).filter((m) => !/\.[a-f0-9]{10}\.(?:js|css)"$/.test(m));
     if (stale.length) { console.error(`build: ${to} still references an unhashed asset: ${stale[0]}`); process.exit(1); }
@@ -549,7 +553,7 @@ if (fs.existsSync(guideDir)) {
 }
 
 const subPages = (dir) => fs.existsSync(path.join(dist,dir)) ? fs.readdirSync(path.join(dist,dir),{withFileTypes:true}).filter((e) => e.isDirectory() && fs.existsSync(path.join(dist,dir,e.name,'index.html'))).map((e) => `${dir}/${e.name}/index.html`) : [];
-for (const html of ['index.html','docs/index.html','404.html','articles/index.html','templates/index.html',...subPages('articles'),...subPages('docs')]) {
+for (const html of ['index.html','docs/index.html','404.html','articles/index.html','templates/index.html','demo/index.html',...subPages('articles'),...subPages('docs')]) {
   const p = path.join(dist,html);
   if (!fs.existsSync(p)) continue;
   let s = fs.readFileSync(p,'utf8');

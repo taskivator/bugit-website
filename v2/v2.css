@@ -695,7 +695,8 @@ h1,h2,h3{text-wrap:balance}
 .try-row textarea::placeholder{color:var(--ink-3)}
 .try-go{flex:0 0 auto;align-self:stretch;white-space:nowrap}
 .try-note{margin:10px 2px 0;font-size:13px;color:var(--ink-3)}
-.hero>.ask{margin-top:36px}
+.hero>.ask{margin:22px auto 0;width:min(480px,100%)}
+.hero>.demo{margin-top:40px}
 @media (max-width:560px){
   .hero{padding-top:20px}
   .hero>h1{font-size:32px}
@@ -705,7 +706,8 @@ h1,h2,h3{text-wrap:balance}
   .try-go{width:100%}
   .try-title{font-size:16px}
   .hero>.demo{order:6}
-  .hero>.ask,.hero>.runs,.hero>.hero-needs{order:7}
+  .hero>.ask{order:5}
+  .hero>.runs,.hero>.hero-needs{order:7}
   .hero>.hero-needs{margin-top:16px}
 }
 @media (forced-colors:active){.try{border:1px solid CanvasText}.try-row textarea{border:1px solid CanvasText}}

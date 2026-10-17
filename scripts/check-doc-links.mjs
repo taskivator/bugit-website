@@ -160,6 +160,7 @@ function publishedLinkProblem(entry, href) {
   else if (abs.startsWith("/articles/")) file = join(root, "v2", abs.replace(/\/$/, "/index.html").slice(1));
   // The free template pack (2026-10-10): build.js publishes v2/templates/ at /templates/.
   else if (abs.startsWith("/templates/")) file = join(root, "v2", abs.replace(/\/$/, "/index.html").slice(1));
+  else if (abs.startsWith("/demo/")) file = join(root, "v2", "demo", "index.html");
   else file = join(root, abs.replace(/\/$/, "/index.html"));
   if (!existsSync(file)) return `nothing at ${abs} in the source tree`;
   if (fragment.startsWith("#/")) {
