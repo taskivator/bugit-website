@@ -263,7 +263,7 @@
  "pricing.templates": "まだ決めかねている場合は、<a href=\"/templates/\">無料のバグレポートテンプレート</a>から始めてみてください。BugIt が代わりに行う作業の手作業版です。",
  "hero.trust": "サブスクリプションなし。返金ポリシーの条件のもと、<a href=\"/docs/refund/\">購入後7日以内に返金を申請</a>できます。",
  "pricing.needs.h": "必要なもの",
- "pricing.needs": "ご自身のAIアシスタント（試すだけならGitHub Copilot Freeで足ります。Claude拡張機能でも、ご自身のOpenAIまたはAnthropicのキーを使って単独で動かす方法でも構いません）、VS Code、Python 3.10から3.14、そしてトラッカー用のトークン。セットアップ全体の所要時間は約15分です。Windows 11は完全対応、macOSとLinuxはプレビュー版です。フォルダーをダウンロードして解凍し、VS Codeで開いて、BugItアカウントで有効化します。",
+ "pricing.needs": "ご自身のAIアシスタント（GitHub Copilot、Claude拡張機能、またはご自身のOpenAIかAnthropicのキーを使った単独動作）、VS Code、Python 3.10から3.14、そしてトラッカー用のトークン。Windows 11は完全対応、macOSとLinuxはプレビュー版です。フォルダーをダウンロードして解凍し、VS Codeで開いて、BugItアカウントで有効化します。",
  "faq.try.q": "まず試せますか？",
  "faq.try.a": "はい。BugItアカウントから14日間の無料トライアルを開始できます。デバイス1台、カード不要です。終了日に停止します。",
  "faq.model.q": "BugItにAIモデルは含まれていますか？",
@@ -276,5 +276,5 @@
  "foot.support": "サポート",
  "hero.trialNote": "デバイス 1 台。カード不要。",
  "trial.ctaNote": "デバイス 1 台。カード不要。",
- "needs.short": "必要なもの：ご自身のAIアシスタント（試すだけならGitHub Copilot Freeで足ります。Claude拡張機能でも、ご自身のOpenAIまたはAnthropicのキーを使って単独で動かす方法でも構いません）、VS Code、Python 3.10から3.14、そしてトラッカー用のトークン。セットアップ全体の所要時間は約15分です。"
+ "needs.short": "必要なもの：ご自身のAIアシスタント（GitHub Copilot、Claude拡張機能、またはご自身のOpenAIかAnthropicのキーを使った単独動作）、VS Code、Python 3.10から3.14、そしてトラッカー用のトークン。"
 }

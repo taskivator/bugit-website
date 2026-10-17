@@ -54,7 +54,7 @@
   ],
   [
    "Do I need GitHub Copilot?",
-   "No. BugIt runs in any assistant that can run a command: GitHub Copilot Chat (the Free plan is enough to try), the Claude extension in VS Code, or a plain terminal. Filing is a command, so it works the same in all of them."
+   "No. BugIt runs in any assistant that can run a command: GitHub Copilot Chat, the Claude extension in VS Code, or a plain terminal. Filing is a command, so it works the same in all of them."
   ],
   [
    "Can I use Claude, Gemini or GPT?",

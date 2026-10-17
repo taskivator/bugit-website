@@ -263,7 +263,7 @@
  "pricing.templates": "Ainda não decidiu? Comece pelos <a href=\"/templates/\">modelos gratuitos de relatório de bug</a>, a versão manual do que o BugIt faz por você.",
  "hero.trust": "Sem assinatura. <a href=\"/docs/refund/\">Prazo de reembolso de 7 dias</a>, nas condições da nossa política de reembolso.",
  "pricing.needs.h": "O que você precisa",
- "pricing.needs": "Um assistente de IA próprio (o GitHub Copilot Free basta para experimentar, ou a extensão do Claude, ou, sozinho, a sua própria chave da OpenAI ou da Anthropic), VS Code, Python 3.10 a 3.14 e um token do seu rastreador. Reserve cerca de 15 minutos para a configuração completa. Windows 11 totalmente compatível; macOS e Linux em prévia. Você baixa uma pasta, descompacta, abre no VS Code e ativa com a sua conta BugIt.",
+ "pricing.needs": "Um assistente de IA próprio (GitHub Copilot, a extensão do Claude ou, sozinho, a sua própria chave da OpenAI ou da Anthropic), VS Code, Python 3.10 a 3.14 e um token do seu rastreador. Windows 11 totalmente compatível; macOS e Linux em prévia. Você baixa uma pasta, descompacta, abre no VS Code e ativa com a sua conta BugIt.",
  "faq.try.q": "Posso testar antes?",
  "faq.try.a": "Sim. Comece um teste grátis de 14 dias pela sua conta BugIt: um dispositivo, sem cartão. Ele termina na data final.",
  "faq.model.q": "O BugIt inclui um modelo de IA?",
@@ -276,5 +276,5 @@
  "foot.support": "Suporte",
  "hero.trialNote": "Um dispositivo. Sem cartão.",
  "trial.ctaNote": "Um dispositivo. Sem cartão.",
- "needs.short": "O que você precisa: um assistente de IA próprio (o GitHub Copilot Free basta para experimentar, ou a extensão do Claude, ou, sozinho, a sua própria chave da OpenAI ou da Anthropic), VS Code, Python 3.10 a 3.14 e um token do seu rastreador. Reserve cerca de 15 minutos para a configuração completa."
+ "needs.short": "O que você precisa: um assistente de IA próprio (GitHub Copilot, a extensão do Claude ou, sozinho, a sua própria chave da OpenAI ou da Anthropic), VS Code, Python 3.10 a 3.14 e um token do seu rastreador."
 }

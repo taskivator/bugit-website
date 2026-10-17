@@ -54,7 +54,7 @@
   ],
   [
    "¿Necesito GitHub Copilot?",
-   "No. BugIt funciona en cualquier asistente que pueda ejecutar un comando: GitHub Copilot Chat (el plan Free basta para probar), la extensión de Claude en VS Code o una terminal. Registrar es un comando, así que funciona igual en todos."
+   "No. BugIt funciona en cualquier asistente que pueda ejecutar un comando: GitHub Copilot Chat, la extensión de Claude en VS Code o una terminal. Registrar es un comando, así que funciona igual en todos."
   ],
   [
    "¿Puedo usar Claude, Gemini o GPT?",

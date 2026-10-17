@@ -54,7 +54,7 @@
   ],
   [
    "GitHub Copilot이 필요한가요?",
-   "아니요. 명령을 실행할 수 있는 어떤 어시스턴트에서도 동작합니다. GitHub Copilot Chat(체험에는 Free 플랜으로 충분합니다), VS Code의 Claude 확장, 일반 터미널 모두 가능합니다. 등록은 명령이므로 어디서나 동일하게 작동합니다."
+   "아니요. 명령을 실행할 수 있는 어떤 어시스턴트에서도 동작합니다. GitHub Copilot Chat, VS Code의 Claude 확장, 일반 터미널 모두 가능합니다. 등록은 명령이므로 어디서나 동일하게 작동합니다."
   ],
   [
    "Claude, Gemini 또는 GPT를 사용할 수 있나요?",

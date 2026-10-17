@@ -54,7 +54,7 @@
   ],
   [
    "我需要 GitHub Copilot 吗？",
-   "不需要。BugIt 可在任何能运行命令的助手中使用：GitHub Copilot Chat（试用的话 Free 套餐就够了）、VS Code 中的 Claude 扩展，或普通终端。提交是一条命令，因此在它们中的使用方式完全相同。"
+   "不需要。BugIt 可在任何能运行命令的助手中使用：GitHub Copilot Chat、VS Code 中的 Claude 扩展，或普通终端。提交是一条命令，因此在它们中的使用方式完全相同。"
   ],
   [
    "可以使用 Claude、Gemini 或 GPT 吗？",
