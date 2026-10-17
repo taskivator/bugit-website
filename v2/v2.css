@@ -816,7 +816,7 @@ h1,h2,h3{text-wrap:balance}
 .faq summary:after{width:26px;height:26px;background-size:10px 1.5px,1.5px 10px}
 .faq p{padding:0 16px 16px calc(14px + 28px + 12px);font-size:15px;line-height:1.55}
 [dir="rtl"] .faq p{padding:0 calc(14px + 28px + 12px) 16px 16px}
-@media (max-width:900px){.faq{grid-template-columns:minmax(0,1fr);max-width:720px}}
+@media (max-width:700px){.faq{grid-template-columns:minmax(0,1fr);max-width:720px}}
 @media (max-width:560px){
   .faq{gap:8px;margin-top:26px}
   .faq summary{padding:11px 12px;min-height:50px;font-size:15px;gap:10px}
