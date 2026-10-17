@@ -100,7 +100,7 @@ Some bugs appear now and then. Do not leave the steps out because you cannot mak
 
 ## Where BugIt fits
 
-Writing steps this carefully is easy to agree with and hard to do at the end of a long day. When you describe what broke in a rough sentence, BugIt turns it into numbered steps with expected and actual results, and it uses a log you paste to fill in the environment. It redacts common personal data as a best effort, so you read the draft before it is filed. You review every draft, and nothing is written to your tracker until you type FILE IT.
+Writing steps this carefully is easy to agree with and hard to do at the end of a long day. When you describe what broke in a rough sentence, BugIt turns it into numbered steps with expected and actual results, and it uses a log you paste to fill in the environment. BugIt can redact common personal data before the draft; always read the draft before you file. You review every draft, and nothing is written to your tracker until you type FILE IT.
 
 Learn more at [bugit.dev](https://bugit.dev/) and [taskivator.com/bugit](https://taskivator.com/bugit/).
 

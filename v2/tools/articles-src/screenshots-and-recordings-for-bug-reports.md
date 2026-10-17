@@ -81,7 +81,7 @@ A screenshot is evidence, not the whole report. The steps to reproduce, the expe
 
 ## Where BugIt fits
 
-BugIt is a QA agent that runs in the assistant you already use. You describe what broke in a rough sentence, and it writes the report in your team's shape: title, steps, expected and actual, severity and the evidence you gave it. It redacts common personal data in what it drafts, which is a best effort, so you read the draft before it goes anywhere. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT. Images and recordings you attach are yours to check, so keep the privacy habits above.
+BugIt is a QA agent that runs in the assistant you already use. You describe what broke in a rough sentence, and it writes the report in your team's shape: title, steps, expected and actual, severity and the evidence you gave it. BugIt can redact common personal data before the draft; always read the draft before you file. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT. Images and recordings you attach are yours to check, so keep the privacy habits above.
 
 Find out more at [bugit.dev](https://bugit.dev/) and [taskivator.com/bugit](https://taskivator.com/bugit/).
 
