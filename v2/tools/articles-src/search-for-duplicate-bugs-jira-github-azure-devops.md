@@ -187,7 +187,7 @@ A match is a pointer, not a verdict. Read it and choose the move that fits.
 
 Searching a tracker properly takes patience, and it is the step people skip when they are in a hurry. When you describe a bug, BugIt searches your tracker for tickets like yours before you see the draft. The search only reads. It gives each candidate a score so you can judge how close it is, and it lists related tickets in the draft. A quick bug skips the search.
 
-It is a pointer, not a verdict. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT. BugIt can redact common personal data before the draft; always read the draft before you file.
+It is a pointer, not a verdict. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT. BugIt can replace common personal data with placeholders in the report it files, as a best effort; always read the draft before you file it.
 
 Find out more at [bugit.dev](https://bugit.dev/) and [taskivator.com/bugit](https://taskivator.com/bugit/).
 

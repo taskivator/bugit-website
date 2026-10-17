@@ -138,7 +138,7 @@ For the checklist version, see [how to write reproduction steps](/articles/how-t
 
 ## Where BugIt fits
 
-BugIt takes a rough sentence like the weak examples above and drafts the stronger version: a title, numbered steps, expected and actual results and the environment. BugIt can redact common personal data before the draft; always read the draft before you file. You review every draft, and nothing is written to your tracker until you type FILE IT.
+BugIt takes a rough sentence like the weak examples above and drafts the stronger version: a title, numbered steps, expected and actual results and the environment. BugIt can replace common personal data with placeholders in the report it files, as a best effort; always read the draft before you file it. You review every draft, and nothing is written to your tracker until you type FILE IT.
 
 Learn more at [bugit.dev](https://bugit.dev/) and [taskivator.com/bugit](https://taskivator.com/bugit/).
 

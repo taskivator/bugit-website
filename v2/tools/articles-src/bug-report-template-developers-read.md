@@ -119,7 +119,7 @@ Small habits matter more than a perfect template.
 
 ## Where BugIt fits
 
-Writing in this shape is easy to agree with and hard to do at the end of a long day. That is the gap BugIt closes. BugIt is a QA agent that runs in the assistant you already use. You describe what broke in a rough sentence, and it writes the report in your team's wording: title, steps, expected and actual, severity and the evidence you gave it. BugIt can redact common personal data before the draft; always read the draft before you file. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT.
+Writing in this shape is easy to agree with and hard to do at the end of a long day. That is the gap BugIt closes. BugIt is a QA agent that runs in the assistant you already use. You describe what broke in a rough sentence, and it writes the report in your team's wording: title, steps, expected and actual, severity and the evidence you gave it. BugIt can replace common personal data with placeholders in the report it files, as a best effort; always read the draft before you file it. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT.
 
 You can see how it works at [bugit.dev](https://bugit.dev/) and find more about the product at [taskivator.com/bugit](https://taskivator.com/bugit/).
 

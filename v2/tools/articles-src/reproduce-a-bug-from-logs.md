@@ -80,7 +80,7 @@ State the steps you found, what you expected, what happened, the build, and the 
 
 ## Where BugIt fits
 
-Reading logs is a skill worth having, and it is also a chore when the log is long. When you paste a log into BugIt, it keeps the error line and the stack that matter and leaves out the noise around them, then uses what it found to write the steps and the environment into the draft. BugIt can redact common personal data before the draft; always read the draft before you file. You review every draft, and nothing is written to your tracker until you type FILE IT.
+Reading logs is a skill worth having, and it is also a chore when the log is long. When you paste a log into BugIt, it keeps the error line and the stack that matter and leaves out the noise around them, then uses what it found to write the steps and the environment into the draft. BugIt can replace common personal data with placeholders in the report it files, as a best effort; always read the draft before you file it. You review every draft, and nothing is written to your tracker until you type FILE IT.
 
 Learn more at [bugit.dev](https://bugit.dev/) and [taskivator.com/bugit](https://taskivator.com/bugit/).
 

@@ -177,7 +177,7 @@ In the common Agile, Scrum and CMMI processes the Bug type has a Repro Steps fie
 
 ## Where BugIt fits
 
-A template is easy to agree with and hard to follow at the end of a long day. BugIt closes that gap. You describe what broke in a rough sentence, and BugIt writes the report in your team's wording, then files it to your tracker, which can be Jira, Azure DevOps or GitHub Issues, among others. BugIt can redact common personal data before the draft; always read the draft before you file. You review every draft, and nothing is written to your tracker until you type FILE IT.
+A template is easy to agree with and hard to follow at the end of a long day. BugIt closes that gap. You describe what broke in a rough sentence, and BugIt writes the report in your team's wording, then files it to your tracker, which can be Jira, Azure DevOps or GitHub Issues, among others. BugIt can replace common personal data with placeholders in the report it files, as a best effort; always read the draft before you file it. You review every draft, and nothing is written to your tracker until you type FILE IT.
 
 Learn more at [bugit.dev](https://bugit.dev/) and [taskivator.com/bugit](https://taskivator.com/bugit/).
 

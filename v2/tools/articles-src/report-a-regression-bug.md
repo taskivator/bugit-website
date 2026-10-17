@@ -114,7 +114,7 @@ The Related field is easy to forget and worth the effort. A regression often reo
 
 ## Where BugIt fits
 
-BugIt is a QA agent that runs in the assistant you already use. You describe the problem in a rough sentence, and it writes the report in your team's shape. Before you see the draft, it searches your tracker, read only, for tickets like yours and gives each a score, so an earlier ticket about the same symptom can surface as a related ticket. You still supply what only you know, such as the last good build, and BugIt asks for what is missing, including the build and how often it happens. BugIt can redact common personal data before the draft; always read the draft before you file. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT.
+BugIt is a QA agent that runs in the assistant you already use. You describe the problem in a rough sentence, and it writes the report in your team's shape. Before you see the draft, it searches your tracker, read only, for tickets like yours and gives each a score, so an earlier ticket about the same symptom can surface as a related ticket. You still supply what only you know, such as the last good build, and BugIt asks for what is missing, including the build and how often it happens. BugIt can replace common personal data with placeholders in the report it files, as a best effort; always read the draft before you file it. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT.
 
 Learn more at [bugit.dev](https://bugit.dev/) and [taskivator.com/bugit](https://taskivator.com/bugit/).
 

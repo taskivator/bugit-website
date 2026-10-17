@@ -110,7 +110,7 @@ The "Conditions noticed" and "Not yet tested" lines are the heart of it. They te
 
 ## Where BugIt fits
 
-Ghost bugs are exactly where a report gets thin, because the reporter is tired and the details are slipping away. BugIt is a QA agent that runs in the assistant you already use. You describe what happened in a rough sentence, and it asks for what is missing, such as the build and how often it happens, before it writes the draft. It keeps the error line and the stack from a log you paste. BugIt can redact common personal data before the draft; always read the draft before you file. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT.
+Ghost bugs are exactly where a report gets thin, because the reporter is tired and the details are slipping away. BugIt is a QA agent that runs in the assistant you already use. You describe what happened in a rough sentence, and it asks for what is missing, such as the build and how often it happens, before it writes the draft. It keeps the error line and the stack from a log you paste. BugIt can replace common personal data with placeholders in the report it files, as a best effort; always read the draft before you file it. You review every draft before it is filed, and nothing is written to your tracker until you type FILE IT.
 
 See [bugit.dev](https://bugit.dev/) and [taskivator.com/bugit](https://taskivator.com/bugit/).
 
