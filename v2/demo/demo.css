@@ -8,10 +8,9 @@
 .d-hero{position:relative;text-align:center!important;padding:84px 0 44px}
 .d-hero h1{font-size:clamp(40px,7vw,88px);max-width:14ch;margin-inline:auto}
 .d-hero .lede{margin-top:22px}
-.d-spot{position:absolute;inset:-40px 0 auto;height:520px;pointer-events:none;z-index:-1;
-  background:radial-gradient(520px 260px at 28% 30%,rgba(255,79,201,.16),transparent 70%),
-             radial-gradient(560px 280px at 74% 40%,rgba(139,69,255,.2),transparent 70%);
-  filter:blur(8px);mask-image:linear-gradient(#000 40%,transparent)}
+.d-spot{position:absolute;inset:-60px 0 auto;height:620px;pointer-events:none;z-index:-1;
+  background:conic-gradient(from 180deg at 50% 0%,transparent 160deg,rgba(255,79,201,.09) 180deg,transparent 200deg);
+  filter:blur(10px);mask-image:linear-gradient(#000 20%,transparent 70%)}
 .d-noscript{padding:16px 20px;border:1px solid var(--line-2);border-radius:var(--r-sm);color:var(--ink-2)}
 .d-noscript a{color:#fff;text-decoration:underline;text-underline-offset:3px}
 
@@ -29,7 +28,9 @@
 /* ── Panes ──────────────────────────────────────────────────────────────────── */
 .d-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:20px;align-items:start}
 .glass{position:relative;border:1px solid var(--line);border-radius:28px;background:linear-gradient(180deg,rgba(20,15,34,.92),rgba(12,9,22,.92));
-  box-shadow:0 40px 120px -40px rgba(139,69,255,.35),inset 0 1px 0 rgba(255,255,255,.05)}
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 0 36px -8px rgba(255,79,201,.34),0 0 80px -24px rgba(139,69,255,.30)}
+/* Same hairline as the hero window on the main page: product colour bright at two corners, clear between. */
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(160deg,rgba(255,79,201,.7),transparent 40%,transparent 70%,rgba(139,69,255,.45));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
 .d-in{padding:28px}
 .d-out{padding:0;overflow:hidden;min-height:560px}
 .d-out::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(255,79,201,.7),rgba(139,69,255,.7),transparent)}
