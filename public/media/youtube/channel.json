@@ -4,13 +4,13 @@
   "note": "Two cuts per subject. `wide` is the 1920x1080 upload on the videos tab and is what a desktop plays; `tall` is the 1080x1920 upload published as a Short and is what a phone plays. Orientation was read from each video's own watch page by scratchpad/yt_orient.py, never inferred from a file name.",
   "videos": [
     {
-      "slug": "trailer",
-      "wide": "nlLLNSYlzqo",
-      "tall": "hS6j7kuoxU4",
-      "seconds": 121,
-      "duration": "2:01",
-      "title": "BugIt: a QA agent that writes the bug report for you",
-      "label": "The introduction"
+      "slug": "howto",
+      "wide": "lwqSUR1tZhA",
+      "tall": null,
+      "seconds": 334,
+      "duration": "5:34",
+      "title": "How to write a bug report developers will actually read",
+      "label": "How to write a bug report"
     },
     {
       "slug": "gate",
@@ -31,85 +31,31 @@
       "label": "Duplicate rating"
     },
     {
-      "slug": "trackers",
-      "wide": "Q-1wnIszGXI",
-      "tall": "Ohtsl76g3CQ",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "Eleven trackers, one workflow: file where your team already works",
-      "label": "Eleven trackers"
-    },
-    {
       "slug": "pricing",
       "wide": "md_XRTnRKz4",
       "tall": "KgqPusYuJZA",
       "seconds": 30,
       "duration": "0:30",
-      "title": "A full QA workflow, one price, and it does not renew itself",
+      "title": "One license, one year, no subscription",
       "label": "One price"
     },
     {
-      "slug": "quality",
-      "wide": "xIrP4pcaVMM",
-      "tall": "HlJRiA0e4D0",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "BugIt tells you when your bug report is thin",
-      "label": "Report quality"
-    },
-    {
-      "slug": "housestyle",
-      "wide": "tlw_a8BA6gU",
-      "tall": "cVoWRX3PquY",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "Show it one good ticket and it learns your house style",
-      "label": "Your house style"
-    },
-    {
       "slug": "privacy",
-      "wide": "0kchMv1TDaA",
-      "tall": "XOJMCoExDlY",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "BugIt can redact common personal data before you read the draft",
-      "label": "Privacy redaction"
+      "wide": "Z2gP_U25MPQ",
+      "tall": "AzHDFROaj2U",
+      "seconds": 45,
+      "duration": "0:45",
+      "title": "How BugIt handles personal data in the report it files",
+      "label": "Personal data"
     },
     {
-      "slug": "attachments",
-      "wide": "VvTSkMG7Fyc",
-      "tall": "oNvAV07vuj8",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "Screenshots, recordings and logs end up on the ticket",
-      "label": "Attachments"
-    },
-    {
-      "slug": "languages",
-      "wide": "gRTUzQ8-a7Y",
-      "tall": "QhiM9mG7vGc",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "Report in your language, file in the team's",
-      "label": "Your language"
-    },
-    {
-      "slug": "spec",
-      "wide": "beJv_4s97vY",
-      "tall": "vzHltFGimtQ",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "It checks the spec before calling something a bug",
-      "label": "Reads the spec"
-    },
-    {
-      "slug": "logs",
-      "wide": "O-nLjqK-7B0",
-      "tall": "8sYkPhF7ckA",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "Paste the crash log, keep the line that matters",
-      "label": "Crash logs"
+      "slug": "triage",
+      "wide": "68HJ91axMYk",
+      "tall": "HtyxjeSJ1KI",
+      "seconds": 43,
+      "duration": "0:43",
+      "title": "Severity vs priority: the corner people forget",
+      "label": "Severity vs priority"
     }
   ]
 }
