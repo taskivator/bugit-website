@@ -22,24 +22,6 @@
       "label": "The FILE IT gate"
     },
     {
-      "slug": "duplicates",
-      "wide": "1Ser7PATJfE",
-      "tall": "C0UzXeYz9lk",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "Is it a duplicate? BugIt gives you a number",
-      "label": "Duplicate rating"
-    },
-    {
-      "slug": "pricing",
-      "wide": "md_XRTnRKz4",
-      "tall": "KgqPusYuJZA",
-      "seconds": 30,
-      "duration": "0:30",
-      "title": "One license, one year, no subscription",
-      "label": "One price"
-    },
-    {
       "slug": "privacy",
       "wide": "Z2gP_U25MPQ",
       "tall": "AzHDFROaj2U",
