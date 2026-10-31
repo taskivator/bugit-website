@@ -879,3 +879,77 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   #demo .pane{padding:12px}
   #demo .pane-label,#demo .demo-note,#demo .work em{font-size:10.5px}
 }
+
+/* ── A worked sample, and the lines beside the trial buttons (owner brief 2026-10-30) ──────────────────
+   The sample is a real draft from the free preview (see the comment above #sample in index.html), shown
+   as an English island on every language page. The site is dark only, so there is one palette to hold.
+   Labels never rely on colour alone: each carries its words, and the dashed edge marks UNKNOWN. Logical
+   properties throughout, so the note and the draft swap sides in Arabic while the English island keeps
+   its own left to right text. */
+.hero-fine{margin:10px auto 0;max-width:640px}
+.hero-need,.hero-early,.close-need{margin:8px auto 0;font-size:13px;line-height:1.5;color:var(--ink-3);text-wrap:balance}
+.hero-early a{color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.close-need{max-width:560px;margin-top:16px;padding-inline:16px}
+.trial-cta-note{font-weight:500;color:var(--ink-3);font-size:13.5px}
+@media (max-width:560px){
+  .hero>.hero-fine{order:6;margin-top:10px}
+}
+
+.nb{white-space:nowrap}
+.sample-flag{display:inline-block;margin:18px auto 0;padding:5px 14px;border:1px solid rgba(255,194,77,.45);border-radius:999px;
+  background:rgba(255,194,77,.08);color:#ffd9a0;font:600 12px/1.4 var(--mono);letter-spacing:.06em}
+.sample-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;max-width:1040px;margin:36px auto 0;text-align:start;align-items:start}
+.sample-in,.sample-out{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:22px;min-width:0}
+.sample-in .pane-label,.sample-out .pane-label{text-transform:none;letter-spacing:.04em;font-size:12px}
+.sample-note{margin:0;padding:14px 16px;border:1px solid var(--line);border-inline-start:3px solid var(--pink);border-radius:14px;
+  background:var(--card-2);color:var(--ink);font-size:16px;line-height:1.5;text-align:left}
+.sample-ans{margin:14px 0 0;font-size:14px;line-height:1.55;color:var(--ink-2)}
+.sample-draft{border:1px solid var(--line-2);border-radius:14px;background:var(--bg-2);padding:16px 18px;text-align:left}
+.sd-title{margin:0 0 12px;font-size:16px;line-height:1.4;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.sample-draft dl{margin:0;display:grid;gap:12px}
+.sample-draft dt{margin:0;font:600 11px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.sample-draft dd{margin:3px 0 0;font-size:14px;line-height:1.55;color:var(--ink-2)}
+.sample-draft ol,.sample-draft ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.sample-draft .sd-why{margin-top:8px}
+.sd-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sd-pair>div{min-width:0}
+.sd-would{margin:8px 0 0;font-size:13px;color:var(--ink-3)}
+.sd-would b{font-weight:600;color:var(--ink-2)}
+.sample-draft .pill-hot{margin-top:1px}
+.sb{display:inline-block;margin-inline-start:2px;padding:0 8px;border:1px solid;border-radius:999px;vertical-align:1px;white-space:nowrap;
+  font:500 11px/1.55 var(--mono);letter-spacing:.02em}
+.sb-stated{color:var(--green);border-color:rgba(50,242,140,.45);background:rgba(50,242,140,.07)}
+.sb-inferred{color:var(--amber);border-color:rgba(255,194,77,.5);background:rgba(255,194,77,.08)}
+.sb-unknown{color:var(--ink-2);border-color:var(--line-2);border-style:dashed}
+.sample .fine{max-width:700px}
+.sample-src{margin-top:8px}
+@media (max-width:860px){
+  .sample-grid{grid-template-columns:minmax(0,1fr);margin-top:28px}
+}
+@media (max-width:560px){
+  .sample-in,.sample-out{padding:16px}
+  .sample-draft{padding:14px}
+  .sd-pair{grid-template-columns:minmax(0,1fr)}
+  .sample-note{font-size:15px}
+  .sample-draft dd{font-size:13.5px}
+}
+@media (forced-colors:active){
+  .sample-in,.sample-out,.sample-draft,.sample-note{border:1px solid CanvasText}
+  .sb{border-color:CanvasText}
+}
+
+/* FOOTER ALIGNMENT (owner, 2026-10-30). Brand on the left and the social buttons on the right share the
+   first row; the links take a second row of their own, left aligned with the brand and with an even gap
+   in both directions. On a phone it is one column: brand, links, social. Logical properties, so Arabic
+   mirrors. */
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px 24px}
+.foot>span{grid-column:1;grid-row:1}
+.foot>.social{grid-column:2;grid-row:1;justify-self:end}
+.foot>nav{grid-column:1/-1;grid-row:2;gap:0 24px;justify-content:flex-start}
+@media (max-width:640px){
+  .foot{grid-template-columns:minmax(0,1fr);gap:10px}
+  .foot>span,.foot>nav,.foot>.social{grid-column:1}
+  .foot>span{grid-row:1}
+  .foot>nav{grid-row:2;gap:0 20px}
+  .foot>.social{grid-row:3;justify-self:start;margin-top:6px}
+}

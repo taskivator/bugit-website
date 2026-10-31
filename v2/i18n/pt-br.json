@@ -113,7 +113,7 @@
  "t115": "Baixe e ative",
  "t116": "Baixe o BugIt, abra no VS Code e ative em um dispositivo. Dúvidas? Escreva para support@bugit.dev.",
  "t119": "Teste o BugIt grátis por 14 dias",
- "t120": "O teste termina na data final, sem período de carência, e está disponível uma vez por conta.",
+ "t120": "14 dias, um dispositivo, sem cartão, termina na data final, uma vez por conta.",
  "t121": "Preços",
  "t122": "Pague por um ano. Renove só se quiser.",
  "t125": "Solo",
@@ -273,5 +273,12 @@
  "try.ph": "Depois da atualização, o total da fatura mostra 0.00 em pedidos com código de desconto...",
  "try.go": "Escrever meu rascunho",
  "try.note": "Somente em inglês. 3 rascunhos grátis por dia. Nada é registrado em lugar nenhum.",
- "hero.trialNote": "Um dispositivo. Sem cartão."
+ "sample.eyebrow": "Um exemplo",
+ "sample.title": "De uma nota solta a um rascunho que você consegue ler.",
+ "sample.flag": "Exemplo. Os dados são inventados.",
+ "sample.noteLabel": "A nota solta",
+ "sample.answers": "Depois o BugIt fez algumas perguntas. As respostas: adicionar um item ao carrinho, digitar um código de desconto, abrir a fatura; o total deveria mostrar o preço com desconto; Windows, notebook, toda vez, desde a última atualização; versão desconhecida.",
+ "sample.draftLabel": "O rascunho",
+ "sample.basis": "Cada linha diz se veio da nota, se foi inferida ou se é desconhecida.",
+ "sample.source": "Um rascunho resumido, escrito pela prévia grátis, uma versão simplificada do BugIt. A prévia escreve em inglês, e nada é registrado em lugar nenhum. <a href=\"/demo/\">Teste com a sua própria nota.</a>"
 }

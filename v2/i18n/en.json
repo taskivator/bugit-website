@@ -113,7 +113,7 @@
  "t115": "Download and activate",
  "t116": "Download BugIt, open it in VS Code and activate it on one device. Questions? Email support@bugit.dev.",
  "t119": "Try BugIt free for 14 days",
- "t120": "The trial stops on its end date, with no grace period, and is available once per account.",
+ "t120": "14 days, one device, no card, stops on the end date, once per account.",
  "t121": "Pricing",
  "t122": "Pay for a year. Renew only if you want to.",
  "t125": "Solo",
@@ -273,5 +273,12 @@
  "try.ph": "After the update, the invoice total shows 0.00 for orders with a discount code...",
  "try.go": "Write my draft",
  "try.note": "English only. 3 free drafts a day. Nothing is filed anywhere.",
- "hero.trialNote": "One device. No card needed."
+ "sample.eyebrow": "A worked sample",
+ "sample.title": "From a rough note to a draft you can read.",
+ "sample.flag": "Sample. The data is invented.",
+ "sample.noteLabel": "The rough note",
+ "sample.answers": "BugIt then asked a few questions. The answers: add an item, enter a discount code, open the invoice; the total should show the discounted price; Windows, laptop, each time, since the latest update; build not known.",
+ "sample.draftLabel": "The draft",
+ "sample.basis": "Every line says whether it came from the note, was inferred, or is unknown.",
+ "sample.source": "A shortened draft written by the free preview, a simplified version of BugIt. The preview writes in English, and nothing is filed anywhere. <a href=\"/demo/\">Try it on your own note.</a>"
 }

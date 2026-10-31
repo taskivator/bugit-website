@@ -5,9 +5,9 @@
 <script src="/consent.js"></script>
 <script src="/v2/route.js"></script>
 <link rel="preconnect" href="https://portal.bugit.dev" crossorigin="use-credentials">
-<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
-<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/public/bugit/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/bugit/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/bugit/favicon-180.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="canonical" href="https://bugit.dev/">
 <meta name="theme-color" content="#0b0614">
@@ -16,17 +16,17 @@
 <meta property="og:title" content="BugIt: bug report writer for Jira, GitHub and Azure DevOps">
 <meta property="og:description" content="BugIt turns a rough note into a complete bug report in the AI assistant you already use, then files it to Jira, GitHub or Azure DevOps when you type FILE IT.">
 <meta property="og:url" content="https://bugit.dev/">
-<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image" content="https://bugit.dev/public/bugit/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BugIt: bug report writer for Jira, GitHub and Azure DevOps">
 <meta name="twitter:description" content="BugIt turns a rough note into a complete bug report in the AI assistant you already use, then files it to Jira, GitHub or Azure DevOps when you type FILE IT.">
-<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta name="twitter:image" content="https://bugit.dev/public/bugit/og-image.png">
 <title>BugIt: bug report writer for Jira, GitHub and Azure DevOps</title>
 <meta name="description" content="BugIt turns a rough note into a complete bug report in the AI assistant you already use, then files it to Jira, GitHub or Azure DevOps when you type FILE IT.">
-<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/public/bugit/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/public/guide/guide.css">
 <link rel="stylesheet" href="/v2/v2.css">
 <link rel="stylesheet" href="/v2/consent.css">
@@ -53,7 +53,7 @@
         "name": "Taskivator",
         "url": "https://taskivator.com/",
         "logo": "https://taskivator.com/assets/brand/icon-512.png",
-        "brand": { "@type": "Brand", "name": "BugIt" },
+        "brand": { "@type": "Brand", "name": "BugIt", "logo": "https://bugit.dev/public/bugit/logo-512.png" },
         "sameAs": [
           "https://www.linkedin.com/company/bugitdev/",
           "https://www.youtube.com/@BugItByTaskivator",
@@ -67,7 +67,8 @@
         "operatingSystem": "Windows 11, macOS (preview), Linux (preview)",
         "description": "BugIt is a QA agent that runs in GitHub Copilot Chat, the Claude extension in VS Code or a terminal. It turns rough test notes into bug reports you review, and files them to your tracker after your approval.",
         "url": "https://bugit.dev/",
-        "image": "https://bugit.dev/public/brand/og-image.png",
+        "image": "https://bugit.dev/public/bugit/og-image.png",
+        "logo": "https://bugit.dev/public/bugit/logo-512.png",
         "publisher": { "@id": "https://bugit.dev/#org" },
         "offers": [
           { "@type": "Offer", "name": "Solo", "price": "59.99", "priceCurrency": "USD", "category": "1-year license, no subscription, no automatic renewal" },
@@ -119,7 +120,7 @@
       <a class="btn btn-primary" href="https://portal.bugit.dev/pricing" data-k="t012">Get BugIt</a>
       <a class="btn btn-ghost" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t013">Try BugIt free for 14 days</a>
     </div>
-    <p class="hero-trial" data-k="hero.trialNote">One device. No card needed.</p>
+    <p class="hero-trial" data-k="t120">14 days, one device, no card, stops on the end date, once per account.</p>
     <!-- THE DEMO. A real-sized bug, and BugIt visibly working: it asks what is missing, reads the
          project's glossary and house style, parses the attached log, searches for duplicates,
          classifies, rates, redacts and checks the report, and the ticket fills in section by
@@ -186,6 +187,56 @@
 
   </section>
 
+  <!-- ── 1b. A WORKED SAMPLE (owner brief 2026-10-30) ───────────────────────────────────
+       One rough note and the draft the free preview wrote from it. NOT written by hand: the note, the
+       answers and every line of the draft come from a real run of the preview engine on 2026-10-17
+       (04-google-ads-creative/preview-film-2026-10-17/capture/runs/real-desktop, draft-text.txt and
+       events.json), shortened to the parts named below and otherwise verbatim, labels included. The
+       data is invented. The preview writes English only, so the note and the draft are an English
+       island (lang="en") on every language page; the heading, the labels around it and the sentences
+       about it are translated. -->
+  <section class="band sample" id="sample" aria-labelledby="sampleTitle">
+    <p class="eyebrow" data-k="sample.eyebrow">A worked sample</p>
+    <h2 id="sampleTitle" data-k="sample.title">From a rough note to a draft you can read.</h2>
+    <p class="sample-flag" data-k="sample.flag">Sample. The data is invented.</p>
+    <div class="sample-grid">
+      <div class="sample-in">
+        <p class="pane-label" data-k="sample.noteLabel">The rough note</p>
+        <blockquote class="sample-note" lang="en" dir="ltr">After the update the invoice total shows 0.00 for orders with a discount code. It blocks checkout.</blockquote>
+        <p class="sample-ans" data-k="sample.answers">BugIt then asked a few questions. The answers: add an item, enter a discount code, open the invoice; the total should show the discounted price; Windows, laptop, each time, since the latest update; build not known.</p>
+      </div>
+      <div class="sample-out">
+        <p class="pane-label" id="sampleDraftL" data-k="sample.draftLabel">The draft</p>
+        <article class="sample-draft" aria-labelledby="sampleDraftL" lang="en" dir="ltr">
+          <p class="sd-title">[Checkout] Invoice total shows 0.00 for orders with a discount code <span class="sb sb-inferred">Inferred, please check</span></p>
+          <dl>
+            <div><dt>Steps</dt><dd><ol>
+              <li>Add an item to the cart. <span class="sb sb-stated">From your note</span></li>
+              <li>Enter a discount code. <span class="sb sb-stated">From your note</span></li>
+              <li>Open the invoice. <span class="sb sb-stated">From your note</span></li>
+            </ol></dd></div>
+            <div class="sd-pair">
+              <div><dt>Expected result</dt><dd>The invoice shows the discounted price. <span class="sb sb-stated">From your note</span></dd></div>
+              <div><dt>Actual result</dt><dd>The invoice total shows 0.00 and blocks checkout. <span class="sb sb-stated">From your note</span></dd></div>
+            </div>
+            <div><dt>Severity</dt><dd>
+              <span class="pill pill-hot">High</span>
+              <ul class="sd-why">
+                <li>Checkout is blocked for orders with a discount code. <span class="sb sb-stated">From your note</span></li>
+                <li>It happens every time with a discount code. <span class="sb sb-stated">From your note</span></li>
+                <li>No workaround is mentioned, and the number of users affected is unknown. <span class="sb sb-inferred">Inferred, please check</span></li>
+              </ul>
+              <p class="sd-would"><b>What would change this:</b> A workaround is found, which would lower the level to Medium.</p>
+            </dd></div>
+            <div><dt>Build or version</dt><dd>UNKNOWN: reporter did not give the build number <span class="sb sb-unknown">UNKNOWN</span></dd></div>
+          </dl>
+        </article>
+      </div>
+    </div>
+    <p class="fine" data-k="sample.basis">Every line says whether it came from the note, was inferred, or is unknown.</p>
+    <p class="fine sample-src" data-k="sample.source">A shortened draft written by the free preview, a simplified version of BugIt. The preview writes in English, and nothing is filed anywhere. <a href="/demo/">Try it on your own note.</a></p>
+  </section>
+
   <!-- ── 2. HOW IT WORKS ─────────────────────────────────────────────────────────────── -->
   <section class="band" id="how" aria-labelledby="howTitle">
     <p class="eyebrow" data-k="t066">How it works</p>
@@ -249,7 +300,7 @@
 
   <!-- ── 6. WATCH ────────────────────────────────────────────────────────────────────── -->
   <section class="band" id="watch" aria-labelledby="watchTitle">
-    <a class="poster" href="https://www.youtube.com/watch?v=lwqSUR1tZhA" target="_blank" rel="noopener">
+    <a class="poster" href="https://www.youtube.com/watch?v=Mz1W0YX1RXU" target="_blank" rel="noopener">
       <img src="/public/media/youtube/wide/howto.jpg" alt="A still from the BugIt film on how to write a bug report" data-ka="alt:t106alt" width="1280" height="720" loading="lazy">
       <span class="play" aria-hidden="true"><i></i></span>
       <span class="poster-cap"><b id="watchTitle" data-k="t106">How to write a bug report</b><span data-k="t107">Plus short films on BugIt's features, on the BugIt channel</span></span>
@@ -267,7 +318,7 @@
       <li><span class="num">03</span><h3 data-k="t115">Download and activate</h3><p data-k="t116">Download BugIt, open it in VS Code and activate it on one device. Questions? Email support@bugit.dev.</p></li>
     </ol>
     <div class="cta"><a class="btn btn-primary" href="https://portal.bugit.dev/dashboard/free-trial" data-k="t119">Try BugIt free for 14 days</a></div>
-    <p class="fine" data-k="t120">The trial stops on its end date, with no grace period, and is available once per account.</p>
+    <p class="trial-cta-note" data-k="t120">14 days, one device, no card, stops on the end date, once per account.</p>
   </section>
 
   <!-- ── 7. PRICING + FAQ ────────────────────────────────────────────────────── -->

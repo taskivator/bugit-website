@@ -62,6 +62,10 @@ jobs:
       # (a fabricated token in a throwaway workspace; nothing real is read).
       - name: Token lookup works from a worktree
         run: node scripts/check-token-lookup.mjs
+      # The free preview's trial button keeps the channel a tagged preview link arrived with, by the
+      # portal's own strict rule (2026-10-30). Pure function, no browser, no build needed.
+      - name: The preview trial link carries a valid channel and drops a crafted one
+        run: node scripts/check-demo-trial-link.mjs
       # Build-time devDependency only (esbuild, for asset minification). The
       # shipped site stays dependency-free at runtime.
       - name: Install build tooling

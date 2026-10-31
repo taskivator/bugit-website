@@ -7,7 +7,7 @@
   "background_color": "#0b0614",
   "theme_color": "#0b0614",
   "icons": [
-    { "src": "/public/brand/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
-    { "src": "/public/brand/favicon-180.png", "sizes": "180x180", "type": "image/png" }
+    { "src": "/public/bugit/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/public/bugit/favicon-180.png", "sizes": "180x180", "type": "image/png" }
   ]
 }

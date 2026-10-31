@@ -128,10 +128,10 @@ const head = (title, desc, url, type, current, ld = "") => `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="/consent.js"></script>
-<link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/public/brand/favicon-16.png">
-<link rel="apple-touch-icon" href="/public/brand/favicon-180.png">
-<link rel="icon" href="/public/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="/public/bugit/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/public/bugit/favicon-16.png">
+<link rel="apple-touch-icon" href="/public/bugit/favicon-180.png">
+<link rel="icon" href="/public/bugit/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="canonical" href="${url}">
 <meta name="theme-color" content="#0b0614">
@@ -140,14 +140,14 @@ const head = (title, desc, url, type, current, ld = "") => `<!doctype html>
 <meta property="og:title" content="${esc(title)} · BugIt">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta property="og:image" content="https://bugit.dev/public/bugit/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="BugIt by Taskivator, the QA agent that learns your workflow.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)} · BugIt">
 <meta name="twitter:description" content="${esc(desc)}">
-<meta name="twitter:image" content="https://bugit.dev/public/brand/og-image.png">
+<meta name="twitter:image" content="https://bugit.dev/public/bugit/og-image.png">
 <title>${esc(title)} · BugIt</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="stylesheet" href="/v2/v2.css">
@@ -332,7 +332,7 @@ const hubLd = jsonLd({
       "@type": "Article",
       headline: HUB_TITLE,
       description: HUB_DESC,
-      image: "https://bugit.dev/public/brand/og-image.png",
+      image: "https://bugit.dev/public/bugit/og-image.png",
       datePublished: "2026-10-10",
       dateModified: "2026-10-10",
       inLanguage: "en",

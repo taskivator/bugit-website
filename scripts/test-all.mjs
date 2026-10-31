@@ -190,6 +190,8 @@ const SUITES = [
   // Static too: the Cloudflare token is looked up in one place, and found from a git worktree.
   // A worktree broke that lookup three times, the last time refusing a release deploy.
   "check-token-lookup.mjs",
+  // The preview's trial button carries a valid incoming channel and drops a crafted one; no browser.
+  "check-demo-trial-link.mjs",
   // check-assets and check-chrome-a11y used to run only in CI, or nowhere at all, so a local
   // `npm test` could pass while CI failed and vice versa. Both lists are now checked against
   // each other by scripts/check-ci-coverage.mjs.

@@ -234,12 +234,12 @@ console.log(`build: ${INTERNAL_ONLY.length} internal build note(s) kept out of d
 // Copied rather than redirected: it is 15 KB, it is requested on nearly every cold visit, and
 // a redirect for it costs a round trip on the critical path for no benefit.
 {
-  const ico = path.join(root, 'public', 'brand', 'favicon.ico');
+  const ico = path.join(root, 'public', 'bugit', 'favicon.ico');
   if (fs.existsSync(ico)) {
     fs.cpSync(ico, path.join(dist, 'favicon.ico'));
     console.log('build: /favicon.ico published at the root (the default lookup path).');
   } else {
-    console.error('build: public/brand/favicon.ico is missing, so /favicon.ico will 404.');
+    console.error('build: public/bugit/favicon.ico is missing, so /favicon.ico will 404.');
     process.exit(1);
   }
 }

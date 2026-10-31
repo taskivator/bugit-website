@@ -113,7 +113,7 @@
  "t115": "Descarga y activa",
  "t116": "Descarga BugIt, ábrelo en VS Code y actívalo en un dispositivo. ¿Tienes preguntas? Escribe a support@bugit.dev.",
  "t119": "Prueba BugIt gratis durante 14 días",
- "t120": "La prueba termina en su fecha de fin, sin periodo de gracia, y está disponible una vez por cuenta.",
+ "t120": "14 días, un dispositivo, sin tarjeta, termina en la fecha de fin, una vez por cuenta.",
  "t121": "Precios",
  "t122": "Paga un año. Renueva solo si quieres.",
  "t125": "Solo",
@@ -273,5 +273,12 @@
  "try.ph": "Tras la actualización, el total de la factura muestra 0.00 en los pedidos con código de descuento...",
  "try.go": "Escribir mi borrador",
  "try.note": "Solo en inglés. 3 borradores gratis al día. No se registra nada en ningún sitio.",
- "hero.trialNote": "Un dispositivo. Sin tarjeta."
+ "sample.eyebrow": "Un ejemplo",
+ "sample.title": "De una nota suelta a un borrador que puedes leer.",
+ "sample.flag": "Ejemplo. Los datos son inventados.",
+ "sample.noteLabel": "La nota suelta",
+ "sample.answers": "Después BugIt hizo algunas preguntas. Las respuestas: añadir un artículo, introducir un código de descuento, abrir la factura; el total debería mostrar el precio con descuento; Windows, portátil, cada vez, desde la última actualización; versión desconocida.",
+ "sample.draftLabel": "El borrador",
+ "sample.basis": "Cada línea indica si viene de la nota, si es una inferencia o si se desconoce.",
+ "sample.source": "Un borrador acortado, escrito por la vista previa gratis, una versión simplificada de BugIt. La vista previa escribe en inglés y no se registra nada en ningún sitio. <a href=\"/demo/\">Pruébalo con tu propia nota.</a>"
 }

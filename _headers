@@ -204,6 +204,8 @@
   Cache-Control: public, max-age=604800
 /public/brand/*
   Cache-Control: public, max-age=604800
+/public/bugit/*
+  Cache-Control: public, max-age=604800
 
 # The two self-hosted typefaces. A week, not a year, and deliberately NOT immutable: these
 # filenames carry no content hash, so a year of immutable caching on a fixed path is the exact

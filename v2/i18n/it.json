@@ -113,7 +113,7 @@
  "t115": "Scarica e attiva",
  "t116": "Scarica BugIt, aprilo in VS Code e attivalo su un dispositivo. Domande? Scrivi a support@bugit.dev.",
  "t119": "Prova BugIt gratis per 14 giorni",
- "t120": "La prova si ferma alla sua data di scadenza, senza periodo di tolleranza, ed è disponibile una volta per account.",
+ "t120": "14 giorni, un dispositivo, nessuna carta, si ferma alla data di scadenza, una volta per account.",
  "t121": "Prezzi",
  "t122": "Paghi per un anno. Rinnovi solo se vuoi.",
  "t125": "Solo",
@@ -273,5 +273,12 @@
  "try.ph": "Dopo l'aggiornamento, il totale della fattura mostra 0.00 per gli ordini con codice sconto...",
  "try.go": "Scrivi la mia bozza",
  "try.note": "Solo in inglese. 3 bozze gratuite al giorno. Nulla viene registrato da nessuna parte.",
- "hero.trialNote": "Un dispositivo. Nessuna carta richiesta."
+ "sample.eyebrow": "Un esempio",
+ "sample.title": "Da una nota buttata lì a una bozza che puoi leggere.",
+ "sample.flag": "Esempio. I dati sono inventati.",
+ "sample.noteLabel": "La nota buttata lì",
+ "sample.answers": "Poi BugIt ha fatto qualche domanda. Le risposte: aggiungere un articolo, inserire un codice sconto, aprire la fattura; il totale dovrebbe mostrare il prezzo scontato; Windows, laptop, ogni volta, dall’ultimo aggiornamento; versione sconosciuta.",
+ "sample.draftLabel": "La bozza",
+ "sample.basis": "Ogni riga dice se viene dalla nota, se è dedotta o se è sconosciuta.",
+ "sample.source": "Una bozza accorciata, scritta dall’anteprima gratuita, una versione semplificata di BugIt. L’anteprima scrive in inglese e nulla viene registrato da nessuna parte. <a href=\"/demo/\">Provala sulla tua nota.</a>"
 }

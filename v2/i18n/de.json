@@ -113,7 +113,7 @@
  "t115": "Herunterladen und aktivieren",
  "t116": "Laden Sie BugIt herunter, öffnen Sie es in VS Code und aktivieren Sie es auf einem Gerät. Fragen? Schreiben Sie an support@bugit.dev.",
  "t119": "BugIt 14 Tage kostenlos testen",
- "t120": "Die Testversion endet zum Enddatum, ohne Nachfrist, und ist einmal pro Konto verfügbar.",
+ "t120": "14 Tage, ein Gerät, keine Karte, endet zum Enddatum, einmal pro Konto.",
  "t121": "Preise",
  "t122": "Zahlen Sie für ein Jahr. Verlängern Sie nur, wenn Sie möchten.",
  "t125": "Solo",
@@ -273,5 +273,12 @@
  "try.ph": "Nach dem Update zeigt die Rechnungssumme 0.00 bei Bestellungen mit Rabattcode...",
  "try.go": "Entwurf erstellen",
  "try.note": "Nur auf Englisch. 3 kostenlose Entwürfe pro Tag. Nichts wird irgendwo abgelegt.",
- "hero.trialNote": "Ein Gerät. Keine Karte nötig."
+ "sample.eyebrow": "Ein Beispiel",
+ "sample.title": "Von einer groben Notiz zu einem Entwurf, den Sie lesen können.",
+ "sample.flag": "Beispiel. Die Daten sind erfunden.",
+ "sample.noteLabel": "Die grobe Notiz",
+ "sample.answers": "BugIt hat danach ein paar Fragen gestellt. Die Antworten: einen Artikel hinzufügen, einen Rabattcode eingeben, die Rechnung öffnen; die Summe sollte den reduzierten Preis zeigen; Windows, Laptop, jedes Mal, seit dem letzten Update; Build unbekannt.",
+ "sample.draftLabel": "Der Entwurf",
+ "sample.basis": "Jede Zeile sagt, ob sie aus der Notiz stammt, abgeleitet wurde oder unbekannt ist.",
+ "sample.source": "Ein gekürzter Entwurf der kostenlosen Vorschau, einer vereinfachten Version von BugIt. Die Vorschau schreibt auf Englisch, und nichts wird irgendwo angelegt. <a href=\"/demo/\">Probieren Sie es mit Ihrer eigenen Notiz.</a>"
 }

@@ -113,7 +113,7 @@
  "t115": "Téléchargez et activez",
  "t116": "Téléchargez BugIt, ouvrez-le dans VS Code et activez-le sur un appareil. Des questions ? Écrivez à support@bugit.dev.",
  "t119": "Essayez BugIt gratuitement pendant 14 jours",
- "t120": "L’essai s’arrête à sa date de fin, sans délai de grâce, et n’est disponible qu’une fois par compte.",
+ "t120": "14 jours, un appareil, sans carte, s’arrête à la date de fin, une seule fois par compte.",
  "t121": "Tarifs",
  "t122": "Payez pour un an. Renouvelez seulement si vous le voulez.",
  "t125": "Solo",
@@ -273,5 +273,12 @@
  "try.ph": "Après la mise à jour, le total de la facture affiche 0.00 pour les commandes avec un code promo...",
  "try.go": "Rédiger mon brouillon",
  "try.note": "En anglais uniquement. 3 brouillons gratuits par jour. Rien n'est déposé nulle part.",
- "hero.trialNote": "Un appareil. Aucune carte requise."
+ "sample.eyebrow": "Un exemple concret",
+ "sample.title": "D’une note en vrac à un brouillon lisible.",
+ "sample.flag": "Exemple. Les données sont inventées.",
+ "sample.noteLabel": "La note en vrac",
+ "sample.answers": "BugIt a ensuite posé quelques questions. Les réponses : ajouter un article, saisir un code de réduction, ouvrir la facture ; le total devrait afficher le prix réduit ; Windows, ordinateur portable, à chaque fois, depuis la dernière mise à jour ; version inconnue.",
+ "sample.draftLabel": "Le brouillon",
+ "sample.basis": "Chaque ligne indique si elle vient de la note, si elle est déduite ou si elle est inconnue.",
+ "sample.source": "Un brouillon raccourci, écrit par l’aperçu gratuit, une version simplifiée de BugIt. L’aperçu écrit en anglais, et rien n’est déposé nulle part. <a href=\"/demo/\">Essayez-le sur votre propre note.</a>"
 }

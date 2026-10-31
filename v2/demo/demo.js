@@ -7,6 +7,27 @@
   var API = (window.BUGIT_DEMO_API || 'https://portal.bugit.dev/api/demo').replace(/\/$/, '');
   var TRIAL_BEACON = API + '/event';
 
+  /* TRIAL-LINK-BEGIN: pure, no DOM; run by scripts/check-demo-trial-link.mjs */
+  /* The SAME rule as the portal (bugit-portal lib/attribution/trial-utm.ts cleanUtmValue): trim, lowercase,
+     then 1 to 64 characters of a to z, 0 to 9, dot, underscore, hyphen, starting with a letter or digit.
+     Anything else is dropped, never cleaned, so a crafted link cannot put text into the trial record. */
+  function cleanUtm(raw) {
+    if (typeof raw !== 'string') return undefined;
+    var v = raw.trim().toLowerCase();
+    return /^[a-z0-9][a-z0-9._-]{0,63}$/.test(v) ? v : undefined;
+  }
+  /* base is the button's own link. utm_source stays bugit_demo; the incoming utm_source becomes utm_medium and
+     the incoming utm_campaign replaces demo_v1. With neither, the base comes back untouched. */
+  function trialHref(base, search) {
+    var p, src, camp;
+    try { p = new URLSearchParams(search || ''); } catch (e) { return base; }
+    src = cleanUtm(p.get('utm_source')); camp = cleanUtm(p.get('utm_campaign'));
+    if (!src && !camp) return base;
+    return 'https://portal.bugit.dev/dashboard/free-trial?utm_source=bugit_demo&utm_medium=' + (src || 'web') + '&utm_campaign=' + (camp || 'demo_v1');
+  }
+  /* TRIAL-LINK-END */
+
+
   var MSG = {
     paused: 'The preview is paused right now. Please try again later.',
     busy: 'The free preview has reached its limit for now. Please try again later, or try the full BugIt free for 14 days.',
@@ -200,6 +221,10 @@
     $('again').addEventListener('click', onAgain);
     $('fb-yes').addEventListener('click', function () { onFeedback(true); });
     $('fb-no').addEventListener('click', function () { onFeedback(false); });
+    /* The channel that brought the visitor rides on to the trial link (owner brief 2026-10-30). A tagged
+       preview link (/demo/?utm_source=bluesky&utm_campaign=testers-2026-10) would otherwise lose its channel
+       at the trial button. Read from the page URL only: no cookie, no storage, no request. */
+    $('trial-btn').setAttribute('href', trialHref($('trial-btn').getAttribute('href'), location.search));
     $('trial-btn').addEventListener('click', function () { try { navigator.sendBeacon(TRIAL_BEACON, JSON.stringify({ name: 'trial_clicked' })); } catch (e) { /* the link still works */ } });
 
     try {
