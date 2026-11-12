@@ -384,6 +384,59 @@ check(fs.existsSync(path.join(root, "llms-full.txt")), "llms-full.txt exists");
   check(bad.length === 0, "every JSON-LD block on every page parses", "unparseable in: " + bad.join(", "));
 }
 
+// ---------------------------------------------------------------- 7. hreflang pairs with taskivator.com
+// Six articles have translated copies on taskivator.com (ja, de, fr, es). Google pairs hreflang
+// only when BOTH sides link to each other, so these pages must name the four copies, themselves
+// (en) and x-default, and keep a self canonical. The taskivator.com side was verified to link
+// back on 2026-11-13; this gate holds the bugit.dev half in place.
+{
+  const slugs = [
+    "bug-report-template-developers-read",
+    "catch-duplicate-bugs-before-filing",
+    "report-a-bug-that-only-happens-sometimes",
+    "report-a-regression-bug",
+    "reproduce-a-bug-from-logs",
+    "screenshots-and-recordings-for-bug-reports",
+  ];
+  const alternates = (html) => {
+    const out = {};
+    for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
+      const tag = m[0];
+      if (!/rel="alternate"/i.test(tag)) continue;
+      const lang = (tag.match(/hreflang="([^"]+)"/i) || [])[1];
+      const href = (tag.match(/href="([^"]+)"/i) || [])[1];
+      if (lang) out[lang] = href;
+    }
+    return out;
+  };
+  const expected = (s) => {
+    const self = "https://bugit.dev/articles/" + s + "/";
+    return {
+      en: self,
+      ja: "https://taskivator.com/ja/articles/" + s + "/",
+      de: "https://taskivator.com/de/articles/" + s + "/",
+      fr: "https://taskivator.com/fr/articles/" + s + "/",
+      es: "https://taskivator.com/es/articles/" + s + "/",
+      "x-default": self,
+    };
+  };
+  const wrong = [];
+  for (const s of slugs) {
+    const html = read("v2/articles/" + s + "/index.html");
+    const got = alternates(html);
+    const want = expected(s);
+    if (JSON.stringify(got, Object.keys(want).sort()) !== JSON.stringify(want, Object.keys(want).sort()) || Object.keys(got).length !== 6) {
+      wrong.push(s + " has " + JSON.stringify(got));
+    }
+    if (!html.includes('<link rel="canonical" href="' + want.en + '">')) wrong.push(s + " lost its self canonical");
+  }
+  check(wrong.length === 0, "six articles carry hreflang for en, ja, de, fr, es and x-default, with a self canonical", wrong.join("; "));
+  check(
+    Object.keys(alternates('<link rel="alternate" hreflang="ja" href="https://x/">\n<link rel="canonical" href="https://y/">')).join() === "ja",
+    "self-test: the hreflang parser reads an alternate link and ignores a canonical",
+  );
+}
+
 console.log(
   fails
     ? "\ncheck-seo: " + fails + " FAILURE(S)"
