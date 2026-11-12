@@ -9,6 +9,7 @@ Your tickets, specs and tokens go only to the tools you connect and the AI assis
 - [BugIt home](https://bugit.dev/): what BugIt does, how it works and pricing
 - [Documentation](https://bugit.dev/docs/): install, activate, customize and use BugIt
 - [Get BugIt](https://portal.bugit.dev/pricing): plans and purchase
+- [Free preview](https://bugit.dev/demo/): try a simplified sample of the report writer in English, nothing is filed
 - [Free trial](https://portal.bugit.dev/dashboard/free-trial): a free 14 day trial started from your BugIt account, on one device, with no card needed
 
 ## Documentation

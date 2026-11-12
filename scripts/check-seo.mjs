@@ -274,6 +274,45 @@ if (check(Boolean(ld), "index.html has a JSON-LD block")) {
   }
 }
 
+// ---------------------------------------------------------------- 6. findable by AI answer engines
+// Owner rule 2026-11-12: everything new on the websites must be easy to find, accurately, by other
+// AI models and search. Two of the ways that goes wrong are mechanical, so they are gated here:
+// a page that is in the sitemap but not in llms.txt (an answer engine reading llms.txt never
+// hears of it), and a channel the structured data names that llms.txt does not.
+console.log("\ncheck-seo: llms.txt lists every page and every channel the site declares");
+const llms = read("llms.txt");
+const missingFrom = (urls, text) => urls.filter((u) => !text.includes(u));
+check(
+  missingFrom(["https://a/", "https://b/"], "x https://a/ y").join() === "https://b/",
+  "self-test: the missing-URL finder reports the URL that is absent and only that one",
+);
+const notInLlms = missingFrom(locs, llms);
+check(
+  notInLlms.length === 0,
+  "every sitemap URL is listed in llms.txt",
+  "missing from llms.txt: " + notInLlms.join(", "),
+);
+{
+  const ldHome = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  let sameAs = [];
+  try {
+    const g = JSON.parse(ldHome[1])["@graph"] || [];
+    for (const n of g) if (Array.isArray(n.sameAs)) sameAs.push(...n.sameAs);
+  } catch {
+    /* the parse failure is reported by section 5 */
+  }
+  sameAs = [...new Set(sameAs)];
+  check(sameAs.length > 0, "the structured data declares sameAs links");
+  const norm = (u) => u.replace(/\/$/, "");
+  const llmsNorm = llms.replace(/\/\)/g, ")").replace(/\/\s/g, " ");
+  const absent = sameAs.filter((u) => !llmsNorm.includes(norm(u)));
+  check(
+    absent.length === 0,
+    "every sameAs link in the structured data is also listed in llms.txt",
+    "missing from llms.txt: " + absent.join(", "),
+  );
+}
+
 console.log(
   fails
     ? "\ncheck-seo: " + fails + " FAILURE(S)"
