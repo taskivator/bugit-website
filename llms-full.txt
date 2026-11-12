@@ -20,7 +20,7 @@ QA teams and testers who draft, review and file bug reports to a tracker. The so
 - Suggests a severity from the symptoms, with reasons. You decide.
 - Warns when the steps are too thin for a developer to act on, and asks what is missing.
 - Keeps the crash line and the stack when you paste a log.
-- Redaction: BugIt can redact common personal data before the draft; always read the draft before you use it.
+- Redaction: BugIt can replace common personal data with placeholders in the report it files, as a best effort; always read the draft before you file it.
 - Adds a verification comment after a fix is retested.
 - Dry run lets you practise with zero writes.
 

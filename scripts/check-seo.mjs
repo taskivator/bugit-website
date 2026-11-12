@@ -316,6 +316,46 @@ check(
 check(llms.includes("https://bugit.dev/llms-full.txt"), "llms.txt points to llms-full.txt");
 check(fs.existsSync(path.join(root, "llms-full.txt")), "llms-full.txt exists");
 
+// The 2026-10-18 redaction ruling (bugit-97 replay on 1.4.7): redaction applies to the report that
+// is FILED, the displayed draft can still hold personal data. So "before the draft" (in any of the
+// eleven languages), "before you read the draft" and "from the ticket text first" are banned
+// everywhere a visitor or an answer engine can read. llms-full.txt carried it for a day on
+// 2026-11-12 and so did /demo/ and the guide answers, which is why this is a gate.
+{
+  const BANNED = [
+    "before the draft", "before you read the draft", "from the ticket text first",
+    "antes del borrador", "avant le brouillon", "vor dem Entwurf", "prima della bozza",
+    "antes do rascunho", "до появления черновика", "下書きの前", "초안에 들어가기 전에",
+    "生成草稿前", "قبل المسودة",
+  ];
+  const files = ["llms.txt", "llms-full.txt"];
+  for (const dir of ["public/guide/prepared", "v2"]) {
+    const stack = [path.join(root, dir)];
+    while (stack.length) {
+      const d = stack.pop();
+      for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+        const p = path.join(d, e.name);
+        if (e.isDirectory()) stack.push(p);
+        else if (/\.(html|json|js|txt|md)$/.test(e.name)) files.push(path.relative(root, p));
+      }
+    }
+  }
+  const found = [];
+  for (const f of files) {
+    const t = fs.readFileSync(path.join(root, f), "utf8");
+    for (const b of BANNED) if (t.includes(b)) found.push(f + ' has "' + b + '"');
+  }
+  check(
+    found.length === 0,
+    "no page, guide answer or llms file says personal data is redacted before the draft",
+    found.slice(0, 8).join("; "),
+  );
+  check(
+    BANNED.some((b) => "x before the draft y".includes(b)),
+    "self-test: the banned redaction wording list matches the sentence it exists to stop",
+  );
+}
+
 // Every JSON-LD block on every page must parse: a block that does not is silently ignored by
 // every reader, so the page then says nothing about itself.
 {
