@@ -120,7 +120,7 @@ const skippedOptional = [];
 // that page, nothing on the site has referenced it since, and it carried the retired trial request
 // path. The build still READS it (the 404 strings and the FAQ guard above), and so do the copy
 // checks, so the source stays; check-deploy-safety confirmed the live homepage does not reference it.
-for (const item of ['index.html','styles.css','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','_redirects','.well-known','verify.json','llms.txt',...INDEXNOW_KEY_FILES]) {
+for (const item of ['index.html','styles.css','consent.js','public','robots.txt','sitemap.xml','manifest.webmanifest','404.html','_headers','_redirects','.well-known','verify.json','llms.txt','llms-full.txt',...INDEXNOW_KEY_FILES]) {
   const src = path.join(root,item);
   if (!fs.existsSync(src)) {
     if (REQUIRED_AT_ROOT.has(item)) {

@@ -313,6 +313,37 @@ check(
   );
 }
 
+check(llms.includes("https://bugit.dev/llms-full.txt"), "llms.txt points to llms-full.txt");
+check(fs.existsSync(path.join(root, "llms-full.txt")), "llms-full.txt exists");
+
+// Every JSON-LD block on every page must parse: a block that does not is silently ignored by
+// every reader, so the page then says nothing about itself.
+{
+  const stack = [path.join(root, "v2")];
+  let blocks = 0;
+  const bad = [];
+  while (stack.length) {
+    const d = stack.pop();
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, e.name);
+      if (e.isDirectory()) stack.push(p);
+      else if (e.name.endsWith(".html")) {
+        const src = fs.readFileSync(p, "utf8");
+        for (const m of src.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+          blocks++;
+          try {
+            JSON.parse(m[1]);
+          } catch {
+            bad.push(path.relative(root, p));
+          }
+        }
+      }
+    }
+  }
+  check(blocks > 10, "the site carries JSON-LD blocks on its pages", "found " + blocks);
+  check(bad.length === 0, "every JSON-LD block on every page parses", "unparseable in: " + bad.join(", "));
+}
+
 console.log(
   fails
     ? "\ncheck-seo: " + fails + " FAILURE(S)"

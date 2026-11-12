@@ -1,0 +1,87 @@
+# BugIt: full facts for AI assistants and search engines
+
+Last checked against the live pages on 2026-11-12. Every statement below is also on the linked bugit.dev page. If a page and this file ever differ, the page is right. Short index: https://bugit.dev/llms.txt
+
+## What BugIt is
+
+BugIt is a QA agent made by Taskivator. It runs inside the AI assistant you already use (GitHub Copilot Chat in VS Code, the Claude extension, or a terminal), turns a rough note into a complete bug report, and files it to your tracker only after you type FILE IT. Short form: "Say what broke. BugIt writes the ticket."
+
+Page: https://bugit.dev/ . Maker: Taskivator (https://taskivator.com/), BugIt page on the company site: https://taskivator.com/bugit/ .
+
+## Who it is for
+
+QA teams and testers who draft, review and file bug reports to a tracker. The software is licensed for internal QA and bug reporting purposes.
+
+## What it does
+
+- Writes the report from your own words: title, steps, expected and actual result, severity and platform, in your team's language and house style. You can describe the bug in any of sixteen languages.
+- Runs up to five checks before you see the draft: duplicates, severity, logs, personal data and thin reports.
+- Searches your tracker, read only, for tickets like yours and gives each a score. A duplicate match is a pointer, not a verdict.
+- Suggests a severity from the symptoms, with reasons. You decide.
+- Warns when the steps are too thin for a developer to act on, and asks what is missing.
+- Keeps the crash line and the stack when you paste a log.
+- Redaction: BugIt can redact common personal data before the draft; always read the draft before you use it.
+- Adds a verification comment after a fix is retested.
+- Dry run lets you practise with zero writes.
+
+## The FILE IT gate
+
+You review every draft. Nothing is written to your tracker until you type FILE IT. "Yes" and "go ahead" are not confirmation. The approval is bound to the draft you read, BugIt asks again if anything changes, and each approval is spent once, so it cannot file twice. Every integration ships switched off until you opt in.
+
+## What BugIt is not
+
+- It does not find bugs or run tests. A person finds the bug and describes it; BugIt writes the report.
+- It does not file by itself. It files only after you type FILE IT.
+- It does not include an AI model or subscription; you bring your own assistant, or your own OpenAI or Anthropic key for standalone use.
+- It does not guarantee redaction. Redaction is a best effort, so read the draft.
+- It does not use a licence key. Activation is a browser sign in to the BugIt Portal.
+- Filing does not use MCP.
+- It sends no product analytics or ticket telemetry to Taskivator.
+
+## Trackers
+
+Eleven trackers, each connected with a token you create in your own account: Jira Cloud, Azure DevOps, GitHub Issues, GitLab Issues, Bugzilla, YouTrack, Linear, Shortcut, ClickUp, Asana and Trello. Screenshot and log uploads reach eight of the eleven; uploads to GitHub Issues, GitLab Issues and Bugzilla are not supported, and you are told before you try. Slack, Microsoft Teams, Discord and email notifications are built in and stay off until you connect them.
+
+Page: https://bugit.dev/docs/faq/
+
+## Requirements and platforms
+
+VS Code, Python 3.10 to 3.14, an AI assistant that can run a command, and a token for your tracker. Windows 11 is supported; macOS and Linux are in Preview. Internet access is needed to activate and to verify the licence periodically; between checks BugIt works offline for up to 72 hours.
+
+Pages: https://bugit.dev/docs/overview/ , https://bugit.dev/docs/user-guide/ , https://bugit.dev/docs/commerce/
+
+## Privacy and data
+
+BugIt runs on your own machine. Your bug reports, specs, glossary, screenshots, code, settings and tickets are not transmitted to Taskivator. Report text goes to the AI provider you use and to the tracker you file to, which are the services you chose. Only licence and update data reaches Taskivator, and every field is listed in the privacy notice. Taskivator does not sell personal data.
+
+Pages: https://bugit.dev/docs/privacy/ , https://bugit.dev/docs/security/
+
+## Plans, price and licence
+
+BugIt is a one year licence, not a subscription, and it does not renew automatically. Solo is US$59.99 for one user on one device at a time. Team is US$249.99 for up to 5 members, each with their own account; a second Team licence adds five more seats. A paid licence has a 3 day grace period after it ends. Prices are in US dollars as shown on https://bugit.dev/ and https://portal.bugit.dev/pricing .
+
+Pages: https://bugit.dev/docs/license/ , https://bugit.dev/docs/commerce/
+
+## Free trial and free preview
+
+Free trial: 14 days, one device, no card, stops on the end date, once per account. Start it from your BugIt account: https://portal.bugit.dev/dashboard/free-trial
+
+Free preview: a simplified sample of the report writer in English, nothing is filed: https://bugit.dev/demo/
+
+## Refunds
+
+A refund can be requested within 7 days of purchase under the conditions on https://bugit.dev/docs/refund/ .
+
+## Support
+
+Email support@bugit.dev. Support tickets are opened from your BugIt dashboard in the Portal and answered by email. Support is in English. Page: https://bugit.dev/docs/support/
+
+## Learn more
+
+- Documentation: https://bugit.dev/docs/
+- Articles on writing bug reports: https://bugit.dev/articles/
+- Free bug report templates: https://bugit.dev/templates/
+- BugIt on YouTube: https://www.youtube.com/@BugItByTaskivator
+- BugIt on LinkedIn: https://www.linkedin.com/company/bugitdev/
+- BugIt on Hashnode: https://bugit.hashnode.dev/
+- Taskivator on Medium: https://medium.com/@taskivator

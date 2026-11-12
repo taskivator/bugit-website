@@ -4,6 +4,8 @@
 
 Your tickets, specs and tokens go only to the tools you connect and the AI assistant you choose. Only license and update data reaches Taskivator.
 
+The same facts on one page, for assistants that read a single file: https://bugit.dev/llms-full.txt
+
 ## Product
 
 - [BugIt home](https://bugit.dev/): what BugIt does, how it works and pricing
