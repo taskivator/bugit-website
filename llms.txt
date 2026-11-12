@@ -52,4 +52,8 @@ Your tickets, specs and tokens go only to the tools you connect and the AI assis
 ## Company
 
 - [Taskivator](https://taskivator.com/): the company that makes BugIt
-- [BugIt on YouTube](https://www.youtube.com/@BugItByTaskivator): short films on BugIt's features
+- [BugIt on taskivator.com](https://taskivator.com/bugit/): the BugIt page on the company site
+- [BugIt on YouTube](https://www.youtube.com/@BugItByTaskivator): short films on BugIt's features and on how to write a bug report
+- [BugIt on LinkedIn](https://www.linkedin.com/company/bugitdev/): the BugIt company page
+- [BugIt on Hashnode](https://bugit.hashnode.dev/): articles on writing bug reports and on how BugIt works
+- [Taskivator on Medium](https://medium.com/@taskivator): articles from Taskivator, including how to write a bug report
