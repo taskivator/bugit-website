@@ -136,7 +136,7 @@
  "t142": "Mi serve GitHub Copilot?",
  "t143": "No. BugIt funziona in qualsiasi assistente che sappia eseguire un comando: Copilot Chat, l’estensione Claude in VS Code o un semplice terminale. Può anche girare da solo con la tua chiave OpenAI o Anthropic.",
  "t144": "Taskivator vede i miei ticket?",
- "t145": "No. I tuoi ticket, le specifiche e i token non passano dai nostri server. Passano solo i dati di licenza e aggiornamento, e ogni campo è elencato nell’informativa sulla privacy.",
+ "t145": "Non tramite il software. Il software non invia i tuoi ticket né le specifiche ai nostri server. Invia dati di licenza e aggiornamento, e l’informativa sulla privacy elenca ogni campo. L’anteprima web gratuita di questo sito è separata: il testo che scrivi lì viene inviato ai nostri server, e l’informativa sulla privacy spiega come viene trattato.",
  "t148": "Cosa succede dopo un anno?",
  "t149": "I tuoi file e le tue impostazioni restano. Per inviare serve una licenza attiva, e nulla si rinnova se non acquisti di nuovo.",
  "t150": "I tuoi tester trovano i bug.<br><span class=\"grad\">BugIt li scrive.</span>",

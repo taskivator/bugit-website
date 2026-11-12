@@ -136,7 +136,7 @@
  "t142": "Do I need GitHub Copilot?",
  "t143": "No. BugIt runs in any assistant that can run a command: Copilot Chat, the Claude extension in VS Code, or a plain terminal. It can also run standalone with your own OpenAI or Anthropic key.",
  "t144": "Does Taskivator see my tickets?",
- "t145": "No. Your tickets, specs and tokens do not pass through our servers. Only license and update data does, and every field is listed in the privacy notice.",
+ "t145": "Not through the software. Your tickets and specs are not sent to our servers by the software. The software sends license and update data, and the privacy notice lists every field. The free web preview on this site is separate: the text you type there is sent to our servers, and the privacy notice explains how it is handled.",
  "t148": "What happens after a year?",
  "t149": "Your files and settings stay. Filing needs an active license, and nothing renews unless you buy again.",
  "t150": "Your testers find the bugs.<br><span class=\"grad\">BugIt writes them up.</span>",
